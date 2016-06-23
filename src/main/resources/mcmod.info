@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ftrsquids",
+  "name": "Rocket Squids",
+  "description": "3... 2... 1... Blast Off!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["FredTargaryen"],
+  "credits": "Inspired by the buggy squids from the old Minecraft",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
