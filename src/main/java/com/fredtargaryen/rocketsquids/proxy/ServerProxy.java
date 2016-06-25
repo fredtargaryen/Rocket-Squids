@@ -1,8 +1,10 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
-import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
-
 public class ServerProxy extends CommonProxy
 {
+    @Override
     public void registerRenderers(){}
+
+    @Override
+    public void registerModels(){}
 }

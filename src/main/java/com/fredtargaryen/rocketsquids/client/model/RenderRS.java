@@ -11,8 +11,8 @@ import java.util.Random;
 
 public class RenderRS extends RenderLiving<EntityRocketSquid>
 {
-    private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID, "textures/models/rs.png");
-    private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID, "textures/models/rsb.png");
+    private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rs.png");
+    private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rsb.png");
 
     public RenderRS(RenderManager rm, ModelRocketSquid model, float shadowSize)
     {

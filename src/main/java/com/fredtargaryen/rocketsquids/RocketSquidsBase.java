@@ -1,17 +1,19 @@
 /**
+ * No squid texture
+ * No squid name
+ * No item model
+ * No item name
  * Tentacles don't spin with head! (check)
  * Should spin a bit slower (check)
  */
 
 package com.fredtargaryen.rocketsquids;
 
-import com.fredtargaryen.rocketsquids.entity.EntityHandler;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import net.minecraft.init.Biomes;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -20,7 +22,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
 public class RocketSquidsBase
@@ -44,7 +46,18 @@ public class RocketSquidsBase
     public static CommonProxy proxy;
         
     @Mod.EventHandler
-    public void preinit(FMLPreInitializationEvent event)
+    public void preInit(FMLPreInitializationEvent event)
+    {
+    	nitroinksac = new ItemNitroInkSac()
+    	.setMaxStackSize(64)
+        .setUnlocalizedName("nitroinksac")
+        .setRegistryName("nitroinksac");
+
+        proxy.registerRenderers();
+    }
+        
+    @Mod.EventHandler
+    public void Init(FMLInitializationEvent event)
     {
         //Register Entities with EntityRegistry
         EntityRegistry.addSpawn(EntityRocketSquid.class, 7, 1, 3, EnumCreatureType.WATER_CREATURE,
@@ -52,22 +65,10 @@ public class RocketSquidsBase
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
         EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
         EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
+        GameRegistry.register(nitroinksac);
 
-    	nitroinksac = new ItemNitroInkSac()
-    	.setMaxStackSize(64)
-        .setUnlocalizedName("nitroinksac")
-        .setRegistryName("nitroinksac");
-    }
-        
-    @Mod.EventHandler
-    public void Init(FMLInitializationEvent event)
-    {
-        proxy.registerRenderers();
         proxy.registerModels();
-        MinecraftForge.EVENT_BUS.register(new EntityHandler());
         MessageHandler.init();
-
-    	//Add recipes with GameRegistry
     }
         
     @Mod.EventHandler
