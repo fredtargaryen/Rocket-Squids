@@ -2,9 +2,14 @@ package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Random;
@@ -13,6 +18,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
 {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rs.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rsb.png");
+    private static final ResourceLocation fireTexture = new ResourceLocation("textures/blocks/fire_layer_0.png");
 
     public RenderRS(RenderManager rm, ModelRocketSquid model, float shadowSize)
     {
@@ -30,12 +36,12 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
     }
 
     @Override
-    protected void rotateCorpse(EntityRocketSquid ers, float par2, float par3, float par4)
+    protected void rotateCorpse(EntityRocketSquid ers, float yaw, float pitch, float partialTicks)
     {
-        float f3 = ers.prevRotationPitch + (ers.rotationPitch - ers.prevRotationPitch) * par4;
-        float f4 = ers.prevRotationYaw + (ers.rotationYaw - ers.prevRotationYaw) * par4;
+        float f3 = ers.prevRotationPitch + (ers.rotationPitch - ers.prevRotationPitch) * partialTicks;
+        float f4 = ers.prevRotationYaw + (ers.rotationYaw - ers.prevRotationYaw) * partialTicks;
         GlStateManager.translate(0.0F, 0.5F, 0.0F);
-        GlStateManager.rotate(180.0F - par3, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(180.0F - pitch, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(f3, 1.0F, 0.0F, 0.0F);
         GlStateManager.rotate(f4, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(0.0F, -1.2F, 0.0F);
@@ -43,24 +49,37 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
 
     public void doRender(EntityRocketSquid par1EntitySquid, double x, double y, double z, float par8, float partialTicks)
     {
-        //How to get f to
-        float f = par1EntitySquid.prevSpin + (par1EntitySquid.currentSpin - par1EntitySquid.prevSpin) * partialTicks;
-        if (par1EntitySquid.getPhase() == EntityRocketSquid.Phase.SHAKE)
+        if (par1EntitySquid.getShaking())
         {
             Random r = par1EntitySquid.getRNG();
             x += r.nextGaussian() * 0.02D;
             y += r.nextGaussian() * 0.02D;
             z += r.nextGaussian() * 0.02D;
         }
-        else if(par1EntitySquid.getPhase() == EntityRocketSquid.Phase.BLAST)
+        else if(par1EntitySquid.getBlasting())
         {
-            //Put the fire here
+            BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0F, 10.0F, 0.0F);
+            GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.scale(0.9F, 1.2F, 0.9F);
+            int i = par1EntitySquid.getBrightnessForRender(partialTicks);
+            int j = i % 65536;
+            int k = i / 65536;
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            blockrendererdispatcher.renderBlockBrightness(Blocks.FIRE.getDefaultState(), 1.0F);
+            GlStateManager.popMatrix();
+            GlStateManager.disableRescaleNormal();
         }
         super.doRender(par1EntitySquid, x, y, z, par8, partialTicks);
     }
 
     @Override
     protected ResourceLocation getEntityTexture(EntityRocketSquid entity) {
-        return entity.getBlasting() ? blasting : normal;
+        return entity.getBlasting() || entity.getShaking() ? blasting : normal;
     }
 }

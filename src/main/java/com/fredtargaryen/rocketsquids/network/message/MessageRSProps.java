@@ -35,7 +35,6 @@ public class MessageRSProps implements IMessage, IMessageHandler<MessageRSProps,
         try
         {
             EntityRocketSquid ers = this.getSquid(message.eID);
-            ers.setExtraProperties(message.props);
         }
         catch(NullPointerException n)
         {

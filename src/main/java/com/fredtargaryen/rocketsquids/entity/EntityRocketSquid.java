@@ -1,25 +1,22 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.ai.EntityAIRandomMove;
-import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessageRSProps;
-import net.minecraft.block.material.Material;
+import com.fredtargaryen.rocketsquids.entity.ai.*;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+
+import javax.annotation.Nullable;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
-    private int ticksInPhase;
-    private int phaseLength;
-
     public float tentacleAngle;
     public float lastTentacleAngle;
 
@@ -33,48 +30,27 @@ public class EntityRocketSquid extends EntityWaterMob
     public float prevTargetSpin;
     public float targetSpin;
 
-    private float randomMotionVecX;
-    private float randomMotionVecY;
-    private float randomMotionVecZ;
+    private double targetRotationPitch;
+    private double targetRotationYaw;
 
-    public float randomMotionSpeed;
-    public float field_70871_bB;
-
-    private Phase phase;
-
-    private NBTTagCompound extraProperties;
-
-    public enum Phase
-    {
-        SWIM,
-        SHAKE,
-        BLAST
-    }
+    private boolean shaking;
+    private boolean blasting;
 
     public EntityRocketSquid(World par1World)
     {
         super(par1World);
-        //sets size of bounding box. par1=length and width; par2=height.
+        //Set size of bounding box. par1=length and width; par2=height.
         //Normal squids are 0.95F, 0.95F.
-        this.setSize(0.95F, 0.95F);
-        this.phase = Phase.SWIM;
-        this.ticksInPhase = 0;
-        this.extraProperties = new NBTTagCompound();
-        if(!par1World.isRemote)
-        {
-            this.phaseLength = (int) (100 + this.getRNG().nextFloat() * 100);
-            MessageRSProps m = new MessageRSProps();
-            m.setProps(this.getEntityId(), this.getExtraProperties());
-            MessageHandler.INSTANCE.sendToAllAround(m, new NetworkRegistry.TargetPoint(this.worldObj.provider.getDimension(), this.posX, this.posY, this.posZ, 32.00D));
-        }
-        this.tasks.addTask(0, new EntityAIRandomMove(this));
+        this.setSize(0.95F, 1.4F);
     }
 
-    public void setRandomMotionVectors(float x, float y, float z)
+    @Override
+    public void initEntityAI()
     {
-        this.randomMotionVecX = x;
-        this.randomMotionVecY = y;
-        this.randomMotionVecZ = z;
+        //this.tasks.addTask(0, new EntityAIBlastOff(this));
+        //this.tasks.addTask(1, new EntityAIShake(this));
+        this.tasks.addTask(2, new EntityAISwimAround(this));
+        this.tasks.addTask(3, new EntityAIGiveUp(this));
     }
 
     @Override
@@ -86,7 +62,22 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public boolean getBlasting()
     {
-        return this.phase == Phase.SHAKE || this.phase == Phase.BLAST;
+        return this.blasting;
+    }
+
+    public void setBlasting(boolean b)
+    {
+        this.blasting = b;
+    }
+
+    public boolean getShaking()
+    {
+        return this.shaking;
+    }
+
+    public void setShaking(boolean b)
+    {
+        this.shaking = b;
     }
 
     @Override
@@ -100,69 +91,183 @@ public class EntityRocketSquid extends EntityWaterMob
 	public void onLivingUpdate()
     {
         super.onLivingUpdate();
-        //Client
         if(this.worldObj.isRemote)
         {
-            /**
-             * Handles tentacle angles
-             */
+            //Client side
+            //Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
-            switch (this.phase) {
-                case SHAKE:
-                    //Tentacles stick out at 60 degrees
-                    this.tentacleAngle = (float) Math.PI / 3;
-                    break;
-                case BLAST:
-                    //Tentacles quickly close up
-                    this.tentacleAngle = this.ticksInPhase > 100 ? 0 : (float) ((Math.PI / 3) * ((float) (100 - this.ticksInPhase) / 100));
-                    break;
-                default:
-                    //If in water, tentacles oscillate normally
-                    this.tentacleAngle = this.inWater ? (float) ((Math.PI / 6) + (MathHelper.sin((float) Math.toRadians(4 * (this.ticksExisted % 360))) * Math.PI / 6)) : 0;
-                    break;
-            }
-
-            /**
-             * Handles spinning
-             */
-            this.prevSpin = this.currentSpin;
-            if(this.currentSpin == this.targetSpin)
+            if(this.shaking)
             {
-                this.ticksOfCurrentSpin = 0;
-                //Keeps the spin value within range of -pi to pi
-                if(this.currentSpin > Math.PI)
-                {
-                    this.currentSpin -= Math.PI;
-                }
-                else if(this.currentSpin < -Math.PI)
-                {
-                    this.currentSpin += Math.PI;
-                }
-                //1 in 10 chance of starting a new spin whenever it's not spinning - may have to increase number
-                if(this.rand.nextInt(10) == 0)
-                {
-                    this.canDoNewSpin = true;
-                }
+                //Tentacles stick out at 60 degrees
+                this.tentacleAngle = (float) Math.PI / 3;
+            }
+            else if(this.blasting)
+            {
+                //Tentacles quickly close up
+                this.tentacleAngle = 0;
             }
             else
             {
-                //Changes the spin value appropriately
-                //All spins should take 45 ticks so ticksOfCurrentSpin should be multiplied by 2
-                ++this.ticksOfCurrentSpin;
-                this.currentSpin = (float)(Math.sin(Math.toRadians((double)(this.ticksOfCurrentSpin * 2))) * (this.targetSpin - this.prevSpin) + this.prevSpin);
-            }
-            if(this.canDoNewSpin)
-            {
-                //Sets up "source and destination" spin values.
-                //The squid can go 180 degrees around in either direction in one spin
-                this.prevTargetSpin = this.currentSpin;
-                this.targetSpin = this.rand.nextFloat() * (float)(Math.PI);
-                if(this.rand.nextBoolean())
+                if(this.inWater)
                 {
-                    this.targetSpin *= -1;
+                    //If in water, tentacles oscillate normally
+                    this.tentacleAngle = this.inWater ? (float) ((Math.PI / 6) + (MathHelper.sin((float) Math.toRadians(4 * (this.ticksExisted % 360))) * Math.PI / 6)) : 0;
                 }
-                this.canDoNewSpin = false;
-                this.ticksOfCurrentSpin = 0;
+                else
+                {
+                    this.tentacleAngle = 0;
+                }
+            }
+//            if(this.phase != SHAKE)
+//            {
+//            //Handles spinning
+//            this.prevSpin = this.currentSpin;
+//            if(this.currentSpin == this.targetSpin)
+//            {
+//                this.ticksOfCurrentSpin = 0;
+//                //Keeps the spin value within range of -pi to pi
+//                if(this.currentSpin > Math.PI)
+//                {
+//                    this.currentSpin -= Math.PI;
+//                }
+//                else if(this.currentSpin < -Math.PI)
+//                {
+//                    this.currentSpin += Math.PI;
+//                }
+//                //1 in 10 chance of starting a new spin whenever it's not spinning - may have to increase number
+//                if(this.rand.nextInt(10) == 0)
+//                {
+//                    this.canDoNewSpin = true;
+//                }
+//            }
+//            else
+//            {
+//                //Changes the spin value appropriately
+//                //All spins should take 45 ticks so ticksOfCurrentSpin should be multiplied by 2
+//                ++this.ticksOfCurrentSpin;
+//                this.currentSpin = (float)(Math.sin(Math.toRadians((double)(this.ticksOfCurrentSpin * 2))) * (this.targetSpin - this.prevSpin) + this.prevSpin);
+//            }
+//            if(this.canDoNewSpin)
+//            {
+//                //Sets up "source and destination" spin values.
+//                //The squid can go 180 degrees around in either direction in one spin
+//                this.prevTargetSpin = this.currentSpin;
+//                this.targetSpin = this.rand.nextFloat() * (float)(Math.PI);
+//                if(this.rand.nextBoolean())
+//                {
+//                    this.targetSpin *= -1;
+//                }
+//                this.canDoNewSpin = false;
+//                this.ticksOfCurrentSpin = 0;
+//            }
+        }
+        else
+        {
+            //Fraction of distance to target rotation to rotate by each server tick
+            double rotateSpeed;
+            if(this.inWater)
+            {
+                this.motionX *= 0.9;
+                this.motionY *= 0.9;
+                this.motionZ *= 0.9;
+                rotateSpeed = 0.4;
+            }
+            else
+            {
+                if (this.isPotionActive(MobEffects.LEVITATION))
+                {
+                    this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
+                }
+                else if (!this.func_189652_ae())
+                {
+                    this.motionY -= 0.08D;
+                }
+                this.motionX *= 0.9800000190734863D;
+                this.motionY *= 0.9800000190734863D;
+                this.motionZ *= 0.9800000190734863D;
+                rotateSpeed = 0.8;
+            }
+
+            //Correct pitch to be within [-PI, PI] if necessary.
+            //This may involve the sign change discussed below.
+            if(this.rotationPitch < -Math.PI)
+            {
+                this.rotationPitch += Math.PI * 2;
+            }
+            else if(this.rotationPitch > Math.PI)
+            {
+                this.rotationPitch -= Math.PI * 2;
+            }
+            this.prevRotationPitch = this.rotationPitch;
+            //Rotate towards target pitch
+            if(this.targetRotationPitch != this.rotationPitch)
+            {
+                //A squid can rotate clockwise or anticlockwise to its target; this code picks the shortest
+                //direction and rotates that way. One of the directions will take the rotation out of the
+                //interval [-Math.PI, Math.PI]; a sign change of the rotation would be required to put the
+                //rotation back in that interval.
+                double distanceWithoutSignChange = Math.abs(this.targetRotationPitch - this.rotationPitch);
+                if(distanceWithoutSignChange <= Math.PI)
+                {
+                    //Rotating in the shorter direction will not involve a sign change.
+                    if(this.targetRotationPitch > this.rotationPitch)
+                    {
+                        this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
+                    }
+                    else
+                    {
+                        this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
+                    }
+                }
+                else
+                {
+                    //Rotating in the shorter direction will involve a sign change.
+                    if(this.targetRotationPitch > this.rotationPitch)
+                    {
+                        this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
+                    }
+                    else
+                    {
+                        this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
+                    }
+                }
+            }
+
+            //Same code as above but for yaw
+            if(this.rotationYaw < -Math.PI)
+            {
+                this.rotationYaw += Math.PI * 2;
+            }
+            else if(this.rotationYaw > Math.PI)
+            {
+                this.rotationYaw -= Math.PI * 2;
+            }
+            this.prevRotationYaw = this.rotationYaw;
+            if(this.targetRotationYaw != this.rotationYaw)
+            {
+                double distanceWithoutSignChange = Math.abs(this.targetRotationYaw - this.rotationYaw);
+                if(distanceWithoutSignChange <= Math.PI)
+                {
+                    if(this.targetRotationYaw > this.rotationYaw)
+                    {
+                        this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
+                    }
+                    else
+                    {
+                        this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
+                    }
+                }
+                else
+                {
+                    if(this.targetRotationYaw > this.rotationYaw)
+                    {
+                        this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
+                    }
+                    else
+                    {
+                        this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
+                    }
+                }
             }
         }
     }
@@ -176,91 +281,18 @@ public class EntityRocketSquid extends EntityWaterMob
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
     }
 
-    /**
-     * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
-     */
-    public boolean interact(EntityPlayer par1EntityPlayer)
-    {
-        return true;
-    }
-
     @Override
     public boolean canPickUpLoot()
     {
         return false;
     }
 
-    public Phase getPhase()
+    public void addForce(double n)
     {
-        return this.phase;
-    }
-
-    public boolean isMovingRandomly()
-    {
-        return this.randomMotionVecX != 0.0F || this.randomMotionVecY != 0.0F || this.randomMotionVecZ != 0.0F;
-    }
-
-    /**
-     * Checks if this entity is inside water (if inWater field is true as a result of handleWaterMovement() returning
-     * true)
-     */
-    @Override
-    public boolean isInWater()
-    {
-        return this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox().expand(0.0D, -0.6000000238418579D, 0.0D), Material.WATER, this);
-    }
-
-    public NBTTagCompound getExtraProperties()
-    {
-        this.extraProperties.setInteger("tip", this.ticksInPhase);
-        this.extraProperties.setInteger("pl", this.phaseLength);
-        this.extraProperties.setFloat("s", this.currentSpin);
-        this.extraProperties.setFloat("rmvx", this.randomMotionVecX);
-        this.extraProperties.setFloat("rmvy", this.randomMotionVecY);
-        this.extraProperties.setFloat("rmvz", this.randomMotionVecZ);
-        this.extraProperties.setFloat("rms", this.randomMotionSpeed);
-        this.extraProperties.setFloat("wtfisthis", this.field_70871_bB);
-        byte b;
-        switch(this.phase)
-        {
-            case BLAST:
-                b = 0;
-                break;
-            case SHAKE:
-                b = 1;
-                break;
-            default:
-                b = 2;
-                break;
-        }
-        this.extraProperties.setByte("phase", b);
-        return this.extraProperties;
-    }
-
-    public void setExtraProperties(NBTTagCompound newProps)
-    {
-        this.extraProperties = newProps;
-        this.ticksInPhase = this.extraProperties.getInteger("tip");
-        this.phaseLength = this.extraProperties.getInteger("pl");
-        this.currentSpin = this.extraProperties.getFloat("s");
-        this.randomMotionVecX = this.extraProperties.getFloat("rmvx");
-        this.randomMotionVecY = this.extraProperties.getFloat("rmvy");
-        this.randomMotionVecZ = this.extraProperties.getFloat("rmvz");
-        this.randomMotionSpeed = this.extraProperties.getFloat("rms");
-        this.field_70871_bB = this.extraProperties.getFloat("wtfisthis");
-        byte b = this.extraProperties.getByte("phase");
-        switch(b)
-        {
-            case 0:
-                this.phase = Phase.BLAST;
-                break;
-            case 1:
-                this.phase = Phase.SHAKE;
-                break;
-            default:
-                this.phase = Phase.SWIM;
-                break;
-        }
+        this.motionY = n * Math.cos(this.rotationPitch);
+        double horizontalForce = n * Math.sin(this.rotationPitch);
+        this.motionZ = horizontalForce * Math.cos(this.rotationYaw);
+        this.motionX = horizontalForce * Math.sin(this.rotationYaw);
     }
 
     /**
@@ -270,5 +302,31 @@ public class EntityRocketSquid extends EntityWaterMob
     protected SoundEvent getHurtSound()
     {
         return null;
+    }
+
+    @Override
+    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    {
+        if(!this.worldObj.isRemote)
+        {
+            if(stack == null) {
+                this.addForce(1.0);
+            }
+            else
+            {
+                this.addForce(3.0);
+            }
+        }
+        return true;
+    }
+
+    public void setTargetRotationPitch(double targPitch)
+    {
+        this.targetRotationPitch = targPitch;
+    }
+
+    public void setTargetRotationYaw(double targYaw)
+    {
+        this.targetRotationYaw = targYaw;
     }
 }

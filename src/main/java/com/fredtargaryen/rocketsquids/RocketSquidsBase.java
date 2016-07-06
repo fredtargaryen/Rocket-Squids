@@ -1,10 +1,12 @@
 /**
- * No squid texture
- * No squid name
- * No item model
- * No item name
- * Tentacles don't spin with head! (check)
- * Should spin a bit slower (check)
+ * Add synchronisation
+ * Some kind of not responding issue?
+ * Test EntityAIGiveUp
+ * Test EntityAISwimAround
+ * Hitting a squid makes it go flying (check)
+ * Re-enable spin (remove entity AI to test)
+ * Fire for blasting rocket squids (check)
+ * Nitro ink sacs
  */
 
 package com.fredtargaryen.rocketsquids;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
 public class RocketSquidsBase
@@ -74,5 +77,6 @@ public class RocketSquidsBase
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
+        OreDictionary.registerOre("itemGunpowder", nitroinksac);
     }
 }

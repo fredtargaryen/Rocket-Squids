@@ -1,6 +1,8 @@
 package com.fredtargaryen.rocketsquids;
 
 /**
+ * Superflat preset for squid testing:
+ *3;minecraft:glowstone,5*minecraft:water;1
  * ===DESCRIPTION OF CHANNELS===
  */
 

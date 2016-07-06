@@ -30,6 +30,6 @@ public class ClientProxy extends CommonProxy
     {
         //Describes how items and some blocks should look in the inventory
         ItemModelMesher m = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-        m.register(RocketSquidsBase.nitroinksac, 0, new ModelResourceLocation(DataReference.MODID + ":nitroinksac"));
+        m.register(RocketSquidsBase.nitroinksac, 0, new ModelResourceLocation(DataReference.MODID + ":nitroinksac", "inventory"));
     }
 }

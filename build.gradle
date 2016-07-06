@@ -22,10 +22,10 @@ plugins {
 */
 version = "0.1"
 group= "com.fredtargaryen.rocketsquids" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Rocket Squids"
+archivesBaseName = "Rocket Squids 1.10"
 
 minecraft {
-    version = "1.9.4-12.17.0.1976"
+    version = "1.10.2-12.18.0.2002-1.10.0"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -79,4 +79,10 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+idea { module { inheritOutputDirs = true } }
+
+sourceSets {
+    main { output.resourcesDir = output.classesDir }
 }
