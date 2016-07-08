@@ -22,7 +22,7 @@ plugins {
 */
 version = "0.1"
 group= "com.fredtargaryen.rocketsquids" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Rocket Squids 1.10"
+archivesBaseName = "Rocket Squids 1.10.2"
 
 minecraft {
     version = "1.10.2-12.18.0.2002-1.10.0"

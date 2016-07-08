@@ -2,16 +2,23 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.ai.*;
+import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
+import com.fredtargaryen.rocketsquids.network.MessageHandler;
+import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
 
@@ -19,6 +26,8 @@ public class EntityRocketSquid extends EntityWaterMob
 {
     public float tentacleAngle;
     public float lastTentacleAngle;
+
+    private boolean newPacketRequired;
 
     private boolean canDoNewSpin;
     //DEGREES
@@ -58,26 +67,6 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
-    }
-
-    public boolean getBlasting()
-    {
-        return this.blasting;
-    }
-
-    public void setBlasting(boolean b)
-    {
-        this.blasting = b;
-    }
-
-    public boolean getShaking()
-    {
-        return this.shaking;
-    }
-
-    public void setShaking(boolean b)
-    {
-        this.shaking = b;
     }
 
     @Override
@@ -163,110 +152,128 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         else
         {
-            //Fraction of distance to target rotation to rotate by each server tick
-            double rotateSpeed;
-            if(this.inWater)
+            if(this.newPacketRequired)
             {
-                this.motionX *= 0.9;
-                this.motionY *= 0.9;
-                this.motionZ *= 0.9;
-                rotateSpeed = 0.4;
+                if(RocketSquidsBase.SQUIDCAP != null)
+                {
+                    if(this.hasCapability(RocketSquidsBase.SQUIDCAP, null))
+                    {
+                        ISquidCapability cap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
+                        cap.setBlasting(this.blasting);
+                        cap.setShaking(this.shaking);
+                        cap.setTargetRotationPitch(this.targetRotationPitch);
+                        cap.setTargetRotationYaw(this.targetRotationYaw);
+                        MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), cap),
+                                new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 10));
+                    }
+                }
+                this.newPacketRequired = false;
+            }
+        }
+        //Do on client and server
+        //Fraction of distance to target rotation to rotate by each server tick
+        double rotateSpeed;
+        if(this.inWater)
+        {
+            this.motionX *= 0.9;
+            this.motionY *= 0.9;
+            this.motionZ *= 0.9;
+            rotateSpeed = 0.4;
+        }
+        else
+        {
+            if (this.isPotionActive(MobEffects.LEVITATION))
+            {
+                this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
+            }
+            else if (!this.func_189652_ae())
+            {
+                this.motionY -= 0.08D;
+            }
+            this.motionX *= 0.9800000190734863D;
+            this.motionY *= 0.9800000190734863D;
+            this.motionZ *= 0.9800000190734863D;
+            rotateSpeed = 0.8;
+        }
+
+        //Correct pitch to be within [-PI, PI] if necessary.
+        //This may involve the sign change discussed below.
+        if(this.rotationPitch < -Math.PI)
+        {
+            this.rotationPitch += Math.PI * 2;
+        }
+        else if(this.rotationPitch > Math.PI)
+        {
+            this.rotationPitch -= Math.PI * 2;
+        }
+        this.prevRotationPitch = this.rotationPitch;
+        //Rotate towards target pitch
+        if(this.targetRotationPitch != this.rotationPitch)
+        {
+            //A squid can rotate clockwise or anticlockwise to its target; this code picks the shortest
+            //direction and rotates that way. One of the directions will take the rotation out of the
+            //interval [-Math.PI, Math.PI]; a sign change of the rotation would be required to put the
+            //rotation back in that interval.
+            double distanceWithoutSignChange = Math.abs(this.targetRotationPitch - this.rotationPitch);
+            if(distanceWithoutSignChange <= Math.PI)
+            {
+                //Rotating in the shorter direction will not involve a sign change.
+                if(this.targetRotationPitch > this.rotationPitch)
+                {
+                    this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
+                }
+                else
+                {
+                    this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
+                }
             }
             else
             {
-                if (this.isPotionActive(MobEffects.LEVITATION))
+                //Rotating in the shorter direction will involve a sign change.
+                if(this.targetRotationPitch > this.rotationPitch)
                 {
-                    this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
-                }
-                else if (!this.func_189652_ae())
-                {
-                    this.motionY -= 0.08D;
-                }
-                this.motionX *= 0.9800000190734863D;
-                this.motionY *= 0.9800000190734863D;
-                this.motionZ *= 0.9800000190734863D;
-                rotateSpeed = 0.8;
-            }
-
-            //Correct pitch to be within [-PI, PI] if necessary.
-            //This may involve the sign change discussed below.
-            if(this.rotationPitch < -Math.PI)
-            {
-                this.rotationPitch += Math.PI * 2;
-            }
-            else if(this.rotationPitch > Math.PI)
-            {
-                this.rotationPitch -= Math.PI * 2;
-            }
-            this.prevRotationPitch = this.rotationPitch;
-            //Rotate towards target pitch
-            if(this.targetRotationPitch != this.rotationPitch)
-            {
-                //A squid can rotate clockwise or anticlockwise to its target; this code picks the shortest
-                //direction and rotates that way. One of the directions will take the rotation out of the
-                //interval [-Math.PI, Math.PI]; a sign change of the rotation would be required to put the
-                //rotation back in that interval.
-                double distanceWithoutSignChange = Math.abs(this.targetRotationPitch - this.rotationPitch);
-                if(distanceWithoutSignChange <= Math.PI)
-                {
-                    //Rotating in the shorter direction will not involve a sign change.
-                    if(this.targetRotationPitch > this.rotationPitch)
-                    {
-                        this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
-                    }
-                    else
-                    {
-                        this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
-                    }
+                    this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
                 }
                 else
                 {
-                    //Rotating in the shorter direction will involve a sign change.
-                    if(this.targetRotationPitch > this.rotationPitch)
-                    {
-                        this.rotationPitch -= distanceWithoutSignChange * rotateSpeed;
-                    }
-                    else
-                    {
-                        this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
-                    }
+                    this.rotationPitch += distanceWithoutSignChange * rotateSpeed;
                 }
             }
+        }
 
-            //Same code as above but for yaw
-            if(this.rotationYaw < -Math.PI)
+        //Same code as above but for yaw
+        if(this.rotationYaw < -Math.PI)
+        {
+            this.rotationYaw += Math.PI * 2;
+        }
+        else if(this.rotationYaw > Math.PI)
+        {
+            this.rotationYaw -= Math.PI * 2;
+        }
+        this.prevRotationYaw = this.rotationYaw;
+        if(this.targetRotationYaw != this.rotationYaw)
+        {
+            double distanceWithoutSignChange = Math.abs(this.targetRotationYaw - this.rotationYaw);
+            if(distanceWithoutSignChange <= Math.PI)
             {
-                this.rotationYaw += Math.PI * 2;
-            }
-            else if(this.rotationYaw > Math.PI)
-            {
-                this.rotationYaw -= Math.PI * 2;
-            }
-            this.prevRotationYaw = this.rotationYaw;
-            if(this.targetRotationYaw != this.rotationYaw)
-            {
-                double distanceWithoutSignChange = Math.abs(this.targetRotationYaw - this.rotationYaw);
-                if(distanceWithoutSignChange <= Math.PI)
+                if(this.targetRotationYaw > this.rotationYaw)
                 {
-                    if(this.targetRotationYaw > this.rotationYaw)
-                    {
-                        this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
-                    }
-                    else
-                    {
-                        this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
-                    }
+                    this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
                 }
                 else
                 {
-                    if(this.targetRotationYaw > this.rotationYaw)
-                    {
-                        this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
-                    }
-                    else
-                    {
-                        this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
-                    }
+                    this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
+                }
+            }
+            else
+            {
+                if(this.targetRotationYaw > this.rotationYaw)
+                {
+                    this.rotationYaw -= distanceWithoutSignChange * rotateSpeed;
+                }
+                else
+                {
+                    this.rotationYaw += distanceWithoutSignChange * rotateSpeed;
                 }
             }
         }
@@ -309,24 +316,60 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         if(!this.worldObj.isRemote)
         {
-            if(stack == null) {
-                this.addForce(1.0);
-            }
-            else
-            {
-                this.addForce(3.0);
+            if(stack != null) {
+                Item i = stack.getItem();
+                if (i == Items.FLINT_AND_STEEL)
+                {
+                    stack.damageItem(1, player);
+                    this.setBlasting(true);
+                }
+                else if(i == Items.SADDLE)
+                {
+                    //TODO
+                }
             }
         }
         return true;
     }
 
-    public void setTargetRotationPitch(double targPitch)
+    //CAPABILITY METHODS
+    public boolean getBlasting()
     {
-        this.targetRotationPitch = targPitch;
+        return this.blasting;
     }
 
-    public void setTargetRotationYaw(double targYaw)
+    public void setBlasting(boolean b)
     {
-        this.targetRotationYaw = targYaw;
+        if(b != this.blasting) {
+            this.blasting = b;
+            this.newPacketRequired = true;
+        }
+    }
+
+    public boolean getShaking()
+    {
+        return this.shaking;
+    }
+
+    public void setShaking(boolean b)
+    {
+        if(b != this.shaking) {
+            this.shaking = b;
+            this.newPacketRequired = true;
+        }
+    }
+    public void setTargetRotationPitch(double targPitch)
+    {
+        if(targPitch != this.targetRotationPitch) {
+            this.targetRotationPitch = targPitch;
+            this.newPacketRequired = true;
+        }
+    }
+
+    public void setTargetRotationYaw(double targYaw) {
+        if (targYaw != this.targetRotationYaw) {
+            this.targetRotationYaw = targYaw;
+            this.newPacketRequired = true;
+        }
     }
 }

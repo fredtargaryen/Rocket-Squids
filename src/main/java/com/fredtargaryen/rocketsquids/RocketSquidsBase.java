@@ -1,8 +1,7 @@
 /**
- * Add synchronisation
  * Some kind of not responding issue?
  * Test EntityAIGiveUp
- * Test EntityAISwimAround
+ * EntityAISwimAround does nothing
  * Hitting a squid makes it go flying (check)
  * Re-enable spin (remove entity AI to test)
  * Fire for blasting rocket squids (check)
@@ -12,15 +11,27 @@
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.capability.DefaultSquidImplFactory;
+import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
+import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import net.minecraft.init.Biomes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
@@ -47,7 +58,45 @@ public class RocketSquidsBase
     @SidedProxy(clientSide=DataReference.CLIENTPROXYPATH, serverSide=DataReference.SERVERPROXYPATH)
 	
     public static CommonProxy proxy;
-        
+
+    //Code for the BeRocketSquid capability
+    @CapabilityInject(ISquidCapability.class)
+    public static final Capability<ISquidCapability> SQUIDCAP = null;
+
+    @SubscribeEvent
+    public void onEntityConstruct(AttachCapabilitiesEvent.Entity evt)
+    {
+        if(evt.getEntity() instanceof EntityRocketSquid) {
+            evt.addCapability(DataReference.SQUID_CAP_LOCATION,
+                    //Full name ICapabilitySerializableProvider
+                    new ICapabilitySerializable<NBTTagCompound>()
+                    {
+                        ISquidCapability inst = SQUIDCAP.getDefaultInstance();
+
+                        @Override
+                        public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+                            return capability == SQUIDCAP;
+                        }
+
+                        @Override
+                        public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+                            return capability == SQUIDCAP ? SQUIDCAP.<T>cast(inst) : null;
+                        }
+
+                        @Override
+                        public NBTTagCompound serializeNBT() {
+                            return (NBTTagCompound) SQUIDCAP.getStorage().writeNBT(SQUIDCAP, inst, null);
+                        }
+
+                        @Override
+                        public void deserializeNBT(NBTTagCompound nbt) {
+                            SQUIDCAP.getStorage().readNBT(SQUIDCAP, inst, null, nbt);
+                        }
+                    }
+            );
+        }
+    }
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -57,6 +106,10 @@ public class RocketSquidsBase
         .setRegistryName("nitroinksac");
 
         proxy.registerRenderers();
+
+        //Capability
+        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
+        MinecraftForge.EVENT_BUS.register(this);
     }
         
     @Mod.EventHandler

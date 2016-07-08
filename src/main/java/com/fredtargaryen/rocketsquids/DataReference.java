@@ -1,8 +1,10 @@
 package com.fredtargaryen.rocketsquids;
 
+import net.minecraft.util.ResourceLocation;
+
 /**
  * Superflat preset for squid testing:
- *3;minecraft:glowstone,5*minecraft:water;1
+ *3;5*minecraft:glowstone,8*minecraft:water;1
  * ===DESCRIPTION OF CHANNELS===
  */
 
@@ -16,8 +18,9 @@ public class DataReference
     public static final String CLIENTPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ClientProxy";
     public static final String SERVERPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ServerProxy";
 
-    public static String resPath(String un)
-    {
-        return MODID+":"+un.substring(5);
+    public static String resPath(String un) {
+        return MODID + ":" + un.substring(5);
     }
+
+    public static final ResourceLocation SQUID_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ISquidCapability");
 }
