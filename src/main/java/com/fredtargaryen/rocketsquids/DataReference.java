@@ -4,7 +4,7 @@ import net.minecraft.util.ResourceLocation;
 
 /**
  * Superflat preset for squid testing:
- *3;5*minecraft:glowstone,8*minecraft:water;1
+ *3;26*minecraft:glowstone,8*minecraft:water;1
  * ===DESCRIPTION OF CHANNELS===
  */
 

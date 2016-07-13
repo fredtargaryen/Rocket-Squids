@@ -22,10 +22,10 @@ public class EntityAIGiveUp extends EntityAIBase
 
     @Override
     public void updateTask() {
-        if (this.squid.isCollidedHorizontally) {
-            this.squid.setTargetRotationPitch(-Math.PI);
+        if (this.squid.onGround) {
+            this.squid.setTargetRotPitch(Math.PI / 2);
         } else {
-            this.squid.setTargetRotationPitch(Math.PI / 2);
+            this.squid.setTargetRotPitch(-Math.PI);
         }
     }
 }

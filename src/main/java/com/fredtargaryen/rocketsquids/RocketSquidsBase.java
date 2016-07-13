@@ -1,10 +1,8 @@
 /**
- * Some kind of not responding issue?
- * Test EntityAIGiveUp
- * EntityAISwimAround does nothing
- * Hitting a squid makes it go flying (check)
- * Re-enable spin (remove entity AI to test)
+ * Squids turn and swim in negative yaw direction
+ * Need smaller chance of shaking in EntityAISwimAround
  * Fire for blasting rocket squids (check)
+ * Re-enable spin (remove entity AI to test)
  * Nitro ink sacs
  */
 
@@ -17,6 +15,8 @@ import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.init.Biomes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -118,6 +118,7 @@ public class RocketSquidsBase
         //Register Entities with EntityRegistry
         EntityRegistry.addSpawn(EntityRocketSquid.class, 7, 1, 3, EnumCreatureType.WATER_CREATURE,
                 Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
+        EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
         EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
         EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);

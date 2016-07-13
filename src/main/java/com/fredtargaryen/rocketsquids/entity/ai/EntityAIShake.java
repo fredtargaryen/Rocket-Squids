@@ -13,6 +13,7 @@ public class EntityAIShake extends EntityAIBase
         super();
         this.squid = ers;
         this.ticksLeft = -1;
+        this.setMutexBits(1);
     }
 
     @Override

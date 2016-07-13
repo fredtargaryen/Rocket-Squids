@@ -38,12 +38,16 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
     @Override
     protected void rotateCorpse(EntityRocketSquid ers, float yaw, float pitch, float partialTicks)
     {
-        float f3 = ers.prevRotationPitch + (ers.rotationPitch - ers.prevRotationPitch) * partialTicks;
-        float f4 = ers.prevRotationYaw + (ers.rotationYaw - ers.prevRotationYaw) * partialTicks;
+        double prp = ers.getPrevRotPitch();
+        double rp = ers.getRotPitch();
+        //Also convert to degrees.
+        float exactPitch = (float) ((prp + (rp - prp) * partialTicks) * 180 / Math.PI);
+        double pry = ers.getPrevRotYaw();
+        float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
         GlStateManager.translate(0.0F, 0.5F, 0.0F);
-        GlStateManager.rotate(180.0F - pitch, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(f3, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(f4, 0.0F, 1.0F, 0.0F);
+        //GlStateManager.rotate(180.0F - exactPitch, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(exactYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(exactPitch, 1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0.0F, -1.2F, 0.0F);
     }
 
@@ -56,7 +60,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             y += r.nextGaussian() * 0.02D;
             z += r.nextGaussian() * 0.02D;
         }
-        else if(par1EntitySquid.getBlasting())
+        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater())
         {
             BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
             GlStateManager.enableRescaleNormal();
@@ -70,7 +74,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             int k = i / 65536;
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.bindTexture(fireTexture);
             blockrendererdispatcher.renderBlockBrightness(Blocks.FIRE.getDefaultState(), 1.0F);
             GlStateManager.popMatrix();
             GlStateManager.disableRescaleNormal();

@@ -44,7 +44,7 @@ public class MessageSquidCapData implements IMessage, IMessageHandler<MessageSqu
                 while(squidFinder.hasNext())
                 {
                     e = squidFinder.next();
-                    if(e.getPersistentID().equals(MessageSquidCapData.this.squidToUpdate))
+                    if(e.getPersistentID().equals(message.squidToUpdate))
                     {
                         if(e.hasCapability(RocketSquidsBase.SQUIDCAP, null)) {
                             //Can assume e is a rocket squid
