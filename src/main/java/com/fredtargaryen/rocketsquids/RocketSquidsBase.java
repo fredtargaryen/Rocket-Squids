@@ -1,14 +1,23 @@
 /**
- * Squids turn and swim in negative yaw direction
- * Need smaller chance of shaking in EntityAISwimAround
- * Fire for blasting rocket squids (check)
- * Re-enable spin (remove entity AI to test)
- * Nitro ink sacs
+ * Fire is not in correct X and Z on blasting squid. (check)
+ * Fire renders in some weird stupid way
+ * Squids need to set burning when lit with flint and steel (fix after above problems)
+ *
+ * Turbo tube
+ * -Explosion doesn't damage thrower
+ * -Explosion has no visuals
+ *
+ * Burning squids should explode, raining tubes and sacs (check)
+ * -Squid firework effect in explosion
+ * Riding squids
+ * Squids properly pushing other entities?
  */
 
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
+import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
 import com.fredtargaryen.rocketsquids.entity.capability.DefaultSquidImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
@@ -25,6 +34,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -46,11 +56,17 @@ public class RocketSquidsBase
 	 */
     @Mod.Instance(DataReference.MODID)
     public static RocketSquidsBase instance;
-	
+
+    //CONFIG VARS
+    private static int spawnProb;
+    private static int minGrpSize;
+    private static int maxGrpSize;
+
     /**
      * Declare all items here
      */
     public static Item nitroinksac;
+    public static Item turbotube;
 	
     /**   
      * Says where the client and server 'proxy' code is loaded.
@@ -100,10 +116,27 @@ public class RocketSquidsBase
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        //CONFIG SETUP
+        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
+        spawnProb = config.getInt("spawnProb", "Spawning", 7, 1, 100, "Weighted probability of a group spawning");
+        minGrpSize = config.getInt("minGroupSize", "Spawning", 1, 1, 20, "Smallest possible size of a group");
+        maxGrpSize = config.getInt("maxGroupSize", "Spawning", 3, 1, 40, "If true, thin ice patches will generate on frozen bodies of water");
+        config.save();
+        if(maxGrpSize < minGrpSize)
+        {
+            maxGrpSize = minGrpSize;
+        }
+
     	nitroinksac = new ItemNitroInkSac()
-    	.setMaxStackSize(64)
-        .setUnlocalizedName("nitroinksac")
-        .setRegistryName("nitroinksac");
+    	        .setMaxStackSize(64)
+                .setUnlocalizedName("nitroinksac")
+                .setRegistryName("nitroinksac");
+
+        turbotube = new ItemTurboTube()
+                .setMaxStackSize(64)
+                .setUnlocalizedName("turbotube")
+                .setRegistryName("turbotube");
 
         proxy.registerRenderers();
 
@@ -116,13 +149,20 @@ public class RocketSquidsBase
     public void Init(FMLInitializationEvent event)
     {
         //Register Entities with EntityRegistry
-        EntityRegistry.addSpawn(EntityRocketSquid.class, 7, 1, 3, EnumCreatureType.WATER_CREATURE,
-                Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
-        EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
         EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
+
+        //Other Rocket Squid info
+        EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
+                Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
+        EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
         EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
+
+        //Register items
         GameRegistry.register(nitroinksac);
+        GameRegistry.register(turbotube);
 
         proxy.registerModels();
         MessageHandler.init();
@@ -131,6 +171,7 @@ public class RocketSquidsBase
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        OreDictionary.registerOre("itemGunpowder", nitroinksac);
+        OreDictionary.registerOre("gunpowder", turbotube);
+        OreDictionary.registerOre("dyeOrange", nitroinksac);
     }
 }

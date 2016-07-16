@@ -6,12 +6,14 @@ import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
@@ -27,16 +29,6 @@ public class EntityRocketSquid extends EntityWaterMob
     public float lastTentacleAngle;
 
     private boolean newPacketRequired;
-
-    private boolean canDoNewSpin;
-    //DEGREES
-    private int ticksOfCurrentSpin;
-
-    //RADIANS
-    public float currentSpin;
-    public float prevSpin;
-    public float prevTargetSpin;
-    public float targetSpin;
 
     private ISquidCapability squidCap;
 
@@ -153,48 +145,24 @@ public class EntityRocketSquid extends EntityWaterMob
                     this.tentacleAngle = 0;
                 }
             }
-//            if(this.phase != SHAKE)
-//            {
-//            //Handles spinning
-//            this.prevSpin = this.currentSpin;
-//            if(this.currentSpin == this.targetSpin)
-//            {
-//                this.ticksOfCurrentSpin = 0;
-//                //Keeps the spin value within range of -pi to pi
-//                if(this.currentSpin > Math.PI)
-//                {
-//                    this.currentSpin -= Math.PI;
-//                }
-//                else if(this.currentSpin < -Math.PI)
-//                {
-//                    this.currentSpin += Math.PI;
-//                }
-//                //1 in 10 chance of starting a new spin whenever it's not spinning - may have to increase number
-//                if(this.rand.nextInt(10) == 0)
-//                {
-//                    this.canDoNewSpin = true;
-//                }
-//            }
-//            else
-//            {
-//                //Changes the spin value appropriately
-//                //All spins should take 45 ticks so ticksOfCurrentSpin should be multiplied by 2
-//                ++this.ticksOfCurrentSpin;
-//                this.currentSpin = (float)(Math.sin(Math.toRadians((double)(this.ticksOfCurrentSpin * 2))) * (this.targetSpin - this.prevSpin) + this.prevSpin);
-//            }
-//            if(this.canDoNewSpin)
-//            {
-//                //Sets up "source and destination" spin values.
-//                //The squid can go 180 degrees around in either direction in one spin
-//                this.prevTargetSpin = this.currentSpin;
-//                this.targetSpin = this.rand.nextFloat() * (float)(Math.PI);
-//                if(this.rand.nextBoolean())
-//                {
-//                    this.targetSpin *= -1;
-//                }
-//                this.canDoNewSpin = false;
-//                this.ticksOfCurrentSpin = 0;
-//            }
+            if(this.squidCap.getBlasting())
+            {
+                if(this.inWater)
+                {
+                    double smallerX = this.posX - 0.25;
+                    double largerX = this.posX + 0.25;
+                    double smallerZ = this.posZ - 0.25;
+                    double largerZ = this.posZ + 0.25;
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                }
+                else
+                {
+                    this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+                }
+            }
         }
         else
         {
@@ -204,13 +172,6 @@ public class EntityRocketSquid extends EntityWaterMob
                 MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
                         new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64));
                 this.newPacketRequired = false;
-            }
-            if(this.squidCap.getBlasting()) {
-                if (this.inWater) {
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
-                } else {
-                    this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
-                }
             }
         }
     }
@@ -232,19 +193,12 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public void addForce(double n)
     {
-        //Original code:
-//        double rp = this.squidCap.getRotPitch();
-//        double ry = this.squidCap.getRotYaw();
-//        this.motionY = n * Math.cos(rp);
-//        double horizontalForce = n * Math.sin(rp);
-//        this.motionZ = horizontalForce * Math.cos(ry);
-//        this.motionX = horizontalForce * Math.sin(ry);
         double rp = this.squidCap.getRotPitch();
         double ry = this.squidCap.getRotYaw();
         this.motionY = n * Math.cos(rp);
         double horizontalForce = n * Math.sin(rp);
         this.motionZ = horizontalForce * Math.cos(ry);
-        this.motionX = horizontalForce * Math.sin(ry);
+        this.motionX = horizontalForce * -Math.sin(ry);
     }
 
     /**
@@ -267,6 +221,7 @@ public class EntityRocketSquid extends EntityWaterMob
                 {
                     stack.damageItem(1, player);
                     this.setBlasting(true);
+                    //this.setFire(10);
                 }
                 else if(i == Items.SADDLE)
                 {
@@ -275,6 +230,36 @@ public class EntityRocketSquid extends EntityWaterMob
             }
         }
         return true;
+    }
+
+    public void explode()
+    {
+        this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
+        int noSacs = 3 + this.rand.nextInt(3);
+        int noTubes = 2 + this.rand.nextInt(3);
+        for(int x = 0; x < noSacs; ++x)
+        {
+            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
+            entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            this.worldObj.spawnEntityInWorld(entityitem);
+        }
+        for(int x = 0; x < noTubes; ++x)
+        {
+            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
+            entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            this.worldObj.spawnEntityInWorld(entityitem);
+        }
+//        NBTTagCompound onlyFirework = new NBTTagCompound();
+//        //Set data in onlyFirework
+//        onlyFirework.setBoolean("Flicker", true);
+//        NBTTagList squidTag = new NBTTagList();
+//        squidTag.addTag(onlyFirework);
+//        NBTTagCompound finalCompound = new NBTTagCompound();
+//        finalCompound.setTagList("Explosions", squidTag);
+//        this.worldObj.makeFireworks(this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0, finalCompound);
+        this.setDead();
     }
 
     //CAPABILITY METHODS

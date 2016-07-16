@@ -2,10 +2,10 @@ package com.fredtargaryen.rocketsquids.proxy;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.client.model.RenderRSFactory;
+import com.fredtargaryen.rocketsquids.client.model.*;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
-import com.fredtargaryen.rocketsquids.client.model.RenderRS;
+import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
+import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
 import com.fredtargaryen.rocketsquids.item.ItemNitroInkSac;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -23,6 +23,8 @@ public class ClientProxy extends CommonProxy
     public void registerRenderers()
     {
         RenderingRegistry.registerEntityRenderingHandler(EntityRocketSquid.class, new RenderRSFactory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityThrownSac.class, new RenderSacFactory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityThrownTube.class, new RenderTubeFactory());
     }
 
     @Override
@@ -31,5 +33,6 @@ public class ClientProxy extends CommonProxy
         //Describes how items and some blocks should look in the inventory
         ItemModelMesher m = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
         m.register(RocketSquidsBase.nitroinksac, 0, new ModelResourceLocation(DataReference.MODID + ":nitroinksac", "inventory"));
+        m.register(RocketSquidsBase.turbotube, 0, new ModelResourceLocation(DataReference.MODID + ":turbotube", "inventory"));
     }
 }

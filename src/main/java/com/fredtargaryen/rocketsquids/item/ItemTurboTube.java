@@ -1,8 +1,7 @@
 package com.fredtargaryen.rocketsquids.item;
 
-import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
+import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -13,20 +12,20 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public class ItemNitroInkSac extends Item
+public class ItemTurboTube extends Item
 {
-	public ItemNitroInkSac()
-	{
+    public ItemTurboTube()
+    {
         super();
         this.setCreativeTab(CreativeTabs.MATERIALS);
-	}
+    }
 
     /**
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-     public ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World world, EntityPlayer player, EnumHand hand)
-     {
+    public ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World world, EntityPlayer player, EnumHand hand)
+    {
         if (!player.capabilities.isCreativeMode)
         {
             --par1ItemStack.stackSize;
@@ -36,10 +35,10 @@ public class ItemNitroInkSac extends Item
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
         if (!world.isRemote)
         {
-            EntityThrownSac sac = new EntityThrownSac(world, player);
-            sac.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
-            world.spawnEntityInWorld(sac);
+            EntityThrownTube tube = new EntityThrownTube(world, player);
+            tube.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
+            world.spawnEntityInWorld(tube);
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, par1ItemStack);
-	}
+    }
 }

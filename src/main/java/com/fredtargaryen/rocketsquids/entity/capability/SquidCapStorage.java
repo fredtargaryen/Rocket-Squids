@@ -5,6 +5,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
+/**
+ * The storage class for ISquidCapability for all official Rocket Squids.
+ * As is typical of the capability system support is only guaranteed for
+ * this storage class. This storage class was designed for exclusive
+ * use with this mod; correct operation is not guaranteed in any other
+ * context!
+ */
 public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
 {
     @Override

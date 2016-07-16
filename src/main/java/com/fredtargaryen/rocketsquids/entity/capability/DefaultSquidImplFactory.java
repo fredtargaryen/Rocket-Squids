@@ -2,6 +2,13 @@ package com.fredtargaryen.rocketsquids.entity.capability;
 
 import java.util.concurrent.Callable;
 
+/**
+ * The implementation of ISquidCapability for all official Rocket Squids.
+ * As is typical of the capability system support is only guaranteed for
+ * this implementation. This implementation was designed for exclusive
+ * use with this mod; correct operation is not guaranteed in any other
+ * context!
+ */
 public class DefaultSquidImplFactory implements Callable<ISquidCapability>
 {
     public ISquidCapability call()
@@ -67,22 +74,6 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
         @Override
         public void setRotPitch(double d)
         {
-            while(d < -Math.PI)
-            {
-                d += Math.PI * 2;
-            }
-            while(d > Math.PI)
-            {
-                d -= Math.PI * 2;
-            }
-            if(d == Math.PI)
-            {
-                d -= 0.0001;
-            }
-            else if(d == -Math.PI)
-            {
-                d += 0.0001;
-            }
             this.prevRotPitch = this.rotPitch;
             this.rotPitch = d;
         }
@@ -149,9 +140,6 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
                 d -= Math.PI * 2;
             }
             this.prevRotYaw = this.rotYaw;
-            int ryDegrees = (int) (this.getRotYaw() * 180 / Math.PI);
-            int tryDegrees = (int) (d * 180 / Math.PI);
-            System.out.println(ryDegrees + " to " + tryDegrees);
             this.targRotYaw = d;
         }
     }

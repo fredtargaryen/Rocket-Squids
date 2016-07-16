@@ -1,5 +1,11 @@
 package com.fredtargaryen.rocketsquids.entity.capability;
 
+/**
+ * The capability used by all official Rocket Squids.
+ * This capability was designed for exclusive use
+ * with this mod; correct operation is not guaranteed
+ * in any other context!
+ */
 public interface ISquidCapability
 {
     boolean getShaking();

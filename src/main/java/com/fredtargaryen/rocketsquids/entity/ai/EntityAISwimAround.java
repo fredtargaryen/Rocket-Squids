@@ -1,7 +1,10 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import net.minecraft.entity.ai.EntityAIBase;
+
+import java.util.Random;
 
 public class EntityAISwimAround extends EntityAIBase
 {
@@ -12,7 +15,7 @@ public class EntityAISwimAround extends EntityAIBase
      */
     private boolean turning;
 
-    private int ticks;
+    private Random r;
 
     public EntityAISwimAround(EntityRocketSquid ers)
     {
@@ -20,13 +23,13 @@ public class EntityAISwimAround extends EntityAIBase
         this.squid = ers;
         this.setMutexBits(1);
         this.turning = true;
-        this.ticks = -1;
+        this.r = this.squid.getRNG();
     }
 
     @Override
     public boolean shouldExecute()
     {
-        return this.squid.isInWater();
+        return this.squid.isInWater() && !this.squid.getShaking() && !this.squid.getBlasting();
     }
 
     @Override
@@ -34,9 +37,9 @@ public class EntityAISwimAround extends EntityAIBase
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
      * Odds:
-     * 1/6 - starts to shake (hands over to EntityAIShake)
-     * 2/6 - switches action
-     * 3/6 - repeats action
+     * 1/20 - starts to shake (hands over to EntityAIShake)
+     * 6/20 - repeats action
+     * 13/20 - goes from turning to swimming forward or vice versa
      */
     public void updateTask()
     {
@@ -46,34 +49,24 @@ public class EntityAISwimAround extends EntityAIBase
             double prp = this.squid.getPrevRotPitch();
             double ry = this.squid.getRotYaw();
             double pry = this.squid.getPrevRotYaw();
-            if (Math.abs(rp - prp) < 0.005 && Math.abs(ry - pry) < 0.005) {
-                if (this.ticks == -1) {
-                    this.ticks = 60;
-                } else if (this.ticks == 0) {
-                    this.squid.setTargetRotPitch(Math.PI / 2);
-                    this.squid.setTargetRotYaw(ry + Math.PI / 2);
-                    this.turning = false;
-                    this.ticks = -1;
-                } else {
-                    --this.ticks;
+            if (Math.abs(rp - prp) < 0.005 && Math.abs(ry - pry) < 0.005)
+            {
+                //The last turn is as good as finished
+                int randomInt = this.r.nextInt(20);
+                if (randomInt == 0)
+                {
+                    this.squid.setShaking(true);
                 }
-//                int randomInt = this.squid.getRNG().nextInt(6);
-//                if (randomInt == 0)
-//                {
-//                    this.squid.setShaking(true);
-//                }
-//                else if (randomInt > 2)
-//                {
-//                    Random r = this.squid.getRNG();
-//                    //Random doubles between -PI and PI (or -180 and 180)
-                    //Should be current rot +/- PI or less
-//                    this.squid.setTargetRotPitch(r.nextDouble() * (Math.PI - 0.01) * (r.nextBoolean() ? 1 : -1));
-//                    this.squid.setTargetRotYaw(r.nextDouble() * (Math.PI - 0.01) * (r.nextBoolean() ? 1 : -1));
-//                }
-//                else
-//                {
-//                    this.turning = false;
-//                }
+                else if (randomInt < 7)
+                {
+                    //Random doubles between -PI and PI, added to current rotation
+                    this.squid.setTargetRotPitch(rp + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+                    this.squid.setTargetRotYaw(ry + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+                }
+                else
+                {
+                    this.turning = false;
+                }
             }
         }
         else
@@ -81,33 +74,20 @@ public class EntityAISwimAround extends EntityAIBase
             if(Math.abs(this.squid.motionX) < 0.05 && Math.abs(this.squid.motionY) < 0.05
                     && Math.abs(this.squid.motionZ) < 0.05)
             {
-                if(this.ticks == -1)
+                //Last forward swim is as good as finished
+                int randomInt = this.r.nextInt(20);
+                if(randomInt == 0)
                 {
-                    this.ticks = 60;
+                    this.squid.setShaking(true);
                 }
-                else if(this.ticks == 0)
+                else if(randomInt < 7)
                 {
                     this.squid.addForce(0.35);
-                    this.turning = true;
-                    this.ticks = -1;
                 }
                 else
                 {
-                    --this.ticks;
+                    this.turning = true;
                 }
-//                int randomInt = this.squid.getRNG().nextInt(6);
-//                if(randomInt == 0)
-//                {
-//                    this.squid.setShaking(true);
-//                }
-//                else if(randomInt > 2)
-//                {
-//                    this.squid.addForce(0.4);
-//                }
-//                else
-//                {
-//                    this.turning = true;
-//                }
             }
         }
     }
