@@ -53,11 +53,12 @@ public class EntityAISwimAround extends EntityAIBase
             {
                 //The last turn is as good as finished
                 int randomInt = this.r.nextInt(20);
-                if (randomInt == 0)
-                {
-                    this.squid.setShaking(true);
-                }
-                else if (randomInt < 7)
+//                if (randomInt == 0)
+//                {
+//                    this.squid.setShaking(true);
+//                }
+//                else
+if (randomInt < 7)
                 {
                     //Random doubles between -PI and PI, added to current rotation
                     this.squid.setTargetRotPitch(rp + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
@@ -76,11 +77,12 @@ public class EntityAISwimAround extends EntityAIBase
             {
                 //Last forward swim is as good as finished
                 int randomInt = this.r.nextInt(20);
-                if(randomInt == 0)
-                {
-                    this.squid.setShaking(true);
-                }
-                else if(randomInt < 7)
+//                if(randomInt == 0)
+//                {
+//                    this.squid.setShaking(true);
+//                }
+//                else
+if(randomInt < 7)
                 {
                     this.squid.addForce(0.35);
                 }

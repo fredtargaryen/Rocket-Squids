@@ -38,8 +38,7 @@ public class EntityAIBlastOff extends EntityAIBase
                 this.blastStarted = false;
                 if(this.squid.isBurning())
                 {
-                    //Explosion goes here
-                    this.squid.setDead();
+                    this.squid.explode();
                 }
             }
         }

@@ -2,13 +2,12 @@
 {
   "modid": "ftrsquids",
   "name": "Rocket Squids",
-  "description": "3... 2... 1... Blast Off!",
+  "description": "They're not the squids you think they are at home. Oh, no no no.",
   "version": "0.1",
   "mcversion": "1.10.2",
   "url": "",
   "authorList": ["FredTargaryen"],
-  "credits": "Inspired by the buggy squids from the old Minecraft",
+  "credits": "Inspired by watching squids when my latency was through the roof",
   "logoFile": "assets/ftrsquids/textures/gui/banner.png"
-
 }
 ]

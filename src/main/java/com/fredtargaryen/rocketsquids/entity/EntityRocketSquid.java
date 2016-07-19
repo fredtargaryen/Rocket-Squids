@@ -5,6 +5,7 @@ import com.fredtargaryen.rocketsquids.entity.ai.*;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -14,6 +15,9 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
@@ -22,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
@@ -32,13 +37,23 @@ public class EntityRocketSquid extends EntityWaterMob
 
     private ISquidCapability squidCap;
 
+    //May have to remove and use capability instead
+    private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityRocketSquid.class, DataSerializers.BOOLEAN);
+
     public EntityRocketSquid(World par1World)
     {
         super(par1World);
         //Set size of bounding box. par1=length and width; par2=height.
         //Normal squids are 0.8F, 0.8F.
-        this.setSize(0.95F, 1.4F);
+        this.setSize(1.1F, 1.1F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
+    }
+
+    @Override
+    protected void entityInit()
+    {
+        super.entityInit();
+        this.dataManager.register(SADDLED, Boolean.valueOf(false));
     }
 
     @Override
@@ -195,10 +210,10 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         double rp = this.squidCap.getRotPitch();
         double ry = this.squidCap.getRotYaw();
-        this.motionY = n * Math.cos(rp);
+        this.motionY += n * Math.cos(rp);
         double horizontalForce = n * Math.sin(rp);
-        this.motionZ = horizontalForce * Math.cos(ry);
-        this.motionX = horizontalForce * -Math.sin(ry);
+        this.motionZ += horizontalForce * Math.cos(ry);
+        this.motionX += horizontalForce * -Math.sin(ry);
     }
 
     /**
@@ -215,21 +230,34 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         if(!this.worldObj.isRemote)
         {
-            if(stack != null) {
+            if(stack == null)
+            {
+                if (this.getSaddled() && !this.isBeingRidden())
+                {
+                    player.startRiding(this);
+                    return true;
+                }
+            }
+            else
+            {
                 Item i = stack.getItem();
-                if (i == Items.FLINT_AND_STEEL)
+                if(i == Items.FLINT_AND_STEEL)
                 {
                     stack.damageItem(1, player);
                     this.setBlasting(true);
                     //this.setFire(10);
+                    return true;
                 }
                 else if(i == Items.SADDLE)
                 {
-                    //TODO
+                    stack.damageItem(1, player);
+                    this.setSaddled(true);
+                    player.startRiding(this);
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     public void explode()
@@ -260,6 +288,175 @@ public class EntityRocketSquid extends EntityWaterMob
 //        finalCompound.setTagList("Explosions", squidTag);
 //        this.worldObj.makeFireworks(this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0, finalCompound);
         this.setDead();
+    }
+
+    /**
+     * Applies a velocity to the entities, to push them away from eachother.
+     */
+    public void applyEntityCollision(Entity obstacle)
+    {
+        if (!obstacle.noClip && !this.noClip)
+        {
+            double xDist = obstacle.posX - this.posX;
+            double zDist = obstacle.posZ - this.posZ;
+            double yDist = obstacle.posY - this.posY;
+            double largerDist = MathHelper.abs_max(xDist, MathHelper.abs_max(yDist, zDist));
+
+            if (largerDist >= 0.009999999776482582D)
+            {
+                largerDist = (double)MathHelper.sqrt_double(largerDist);
+                xDist /= largerDist;
+                yDist /= largerDist;
+                zDist /= largerDist;
+                double d3 = 1.0D / largerDist;
+
+                if (d3 > 1.0D)
+                {
+                    d3 = 1.0D;
+                }
+
+                xDist *= d3;
+                yDist *= d3;
+                zDist *= d3;
+                xDist *= 0.05000000074505806D;
+                yDist *= 0.05000000074505806D;
+                zDist *= 0.05000000074505806D;
+
+                this.addVelocity(-xDist * 0.02, -yDist * 0.02, -zDist * 0.02);
+                obstacle.addVelocity(xDist * 0.98, yDist * 0.98, zDist * 0.98);
+            }
+        }
+    }
+
+    //RIDING METHODS
+
+    @Override
+    protected void addPassenger(Entity p)
+    {
+        if(this.getPassengers().size() == 0)
+        {
+            super.addPassenger(p);
+        }
+    }
+
+    @Nullable
+    public Entity getControllingPassenger()
+    {
+        List passengers = this.getPassengers();
+        if(passengers.isEmpty())
+        {
+            return null;
+        }
+        else {
+            return this.getPassengers().get(0);
+        }
+    }
+
+    @Override
+    public void fall(float dist, float damMult) {}
+
+    /**
+     * Should keep the passenger on, or at least around, the squid's back.
+     */
+    @Override
+    public void updatePassenger(Entity passenger)
+    {
+        if (this.isPassenger(passenger))
+        {
+            double pitch = this.squidCap.getRotPitch();
+            double yaw = this.squidCap.getRotYaw();
+            double yOffset = 0.75 * Math.sin(pitch);
+            double hOffset = 0.75 * -Math.cos(pitch);
+            double xOffset = hOffset * -Math.sin(yaw);
+            double zOffset = hOffset * Math.cos(yaw);
+            if(this.worldObj.isRemote)
+            {
+                passenger.setPositionAndRotationDirect(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset,
+                        (float) (yaw * 180 / Math.PI), (float) ((pitch * 180 / Math.PI) - 90.0F), 0, false);
+            }
+            else {
+                passenger.setPosition(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset);
+            }
+        }
+    }
+
+    @Override
+    public boolean startRiding(Entity entityIn, boolean force)
+    {
+        return false;
+    }
+
+    @Override
+    protected boolean canBeRidden(Entity entityIn)
+    {
+        return this.getPassengers().size() == 0;
+    }
+
+    public boolean getSaddled()
+    {
+        return ((Boolean)this.dataManager.get(SADDLED)).booleanValue();
+    }
+
+    /**
+     * Set or remove the saddle of the pig.
+     */
+    public void setSaddled(boolean saddled)
+    {
+        if (saddled)
+        {
+            this.dataManager.set(SADDLED, Boolean.valueOf(true));
+        }
+        else
+        {
+            this.dataManager.set(SADDLED, Boolean.valueOf(false));
+        }
+    }
+
+    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier)
+    {
+        super.dropEquipment(wasRecentlyHit, lootingModifier);
+
+        if (this.getSaddled())
+        {
+            this.dropItem(Items.SADDLE, 1);
+        }
+    }
+
+    /**
+     * If a rider of this entity can interact with this entity. Should return true on the
+     * ridden entity if so.
+     *
+     * @return if the entity can be interacted with from a rider
+     */
+    @Override
+    public boolean canRiderInteract()
+    {
+        return true;
+    }
+
+    /**
+     * If the rider should be dismounted from the entity when the entity goes under water
+     *
+     * @param rider The entity that is riding
+     * @return if the entity should be dismounted when under water
+     */
+    public boolean shouldDismountInWater(Entity rider)
+    {
+        return false;
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        compound.setBoolean("Saddle", this.getSaddled());
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+        this.setSaddled(compound.getBoolean("Saddle"));
     }
 
     //CAPABILITY METHODS

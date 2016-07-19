@@ -28,7 +28,8 @@ public class LayerFireBlock implements LayerRenderer<EntityRocketSquid>
             GlStateManager.pushMatrix();
             GlStateManager.scale(0.36F, 1.2F, 0.36F);
             GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(-0.18F, 0.375F, 0.3F);
+            //Need to go left and down (-0.4)      (0.52)
+            GlStateManager.translate(-0.44F, 0.375F, 0.54F);
             int i = par1EntitySquid.getBrightnessForRender(partialTicks);
             int j = i % 65536;
             int k = i / 65536;

@@ -1,43 +1,37 @@
 package com.fredtargaryen.rocketsquids.entity;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EntityThrownTube extends EntityThrowable
 {
-    public EntityThrownTube(World w) { super(w); }
-    public EntityThrownTube(World w, EntityPlayer p)
+    private Vec3d impactPos;
+
+    public EntityThrownTube(World w) {
+        super(w);
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public EntityThrownTube(World w, EntityLivingBase elb)
     {
-        super(w, p);
+        super(w, elb);
     }
 
     @Override
     protected void onImpact(RayTraceResult result) {
-        if (result.entityHit != null)
-        {
-            result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
-        }
         if (!this.worldObj.isRemote)
         {
-            this.explode();
+            this.impactPos = new Vec3d(this.posX, this.posY, this.posZ);
+            this.worldObj.createExplosion(this.getThrower(), this.posX, this.posY, this.posZ, 0.1F, true);
             this.setDead();
         }
-    }
-
-    /**
-     * returns a new explosion. Does initiation (at time of writing Explosion is not finished)
-     */
-    public TubeExplosion explode()
-    {
-        TubeExplosion explosion = new TubeExplosion(this.worldObj, this, this.posX, this.posY, this.posZ);
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.worldObj, explosion)) return explosion;
-        explosion.doExplosionA();
-        explosion.doExplosionB(true);
-        return explosion;
     }
 }
