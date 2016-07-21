@@ -3,13 +3,13 @@ package com.fredtargaryen.rocketsquids.client.model;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerHeldBlock;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
@@ -23,7 +23,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
     public RenderRS(RenderManager rm, ModelRocketSquid model, float shadowSize)
     {
         super(rm, model, shadowSize);
-        this.addLayer(new LayerFireBlock(this));
+        //this.addLayer(new LayerFireBlock(this));
     }
 
     /**
@@ -59,6 +59,42 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             x += r.nextGaussian() * 0.02D;
             y += r.nextGaussian() * 0.02D;
             z += r.nextGaussian() * 0.02D;
+        }
+        if(par1EntitySquid.getBlasting())
+        {
+            GlStateManager.disableLighting();
+            TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
+            TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
+            GlStateManager.pushMatrix();
+            //Larger x goes right; larger y goes ; larger z goes down
+            //Need to go right, in and up (-0.43       0.375        0.535)
+            GlStateManager.translate(x - 0.36, y + 0.36, z + 0.52);
+            GlStateManager.rotate((float)(par1EntitySquid.getRotYaw() * 180 / Math.PI), 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), 1.0F, 0.0F, 0.0F);
+            Tessellator tessellator = Tessellator.getInstance();
+            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            float minu = tas.getMinU();
+            float minv = tas.getMinV();
+            float maxu = tas.getMaxU();
+            float maxv = tas.getMaxV();
+            //On a squid laying down:
+            //Facing top left
+            vertexbuffer.pos(-0.18, 0.0, -0.18).tex(maxu, maxv).endVertex();
+            vertexbuffer.pos(-0.19, -1.5, -0.19).tex(maxu, minv).endVertex();
+            vertexbuffer.pos(0.19, -1.5, 0.19).tex(minu, minv).endVertex();
+            vertexbuffer.pos(0.18, 0.0, 0.18).tex(minu, maxv).endVertex();
+//            //Facing bottom left
+//            vertexbuffer.pos(squidCentreX + 0.18, squidCentreY,         squidCentreZ + 0.18).tex(minu, maxv).endVertex();
+//            vertexbuffer.pos(squidCentreX + 0.19, squidCentreY - 1.2,  squidCentreZ + 0.19).tex(minu, minv).endVertex();
+//            vertexbuffer.pos(squidCentreX - 0.19, squidCentreY - 1.2,  squidCentreZ - 0.19).tex(maxu, minv).endVertex();
+//            vertexbuffer.pos(squidCentreX - 0.18, squidCentreY,         squidCentreZ - 0.18).tex(maxu, maxv).endVertex();
+
+            tessellator.draw();
+            GlStateManager.popMatrix();
+            GlStateManager.enableLighting();
         }
         super.doRender(par1EntitySquid, x, y, z, par8, partialTicks);
     }

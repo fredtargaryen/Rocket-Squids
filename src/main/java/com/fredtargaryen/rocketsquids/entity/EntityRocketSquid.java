@@ -5,6 +5,7 @@ import com.fredtargaryen.rocketsquids.entity.ai.*;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
@@ -23,6 +24,9 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
@@ -47,6 +51,7 @@ public class EntityRocketSquid extends EntityWaterMob
         //Normal squids are 0.8F, 0.8F.
         this.setSize(1.1F, 1.1F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -93,7 +98,7 @@ public class EntityRocketSquid extends EntityWaterMob
             this.motionX *= 0.9;
             this.motionY *= 0.9;
             this.motionZ *= 0.9;
-            rotateSpeed = 0.15;
+            rotateSpeed = 0.1;
         }
         else
         {
@@ -365,17 +370,16 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             double pitch = this.squidCap.getRotPitch();
             double yaw = this.squidCap.getRotYaw();
-            double yOffset = 0.75 * Math.sin(pitch);
-            double hOffset = 0.75 * -Math.cos(pitch);
+            //Was positive before
+            double yOffset = 0.5 * -Math.sin(pitch);
+            double hOffset = 0.5 * -Math.cos(pitch);
             double xOffset = hOffset * -Math.sin(yaw);
             double zOffset = hOffset * Math.cos(yaw);
-            if(this.worldObj.isRemote)
+            if(!this.worldObj.isRemote)
             {
-                passenger.setPositionAndRotationDirect(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset,
-                        (float) (yaw * 180 / Math.PI), (float) ((pitch * 180 / Math.PI) - 90.0F), 0, false);
-            }
-            else {
-                passenger.setPosition(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset);
+//                passenger.setPositionAndRotation(passenger.posX, passenger.posY, passenger.posZ,
+//                        (float) ((yaw * 180 / Math.PI) + 180.0), (float) ((pitch * 180 / Math.PI) + 90.0));
+                passenger.setPositionAndUpdate(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset);
             }
         }
     }
@@ -440,9 +444,29 @@ public class EntityRocketSquid extends EntityWaterMob
      * @param rider The entity that is riding
      * @return if the entity should be dismounted when under water
      */
+    @Override
     public boolean shouldDismountInWater(Entity rider)
     {
         return false;
+    }
+
+    @SubscribeEvent
+    public void addRotation(RenderPlayerEvent.Pre event)
+    {
+        if(this.isPassenger(event.getEntityPlayer()))
+        {
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate((float)(this.squidCap.getRotYaw() * 180 / Math.PI) + 90.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float)((this.squidCap.getRotPitch() * 180 / Math.PI) - 90.0F), 1.0F, 0.0F, 0.0F);
+        }
+    }
+    @SubscribeEvent
+    public void removeRotation(RenderPlayerEvent.Post event)
+    {
+        if(this.isPassenger(event.getEntityPlayer()))
+        {
+            GlStateManager.popMatrix();
+        }
     }
 
     @Override

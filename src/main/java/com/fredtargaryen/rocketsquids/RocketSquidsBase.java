@@ -1,18 +1,24 @@
 /**
- * Fire is not in correct X and Z on blasting squid. (check)
- * Squids need to set burning when lit with flint and steel (fix and check after above)
- * Burning squids should explode, raining tubes and sacs (fix and check after above)
+ * Fire is not in correct position on blasting squid. (check)
+ * Add planes facing (do after above)
+ * --Top right
+ * --Bottom left
+ * --Bottom right
+ * Squids need to set burning when lit with flint and steel (do after above)
+ * Burning squids should explode, raining tubes and sacs (do after above)
  *
- * Riding squids
- * Check riding without blasts
- * --Adding the saddle makes the rotation go a bit strange - possibly setting onGround to false
- * --Riders don't snap to the squid position unless they dismount
- * --Rocket squid moved too quickly
+ * Riding squids (check)
+ * --If beached, adding the saddle makes the rotation go a bit strange - possibly setting onGround to false
+ * --Rider not sticking to squid's back (check)
  * --Do saddle model
+ *   Offset should leave just enough room for saddle (do after above)
  *
+ * Re-add blasts (do after all above)
+ * Rocket squid moved too quickly (do after above)
+ *
+ * Post-release tasks:
  * Squid firework effect in explosion
  * Good-sized non-griefing explosion for Turbo Tubes
- * Fire renders in some weird stupid way
  */
 
 package com.fredtargaryen.rocketsquids;
