@@ -250,20 +250,33 @@ public class EntityRocketSquid extends EntityWaterMob
                 {
                     stack.damageItem(1, player);
                     this.setBlasting(true);
-                    //this.setFire(10);
+                    this.setFire(10);
                     return true;
                 }
                 else if(i == Items.SADDLE)
                 {
-                    stack.damageItem(1, player);
-                    this.setSaddled(true);
+                    if(!this.getSaddled()) {
+                        stack.damageItem(1, player);
+                        this.setSaddled(true);
+                    }
                     player.startRiding(this);
                     return true;
+                }
+                else
+                {
+                    if (this.getSaddled() && !this.isBeingRidden())
+                    {
+                        player.startRiding(this);
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
+
+    @Override
+    public void extinguish() {}
 
     public void explode()
     {
@@ -274,6 +287,7 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
             entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            entityitem.motionY = -0.2;
             entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
             this.worldObj.spawnEntityInWorld(entityitem);
         }
@@ -281,6 +295,7 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
             entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+            entityitem.motionY = -0.2;
             entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
             this.worldObj.spawnEntityInWorld(entityitem);
         }
@@ -453,11 +468,24 @@ public class EntityRocketSquid extends EntityWaterMob
     @SubscribeEvent
     public void addRotation(RenderPlayerEvent.Pre event)
     {
-        if(this.isPassenger(event.getEntityPlayer()))
+        EntityPlayer p = event.getEntityPlayer();
+        if(this.isPassenger(p))
         {
+            //At pitches within [-2PI, -PI], [0, PI], [2PI, 3PI] etc, the apparent yaw of the squid is the same as the
+            //yaw given by the capability.
+            //Outside of this range the squid appears to be at the opposite yaw to that given by the capability.
+            //Conveniently at any of the above pitches, sin(pitch) >= 0.
+            //This code is concerned with matching the apparent rotation rather than the actual rotation.
+            double visualPitch = this.squidCap.getRotPitch() * 180 / Math.PI;
+            double visualYaw = 180.0 - (this.squidCap.getRotYaw() * 180 / Math.PI);
+//            if(Math.sin(visualPitch) < 0)
+//            {
+//                visualYaw = -visualYaw;
+//            }
             GlStateManager.pushMatrix();
-            GlStateManager.rotate((float)(this.squidCap.getRotYaw() * 180 / Math.PI) + 90.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float)((this.squidCap.getRotPitch() * 180 / Math.PI) - 90.0F), 1.0F, 0.0F, 0.0F);
+            //GlStateManager.rotate(p.renderYawOffset, 0.0F, -1.0F, 0.0F);
+            //GlStateManager.rotate((float) visualYaw, 0.0F, 0.5F, 0.0F);
+            GlStateManager.rotate((float) visualPitch - 180.0F, 1.0F, 0.0F, 0.0F);
         }
     }
     @SubscribeEvent
@@ -545,4 +573,8 @@ public class EntityRocketSquid extends EntityWaterMob
             this.newPacketRequired = true;
         }
     }
+
+    public double getTargRotPitch() { return this.squidCap.getTargetRotPitch(); }
+
+    public double getTargRotYaw() { return this.squidCap.getTargetRotYaw(); }
 }

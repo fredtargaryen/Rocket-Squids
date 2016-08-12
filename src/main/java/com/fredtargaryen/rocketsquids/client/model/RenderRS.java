@@ -23,7 +23,6 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
     public RenderRS(RenderManager rm, ModelRocketSquid model, float shadowSize)
     {
         super(rm, model, shadowSize);
-        //this.addLayer(new LayerFireBlock(this));
     }
 
     /**
@@ -66,9 +65,8 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
             TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
             GlStateManager.pushMatrix();
-            //Larger x goes right; larger y goes ; larger z goes down
-            //Need to go right, in and up (-0.43       0.375        0.535)
-            GlStateManager.translate(x - 0.36, y + 0.36, z + 0.52);
+            //Larger x goes right; larger y goes in; larger z goes down
+            GlStateManager.translate(x,             y + 0.52, z + 0.36);
             GlStateManager.rotate((float)(par1EntitySquid.getRotYaw() * 180 / Math.PI), 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), 1.0F, 0.0F, 0.0F);
             Tessellator tessellator = Tessellator.getInstance();
@@ -82,15 +80,32 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             float maxv = tas.getMaxV();
             //On a squid laying down:
             //Facing top left
-            vertexbuffer.pos(-0.18, 0.0, -0.18).tex(maxu, maxv).endVertex();
-            vertexbuffer.pos(-0.19, -1.5, -0.19).tex(maxu, minv).endVertex();
-            vertexbuffer.pos(0.19, -1.5, 0.19).tex(minu, minv).endVertex();
-            vertexbuffer.pos(0.18, 0.0, 0.18).tex(minu, maxv).endVertex();
-//            //Facing bottom left
-//            vertexbuffer.pos(squidCentreX + 0.18, squidCentreY,         squidCentreZ + 0.18).tex(minu, maxv).endVertex();
-//            vertexbuffer.pos(squidCentreX + 0.19, squidCentreY - 1.2,  squidCentreZ + 0.19).tex(minu, minv).endVertex();
-//            vertexbuffer.pos(squidCentreX - 0.19, squidCentreY - 1.2,  squidCentreZ - 0.19).tex(maxu, minv).endVertex();
-//            vertexbuffer.pos(squidCentreX - 0.18, squidCentreY,         squidCentreZ - 0.18).tex(maxu, maxv).endVertex();
+            //bottom: z -0.22
+            //top: z 0.22
+            //left: x -0.22
+            //right: x 0.22
+            vertexbuffer.pos(-0.22, 0.0, -0.22).tex(maxu, maxv).endVertex();
+            vertexbuffer.pos(-0.16, -1.5, -0.28).tex(maxu, minv).endVertex();
+            vertexbuffer.pos(0.28, -1.5, 0.16).tex(minu, minv).endVertex();
+            vertexbuffer.pos(0.22, 0.0, 0.22).tex(minu, maxv).endVertex();
+
+            //Facing top right
+            vertexbuffer.pos(-0.22, 0.0, 0.22).tex(maxu, maxv).endVertex();
+            vertexbuffer.pos(-0.28, -1.5, 0.16).tex(maxu, minv).endVertex();
+            vertexbuffer.pos(0.16, -1.5, -0.28).tex(minu, minv).endVertex();
+            vertexbuffer.pos(0.22, 0.0, -0.22).tex(minu, maxv).endVertex();
+
+            //Facing bottom left
+            vertexbuffer.pos(0.22, 0.0, -0.22).tex(maxu, maxv).endVertex();
+            vertexbuffer.pos(0.28, -1.5, -0.16).tex(maxu, minv).endVertex();
+            vertexbuffer.pos(-0.16, -1.5, 0.28).tex(minu, minv).endVertex();
+            vertexbuffer.pos(-0.22, 0.0, 0.22).tex(minu, maxv).endVertex();
+
+            //Facing bottom right
+            vertexbuffer.pos(0.22, 0.0, 0.22).tex(maxu, maxv).endVertex();
+            vertexbuffer.pos(0.16, -1.5, 0.28).tex(maxu, minv).endVertex();
+            vertexbuffer.pos(-0.28, -1.5, -0.16).tex(minu, minv).endVertex();
+            vertexbuffer.pos(-0.22, 0.0, -0.22).tex(minu, maxv).endVertex();
 
             tessellator.draw();
             GlStateManager.popMatrix();

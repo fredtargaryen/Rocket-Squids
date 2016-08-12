@@ -1,17 +1,12 @@
 /**
- * Fire is not in correct position on blasting squid. (check)
- * Add planes facing (do after above)
- * --Top right
- * --Bottom left
- * --Bottom right
- * Squids need to set burning when lit with flint and steel (do after above)
- * Burning squids should explode, raining tubes and sacs (do after above)
+ * Replace extinguishing with fire reduction (check)
  *
- * Riding squids (check)
+ * Riding squids
  * --If beached, adding the saddle makes the rotation go a bit strange - possibly setting onGround to false
- * --Rider not sticking to squid's back (check)
- * --Do saddle model
- *   Offset should leave just enough room for saddle (do after above)
+ * --Make rider yaw suit squid yaw (check visualYaw / 2 - renderYawOffset)
+ *   --Currently turns the right way but oscillates between 90 and -90 still
+ * --Make rider pitch suit squid pitch (check)
+ * --Camera locks
  *
  * Re-add blasts (do after all above)
  * Rocket squid moved too quickly (do after above)

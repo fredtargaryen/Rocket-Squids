@@ -7,6 +7,7 @@ public class EntityAIBlastOff extends EntityAIBase
 {
     private EntityRocketSquid squid;
     private boolean blastStarted;
+    private boolean horizontal;
 
     public EntityAIBlastOff(EntityRocketSquid ers)
     {
@@ -14,13 +15,13 @@ public class EntityAIBlastOff extends EntityAIBase
         this.squid = ers;
         this.setMutexBits(1);
         this.blastStarted = false;
+        this.horizontal = true;
     }
 
-    //Change to isBurning() later
     @Override
     public boolean shouldExecute()
     {
-        return this.squid.getBlasting() || this.squid.isInLava();
+        return this.squid.getBlasting() || this.squid.isBurning();
     }
 
     @Override
@@ -29,8 +30,8 @@ public class EntityAIBlastOff extends EntityAIBase
         if (this.blastStarted)
         {
             //The squid is part of the way through a blast
-            if(Math.sqrt((this.squid.motionX * this.squid.motionX) + (this.squid.motionY * this.squid.motionY) +
-                    (this.squid.motionZ * this.squid.motionZ)) < 0.05)
+            if((this.horizontal && Math.abs(this.squid.motionX) < 0.05 && Math.abs(this.squid.motionZ) < 0.05) ||
+                    (!this.horizontal && Math.abs(this.squid.motionY) < 0.05))
             {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
@@ -47,6 +48,7 @@ public class EntityAIBlastOff extends EntityAIBase
             //Blast has not started yet
             this.squid.setShaking(false);
             this.squid.addForce(3.0);
+            this.horizontal = Math.abs(this.squid.motionY) < 0.05;
             this.blastStarted = true;
         }
     }

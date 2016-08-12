@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
+import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -15,6 +16,8 @@ public class ModelRocketSquid extends ModelBase
     private ModelRenderer Tent7;
     private ModelRenderer Tent6;
     private ModelRenderer Tent5;
+    private ModelRenderer Saddle;
+    private ModelRenderer Straps;
   
     public ModelRocketSquid()
     {
@@ -83,6 +86,20 @@ public class ModelRocketSquid extends ModelBase
         Tent5.setTextureSize(128, 64);
         Tent5.mirror = true;
         setRotation(Tent5, 0F, -0.7853982F, 0F);
+
+        Saddle = new ModelRenderer(this, 106, 53);
+        Saddle.addBox(-5F, 0F, 7F, 10, 10, 1);
+        Saddle.setRotationPoint(0F, 0F, 0F);
+        Saddle.setTextureSize(128, 64);
+        Saddle.mirror = true;
+        setRotation(Saddle, 0F, 0F, 0F);
+
+        Straps = new ModelRenderer(this, 68, 0);
+        Straps.addBox(-7.5F, 1F, -7.5F, 15, 8, 15);
+        Straps.setRotationPoint(0F, 0F, 0F);
+        Straps.setTextureSize(128, 64);
+        Straps.mirror = true;
+        setRotation(Straps, 0F, 0F, 0F);
     }
   
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
@@ -98,6 +115,11 @@ public class ModelRocketSquid extends ModelBase
         Tent7.render(f5);
         Tent6.render(f5);
         Tent5.render(f5);
+        if(((EntityRocketSquid) entity).getSaddled())
+        {
+            Saddle.render(f5);
+            Straps.render(f5);
+        }
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z)
