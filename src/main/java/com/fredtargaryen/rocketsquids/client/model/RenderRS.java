@@ -6,13 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.layers.LayerHeldBlock;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-
 import java.util.Random;
 
 public class RenderRS extends RenderLiving<EntityRocketSquid>
@@ -45,8 +42,8 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
         double pry = ers.getPrevRotYaw();
         float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
         GlStateManager.translate(0.0F, 0.5F, 0.0F);
-        GlStateManager.rotate(exactYaw, 0.0F, -1.0F, 0.0F);
-        GlStateManager.rotate(exactPitch, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(exactPitch, -1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0.0F, -1.2F, 0.0F);
     }
 

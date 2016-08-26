@@ -7,7 +7,7 @@
   "mcversion": "1.10.2",
   "url": "",
   "authorList": ["FredTargaryen"],
-  "credits": "Inspired by watching squids when my latency was through the roof",
+  "credits": "Inspired by watching squids when my latency was through the roof. Thank you to LapisSea for rider rotation code.",
   "logoFile": "assets/ftrsquids/textures/gui/banner.png"
 }
 ]

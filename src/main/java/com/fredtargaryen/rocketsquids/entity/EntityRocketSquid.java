@@ -26,8 +26,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,6 +39,7 @@ public class EntityRocketSquid extends EntityWaterMob
 {
     public float tentacleAngle;
     public float lastTentacleAngle;
+    private boolean playerRotated;
 
     private boolean newPacketRequired;
 
@@ -51,6 +55,7 @@ public class EntityRocketSquid extends EntityWaterMob
         //Normal squids are 0.8F, 0.8F.
         this.setSize(1.1F, 1.1F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
+        this.playerRotated = false;
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -114,6 +119,18 @@ public class EntityRocketSquid extends EntityWaterMob
             this.motionY *= 0.9800000190734863D;
             this.motionZ *= 0.9800000190734863D;
             rotateSpeed = 0.2;
+        }
+
+        boolean onFire = false;
+        if(this.isBurning() || this.isInLava())
+        {
+            onFire = true;
+            this.squidCap.setForcedBlast(true);
+            this.newPacketRequired = true;
+        }
+        if(onFire || this.squidCap.getForcedBlast())
+        {
+            this.setFire(1);
         }
 
         //Rotate towards target pitch
@@ -249,8 +266,7 @@ public class EntityRocketSquid extends EntityWaterMob
                 if(i == Items.FLINT_AND_STEEL)
                 {
                     stack.damageItem(1, player);
-                    this.setBlasting(true);
-                    this.setFire(10);
+                    this.squidCap.setForcedBlast(true);
                     return true;
                 }
                 else if(i == Items.SADDLE)
@@ -372,8 +388,29 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
+    /**
+     * Checks if squid pitch is less than -45 degrees and more than -135 degrees.
+     * Between these angles the player would appear to hit the ground first so the player should be hurt.
+     */
     @Override
-    public void fall(float dist, float damMult) {}
+    public void fall(float dist, float damMult)
+    {
+        if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865)
+        {
+            super.fall(dist, damMult);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void applyOrientationToEntity(Entity e)
+    {
+//        float yaw = (float) (this.squidCap.getRotYaw() * 180 / Math.PI);
+//        float newHeadYaw = MathHelper.clamp_float(e.rotationYaw, yaw - 90.0F, yaw + 90.0F);
+//        e.prevRotationYaw = newHeadYaw;
+//        e.rotationYaw = newHeadYaw;
+//        e.setRotationYawHead(newHeadYaw);
+    }
 
     /**
      * Should keep the passenger on, or at least around, the squid's back.
@@ -381,21 +418,8 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     public void updatePassenger(Entity passenger)
     {
-        if (this.isPassenger(passenger))
-        {
-            double pitch = this.squidCap.getRotPitch();
-            double yaw = this.squidCap.getRotYaw();
-            //Was positive before
-            double yOffset = 0.5 * -Math.sin(pitch);
-            double hOffset = 0.5 * -Math.cos(pitch);
-            double xOffset = hOffset * -Math.sin(yaw);
-            double zOffset = hOffset * Math.cos(yaw);
-            if(!this.worldObj.isRemote)
-            {
-//                passenger.setPositionAndRotation(passenger.posX, passenger.posY, passenger.posZ,
-//                        (float) ((yaw * 180 / Math.PI) + 180.0), (float) ((pitch * 180 / Math.PI) + 90.0));
-                passenger.setPositionAndUpdate(this.posX - xOffset, this.posY + yOffset, this.posZ - zOffset);
-            }
+        if(this.isPassenger(passenger)) {
+            passenger.setPosition(this.posX, this.posY, this.posZ);
         }
     }
 
@@ -465,35 +489,50 @@ public class EntityRocketSquid extends EntityWaterMob
         return false;
     }
 
-    @SubscribeEvent
+    /**
+     * Add transformations to put player on back of squid.
+     * Thanks to LapisSea for helping with rider rotation code.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event)
     {
         EntityPlayer p = event.getEntityPlayer();
         if(this.isPassenger(p))
         {
-            //At pitches within [-2PI, -PI], [0, PI], [2PI, 3PI] etc, the apparent yaw of the squid is the same as the
-            //yaw given by the capability.
-            //Outside of this range the squid appears to be at the opposite yaw to that given by the capability.
-            //Conveniently at any of the above pitches, sin(pitch) >= 0.
-            //This code is concerned with matching the apparent rotation rather than the actual rotation.
-            double visualPitch = this.squidCap.getRotPitch() * 180 / Math.PI;
-            double visualYaw = 180.0 - (this.squidCap.getRotYaw() * 180 / Math.PI);
-//            if(Math.sin(visualPitch) < 0)
-//            {
-//                visualYaw = -visualYaw;
-//            }
+            double pitch_r = this.squidCap.getRotPitch();
+            double yaw_r = this.squidCap.getRotYaw();
+            double pitch_d = pitch_r * 180 / Math.PI;
+            double yaw_d = yaw_r * 180 / Math.PI;
+            this.playerRotated = true;
             GlStateManager.pushMatrix();
-            //GlStateManager.rotate(p.renderYawOffset, 0.0F, -1.0F, 0.0F);
-            //GlStateManager.rotate((float) visualYaw, 0.0F, 0.5F, 0.0F);
-            GlStateManager.rotate((float) visualPitch - 180.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.translate(0, 3/16F, 0);
+            //My wrong answer
+            //GlStateManager.rotate((float) (180.0F - yaw_d) / 2, 0.0F, 1.0F, 0.0F);
+            //GlStateManager.rotate((float) (pitch_d - 90.0F) / 2, 1.0F, 0.0F, 0.0F);
+            //LapisSea's answer
+            //GlStateManager.rotate(-this.renderYawOffset,            0.0F, 1.0F, 0.0F);
+            //GlStateManager.rotate((float) (-pitch_d + 90.0F),   1.0F, 0.0F, 0.0F);
+            //GlStateManager.rotate((float) -yaw_d,               0.0F, 0.0F, 1.0F);
+            //Current answer
+            //GlStateManager.rotate(this.renderYawOffset * 7 / 8,            0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float) (pitch_d - 90.0F) / 2,    1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate((float) -yaw_d / 2,               0.0F, 0.0F, 1.0F);
+            GlStateManager.translate(0, -3/16F, 0);
+            double yOffset = 0.225 * Math.sin(pitch_r);
+            double hOffset = 0.225 * Math.cos(pitch_r);
+            double xOffset = hOffset * -Math.sin(yaw_r);
+            double zOffset = hOffset * Math.cos(yaw_r);
+            GlStateManager.translate(-xOffset, yOffset, -zOffset);
         }
     }
-    @SubscribeEvent
+
+    @SubscribeEvent(priority=EventPriority.LOWEST)
     public void removeRotation(RenderPlayerEvent.Post event)
     {
-        if(this.isPassenger(event.getEntityPlayer()))
+        if(this.playerRotated)
         {
             GlStateManager.popMatrix();
+            this.playerRotated = false;
         }
     }
 
@@ -577,4 +616,6 @@ public class EntityRocketSquid extends EntityWaterMob
     public double getTargRotPitch() { return this.squidCap.getTargetRotPitch(); }
 
     public double getTargRotYaw() { return this.squidCap.getTargetRotYaw(); }
+
+    public boolean getForcedBlast() { return this.squidCap.getForcedBlast(); }
 }

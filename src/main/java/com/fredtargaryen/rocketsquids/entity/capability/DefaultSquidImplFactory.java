@@ -4,10 +4,8 @@ import java.util.concurrent.Callable;
 
 /**
  * The implementation of ISquidCapability for all official Rocket Squids.
- * As is typical of the capability system support is only guaranteed for
- * this implementation. This implementation was designed for exclusive
- * use with this mod; correct operation is not guaranteed in any other
- * context!
+ * This implementation was designed for exclusive use with this mod;
+ * correct operation is not guaranteed in any other context!
  */
 public class DefaultSquidImplFactory implements Callable<ISquidCapability>
 {
@@ -26,6 +24,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
         private double rotYaw;
         private double targRotPitch;
         private double targRotYaw;
+        private boolean forcedBlast;
 
         public DefaultSquidImpl()
         {
@@ -37,6 +36,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             this.rotYaw = 0.0;
             this.targRotPitch = 0.0;
             this.targRotYaw = 0.0;
+            this.forcedBlast = false;
         }
 
         @Override
@@ -141,6 +141,18 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             }
             this.prevRotYaw = this.rotYaw;
             this.targRotYaw = d;
+        }
+
+        @Override
+        public boolean getForcedBlast()
+        {
+            return this.forcedBlast;
+        }
+
+        @Override
+        public void setForcedBlast(boolean b)
+        {
+            this.forcedBlast = b;
         }
     }
 }

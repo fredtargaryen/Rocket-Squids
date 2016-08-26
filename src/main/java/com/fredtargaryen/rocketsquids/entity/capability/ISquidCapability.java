@@ -25,4 +25,7 @@ public interface ISquidCapability
     void setTargetRotPitch(double d);
     double getTargetRotYaw();
     void setTargetRotYaw(double d);
+
+    boolean getForcedBlast();
+    void setForcedBlast(boolean b);
 }

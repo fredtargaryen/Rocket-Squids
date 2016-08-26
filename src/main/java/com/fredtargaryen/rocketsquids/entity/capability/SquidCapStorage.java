@@ -7,10 +7,8 @@ import net.minecraftforge.common.capabilities.Capability;
 
 /**
  * The storage class for ISquidCapability for all official Rocket Squids.
- * As is typical of the capability system support is only guaranteed for
- * this storage class. This storage class was designed for exclusive
- * use with this mod; correct operation is not guaranteed in any other
- * context!
+ * This storage class was designed for exclusive use with this mod;
+ * correct operation is not guaranteed in any other context!
  */
 public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
 {
@@ -24,6 +22,7 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         comp.setDouble("targetYaw", instance.getTargetRotYaw());
         comp.setBoolean("shaking", instance.getShaking());
         comp.setBoolean("blasting", instance.getBlasting());
+        comp.setBoolean("forcedblast", instance.getForcedBlast());
         return comp;
     }
 
@@ -37,5 +36,6 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         instance.setTargetRotYaw(comp.getDouble("targetYaw"));
         instance.setShaking(comp.getBoolean("shaking"));
         instance.setBlasting(comp.getBoolean("blasting"));
+        instance.setForcedBlast(comp.getBoolean("forcedblast"));
     }
 }

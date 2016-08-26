@@ -1,19 +1,12 @@
 /**
- * Replace extinguishing with fire reduction (check)
- *
- * Riding squids
- * --If beached, adding the saddle makes the rotation go a bit strange - possibly setting onGround to false
- * --Make rider yaw suit squid yaw (check visualYaw / 2 - renderYawOffset)
- *   --Currently turns the right way but oscillates between 90 and -90 still
- * --Make rider pitch suit squid pitch (check)
- * --Camera locks
- *
- * Re-add blasts (do after all above)
- * Rocket squid moved too quickly (do after above)
+ * Rocket squid moved too quickly (check)
  *
  * Post-release tasks:
+ * Use "forced blast" boolean
  * Squid firework effect in explosion
- * Good-sized non-griefing explosion for Turbo Tubes
+ * Good-sized non-griefing explosion for Tubes
+ * Get rider "firmly" onto squid saddle
+ * Try to stop squid bucking when saddled and being ridden on ground
  */
 
 package com.fredtargaryen.rocketsquids;
@@ -123,8 +116,8 @@ public class RocketSquidsBase
         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
         spawnProb = config.getInt("spawnProb", "Spawning", 7, 1, 100, "Weighted probability of a group spawning");
-        minGrpSize = config.getInt("minGroupSize", "Spawning", 1, 1, 20, "Smallest possible size of a group");
-        maxGrpSize = config.getInt("maxGroupSize", "Spawning", 3, 1, 40, "If true, thin ice patches will generate on frozen bodies of water");
+        minGrpSize = config.getInt("minGroupSize", "Spawning", 2, 1, 20, "Smallest possible size of a group");
+        maxGrpSize = config.getInt("maxGroupSize", "Spawning", 5, 1, 40, "Largest possible size of a group");
         config.save();
         if(maxGrpSize < minGrpSize)
         {

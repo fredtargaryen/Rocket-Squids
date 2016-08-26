@@ -21,7 +21,7 @@ public class EntityAIBlastOff extends EntityAIBase
     @Override
     public boolean shouldExecute()
     {
-        return this.squid.getBlasting() || this.squid.isBurning();
+        return this.squid.getBlasting() || this.squid.getForcedBlast();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class EntityAIBlastOff extends EntityAIBase
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
                 this.blastStarted = false;
-                if(this.squid.isBurning())
+                if(this.squid.getForcedBlast())
                 {
                     this.squid.explode();
                 }
