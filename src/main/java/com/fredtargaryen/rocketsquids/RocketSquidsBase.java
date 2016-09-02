@@ -1,12 +1,23 @@
 /**
- * Rocket squid moved too quickly (check)
+ * Pre-release tasks:
+ * Rocket squid moved too quickly. [2.75, 3.0) so far; trying 2.875 (check 1)
+ * Riders jumping off blasting squids (2)
+ * Rocket Squids not blowing up at the top of the blast sometimes
+ *
+ * Fire in wrong place during blast (check 3)
+ * --Translate moves coords relative to camera. To check, try again - fire should be in middle of screen. Translate x, y, z?
+ *
+ * Squids can stop moving when ridden (check)
+ * Correct rider offset (check 4 and 5)
+ * Squids getting stuck inside ground - not recognizing when on ground (check)
  *
  * Post-release tasks:
- * Use "forced blast" boolean
  * Squid firework effect in explosion
  * Good-sized non-griefing explosion for Tubes
- * Get rider "firmly" onto squid saddle
- * Try to stop squid bucking when saddled and being ridden on ground
+ * Try to stop squid bucking when saddled and being ridden on ground (may be related to point 3)
+ * Try to prevent "vehicle moved too quickly!" so blast speed can be increased
+ * Rider yaw adjustment doesn't quite fit the squid rotation
+ * VIP riders
  */
 
 package com.fredtargaryen.rocketsquids;

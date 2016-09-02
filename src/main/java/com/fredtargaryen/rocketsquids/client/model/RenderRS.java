@@ -56,16 +56,20 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             y += r.nextGaussian() * 0.02D;
             z += r.nextGaussian() * 0.02D;
         }
-        if(par1EntitySquid.getBlasting())
+        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater())
         {
+            //375, 37, 377
             GlStateManager.disableLighting();
             TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
             TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
             GlStateManager.pushMatrix();
+            //GlStateManager.rotate((float)(par1EntitySquid.getRotYaw() * 180 / Math.PI), 0.0F, 1.0F, 0.0F);
+            //GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), 1.0F, 0.0F, 0.0F);
+            double yaw_d = par1EntitySquid.getRotYaw() * 180 / Math.PI;
+            GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), (float) Math.cos(yaw_d), 0.0F, (float) Math.sin(yaw_d));
             //Larger x goes right; larger y goes in; larger z goes down
-            GlStateManager.translate(x,             y + 0.52, z + 0.36);
-            GlStateManager.rotate((float)(par1EntitySquid.getRotYaw() * 180 / Math.PI), 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), 1.0F, 0.0F, 0.0F);
+            //GlStateManager.translate(x,             y + 0.52, z + 0.36);
+            //GlStateManager.translate(0.0, 0.52, 0.36);
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

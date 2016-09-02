@@ -56,7 +56,9 @@ public class EntityRocketSquid extends EntityWaterMob
         this.setSize(1.1F, 1.1F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
         this.playerRotated = false;
-        MinecraftForge.EVENT_BUS.register(this);
+        if(par1World.isRemote) {
+            MinecraftForge.EVENT_BUS.register(this);
+        }
     }
 
     @Override
@@ -130,7 +132,7 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         if(onFire || this.squidCap.getForcedBlast())
         {
-            this.setFire(1);
+            this.squidCap.setBlasting(true);
         }
 
         //Rotate towards target pitch
@@ -230,12 +232,14 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public void addForce(double n)
     {
-        double rp = this.squidCap.getRotPitch();
-        double ry = this.squidCap.getRotYaw();
-        this.motionY += n * Math.cos(rp);
-        double horizontalForce = n * Math.sin(rp);
-        this.motionZ += horizontalForce * Math.cos(ry);
-        this.motionX += horizontalForce * -Math.sin(ry);
+        if(!this.worldObj.isRemote) {
+            double rp = this.squidCap.getRotPitch();
+            double ry = this.squidCap.getRotYaw();
+            this.motionY += n * Math.cos(rp);
+            double horizontalForce = n * Math.sin(rp);
+            this.motionZ += horizontalForce * Math.cos(ry);
+            this.motionX += horizontalForce * -Math.sin(ry);
+        }
     }
 
     /**
@@ -327,39 +331,41 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     /**
-     * Applies a velocity to the entities, to push them away from eachother.
+     * Applies a velocity to the entities (unless they're riding), to push them away from each other.
      */
     public void applyEntityCollision(Entity obstacle)
     {
-        if (!obstacle.noClip && !this.noClip)
+        Entity passenger = this.getControllingPassenger();
+        if(passenger == null || passenger != obstacle)
         {
-            double xDist = obstacle.posX - this.posX;
-            double zDist = obstacle.posZ - this.posZ;
-            double yDist = obstacle.posY - this.posY;
-            double largerDist = MathHelper.abs_max(xDist, MathHelper.abs_max(yDist, zDist));
+            //Obstacle is not the rider, so apply collision
+            if (!obstacle.noClip && !this.noClip) {
+                double xDist = obstacle.posX - this.posX;
+                double zDist = obstacle.posZ - this.posZ;
+                double yDist = obstacle.posY - this.posY;
+                double largerDist = MathHelper.abs_max(xDist, MathHelper.abs_max(yDist, zDist));
 
-            if (largerDist >= 0.009999999776482582D)
-            {
-                largerDist = (double)MathHelper.sqrt_double(largerDist);
-                xDist /= largerDist;
-                yDist /= largerDist;
-                zDist /= largerDist;
-                double d3 = 1.0D / largerDist;
+                if (largerDist >= 0.009999999776482582D) {
+                    largerDist = (double) MathHelper.sqrt_double(largerDist);
+                    xDist /= largerDist;
+                    yDist /= largerDist;
+                    zDist /= largerDist;
+                    double d3 = 1.0D / largerDist;
 
-                if (d3 > 1.0D)
-                {
-                    d3 = 1.0D;
+                    if (d3 > 1.0D) {
+                        d3 = 1.0D;
+                    }
+
+                    xDist *= d3;
+                    yDist *= d3;
+                    zDist *= d3;
+                    xDist *= 0.05000000074505806D;
+                    yDist *= 0.05000000074505806D;
+                    zDist *= 0.05000000074505806D;
+
+                    this.addVelocity(-xDist * 0.02, -yDist * 0.02, -zDist * 0.02);
+                    obstacle.addVelocity(xDist * 0.98, yDist * 0.98, zDist * 0.98);
                 }
-
-                xDist *= d3;
-                yDist *= d3;
-                zDist *= d3;
-                xDist *= 0.05000000074505806D;
-                yDist *= 0.05000000074505806D;
-                zDist *= 0.05000000074505806D;
-
-                this.addVelocity(-xDist * 0.02, -yDist * 0.02, -zDist * 0.02);
-                obstacle.addVelocity(xDist * 0.98, yDist * 0.98, zDist * 0.98);
             }
         }
     }
@@ -405,11 +411,10 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     public void applyOrientationToEntity(Entity e)
     {
-//        float yaw = (float) (this.squidCap.getRotYaw() * 180 / Math.PI);
-//        float newHeadYaw = MathHelper.clamp_float(e.rotationYaw, yaw - 90.0F, yaw + 90.0F);
-//        e.prevRotationYaw = newHeadYaw;
-//        e.rotationYaw = newHeadYaw;
-//        e.setRotationYawHead(newHeadYaw);
+        float yawDifference = (float) ((this.squidCap.getRotYaw() - this.squidCap.getPrevRotYaw()) * 180 / Math.PI);
+        e.prevRotationYaw += yawDifference;
+        e.rotationYaw += yawDifference;
+        e.setRotationYawHead(e.rotationYaw);
     }
 
     /**
@@ -419,7 +424,7 @@ public class EntityRocketSquid extends EntityWaterMob
     public void updatePassenger(Entity passenger)
     {
         if(this.isPassenger(passenger)) {
-            passenger.setPosition(this.posX, this.posY, this.posZ);
+            passenger.setPosition(this.posX, this.posY + 0.35D, this.posZ);
         }
     }
 
@@ -489,40 +494,40 @@ public class EntityRocketSquid extends EntityWaterMob
         return false;
     }
 
+    @Override
+    public void removePassenger(Entity passenger)
+    {
+        super.removePassenger(passenger);
+        passenger.prevPosY += 1.0;
+        passenger.posY += 1.0;
+        if (this.getBlasting())
+        {
+            passenger.motionX += this.motionX * 1.5;
+            passenger.motionY += this.motionY * 1.5;
+            passenger.motionZ += this.motionZ * 1.5;
+        }
+    }
+
     /**
      * Add transformations to put player on back of squid.
-     * Thanks to LapisSea for helping with rider rotation code.
      */
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event)
     {
         EntityPlayer p = event.getEntityPlayer();
         if(this.isPassenger(p))
         {
-            double pitch_r = this.squidCap.getRotPitch();
-            double yaw_r = this.squidCap.getRotYaw();
-            double pitch_d = pitch_r * 180 / Math.PI;
-            double yaw_d = yaw_r * 180 / Math.PI;
             this.playerRotated = true;
             GlStateManager.pushMatrix();
-            GlStateManager.translate(0, 3/16F, 0);
-            //My wrong answer
-            //GlStateManager.rotate((float) (180.0F - yaw_d) / 2, 0.0F, 1.0F, 0.0F);
-            //GlStateManager.rotate((float) (pitch_d - 90.0F) / 2, 1.0F, 0.0F, 0.0F);
-            //LapisSea's answer
-            //GlStateManager.rotate(-this.renderYawOffset,            0.0F, 1.0F, 0.0F);
-            //GlStateManager.rotate((float) (-pitch_d + 90.0F),   1.0F, 0.0F, 0.0F);
-            //GlStateManager.rotate((float) -yaw_d,               0.0F, 0.0F, 1.0F);
-            //Current answer
-            //GlStateManager.rotate(this.renderYawOffset * 7 / 8,            0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float) (pitch_d - 90.0F) / 2,    1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate((float) -yaw_d / 2,               0.0F, 0.0F, 1.0F);
-            GlStateManager.translate(0, -3/16F, 0);
-            double yOffset = 0.225 * Math.sin(pitch_r);
-            double hOffset = 0.225 * Math.cos(pitch_r);
-            double xOffset = hOffset * -Math.sin(yaw_r);
-            double zOffset = hOffset * Math.cos(yaw_r);
-            GlStateManager.translate(-xOffset, yOffset, -zOffset);
+			GlStateManager.translate(0.0F, 0.17F, 0.0F);
+            double prevPitch_r = this.squidCap.getPrevRotPitch();
+            double pitch_r = this.squidCap.getRotPitch();
+			float partialTick = event.getPartialRenderTick();
+            double exactPitch_r = prevPitch_r + (pitch_r - prevPitch_r) * partialTick;
+            double exactPitch_d = exactPitch_r * 180 / Math.PI;
+			double yaw_r = this.squidCap.getRotYaw();
+            GlStateManager.rotate((float) (exactPitch_d - 90.0F),   (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
         }
     }
 

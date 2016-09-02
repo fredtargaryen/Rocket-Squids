@@ -46,9 +46,9 @@ public class EntityAISwimAround extends EntityAIBase
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
      * Odds:
-     * 1/20 - starts to shake (hands over to EntityAIShake)
-     * 6/20 - repeats action
-     * 13/20 - goes from turning to swimming forward or vice versa
+     * 1/15 - starts to shake (hands over to EntityAIShake)
+     * 6/15 - repeats action
+     * 8/15 - goes from turning to swimming forward or vice versa
      */
     public void updateTask()
     {
@@ -112,7 +112,7 @@ public class EntityAISwimAround extends EntityAIBase
             if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005)
             {
                 //The last turn is as good as finished
-                int randomInt = this.r.nextInt(20);
+                int randomInt = this.r.nextInt(15);
                 if (randomInt == 0)
                 {
                     this.squid.setShaking(true);
@@ -136,7 +136,7 @@ public class EntityAISwimAround extends EntityAIBase
                     && Math.abs(this.squid.motionZ) < 0.005)
             {
                 //Last forward swim is as good as finished
-                int randomInt = this.r.nextInt(20);
+                int randomInt = this.r.nextInt(15);
                 if(randomInt == 0)
                 {
                     this.squid.setShaking(true);

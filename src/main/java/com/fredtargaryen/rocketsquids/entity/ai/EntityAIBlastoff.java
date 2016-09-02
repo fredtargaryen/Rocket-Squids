@@ -30,8 +30,8 @@ public class EntityAIBlastOff extends EntityAIBase
         if (this.blastStarted)
         {
             //The squid is part of the way through a blast
-            if((this.horizontal && Math.abs(this.squid.motionX) < 0.05 && Math.abs(this.squid.motionZ) < 0.05) ||
-                    (!this.horizontal && Math.abs(this.squid.motionY) < 0.05))
+            if((this.horizontal && Math.abs(this.squid.motionX) < 0.006 && Math.abs(this.squid.motionZ) < 0.006) ||
+                    (!this.horizontal && Math.abs(this.squid.motionY) < 0.006))
             {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
@@ -47,7 +47,7 @@ public class EntityAIBlastOff extends EntityAIBase
         {
             //Blast has not started yet
             this.squid.setShaking(false);
-            this.squid.addForce(3.0);
+            this.squid.addForce(2.875);
             this.horizontal = Math.abs(this.squid.motionY) < 0.05;
             this.blastStarted = true;
         }
