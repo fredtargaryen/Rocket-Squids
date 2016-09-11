@@ -1,7 +1,10 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.ai.*;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastOff;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAIShake;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
@@ -37,6 +40,8 @@ import java.util.List;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
+    public static double flameRadius;
+
     public float tentacleAngle;
     public float lastTentacleAngle;
     private boolean playerRotated;
@@ -58,6 +63,7 @@ public class EntityRocketSquid extends EntityWaterMob
         this.playerRotated = false;
         if(par1World.isRemote) {
             MinecraftForge.EVENT_BUS.register(this);
+            flameRadius = 0.0;
         }
     }
 
@@ -120,7 +126,7 @@ public class EntityRocketSquid extends EntityWaterMob
             this.motionX *= 0.9800000190734863D;
             this.motionY *= 0.9800000190734863D;
             this.motionZ *= 0.9800000190734863D;
-            rotateSpeed = 0.2;
+            rotateSpeed = 0.15;
         }
 
         boolean onFire = false;
@@ -205,7 +211,6 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         else
         {
-            //Server side
             if(this.newPacketRequired)
             {
                 MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
@@ -239,6 +244,7 @@ public class EntityRocketSquid extends EntityWaterMob
             double horizontalForce = n * Math.sin(rp);
             this.motionZ += horizontalForce * Math.cos(ry);
             this.motionX += horizontalForce * -Math.sin(ry);
+            this.isAirBorne = true;
         }
     }
 
@@ -274,7 +280,7 @@ public class EntityRocketSquid extends EntityWaterMob
                     return true;
                 }
                 else if(i == Items.SADDLE)
-                {
+
                     if(!this.getSaddled()) {
                         stack.damageItem(1, player);
                         this.setSaddled(true);
@@ -294,9 +300,6 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         return false;
     }
-
-    @Override
-    public void extinguish() {}
 
     public void explode()
     {
@@ -424,7 +427,7 @@ public class EntityRocketSquid extends EntityWaterMob
     public void updatePassenger(Entity passenger)
     {
         if(this.isPassenger(passenger)) {
-            passenger.setPosition(this.posX, this.posY + 0.35D, this.posZ);
+            passenger.setPosition(this.posX, this.posY + 0.355, this.posZ);
         }
     }
 
@@ -520,7 +523,7 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             this.playerRotated = true;
             GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, 0.17F, 0.0F);
+			GlStateManager.translate(0.0F, 0.08F, 0.0F);
             double prevPitch_r = this.squidCap.getPrevRotPitch();
             double pitch_r = this.squidCap.getRotPitch();
 			float partialTick = event.getPartialRenderTick();
@@ -553,6 +556,13 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         super.readEntityFromNBT(compound);
         this.setSaddled(compound.getBoolean("Saddle"));
+    }
+
+    public void pointToWhereFlying()
+    {
+        if(!(Math.abs(this.motionY) < 0.0785 && this.motionX == 0.0 && this.motionZ == 0.0)) {
+            this.squidCap.setTargetRotPitch(Math.atan2(this.motionY, Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ)));
+        }
     }
 
     //CAPABILITY METHODS

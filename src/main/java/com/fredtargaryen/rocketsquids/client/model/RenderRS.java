@@ -58,59 +58,62 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
         }
         else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater())
         {
-            //375, 37, 377
-            GlStateManager.disableLighting();
+            //Choose texture
             TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
             TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
+
+            //Calculate and set translation-rotation matrix
             GlStateManager.pushMatrix();
-            //GlStateManager.rotate((float)(par1EntitySquid.getRotYaw() * 180 / Math.PI), 0.0F, 1.0F, 0.0F);
-            //GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), 1.0F, 0.0F, 0.0F);
-            double yaw_d = par1EntitySquid.getRotYaw() * 180 / Math.PI;
-            GlStateManager.rotate((float)(par1EntitySquid.getRotPitch() * 180 / Math.PI), (float) Math.cos(yaw_d), 0.0F, (float) Math.sin(yaw_d));
-            //Larger x goes right; larger y goes in; larger z goes down
-            //GlStateManager.translate(x,             y + 0.52, z + 0.36);
-            //GlStateManager.translate(0.0, 0.52, 0.36);
+            double yaw_r = par1EntitySquid.getRotYaw();
+            double pitch_r = par1EntitySquid.getRotPitch();
+            double adjusted_h_flame_offset = 0.35 * Math.sin(pitch_r);
+            GlStateManager.translate(
+                    x + (adjusted_h_flame_offset * Math.sin(yaw_r)),
+                    y + 0.5 - (0.3 * Math.cos(pitch_r)),
+                    z - (adjusted_h_flame_offset * Math.cos(yaw_r)));
+            GlStateManager.rotate((float)(pitch_r * 180 / Math.PI), (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
+
+            //Prepare to draw
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
+            GlStateManager.disableLighting();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+            //Draw the faces. Advised not to touch any of this; creates a pretty cross of fire which is adjusted to be
+            //visible even when squid is blasting directly away from viewer.
             float minu = tas.getMinU();
             float minv = tas.getMinV();
             float maxu = tas.getMaxU();
             float maxv = tas.getMaxV();
-            //On a squid laying down:
-            //Facing top left
-            //bottom: z -0.22
-            //top: z 0.22
-            //left: x -0.22
-            //right: x 0.22
+
             vertexbuffer.pos(-0.22, 0.0, -0.22).tex(maxu, maxv).endVertex();
             vertexbuffer.pos(-0.16, -1.5, -0.28).tex(maxu, minv).endVertex();
             vertexbuffer.pos(0.28, -1.5, 0.16).tex(minu, minv).endVertex();
             vertexbuffer.pos(0.22, 0.0, 0.22).tex(minu, maxv).endVertex();
 
-            //Facing top right
             vertexbuffer.pos(-0.22, 0.0, 0.22).tex(maxu, maxv).endVertex();
             vertexbuffer.pos(-0.28, -1.5, 0.16).tex(maxu, minv).endVertex();
             vertexbuffer.pos(0.16, -1.5, -0.28).tex(minu, minv).endVertex();
             vertexbuffer.pos(0.22, 0.0, -0.22).tex(minu, maxv).endVertex();
 
-            //Facing bottom left
             vertexbuffer.pos(0.22, 0.0, -0.22).tex(maxu, maxv).endVertex();
             vertexbuffer.pos(0.28, -1.5, -0.16).tex(maxu, minv).endVertex();
             vertexbuffer.pos(-0.16, -1.5, 0.28).tex(minu, minv).endVertex();
             vertexbuffer.pos(-0.22, 0.0, 0.22).tex(minu, maxv).endVertex();
 
-            //Facing bottom right
             vertexbuffer.pos(0.22, 0.0, 0.22).tex(maxu, maxv).endVertex();
             vertexbuffer.pos(0.16, -1.5, 0.28).tex(maxu, minv).endVertex();
             vertexbuffer.pos(-0.28, -1.5, -0.16).tex(minu, minv).endVertex();
             vertexbuffer.pos(-0.22, 0.0, -0.22).tex(minu, maxv).endVertex();
 
             tessellator.draw();
-            GlStateManager.popMatrix();
+
+            //Clear up
             GlStateManager.enableLighting();
+            GlStateManager.popMatrix();
         }
         super.doRender(par1EntitySquid, x, y, z, par8, partialTicks);
     }

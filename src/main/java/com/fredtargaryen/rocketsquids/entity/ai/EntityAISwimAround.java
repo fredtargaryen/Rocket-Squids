@@ -135,6 +135,7 @@ public class EntityAISwimAround extends EntityAIBase
             if(Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
                     && Math.abs(this.squid.motionZ) < 0.005)
             {
+                this.squid.isAirBorne = false;
                 //Last forward swim is as good as finished
                 int randomInt = this.r.nextInt(15);
                 if(randomInt == 0)

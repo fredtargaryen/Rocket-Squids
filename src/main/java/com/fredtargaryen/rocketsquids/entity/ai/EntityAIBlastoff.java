@@ -8,6 +8,9 @@ public class EntityAIBlastOff extends EntityAIBase
     private EntityRocketSquid squid;
     private boolean blastStarted;
     private boolean horizontal;
+    private double prevMotionX;
+    private double prevMotionY;
+    private double prevMotionZ;
 
     public EntityAIBlastOff(EntityRocketSquid ers)
     {
@@ -30,26 +33,41 @@ public class EntityAIBlastOff extends EntityAIBase
         if (this.blastStarted)
         {
             //The squid is part of the way through a blast
-            if((this.horizontal && Math.abs(this.squid.motionX) < 0.006 && Math.abs(this.squid.motionZ) < 0.006) ||
-                    (!this.horizontal && Math.abs(this.squid.motionY) < 0.006))
+            if((this.horizontal
+                    && this.motionHasPeaked(this.prevMotionX, this.squid.motionX)
+                    && this.motionHasPeaked(this.prevMotionZ, this.squid.motionZ))
+                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, this.squid.motionY)))
             {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
+                this.squid.isAirBorne = false;
                 this.blastStarted = false;
                 if(this.squid.getForcedBlast())
                 {
                     this.squid.explode();
                 }
             }
+            else
+            {
+                this.squid.pointToWhereFlying();
+            }
         }
         else
         {
             //Blast has not started yet
             this.squid.setShaking(false);
-            this.squid.addForce(2.875);
-            this.horizontal = Math.abs(this.squid.motionY) < 0.05;
+            this.squid.addForce(2.952);
+            this.horizontal = Math.abs(this.squid.motionY) < 0.08;
             this.blastStarted = true;
         }
+        this.prevMotionX = this.squid.motionX;
+        this.prevMotionY = this.squid.motionY;
+        this.prevMotionZ = this.squid.motionZ;
+    }
+
+    private boolean motionHasPeaked(double prev, double current)
+    {
+        return (prev > 0 && current <= 0) || (prev < 0 && current >= 0);
     }
 }

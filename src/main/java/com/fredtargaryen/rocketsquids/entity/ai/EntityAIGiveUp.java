@@ -24,8 +24,8 @@ public class EntityAIGiveUp extends EntityAIBase
     public void updateTask() {
         if (this.squid.onGround) {
             this.squid.setTargetRotPitch(Math.PI / 2);
-        } else {
-            this.squid.setTargetRotPitch(-Math.PI);
+        } else if(Math.abs(this.squid.motionY) > 0.008){
+            this.squid.pointToWhereFlying();
         }
     }
 }
