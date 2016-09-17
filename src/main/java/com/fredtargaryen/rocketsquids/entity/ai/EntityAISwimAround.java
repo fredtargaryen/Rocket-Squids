@@ -17,14 +17,6 @@ public class EntityAISwimAround extends EntityAIBase
 
     private Random r;
 	
-	/**
-	 * For the test code in updateTask
-	 */
-//	private boolean goHorizontal;
-//    private int currentAngle;
-//    private final double[] angles = new double[]{  Math.PI,     Math.PI * 3 / 4,       Math.PI / 2,    Math.PI / 4,
-//                                                    0.0, -Math.PI / 4,  -Math.PI / 2,   -Math.PI * 3 / 4 };
-
     public EntityAISwimAround(EntityRocketSquid ers)
     {
         super();
@@ -32,7 +24,6 @@ public class EntityAISwimAround extends EntityAIBase
         this.setMutexBits(1);
         this.turning = true;
         this.r = this.squid.getRNG();
-        //this.currentAngle = 0;
     }
 
     @Override
@@ -46,9 +37,9 @@ public class EntityAISwimAround extends EntityAIBase
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
      * Odds:
-     * 1/15 - starts to shake (hands over to EntityAIShake)
-     * 6/15 - repeats action
-     * 8/15 - goes from turning to swimming forward or vice versa
+     * 1/12 - starts to shake (hands over to EntityAIShake)
+     * 4/12 - repeats action
+     * 7/12 - goes from turning to swimming forward or vice versa
      */
     public void updateTask()
     {
@@ -112,12 +103,12 @@ public class EntityAISwimAround extends EntityAIBase
             if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005)
             {
                 //The last turn is as good as finished
-                int randomInt = this.r.nextInt(15);
+                int randomInt = this.r.nextInt(12);
                 if (randomInt == 0)
                 {
                     this.squid.setShaking(true);
                 }
-                else if (randomInt < 7)
+                else if (randomInt < 5)
                 {
                     //Random doubles between -PI and PI, added to current rotation
                     this.squid.setTargetRotPitch(rp + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
@@ -137,12 +128,12 @@ public class EntityAISwimAround extends EntityAIBase
             {
                 this.squid.isAirBorne = false;
                 //Last forward swim is as good as finished
-                int randomInt = this.r.nextInt(15);
+                int randomInt = this.r.nextInt(12);
                 if(randomInt == 0)
                 {
                     this.squid.setShaking(true);
                 }
-                else if(randomInt < 7)
+                else if(randomInt < 5)
                 {
                     this.squid.addForce(0.35);
                 }

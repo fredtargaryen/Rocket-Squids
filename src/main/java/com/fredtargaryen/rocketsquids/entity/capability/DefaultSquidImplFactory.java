@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
  */
 public class DefaultSquidImplFactory implements Callable<ISquidCapability>
 {
+    private static final double doublePi = Math.PI / 2;
     public ISquidCapability call()
     {
         return new DefaultSquidImpl();
@@ -105,13 +106,13 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             //current rotation and brought back in next time this method is called.
             while(this.rotPitch < -Math.PI)
             {
-                this.rotPitch += Math.PI * 2;
-                d += Math.PI * 2;
+                this.rotPitch += doublePi;
+                d += doublePi;
             }
             while(this.rotPitch > Math.PI)
             {
-                this.rotPitch -= Math.PI * 2;
-                d -= Math.PI * 2;
+                this.rotPitch -= doublePi;
+                d -= doublePi;
             }
             this.prevRotPitch = this.rotPitch;
             this.targRotPitch = d;
@@ -131,13 +132,13 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             //current rotation and brought back in next time this method is called.
             while(this.rotYaw < -Math.PI)
             {
-                this.rotYaw += Math.PI * 2;
-                d += Math.PI * 2;
+                this.rotYaw += doublePi;
+                d += doublePi;
             }
             while(this.rotYaw > Math.PI)
             {
-                this.rotYaw -= Math.PI * 2;
-                d -= Math.PI * 2;
+                this.rotYaw -= doublePi;
+                d -= doublePi;
             }
             this.prevRotYaw = this.rotYaw;
             this.targRotYaw = d;

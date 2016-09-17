@@ -68,6 +68,6 @@ public class EntityAIBlastOff extends EntityAIBase
 
     private boolean motionHasPeaked(double prev, double current)
     {
-        return (prev > 0 && current <= 0) || (prev < 0 && current >= 0);
+        return (prev >= 0 && current <= 0) || (prev <= 0 && current >= 0);
     }
 }

@@ -40,8 +40,6 @@ import java.util.List;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
-    public static double flameRadius;
-
     public float tentacleAngle;
     public float lastTentacleAngle;
     private boolean playerRotated;
@@ -63,7 +61,6 @@ public class EntityRocketSquid extends EntityWaterMob
         this.playerRotated = false;
         if(par1World.isRemote) {
             MinecraftForge.EVENT_BUS.register(this);
-            flameRadius = 0.0;
         }
     }
 
@@ -280,7 +277,7 @@ public class EntityRocketSquid extends EntityWaterMob
                     return true;
                 }
                 else if(i == Items.SADDLE)
-
+                {
                     if(!this.getSaddled()) {
                         stack.damageItem(1, player);
                         this.setSaddled(true);
@@ -561,7 +558,13 @@ public class EntityRocketSquid extends EntityWaterMob
     public void pointToWhereFlying()
     {
         if(!(Math.abs(this.motionY) < 0.0785 && this.motionX == 0.0 && this.motionZ == 0.0)) {
-            this.squidCap.setTargetRotPitch(Math.atan2(this.motionY, Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ)));
+            //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.
+            //The global z movement is given by this.motionZ.
+            //In addForce, this.motionZ is given by horizontalForce * cos(yaw).
+            //By rearranging, horizontalForce = this.motionZ / cos(yaw).
+            //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
+            double speed = this.motionZ / Math.cos(this.squidCap.getRotYaw());
+            this.squidCap.setTargetRotPitch(Math.PI / 2 - Math.atan2(this.motionY, speed));
         }
     }
 

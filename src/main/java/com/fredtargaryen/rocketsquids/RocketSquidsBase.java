@@ -1,23 +1,19 @@
 /**
  * Pre-release tasks:
  * Rocket squid moved too quickly. Looks like [2.9375,2.96875) right now; trying 2.952 (check 1 on server)
- *
- * Squids don't fall when placed up a wall
- * Blasting and falling squids don't quite face the way they fall (2)
- *
- * Blasting squids not always stopping the blast when they hit a wall (check 3)
- *
- * Rocket squid moved wrongly! Squids can go so fast they can pass through a solid block
+ * Is offset just before blast dismount really needed? (2)
+ * Rocket squid moved wrongly!
+ * --Squids can go so fast they can pass through a solid block
  *
  * Post-release tasks:
  * Squid firework effect in explosion
  * Good-sized non-griefing explosion for Tubes
- * Try to stop squid bucking when saddled and being ridden on ground
- * --may be related to them not getting off the ground when ridden, or stopping when ridden)
+ * Think about rider interaction; quite difficult right now
  * Try to prevent "vehicle moved too quickly!" so blast speed can be increased
  * Rider yaw adjustment doesn't quite fit the squid rotation
  * VIP riders
- * Is offset just before blast dismount really needed?
+ * Occasional rotation snapping and off-rotation movement - gulp
+ * --Is all rotation on server side?
  */
 
 package com.fredtargaryen.rocketsquids;
