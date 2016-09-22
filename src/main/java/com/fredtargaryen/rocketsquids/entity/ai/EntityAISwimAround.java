@@ -10,6 +10,10 @@ public class EntityAISwimAround extends EntityAIBase
 {
     private EntityRocketSquid squid;
 
+    private boolean goHorizontal = false;
+    private double[] angles = new double[]{-Math.PI, -3*Math.PI / 4, -Math.PI / 2, -Math.PI / 4, 0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4};
+    private int currentAngle;
+
     /**
      * True if turning; false if swimming forwards
      */
@@ -22,8 +26,9 @@ public class EntityAISwimAround extends EntityAIBase
         super();
         this.squid = ers;
         this.setMutexBits(1);
-        this.turning = true;
+        this.turning = false;
         this.r = this.squid.getRNG();
+        this.currentAngle = 0;
     }
 
     @Override
@@ -45,7 +50,6 @@ public class EntityAISwimAround extends EntityAIBase
     {
 		//Code for testing squid swimming and visuals.
 		//If all uncommented, will swim in an octagon without shaking.
-//        this.goHorizontal = false;
 //		if(this.turning)
 //		{
 //            double rp = this.squid.getRotPitch();
@@ -96,7 +100,7 @@ public class EntityAISwimAround extends EntityAIBase
 
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
-        if(turning)
+        if(this.turning)
         {
             double trp = this.squid.getTargRotPitch();
             double Try = this.squid.getTargRotYaw();

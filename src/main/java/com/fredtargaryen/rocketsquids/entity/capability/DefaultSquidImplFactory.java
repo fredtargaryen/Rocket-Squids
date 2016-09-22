@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
  */
 public class DefaultSquidImplFactory implements Callable<ISquidCapability>
 {
-    private static final double doublePi = Math.PI / 2;
+    private static final double doublePi = Math.PI * 2;
     public ISquidCapability call()
     {
         return new DefaultSquidImpl();

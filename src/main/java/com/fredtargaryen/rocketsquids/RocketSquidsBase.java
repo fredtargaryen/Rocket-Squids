@@ -1,19 +1,13 @@
 /**
  * Pre-release tasks:
  * Rocket squid moved too quickly. Looks like [2.9375,2.96875) right now; trying 2.952 (check 1 on server)
- * Is offset just before blast dismount really needed? (2)
- * Rocket squid moved wrongly!
- * --Squids can go so fast they can pass through a solid block
  *
  * Post-release tasks:
  * Squid firework effect in explosion
  * Good-sized non-griefing explosion for Tubes
  * Think about rider interaction; quite difficult right now
  * Try to prevent "vehicle moved too quickly!" so blast speed can be increased
- * Rider yaw adjustment doesn't quite fit the squid rotation
  * VIP riders
- * Occasional rotation snapping and off-rotation movement - gulp
- * --Is all rotation on server side?
  */
 
 package com.fredtargaryen.rocketsquids;

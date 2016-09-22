@@ -208,6 +208,7 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         else
         {
+
             if(this.newPacketRequired)
             {
                 MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
@@ -235,8 +236,10 @@ public class EntityRocketSquid extends EntityWaterMob
     public void addForce(double n)
     {
         if(!this.worldObj.isRemote) {
-            double rp = this.squidCap.getRotPitch();
-            double ry = this.squidCap.getRotYaw();
+            //double rp = this.squidCap.getRotPitch();
+            //double ry = this.squidCap.getRotYaw();
+            double rp = this.squidCap.getTargetRotPitch();
+            double ry = this.squidCap.getTargetRotYaw();
             this.motionY += n * Math.cos(rp);
             double horizontalForce = n * Math.sin(rp);
             this.motionZ += horizontalForce * Math.cos(ry);
@@ -498,8 +501,6 @@ public class EntityRocketSquid extends EntityWaterMob
     public void removePassenger(Entity passenger)
     {
         super.removePassenger(passenger);
-        passenger.prevPosY += 1.0;
-        passenger.posY += 1.0;
         if (this.getBlasting())
         {
             passenger.motionX += this.motionX * 1.5;
@@ -564,7 +565,7 @@ public class EntityRocketSquid extends EntityWaterMob
             //By rearranging, horizontalForce = this.motionZ / cos(yaw).
             //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
             double speed = this.motionZ / Math.cos(this.squidCap.getRotYaw());
-            this.squidCap.setTargetRotPitch(Math.PI / 2 - Math.atan2(this.motionY, speed));
+            this.setTargetRotPitch(Math.PI / 2 - Math.atan2(this.motionY, speed));
         }
     }
 
