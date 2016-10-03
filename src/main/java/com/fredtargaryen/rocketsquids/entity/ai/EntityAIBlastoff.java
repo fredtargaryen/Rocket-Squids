@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 public class EntityAIBlastOff extends EntityAIBase
 {
-    private EntityRocketSquid squid;
+    private final EntityRocketSquid squid;
     private boolean blastStarted;
     private boolean horizontal;
     private double prevMotionX;

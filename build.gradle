@@ -20,7 +20,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "0.1"
+version = "0.9"
 group= "com.fredtargaryen.rocketsquids" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Rocket Squids"
 
@@ -80,7 +80,3 @@ processResources
         exclude 'mcmod.info'
     }
 }
-
-idea { module { inheritOutputDirs = true } }
-
-sourceSets { main { output.resourcesDir = output.classesDir } }

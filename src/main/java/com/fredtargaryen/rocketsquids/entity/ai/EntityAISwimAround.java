@@ -1,25 +1,25 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import net.minecraft.entity.ai.EntityAIBase;
 
 import java.util.Random;
 
 public class EntityAISwimAround extends EntityAIBase
 {
-    private EntityRocketSquid squid;
+    private final EntityRocketSquid squid;
 
-    private boolean goHorizontal = false;
-    private double[] angles = new double[]{-Math.PI, -3*Math.PI / 4, -Math.PI / 2, -Math.PI / 4, 0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4};
-    private int currentAngle;
+    //FOR TESTING
+    //private boolean goHorizontal = false;
+    //private double[] angles = new double[]{-Math.PI, -3*Math.PI / 4, -Math.PI / 2, -Math.PI / 4, 0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4};
+    //private int currentAngle;
 
     /**
      * True if turning; false if swimming forwards
      */
     private boolean turning;
 
-    private Random r;
+    private final Random r;
 	
     public EntityAISwimAround(EntityRocketSquid ers)
     {
@@ -28,7 +28,7 @@ public class EntityAISwimAround extends EntityAIBase
         this.setMutexBits(1);
         this.turning = false;
         this.r = this.squid.getRNG();
-        this.currentAngle = 0;
+        //this.currentAngle = 0;
     }
 
     @Override
@@ -37,7 +37,6 @@ public class EntityAISwimAround extends EntityAIBase
         return this.squid.isInWater() && !this.squid.getShaking() && !this.squid.getBlasting();
     }
 
-    @Override
     /**
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
@@ -46,6 +45,7 @@ public class EntityAISwimAround extends EntityAIBase
      * 4/12 - repeats action
      * 7/12 - goes from turning to swimming forward or vice versa
      */
+    @Override
     public void updateTask()
     {
 		//Code for testing squid swimming and visuals.

@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 public class EntityAIShake extends EntityAIBase
 {
-    private EntityRocketSquid squid;
+    private final EntityRocketSquid squid;
     private int ticksLeft;
 
     public EntityAIShake(EntityRocketSquid ers)

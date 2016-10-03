@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.proxy;
 
 public interface IProxy
 {
-    public void registerRenderers();
+    void registerRenderers();
 
-    public void registerModels();
+    void registerModels();
 }

@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.client.particle.SquidFirework;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastOff;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIShake;
@@ -8,6 +9,9 @@ import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -46,7 +50,7 @@ public class EntityRocketSquid extends EntityWaterMob
 
     private boolean newPacketRequired;
 
-    private ISquidCapability squidCap;
+    private final ISquidCapability squidCap;
 
     //May have to remove and use capability instead
     private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityRocketSquid.class, DataSerializers.BOOLEAN);
@@ -55,8 +59,8 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         super(par1World);
         //Set size of bounding box. par1=length and width; par2=height.
-        //Normal squids are 0.8F, 0.8F.
-        this.setSize(1.1F, 1.1F);
+        //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
+        this.setSize(0.99F, 0.99F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
         this.playerRotated = false;
         if(par1World.isRemote) {
@@ -236,10 +240,8 @@ public class EntityRocketSquid extends EntityWaterMob
     public void addForce(double n)
     {
         if(!this.worldObj.isRemote) {
-            //double rp = this.squidCap.getRotPitch();
-            //double ry = this.squidCap.getRotYaw();
-            double rp = this.squidCap.getTargetRotPitch();
-            double ry = this.squidCap.getTargetRotYaw();
+            double rp = this.squidCap.getRotPitch();
+            double ry = this.squidCap.getRotYaw();
             this.motionY += n * Math.cos(rp);
             double horizontalForce = n * Math.sin(rp);
             this.motionZ += horizontalForce * Math.cos(ry);
@@ -303,34 +305,44 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public void explode()
     {
-        this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
-        int noSacs = 3 + this.rand.nextInt(3);
-        int noTubes = 2 + this.rand.nextInt(3);
-        for(int x = 0; x < noSacs; ++x)
-        {
-            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
-            entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-            entityitem.motionY = -0.2;
-            entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-            this.worldObj.spawnEntityInWorld(entityitem);
+        if(!this.worldObj.isRemote) {
+            this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
+            int noSacs = 3 + this.rand.nextInt(3);
+            int noTubes = 2 + this.rand.nextInt(3);
+            for (int x = 0; x < noSacs; ++x) {
+                EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
+                entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+                entityitem.motionY = -0.2;
+                entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+                this.worldObj.spawnEntityInWorld(entityitem);
+            }
+            for (int x = 0; x < noTubes; ++x) {
+                EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
+                entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+                entityitem.motionY = -0.2;
+                entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
+                this.worldObj.spawnEntityInWorld(entityitem);
+            }
         }
-        for(int x = 0; x < noTubes; ++x)
-        {
-            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
-            entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-            entityitem.motionY = -0.2;
-            entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-            this.worldObj.spawnEntityInWorld(entityitem);
-        }
-//        NBTTagCompound onlyFirework = new NBTTagCompound();
-//        //Set data in onlyFirework
-//        onlyFirework.setBoolean("Flicker", true);
-//        NBTTagList squidTag = new NBTTagList();
-//        squidTag.addTag(onlyFirework);
-//        NBTTagCompound finalCompound = new NBTTagCompound();
-//        finalCompound.setTagList("Explosions", squidTag);
-//        this.worldObj.makeFireworks(this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0, finalCompound);
         this.setDead();
+    }
+
+    @Override
+    public void setDead()
+    {
+        if(this.worldObj.isRemote && this.squidCap.getForcedBlast())
+        {
+            this.doFireworkParticles();
+        }
+        super.setDead();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void doFireworkParticles()
+    {
+        ParticleManager effectRenderer = Minecraft.getMinecraft().effectRenderer;
+        effectRenderer.addEffect(new SquidFirework(
+                (WorldClient) this.worldObj, this.posX, this.posY, this.posZ, effectRenderer));
     }
 
     /**
@@ -451,7 +463,7 @@ public class EntityRocketSquid extends EntityWaterMob
     /**
      * Set or remove the saddle of the pig.
      */
-    public void setSaddled(boolean saddled)
+    private void setSaddled(boolean saddled)
     {
         if (saddled)
         {

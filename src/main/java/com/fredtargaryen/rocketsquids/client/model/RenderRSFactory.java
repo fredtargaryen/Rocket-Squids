@@ -10,6 +10,6 @@ public class RenderRSFactory implements IRenderFactory<EntityRocketSquid>
     @Override
     public Render<? super EntityRocketSquid> createRenderFor(RenderManager manager)
     {
-        return new RenderRS(manager, new ModelRocketSquid(), 0.5F);
+        return new RenderRS(manager, new ModelRocketSquid());
     }
 }

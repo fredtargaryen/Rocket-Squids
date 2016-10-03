@@ -17,9 +17,9 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rs.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rsb.png");
 
-    public RenderRS(RenderManager rm, ModelRocketSquid model, float shadowSize)
+    public RenderRS(RenderManager rm, ModelRocketSquid model)
     {
-        super(rm, model, shadowSize);
+        super(rm, model, 0.99F);
     }
 
     /**

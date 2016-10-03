@@ -2,7 +2,6 @@ package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;

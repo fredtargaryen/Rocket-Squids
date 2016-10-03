@@ -1,15 +1,11 @@
 /**
- * Pre-release tasks:
- * Rocket squid moved too quickly. Looks like [2.9375,2.96875) right now; trying 2.952 (check 1 on server)
- *
- * Post-release tasks:
- * Squid firework effect in explosion
- * Good-sized non-griefing explosion for Tubes
+ * Rocket Squids may go through floor when spawned
+ * Occasional "Rocket Squid moved wrongly!"
+ * Will they push boats?
  * Think about rider interaction; quite difficult right now
- * Try to prevent "vehicle moved too quickly!" so blast speed can be increased
+ * Good-sized non-griefing explosion for Tubes
  * VIP riders
  */
-
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
@@ -25,6 +21,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.init.Biomes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -64,6 +61,19 @@ public class RocketSquidsBase
      */
     public static Item nitroinksac;
     public static Item turbotube;
+
+    /**
+     * A custom firework that looks like a Rocket Squid.
+     * Firework structure:
+     * TagCompound          (firework)
+     * |_TagList            (list, "Explosions")
+     *   |_TagCompound      (Single firework part)
+     *     |_TagBoolean     ("Trail")
+     *     |_TagBoolean     ("Flicker")
+     *     |_TagIntArray    ("Colors")
+     *     |_TagIntArray    ("FadeColors")
+     */
+    public static final NBTTagCompound firework = new NBTTagCompound();
 	
     /**   
      * Says where the client and server 'proxy' code is loaded.
@@ -113,6 +123,10 @@ public class RocketSquidsBase
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        //Capability
+        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
+        MinecraftForge.EVENT_BUS.register(this);
+
         //CONFIG SETUP
         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
@@ -137,9 +151,15 @@ public class RocketSquidsBase
 
         proxy.registerRenderers();
 
-        //Capability
-        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
-        MinecraftForge.EVENT_BUS.register(this);
+        //Make the firework
+        NBTTagList list = new NBTTagList();
+            NBTTagCompound f1 = new NBTTagCompound();
+            f1.setBoolean("Flicker", false);
+            f1.setBoolean("Trail", false);
+            f1.setIntArray("Colors", new int[]{15435844});
+            f1.setIntArray("FadeColors", new int[]{6719955});
+        list.appendTag(f1);
+        firework.setTag("Explosions", list);
     }
         
     @Mod.EventHandler

@@ -7,17 +7,17 @@ import net.minecraft.entity.Entity;
 
 public class ModelRocketSquid extends ModelBase
 {
-    private ModelRenderer Head;
-    private ModelRenderer Tent0;
-    private ModelRenderer Tent1;
-    private ModelRenderer Tent2;
-    private ModelRenderer Tent3;
-    private ModelRenderer Tent4;
-    private ModelRenderer Tent7;
-    private ModelRenderer Tent6;
-    private ModelRenderer Tent5;
-    private ModelRenderer Saddle;
-    private ModelRenderer Straps;
+    private final ModelRenderer Head;
+    private final ModelRenderer Tent0;
+    private final ModelRenderer Tent1;
+    private final ModelRenderer Tent2;
+    private final ModelRenderer Tent3;
+    private final ModelRenderer Tent4;
+    private final ModelRenderer Tent7;
+    private final ModelRenderer Tent6;
+    private final ModelRenderer Tent5;
+    private final ModelRenderer Saddle;
+    private final ModelRenderer Straps;
   
     public ModelRocketSquid()
     {

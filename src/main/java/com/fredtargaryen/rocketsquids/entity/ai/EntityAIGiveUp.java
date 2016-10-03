@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 
 public class EntityAIGiveUp extends EntityAIBase
 {
-    private EntityRocketSquid squid;
+    private final EntityRocketSquid squid;
 
     public EntityAIGiveUp(EntityRocketSquid ers)
     {
