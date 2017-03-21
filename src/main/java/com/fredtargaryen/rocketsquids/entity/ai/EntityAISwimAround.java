@@ -20,14 +20,16 @@ public class EntityAISwimAround extends EntityAIBase
     private boolean turning;
 
     private final Random r;
-	
-    public EntityAISwimAround(EntityRocketSquid ers)
+	private final double swimForce;
+
+    public EntityAISwimAround(EntityRocketSquid ers, double swimForce)
     {
         super();
         this.squid = ers;
         this.setMutexBits(1);
         this.turning = false;
         this.r = this.squid.getRNG();
+        this.swimForce = swimForce;
         //this.currentAngle = 0;
     }
 
@@ -120,7 +122,7 @@ public class EntityAISwimAround extends EntityAIBase
                 }
                 else
                 {
-                    this.squid.addForce(0.35);
+                    this.squid.addForce(this.swimForce);
                     this.turning = false;
                 }
             }
@@ -139,7 +141,7 @@ public class EntityAISwimAround extends EntityAIBase
                 }
                 else if(randomInt < 5)
                 {
-                    this.squid.addForce(0.35);
+                    this.squid.addForce(this.swimForce);
                 }
                 else
                 {

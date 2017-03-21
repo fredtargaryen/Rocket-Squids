@@ -51,6 +51,8 @@ public class EntityRocketSquid extends EntityWaterMob
     private boolean newPacketRequired;
 
     private final ISquidCapability squidCap;
+    protected boolean isBaby;
+    protected short breedCooldown;
 
     //May have to remove and use capability instead
     private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityRocketSquid.class, DataSerializers.BOOLEAN);
@@ -66,6 +68,7 @@ public class EntityRocketSquid extends EntityWaterMob
         if(par1World.isRemote) {
             MinecraftForge.EVENT_BUS.register(this);
         }
+        this.isBaby = false;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class EntityRocketSquid extends EntityWaterMob
         super.initEntityAI();
         this.tasks.addTask(0, new EntityAIBlastOff(this));
         this.tasks.addTask(1, new EntityAIShake(this));
-        this.tasks.addTask(2, new EntityAISwimAround(this));
+        this.tasks.addTask(2, new EntityAISwimAround(this, 0.35));
         this.tasks.addTask(3, new EntityAIGiveUp(this));
     }
 
@@ -212,7 +215,10 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         else
         {
-
+            if(this.breedCooldown > 0)
+            {
+                --this.breedCooldown;
+            }
             if(this.newPacketRequired)
             {
                 MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
@@ -262,7 +268,7 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if(!this.worldObj.isRemote)
+        if(!this.isBaby && !this.worldObj.isRemote)
         {
             if(stack == null)
             {
@@ -354,7 +360,13 @@ public class EntityRocketSquid extends EntityWaterMob
         if(passenger == null || passenger != obstacle)
         {
             //Obstacle is not the rider, so apply collision
-            if (!obstacle.noClip && !this.noClip) {
+            if (!obstacle.noClip && !this.noClip)
+            {
+                if(!this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0)
+                {
+                    this.breedCooldown = 3600;
+                    this.worldObj.spawnEntityInWorld(new EntityBabyRocketSquid(this.worldObj));
+                }
                 double xDist = obstacle.posX - this.posX;
                 double zDist = obstacle.posZ - this.posZ;
                 double yDist = obstacle.posY - this.posY;
@@ -461,7 +473,7 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     /**
-     * Set or remove the saddle of the pig.
+     * Set or remove the saddle of the squid.
      */
     private void setSaddled(boolean saddled)
     {
@@ -559,6 +571,7 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         super.writeEntityToNBT(compound);
         compound.setBoolean("Saddle", this.getSaddled());
+        compound.setShort("Breed Cooldown", this.breedCooldown);
     }
 
     @Override
@@ -566,6 +579,7 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         super.readEntityFromNBT(compound);
         this.setSaddled(compound.getBoolean("Saddle"));
+        this.breedCooldown = compound.getShort("Breed Cooldown");
     }
 
     public void pointToWhereFlying()

@@ -3,6 +3,7 @@ package com.fredtargaryen.rocketsquids.proxy;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.model.*;
+import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
@@ -18,9 +19,10 @@ public class ClientProxy extends CommonProxy
 {
     public void registerRenderers()
     {
-        RenderingRegistry.registerEntityRenderingHandler(EntityRocketSquid.class, new RenderRSFactory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityRocketSquid.class, new RenderRSFactory((byte) 1));
         RenderingRegistry.registerEntityRenderingHandler(EntityThrownSac.class, new RenderSacFactory());
         RenderingRegistry.registerEntityRenderingHandler(EntityThrownTube.class, new RenderTubeFactory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityBabyRocketSquid.class, new RenderRSFactory((byte) 0));
     }
 
     @Override

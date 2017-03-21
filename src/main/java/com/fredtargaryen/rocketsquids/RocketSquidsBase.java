@@ -1,13 +1,17 @@
 /**
  * Rocket Squids may go through floor when spawned
  * Occasional "Rocket Squid moved wrongly!"
- * Will they push boats?
+ * Will they push boats? (check)
  * Think about rider interaction; quite difficult right now
  * Good-sized non-griefing explosion for Tubes
  * VIP riders
+ * Babies (check)
+ * Leashing (check)
+ * Mega
  */
 package com.fredtargaryen.rocketsquids;
 
+import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
@@ -170,6 +174,7 @@ public class RocketSquidsBase
         EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
         EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
         EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
 
         //Other Rocket Squid info
         EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
