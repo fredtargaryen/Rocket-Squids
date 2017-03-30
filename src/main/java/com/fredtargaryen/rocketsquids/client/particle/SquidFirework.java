@@ -75,7 +75,7 @@ public class SquidFirework extends Particle
                 soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_BLAST;
             }
 
-            this.worldObj.playSound(this.posX, this.posY, this.posZ, soundevent1, SoundCategory.AMBIENT, 20.0F, 0.95F + this.rand.nextFloat() * 0.1F, true);
+            this.world.playSound(this.posX, this.posY, this.posZ, soundevent1, SoundCategory.AMBIENT, 20.0F, 0.95F + this.rand.nextFloat() * 0.1F, true);
         }
 
         if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.tagCount())
@@ -107,7 +107,7 @@ public class SquidFirework extends Particle
             float f = (float)((j & 16711680) >> 16) / 255.0F;
             float f1 = (float)((j & 65280) >> 8) / 255.0F;
             float f2 = (float)(j & 255) / 255.0F;
-            OverlayCopy o = new OverlayCopy(this.worldObj, this.posX, this.posY, this.posZ);
+            OverlayCopy o = new OverlayCopy(this.world, this.posX, this.posY, this.posZ);
             o.setRBGColorF(f, f1, f2);
             this.effects.addEffect(o);
         }
@@ -118,7 +118,7 @@ public class SquidFirework extends Particle
         {
             boolean flag3 = this.isFarFromCamera();
             SoundEvent soundevent = flag3 ? SoundEvents.ENTITY_FIREWORK_TWINKLE_FAR : SoundEvents.ENTITY_FIREWORK_TWINKLE;
-            this.worldObj.playSound(this.posX, this.posY, this.posZ, soundevent, SoundCategory.AMBIENT, 20.0F, 0.9F + this.rand.nextFloat() * 0.15F, true);
+            this.world.playSound(this.posX, this.posY, this.posZ, soundevent, SoundCategory.AMBIENT, 20.0F, 0.9F + this.rand.nextFloat() * 0.15F, true);
             this.setExpired();
         }
     }
@@ -172,7 +172,7 @@ public class SquidFirework extends Particle
      */
     private void createParticle(double p_92034_1_, double p_92034_3_, double p_92034_5_, double p_92034_7_, double p_92034_9_, double p_92034_11_, int[] p_92034_13_, int[] p_92034_14_, boolean p_92034_15_, boolean p_92034_16_)
     {
-        ParticleFirework.Spark particlefirework$spark = new ParticleFirework.Spark(this.worldObj, p_92034_1_, p_92034_3_, p_92034_5_, p_92034_7_, p_92034_9_, p_92034_11_, this.effects);
+        ParticleFirework.Spark particlefirework$spark = new ParticleFirework.Spark(this.world, p_92034_1_, p_92034_3_, p_92034_5_, p_92034_7_, p_92034_9_, p_92034_11_, this.effects);
         particlefirework$spark.setAlphaF(0.99F);
         particlefirework$spark.setTrail(p_92034_15_);
         particlefirework$spark.setTwinkle(p_92034_16_);

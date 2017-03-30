@@ -19,10 +19,10 @@ public class ClientProxy extends CommonProxy
 {
     public void registerRenderers()
     {
-        RenderingRegistry.registerEntityRenderingHandler(EntityRocketSquid.class, new RenderRSFactory((byte) 1));
+        RenderingRegistry.registerEntityRenderingHandler(EntityRocketSquid.class, new RenderRSFactory());
         RenderingRegistry.registerEntityRenderingHandler(EntityThrownSac.class, new RenderSacFactory());
         RenderingRegistry.registerEntityRenderingHandler(EntityThrownTube.class, new RenderTubeFactory());
-        RenderingRegistry.registerEntityRenderingHandler(EntityBabyRocketSquid.class, new RenderRSFactory((byte) 0));
+        RenderingRegistry.registerEntityRenderingHandler(EntityBabyRocketSquid.class, new RenderBabyRSFactory());
     }
 
     @Override

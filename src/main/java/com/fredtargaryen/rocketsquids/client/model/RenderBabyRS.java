@@ -12,8 +12,10 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/brs.png");
     public RenderBabyRS(RenderManager rm, ModelBabyRocketSquid model)
     {
-        super(rm, model, 0.5F);
+        super(rm, model, 0.2F);
     }
+    public static float BEFORE_ROT_OFFSET = 0.0F;
+    public static float AFTER_ROT_OFFSET = 0.0F;
 
     /**
      * Defines what float the third param in setRotationAngles of ModelBase is
@@ -26,7 +28,7 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
     }
 
     @Override
-    protected void rotateCorpse(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks)
+    protected void applyRotations(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks)
     {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();

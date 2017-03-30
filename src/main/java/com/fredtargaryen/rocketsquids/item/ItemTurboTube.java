@@ -24,11 +24,12 @@ public class ItemTurboTube extends Item
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+        ItemStack stack = player.getHeldItem(hand);
         if (!player.capabilities.isCreativeMode)
         {
-            --par1ItemStack.stackSize;
+            stack.grow(-1);
         }
 
         world.playSound(null, player.posX, player.posY, player.posZ,
@@ -37,8 +38,8 @@ public class ItemTurboTube extends Item
         {
             EntityThrownTube tube = new EntityThrownTube(world, player);
             tube.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
-            world.spawnEntityInWorld(tube);
+            world.spawnEntity(tube);
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, par1ItemStack);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 }

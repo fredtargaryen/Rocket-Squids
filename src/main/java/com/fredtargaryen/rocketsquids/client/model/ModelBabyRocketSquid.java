@@ -100,9 +100,9 @@ public class ModelBabyRocketSquid extends ModelBase
         model.rotateAngleZ = z;
     }
 
-    public void setRotationAngles(float time, float maxSpeed, float f2, float whatever, float rotationYaw, float rotationPitch, Entity entity)
+    public void setRotationAngles(float time, float maxSpeed, float whatever, float rotationYaw, float rotationPitch, float scale, Entity entity)
     {
-        super.setRotationAngles(time, maxSpeed, f2, whatever, rotationYaw, rotationPitch, entity);
+        super.setRotationAngles(time, maxSpeed, whatever, rotationYaw, rotationPitch, scale, entity);
         this.Tent1.rotateAngleX = whatever;
         this.Tent2.rotateAngleX = whatever;
         this.Tent3.rotateAngleX = whatever;

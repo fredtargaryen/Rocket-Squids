@@ -1,12 +1,18 @@
 /**
- * Rocket Squids may go through floor when spawned
- * Occasional "Rocket Squid moved wrongly!"
+ * BUGS
  * Will they push boats? (check)
+ * Babies very off-center(2, 3)
+ * Babies don't age
+ * Leads break when blasting
+ * -Do they keep squids nearby when they're not blasting? (check)
+ * Take-off sound
+ * Squids skid too far on ground
+ * Rocket Squids may go through floor when spawned (rare)
+ * "Rocket Squid moved wrongly!" (rare)
+ * FEATURES
  * Think about rider interaction; quite difficult right now
  * Good-sized non-griefing explosion for Tubes
  * VIP riders
- * Babies (check)
- * Leashing (check)
  * Mega
  */
 package com.fredtargaryen.rocketsquids;
@@ -27,6 +33,7 @@ import net.minecraft.init.Biomes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -170,17 +177,20 @@ public class RocketSquidsBase
     public void Init(FMLInitializationEvent event)
     {
         //Register Entities with EntityRegistry
+        ResourceLocation squidResourceLocation = new ResourceLocation(DataReference.MODID+":rocketsquid");
+        ResourceLocation babySquidResourceLocation = new ResourceLocation(DataReference.MODID+":babyrocketsquid");
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
-        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(squidResourceLocation, EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":nitroinksac"), EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":turbotube"), EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(babySquidResourceLocation, EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
 
         //Other Rocket Squid info
         EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
                 Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
         EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
-        EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
+        EntityRegistry.registerEgg(squidResourceLocation, 9838110, 16744192);
+        EntityRegistry.registerEgg(babySquidResourceLocation, 9838110, 16744192);
 
         //Register items
         GameRegistry.register(nitroinksac);

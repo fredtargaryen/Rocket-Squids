@@ -34,7 +34,7 @@ public class MessageSquidCapData implements IMessage, IMessageHandler<MessageSqu
             @Override
             public void run()
             {
-                List<Entity> l = Minecraft.getMinecraft().theWorld.getLoadedEntityList();
+                List<Entity> l = Minecraft.getMinecraft().world.getLoadedEntityList();
                 Iterator<Entity> squidFinder = l.iterator();
                 Entity e;
                 while(squidFinder.hasNext())

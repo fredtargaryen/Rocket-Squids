@@ -14,6 +14,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -123,7 +124,7 @@ public class EntityRocketSquid extends EntityWaterMob
             {
                 this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
             }
-            else if (!this.func_189652_ae())
+            else if (!this.hasNoGravity())
             {
                 this.motionY -= 0.08D;
             }
@@ -167,7 +168,7 @@ public class EntityRocketSquid extends EntityWaterMob
             this.newPacketRequired = true;
         }
 
-        if(this.worldObj.isRemote)
+        if(this.world.isRemote)
         {
             //Client side
             //Handles tentacle angles
@@ -202,14 +203,14 @@ public class EntityRocketSquid extends EntityWaterMob
                     double largerX = this.posX + 0.25;
                     double smallerZ = this.posZ - 0.25;
                     double largerZ = this.posZ + 0.25;
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
                 }
                 else
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
                 }
             }
         }
@@ -234,7 +235,7 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     public void moveEntityWithHeading(float par1, float par2)
     {
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
 
     @Override
@@ -245,7 +246,7 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public void addForce(double n)
     {
-        if(!this.worldObj.isRemote) {
+        if(!this.world.isRemote) {
             double rp = this.squidCap.getRotPitch();
             double ry = this.squidCap.getRotYaw();
             this.motionY += n * Math.cos(rp);
@@ -265,11 +266,21 @@ public class EntityRocketSquid extends EntityWaterMob
         return null;
     }
 
+    /**
+     * Returns the sound this mob makes when it dies.
+     */
     @Override
-    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    protected SoundEvent getDeathSound()
     {
-        if(!this.isBaby && !this.worldObj.isRemote)
+        return null;
+    }
+
+    @Override
+    protected boolean processInteract(EntityPlayer player, EnumHand hand)
+    {
+        if(!this.isBaby && !this.world.isRemote)
         {
+            ItemStack stack = player.getHeldItem(hand);
             if(stack == null)
             {
                 if (this.getSaddled() && !this.isBeingRidden())
@@ -311,23 +322,23 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public void explode()
     {
-        if(!this.worldObj.isRemote) {
-            this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
+        if(!this.world.isRemote) {
+            this.world.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
             int noSacs = 3 + this.rand.nextInt(3);
             int noTubes = 2 + this.rand.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
-                EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
+                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
                 entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 entityitem.motionY = -0.2;
                 entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-                this.worldObj.spawnEntityInWorld(entityitem);
+                this.world.spawnEntity(entityitem);
             }
             for (int x = 0; x < noTubes; ++x) {
-                EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
+                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
                 entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 entityitem.motionY = -0.2;
                 entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-                this.worldObj.spawnEntityInWorld(entityitem);
+                this.world.spawnEntity(entityitem);
             }
         }
         this.setDead();
@@ -336,7 +347,7 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     public void setDead()
     {
-        if(this.worldObj.isRemote && this.squidCap.getForcedBlast())
+        if(this.world.isRemote && this.squidCap.getForcedBlast())
         {
             this.doFireworkParticles();
         }
@@ -348,7 +359,7 @@ public class EntityRocketSquid extends EntityWaterMob
     {
         ParticleManager effectRenderer = Minecraft.getMinecraft().effectRenderer;
         effectRenderer.addEffect(new SquidFirework(
-                (WorldClient) this.worldObj, this.posX, this.posY, this.posZ, effectRenderer));
+                (WorldClient) this.world, this.posX, this.posY, this.posZ, effectRenderer));
     }
 
     /**
@@ -362,18 +373,20 @@ public class EntityRocketSquid extends EntityWaterMob
             //Obstacle is not the rider, so apply collision
             if (!obstacle.noClip && !this.noClip)
             {
-                if(!this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0)
+                if(!this.world.isRemote && !this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0)
                 {
                     this.breedCooldown = 3600;
-                    this.worldObj.spawnEntityInWorld(new EntityBabyRocketSquid(this.worldObj));
+                    EntityBabyRocketSquid baby = new EntityBabyRocketSquid(this.world);
+                    baby.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+                    this.world.spawnEntity(baby);
                 }
                 double xDist = obstacle.posX - this.posX;
                 double zDist = obstacle.posZ - this.posZ;
                 double yDist = obstacle.posY - this.posY;
-                double largerDist = MathHelper.abs_max(xDist, MathHelper.abs_max(yDist, zDist));
+                double largerDist = MathHelper.absMax(xDist, MathHelper.absMax(yDist, zDist));
 
                 if (largerDist >= 0.009999999776482582D) {
-                    largerDist = (double) MathHelper.sqrt_double(largerDist);
+                    largerDist = (double) MathHelper.sqrt(largerDist);
                     xDist /= largerDist;
                     yDist /= largerDist;
                     zDist /= largerDist;
