@@ -19,7 +19,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
 
     public RenderRS(RenderManager rm, ModelRocketSquid model)
     {
-        super(rm, model, 0.99F);
+        super(rm, model, 0.9F);
     }
 
     /**

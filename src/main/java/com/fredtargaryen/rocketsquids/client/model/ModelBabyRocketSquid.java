@@ -74,7 +74,7 @@ public class ModelBabyRocketSquid extends ModelBase
         Tent8.setRotationPoint(-1F, 4F, 0.5F);
         Tent8.setTextureSize(32, 32);
         Tent8.mirror = true;
-        setRotation(Tent8, 0F, 1.570796F, 0F);
+        setRotation(Tent8, 0F, -1.570796F, 0F);
     }
 
     @Override

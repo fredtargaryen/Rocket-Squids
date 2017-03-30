@@ -12,7 +12,7 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/brs.png");
     public RenderBabyRS(RenderManager rm, ModelBabyRocketSquid model)
     {
-        super(rm, model, 0.2F);
+        super(rm, model, 0.4F);
     }
     public static float BEFORE_ROT_OFFSET = 0.0F;
     public static float AFTER_ROT_OFFSET = 0.0F;
@@ -36,10 +36,12 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
         float exactPitch = (float) ((prp + (rp - prp) * partialTicks) * 180 / Math.PI);
         double pry = ers.getPrevRotYaw();
         float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
-        GlStateManager.translate(0.0F, 0.5F, 0.0F);
+        //Previously 0.5F
+        GlStateManager.translate(0.0F, 0.15F + BEFORE_ROT_OFFSET, 0.0F);
         GlStateManager.rotate(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(exactPitch, -1.0F, 0.0F, 0.0F);
-        GlStateManager.translate(0.0F, -1.2F, 0.0F);
+        //Previously 1.2F
+        GlStateManager.translate(0.0F, -1.3F + AFTER_ROT_OFFSET, 0.0F);
     }
 
     @Override

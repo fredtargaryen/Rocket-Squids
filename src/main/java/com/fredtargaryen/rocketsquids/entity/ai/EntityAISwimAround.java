@@ -1,7 +1,9 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.Random;
 
@@ -39,12 +41,42 @@ public class EntityAISwimAround extends EntityAIBase
         return this.squid.isInWater() && !this.squid.getShaking() && !this.squid.getBlasting();
     }
 
+    //Later check rider name
+    private boolean hasVIPRider()
+    {
+        Entity passenger = this.squid.getControllingPassenger();
+        if(passenger != null && passenger instanceof EntityPlayer)
+        {
+            return true;
+            //return passenger.getName().equals("Djymne");
+        }
+        return false;
+    }
+
+    public void doTurn()
+    {
+        if(this.hasVIPRider())
+        {
+            Entity pass = this.squid.getControllingPassenger();
+            this.squid.setTargetRotPitch(pass.rotationPitch);
+            this.squid.setTargetRotYaw(pass.getRotationYawHead());
+        }
+        else {
+            //Random doubles between -PI and PI, added to current rotation
+            this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+            this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+        }
+    }
+
     /**
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
-     * Odds:
+     * Adult odds:
      * 1/12 - starts to shake (hands over to EntityAIShake)
      * 4/12 - repeats action
+     * 7/12 - goes from turning to swimming forward or vice versa
+     * Baby odds:
+     * 5/12 - repeats action
      * 7/12 - goes from turning to swimming forward or vice versa
      */
     @Override
@@ -110,15 +142,13 @@ public class EntityAISwimAround extends EntityAIBase
             {
                 //The last turn is as good as finished
                 int randomInt = this.r.nextInt(12);
-                if (randomInt == 0)
+                if (!this.squid.isBaby() && randomInt == 0)
                 {
                     this.squid.setShaking(true);
                 }
                 else if (randomInt < 5)
                 {
-                    //Random doubles between -PI and PI, added to current rotation
-                    this.squid.setTargetRotPitch(rp + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
-                    this.squid.setTargetRotYaw(ry + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+                    this.doTurn();
                 }
                 else
                 {
@@ -135,7 +165,7 @@ public class EntityAISwimAround extends EntityAIBase
                 this.squid.isAirBorne = false;
                 //Last forward swim is as good as finished
                 int randomInt = this.r.nextInt(12);
-                if(randomInt == 0)
+                if(!this.squid.isBaby() && randomInt == 0)
                 {
                     this.squid.setShaking(true);
                 }
@@ -145,8 +175,7 @@ public class EntityAISwimAround extends EntityAIBase
                 }
                 else
                 {
-                    this.squid.setTargetRotPitch(rp + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
-                    this.squid.setTargetRotYaw(ry + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+                    this.doTurn();
                     this.turning = true;
                 }
             }

@@ -96,6 +96,11 @@ public class EntityRocketSquid extends EntityWaterMob
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
     }
 
+    public boolean isBaby()
+    {
+        return this.isBaby;
+    }
+
     @Override
     protected Item getDropItem(){return RocketSquidsBase.nitroinksac;}
 

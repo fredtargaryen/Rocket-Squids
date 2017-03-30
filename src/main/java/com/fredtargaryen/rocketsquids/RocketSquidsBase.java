@@ -1,8 +1,10 @@
 /**
  * BUGS
- * Will they push boats? (check)
- * Babies very off-center(2, 3)
- * Babies don't age
+ * Baby centre is end of the tentacles (1, 2)
+ * Babies don't spawn new squid when aging(3)
+ * Squid not turning correctly with VIP rider (5, 6)
+ * ---SOLVE ABOVE FIRST---
+ * Will they push boats?
  * Leads break when blasting
  * -Do they keep squids nearby when they're not blasting? (check)
  * Take-off sound
@@ -12,8 +14,8 @@
  * FEATURES
  * Think about rider interaction; quite difficult right now
  * Good-sized non-griefing explosion for Tubes
- * VIP riders
  * Mega
+ * Squid rolling?
  */
 package com.fredtargaryen.rocketsquids;
 

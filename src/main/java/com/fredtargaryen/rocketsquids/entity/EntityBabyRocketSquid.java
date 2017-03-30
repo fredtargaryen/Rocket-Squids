@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.entity;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.model.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
@@ -19,7 +20,7 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     public EntityBabyRocketSquid(World w)
     {
         super(w);
-        this.setSize(0.2F, 0.2F);
+        this.setSize(0.4F, 0.4F);
         if(w.isRemote)
         {
             MinecraftForge.EVENT_BUS.unregister(this);
@@ -64,7 +65,7 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     public void onLivingUpdate()
     {
         super.onLivingUpdate();
-        if(this.entityAge == 180)
+        if(this.entityAge == 10)
         {
             if(!this.world.isRemote)
             {
@@ -108,4 +109,10 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
         }
         return true;
     }
+
+    @Override
+    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {}
+
+    @Override
+    protected Item getDropItem(){return null;}
 }
