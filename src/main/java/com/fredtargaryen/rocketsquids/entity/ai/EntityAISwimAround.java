@@ -41,25 +41,13 @@ public class EntityAISwimAround extends EntityAIBase
         return this.squid.isInWater() && !this.squid.getShaking() && !this.squid.getBlasting();
     }
 
-    //Later check rider name
-    private boolean hasVIPRider()
-    {
-        Entity passenger = this.squid.getControllingPassenger();
-        if(passenger != null && passenger instanceof EntityPlayer)
-        {
-            return true;
-            //return passenger.getName().equals("Djymne");
-        }
-        return false;
-    }
-
     public void doTurn()
     {
-        if(this.hasVIPRider())
+        if(this.squid.hasVIPRider())
         {
             Entity pass = this.squid.getControllingPassenger();
-            this.squid.setTargetRotPitch(pass.rotationPitch);
-            this.squid.setTargetRotYaw(pass.getRotationYawHead());
+            this.squid.setTargetRotPitch((pass.rotationPitch + 90.0F) * Math.PI / 180.0F);
+            this.squid.setTargetRotYaw(pass.getRotationYawHead() * Math.PI / 180.0F);
         }
         else {
             //Random doubles between -PI and PI, added to current rotation

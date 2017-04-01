@@ -19,13 +19,14 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
     {
         private boolean shaking;
         private boolean blasting;
+        private boolean forcedBlast;
+        //ALL RADIANS
         private double prevRotPitch;
         private double prevRotYaw;
         private double rotPitch;
         private double rotYaw;
         private double targRotPitch;
         private double targRotYaw;
-        private boolean forcedBlast;
 
         public DefaultSquidImpl()
         {

@@ -1,9 +1,5 @@
 /**
  * BUGS
- * Baby centre is end of the tentacles (1, 2)
- * Babies don't spawn new squid when aging(3)
- * Squid not turning correctly with VIP rider (5, 6)
- * ---SOLVE ABOVE FIRST---
  * Will they push boats?
  * Leads break when blasting
  * -Do they keep squids nearby when they're not blasting? (check)
@@ -11,6 +7,8 @@
  * Squids skid too far on ground
  * Rocket Squids may go through floor when spawned (rare)
  * "Rocket Squid moved wrongly!" (rare)
+ * Remove offset stuff in EntityBabyRocketSquid and RenderBabyRS(5, 6, 7)
+ * Change VIP check (8)
  * FEATURES
  * Think about rider interaction; quite difficult right now
  * Good-sized non-griefing explosion for Tubes

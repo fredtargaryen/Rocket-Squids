@@ -65,49 +65,16 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     public void onLivingUpdate()
     {
         super.onLivingUpdate();
-        if(this.entityAge == 10)
+        if(this.ticksExisted > 72000)
         {
             if(!this.world.isRemote)
             {
                 this.setDead();
                 EntityRocketSquid adult = new EntityRocketSquid(this.world);
-                adult.setPositionAndRotation(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+                adult.setLocationAndAngles(this.posX, this.posY, this.posZ, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
                 this.world.spawnEntity(adult);
             }
         }
-    }
-
-    @Override
-    protected boolean processInteract(EntityPlayer player, EnumHand hand)
-    {
-        if(!this.world.isRemote) {
-            ItemStack stack = player.getHeldItem(hand);
-            if (!stack.isEmpty()) {
-                Item i = stack.getItem();
-                if(i == Items.APPLE)
-                {
-                    //Increase before offset
-                    RenderBabyRS.BEFORE_ROT_OFFSET += 0.1F;
-                }
-                else if(i == Items.BEETROOT)
-                {
-                    //Decrease before offset
-                    RenderBabyRS.BEFORE_ROT_OFFSET -= 0.1F;
-                }
-                else if(i == Items.COMPASS)
-                {
-                    //Increase after offset
-                    RenderBabyRS.AFTER_ROT_OFFSET += 0.1F;
-                }
-                else if(i == Items.CLOCK)
-                {
-                    //Decrease after offset
-                    RenderBabyRS.AFTER_ROT_OFFSET -= 0.1F;
-                }
-                System.out.println("'Before' offset: "+RenderBabyRS.BEFORE_ROT_OFFSET+"; 'After' offset: "+RenderBabyRS.AFTER_ROT_OFFSET);
-            }
-        }
-        return true;
     }
 
     @Override

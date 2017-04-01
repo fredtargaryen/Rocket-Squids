@@ -414,8 +414,9 @@ public class EntityRocketSquid extends EntityWaterMob
             }
         }
     }
-
-    //RIDING METHODS
+    //////////////////
+    //RIDING METHODS//
+    //////////////////
 
     @Override
     protected void addPassenger(Entity p)
@@ -439,6 +440,18 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
+    //Later check rider name
+    public boolean hasVIPRider()
+    {
+        Entity passenger = this.getControllingPassenger();
+        if(passenger != null && passenger instanceof EntityPlayer)
+        {
+            return true;
+            //return passenger.getName().equals("Djymne");
+        }
+        return false;
+    }
+
     /**
      * Checks if squid pitch is less than -45 degrees and more than -135 degrees.
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
@@ -452,14 +465,19 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
+    /**
+     * Can assume e is the passenger.
+     */
     @SideOnly(Side.CLIENT)
     @Override
     public void applyOrientationToEntity(Entity e)
     {
-        float yawDifference = (float) ((this.squidCap.getRotYaw() - this.squidCap.getPrevRotYaw()) * 180 / Math.PI);
-        e.prevRotationYaw += yawDifference;
-        e.rotationYaw += yawDifference;
-        e.setRotationYawHead(e.rotationYaw);
+        if(!this.hasVIPRider()) {
+            float yawDifference = (float) ((this.squidCap.getRotYaw() - this.squidCap.getPrevRotYaw()) * 180 / Math.PI);
+            e.prevRotationYaw += yawDifference;
+            e.rotationYaw += yawDifference;
+            e.setRotationYawHead(e.rotationYaw);
+        }
     }
 
     /**

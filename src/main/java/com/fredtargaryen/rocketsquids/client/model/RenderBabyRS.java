@@ -14,8 +14,6 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
     {
         super(rm, model, 0.4F);
     }
-    public static float BEFORE_ROT_OFFSET = 0.0F;
-    public static float AFTER_ROT_OFFSET = 0.0F;
 
     /**
      * Defines what float the third param in setRotationAngles of ModelBase is
@@ -36,12 +34,12 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
         float exactPitch = (float) ((prp + (rp - prp) * partialTicks) * 180 / Math.PI);
         double pry = ers.getPrevRotYaw();
         float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
-        //Previously 0.5F
-        GlStateManager.translate(0.0F, 0.15F + BEFORE_ROT_OFFSET, 0.0F);
+        //0.5F for adults
+        GlStateManager.translate(0.0F, 0.15F, 0.0F);
         GlStateManager.rotate(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(exactPitch, -1.0F, 0.0F, 0.0F);
-        //Previously 1.2F
-        GlStateManager.translate(0.0F, -1.3F + AFTER_ROT_OFFSET, 0.0F);
+        //1.2F for adults
+        GlStateManager.translate(0.0F, -1.3F, 0.0F);
     }
 
     @Override
