@@ -17,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -30,7 +31,9 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -51,7 +54,7 @@ public class EntityRocketSquid extends EntityWaterMob
 
     private boolean newPacketRequired;
 
-    private final ISquidCapability squidCap;
+    protected final ISquidCapability squidCap;
     protected boolean isBaby;
     protected short breedCooldown;
 
@@ -125,6 +128,11 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         else
         {
+            if(this.recentlyHit > 0)
+            {
+                this.motionX = 0.0D;
+                this.motionZ = 0.0D;
+            }
             if (this.isPotionActive(MobEffects.LEVITATION))
             {
                 this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
@@ -148,6 +156,7 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         if(onFire || this.squidCap.getForcedBlast())
         {
+            this.playSound(RocketSquidsBase.blastoff, 1.0F, 1.0F);
             this.squidCap.setBlasting(true);
         }
 
@@ -414,6 +423,42 @@ public class EntityRocketSquid extends EntityWaterMob
             }
         }
     }
+
+    /**
+     * Applies logic related to leashes, for example dragging the entity or breaking the leash.
+     */
+    protected void updateLeashedState()
+    {
+        super.updateLeashedState();
+
+        if (this.getLeashed() && this.getLeashedToEntity() != null && this.getLeashedToEntity().world == this.world)
+        {
+            Entity entity = this.getLeashedToEntity();
+            float f = this.getDistanceToEntity(entity);
+
+            if (f > 8.0F)
+            {
+                this.motionX = 0.0F;
+                this.motionY = 0.0F;
+                this.motionZ = 0.0F;
+            }
+
+            if (f > 6.0F)
+            {
+                double d0 = (entity.posX - this.posX) / (double)f;
+                double d1 = (entity.posY - this.posY) / (double)f;
+                double d2 = (entity.posZ - this.posZ) / (double)f;
+                this.motionX += d0 * Math.abs(d0) * 0.4D;
+                this.motionY += d1 * Math.abs(d1) * 0.4D;
+                this.motionZ += d2 * Math.abs(d2) * 0.4D;
+            }
+            else
+            {
+                this.tasks.enableControlFlag(1);
+            }
+        }
+    }
+
     //////////////////
     //RIDING METHODS//
     //////////////////
@@ -443,11 +488,16 @@ public class EntityRocketSquid extends EntityWaterMob
     //Later check rider name
     public boolean hasVIPRider()
     {
-        Entity passenger = this.getControllingPassenger();
-        if(passenger != null && passenger instanceof EntityPlayer)
+        if(this.isBaby)
         {
-            return true;
-            //return passenger.getName().equals("Djymne");
+            return false;
+        }
+        else {
+            Entity passenger = this.getControllingPassenger();
+            if (passenger != null && passenger instanceof EntityPlayer) {
+                //return true;
+                return passenger.getName().equals("Djymne");
+            }
         }
         return false;
     }

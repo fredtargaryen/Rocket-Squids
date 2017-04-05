@@ -1,0 +1,7 @@
+{
+  "blastoff":
+  {
+    "sounds": [{"name": "ftrsquids:blastoff","stream": false}],
+    "subtitle": "subs.blastoff"
+  }
+}

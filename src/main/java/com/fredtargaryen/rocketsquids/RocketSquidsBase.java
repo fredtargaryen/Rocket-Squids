@@ -1,19 +1,10 @@
 /**
- * BUGS
- * Will they push boats?
- * Leads break when blasting
- * -Do they keep squids nearby when they're not blasting? (check)
- * Take-off sound
- * Squids skid too far on ground
- * Rocket Squids may go through floor when spawned (rare)
- * "Rocket Squid moved wrongly!" (rare)
- * Remove offset stuff in EntityBabyRocketSquid and RenderBabyRS(5, 6, 7)
- * Change VIP check (8)
- * FEATURES
- * Think about rider interaction; quite difficult right now
+ * FEATURES TO THINK ABOUT
  * Good-sized non-griefing explosion for Tubes
+ * Rider-squid right-click interaction
+ * Centrifugal force on leashed squids
  * Mega
- * Squid rolling?
+ * Squid rolling
  */
 package com.fredtargaryen.rocketsquids;
 
@@ -34,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -72,6 +64,8 @@ public class RocketSquidsBase
      */
     public static Item nitroinksac;
     public static Item turbotube;
+
+    public static SoundEvent blastoff;
 
     /**
      * A custom firework that looks like a Rocket Squid.
@@ -141,7 +135,7 @@ public class RocketSquidsBase
         //CONFIG SETUP
         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
-        spawnProb = config.getInt("spawnProb", "Spawning", 7, 1, 100, "Weighted probability of a group spawning");
+        spawnProb = config.getInt("spawnProb", "Spawning", 4, 1, 100, "Weighted probability of a group spawning");
         minGrpSize = config.getInt("minGroupSize", "Spawning", 2, 1, 20, "Smallest possible size of a group");
         maxGrpSize = config.getInt("maxGroupSize", "Spawning", 5, 1, 40, "Largest possible size of a group");
         config.save();
@@ -171,6 +165,8 @@ public class RocketSquidsBase
             f1.setIntArray("FadeColors", new int[]{6719955});
         list.appendTag(f1);
         firework.setTag("Explosions", list);
+
+        blastoff = GameRegistry.register(new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff"));
     }
         
     @Mod.EventHandler
@@ -180,7 +176,7 @@ public class RocketSquidsBase
         ResourceLocation squidResourceLocation = new ResourceLocation(DataReference.MODID+":rocketsquid");
         ResourceLocation babySquidResourceLocation = new ResourceLocation(DataReference.MODID+":babyrocketsquid");
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
-        EntityRegistry.registerModEntity(squidResourceLocation, EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(squidResourceLocation, EntityRocketSquid.class, "rocketsquid", 0, instance, 128, 10, true);
         EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":nitroinksac"), EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
         EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":turbotube"), EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
         EntityRegistry.registerModEntity(babySquidResourceLocation, EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
@@ -190,7 +186,6 @@ public class RocketSquidsBase
                 Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
         EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
         EntityRegistry.registerEgg(squidResourceLocation, 9838110, 16744192);
-        EntityRegistry.registerEgg(babySquidResourceLocation, 9838110, 16744192);
 
         //Register items
         GameRegistry.register(nitroinksac);

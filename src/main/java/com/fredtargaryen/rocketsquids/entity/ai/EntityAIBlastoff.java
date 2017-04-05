@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.entity.ai.EntityAIBase;
 
@@ -57,6 +58,7 @@ public class EntityAIBlastOff extends EntityAIBase
         {
             //Blast has not started yet
             this.squid.setShaking(false);
+            this.squid.playSound(RocketSquidsBase.blastoff, 1.0F, 1.0F);
             this.squid.addForce(2.952);
             this.horizontal = Math.abs(this.squid.motionY) < 0.08;
             this.blastStarted = true;
