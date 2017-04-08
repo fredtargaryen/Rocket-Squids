@@ -136,7 +136,7 @@ public class EntityRocketSquid extends EntityWaterMob
             {
                 this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
             }
-            else if (!this.hasNoGravity())
+            else
             {
                 this.motionY -= 0.08D;
             }
