@@ -22,9 +22,9 @@ public class EntityThrownTube extends EntityThrowable
 
     @Override
     protected void onImpact(RayTraceResult result) {
-        if (!this.world.isRemote)
+        if (!this.worldObj.isRemote)
         {
-            this.world.createExplosion(this.getThrower(), this.posX, this.posY, this.posZ, 0.1F, true);
+            this.worldObj.createExplosion(this.getThrower(), this.posX, this.posY, this.posZ, 0.1F, true);
             this.setDead();
         }
     }

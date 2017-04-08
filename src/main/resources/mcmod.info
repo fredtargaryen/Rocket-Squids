@@ -4,7 +4,7 @@
   "name": "Rocket Squids",
   "description": "They're not the squids you think they are at home. Oh, no no no.",
   "version": "1.0",
-  "mcversion": "1.11.2",
+  "mcversion": "1.10.2",
   "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/mods-discussion/2746649",
   "authorList": ["FredTargaryen"],
   "credits": "Inspired by watching squids when my latency was through the roof. Thank you to LapisSea for help with rider rotation code.",

@@ -173,19 +173,17 @@ public class RocketSquidsBase
     public void Init(FMLInitializationEvent event)
     {
         //Register Entities with EntityRegistry
-        ResourceLocation squidResourceLocation = new ResourceLocation(DataReference.MODID+":rocketsquid");
-        ResourceLocation babySquidResourceLocation = new ResourceLocation(DataReference.MODID+":babyrocketsquid");
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
-        EntityRegistry.registerModEntity(squidResourceLocation, EntityRocketSquid.class, "rocketsquid", 0, instance, 128, 10, true);
-        EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":nitroinksac"), EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(new ResourceLocation(DataReference.MODID+":turbotube"), EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(babySquidResourceLocation, EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 128, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
 
         //Other Rocket Squid info
         EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
                 Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
         EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
-        EntityRegistry.registerEgg(squidResourceLocation, 9838110, 16744192);
+        EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
 
         //Register items
         GameRegistry.register(nitroinksac);

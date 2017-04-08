@@ -67,12 +67,12 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
         super.onLivingUpdate();
         if(this.ticksExisted > 72000)
         {
-            if(!this.world.isRemote)
+            if(!this.worldObj.isRemote)
             {
                 this.setDead();
-                EntityRocketSquid adult = new EntityRocketSquid(this.world);
+                EntityRocketSquid adult = new EntityRocketSquid(this.worldObj);
                 adult.setLocationAndAngles(this.posX, this.posY, this.posZ, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
-                this.world.spawnEntity(adult);
+                this.worldObj.spawnEntityInWorld(adult);
             }
         }
     }

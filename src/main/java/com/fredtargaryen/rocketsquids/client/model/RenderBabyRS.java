@@ -26,7 +26,7 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
     }
 
     @Override
-    protected void applyRotations(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks)
+    protected void rotateCorpse(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks)
     {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();
