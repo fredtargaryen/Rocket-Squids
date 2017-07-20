@@ -1,10 +1,9 @@
 /**
  * FEATURES TO THINK ABOUT
- * Good-sized non-griefing explosion for Tubes
+ * When high up and far enough away for squids to despawn, lots of squids are spawned each second
  * Rider-squid right-click interaction
- * Centrifugal force on leashed squids
- * Mega
- * Squid rolling
+ * Good-sized non-griefing explosion for Tubes
+ * Mega?
  */
 package com.fredtargaryen.rocketsquids;
 
@@ -174,7 +173,7 @@ public class RocketSquidsBase
     {
         //Register Entities with EntityRegistry
         //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
-        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 128, 10, true);
+        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
         EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
         EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
         EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);

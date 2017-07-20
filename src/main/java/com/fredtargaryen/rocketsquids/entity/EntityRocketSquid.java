@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -30,9 +29,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -68,10 +65,22 @@ public class EntityRocketSquid extends EntityWaterMob
         this.setSize(0.99F, 0.99F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
         this.playerRotated = false;
+        this.breedCooldown = 60;
         if(par1World.isRemote) {
             MinecraftForge.EVENT_BUS.register(this);
         }
+        else {
+            System.out.print("");
+        }
         this.isBaby = false;
+    }
+
+    /**
+     * Determines if an entity can be despawned, used on idle far away entities
+     */
+    protected boolean canDespawn()
+    {
+        return !(this.getSaddled() || this.getLeashed());
     }
 
     @Override
@@ -387,7 +396,7 @@ public class EntityRocketSquid extends EntityWaterMob
             {
                 if(!this.worldObj.isRemote && !this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0)
                 {
-                    this.breedCooldown = 3600;
+                    this.breedCooldown = Short.MAX_VALUE;
                     EntityBabyRocketSquid baby = new EntityBabyRocketSquid(this.worldObj);
                     baby.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
                     this.worldObj.spawnEntityInWorld(baby);
@@ -677,6 +686,15 @@ public class EntityRocketSquid extends EntityWaterMob
             double speed = this.motionZ / Math.cos(this.squidCap.getRotYaw());
             this.setTargetRotPitch(Math.PI / 2 - Math.atan2(this.motionY, speed));
         }
+    }
+
+    /**
+     * Checks if the entity's current position is a valid location to spawn this entity.
+     */
+    @Override
+    public boolean getCanSpawnHere()
+    {
+        return false;
     }
 
     //CAPABILITY METHODS
