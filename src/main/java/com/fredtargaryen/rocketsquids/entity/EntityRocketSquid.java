@@ -28,6 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
@@ -244,10 +245,10 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     /**
-     * Moves the entity based on the specified heading.  Args: strafe, forward
+     * Moves the entity based on strafe, forward (?) and something else
      */
     @Override
-    public void moveEntityWithHeading(float par1, float par2)
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
     {
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
@@ -275,7 +276,7 @@ public class EntityRocketSquid extends EntityWaterMob
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected SoundEvent getHurtSound()
+    protected SoundEvent getHurtSound(DamageSource ds)
     {
         return null;
     }
@@ -295,7 +296,7 @@ public class EntityRocketSquid extends EntityWaterMob
         if(!this.isBaby && !this.world.isRemote)
         {
             ItemStack stack = player.getHeldItem(hand);
-            if(stack == null)
+            if(stack == ItemStack.EMPTY)
             {
                 if (this.getSaddled() && !this.isBeingRidden())
                 {
@@ -319,6 +320,11 @@ public class EntityRocketSquid extends EntityWaterMob
                         this.setSaddled(true);
                     }
                     player.startRiding(this);
+                    return true;
+                }
+                else if(i == Items.FEATHER && this.hasVIPRider())
+                {
+                    this.setShaking(true);
                     return true;
                 }
                 else
@@ -488,11 +494,8 @@ public class EntityRocketSquid extends EntityWaterMob
     //Later check rider name
     public boolean hasVIPRider()
     {
-        if(this.isBaby)
+        if(!this.isBaby)
         {
-            return false;
-        }
-        else {
             Entity passenger = this.getControllingPassenger();
             if (passenger != null && passenger instanceof EntityPlayer) {
                 //return true;

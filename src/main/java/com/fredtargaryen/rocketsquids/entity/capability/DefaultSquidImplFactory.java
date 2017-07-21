@@ -108,11 +108,19 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             while(this.rotPitch < -Math.PI)
             {
                 this.rotPitch += doublePi;
+
+            }
+            while(d < -Math.PI)
+            {
                 d += doublePi;
             }
             while(this.rotPitch > Math.PI)
             {
                 this.rotPitch -= doublePi;
+                d -= doublePi;
+            }
+            while(d > Math.PI)
+            {
                 d -= doublePi;
             }
             this.prevRotPitch = this.rotPitch;
@@ -134,11 +142,17 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability>
             while(this.rotYaw < -Math.PI)
             {
                 this.rotYaw += doublePi;
+            }
+            while(d < -Math.PI)
+            {
                 d += doublePi;
             }
             while(this.rotYaw > Math.PI)
             {
                 this.rotYaw -= doublePi;
+            }
+            while(d > Math.PI)
+            {
                 d -= doublePi;
             }
             this.prevRotYaw = this.rotYaw;
