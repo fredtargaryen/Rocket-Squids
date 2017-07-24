@@ -17,7 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -32,9 +31,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,12 +46,15 @@ import java.util.List;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
+    ///////////////
+    //Client only//
+    ///////////////
     public float tentacleAngle;
     public float lastTentacleAngle;
-    private boolean playerRotated;
+    public boolean riderRotated;
+
 
     private boolean newPacketRequired;
-
     protected final ISquidCapability squidCap;
     protected boolean isBaby;
     protected short breedCooldown;
@@ -69,7 +69,7 @@ public class EntityRocketSquid extends EntityWaterMob
         //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
         this.setSize(0.99F, 0.99F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
-        this.playerRotated = false;
+        this.riderRotated = false;
         this.isBaby = false;
     }
 
@@ -632,6 +632,9 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
+    /////////////////
+    //CLIENT EVENTS//
+    /////////////////
     /**
      * Add transformations to put player on back of squid.
      */
@@ -642,7 +645,7 @@ public class EntityRocketSquid extends EntityWaterMob
         EntityPlayer p = event.getEntityPlayer();
         if(this.isPassenger(p))
         {
-            this.playerRotated = true;
+            this.riderRotated = true;
             GlStateManager.pushMatrix();
 			GlStateManager.translate(0.0F, 0.08F, 0.0F);
             double prevPitch_r = this.squidCap.getPrevRotPitch();
@@ -655,16 +658,9 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
-    @SubscribeEvent(priority=EventPriority.LOWEST)
-    public void removeRotation(RenderPlayerEvent.Post event)
-    {
-        if(this.playerRotated)
-        {
-            GlStateManager.popMatrix();
-            this.playerRotated = false;
-        }
-    }
-
+    ///////
+    //NBT//
+    ///////
     @Override
     public void writeEntityToNBT(NBTTagCompound compound)
     {
