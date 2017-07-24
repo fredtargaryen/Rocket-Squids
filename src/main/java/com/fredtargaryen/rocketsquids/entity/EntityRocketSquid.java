@@ -70,9 +70,6 @@ public class EntityRocketSquid extends EntityWaterMob
         this.setSize(0.99F, 0.99F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
         this.playerRotated = false;
-        if(par1World.isRemote) {
-            MinecraftForge.EVENT_BUS.register(this);
-        }
         this.isBaby = false;
     }
 
@@ -371,6 +368,11 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             this.doFireworkParticles();
         }
+        Entity passenger = this.getControllingPassenger();
+        if(passenger != null)
+        {
+            this.removePassenger(passenger);
+        }
         super.setDead();
     }
 
@@ -475,6 +477,10 @@ public class EntityRocketSquid extends EntityWaterMob
         if(this.getPassengers().size() == 0)
         {
             super.addPassenger(p);
+            if(this.world.isRemote)
+            {
+                MinecraftForge.EVENT_BUS.register(this);
+            }
         }
     }
 
@@ -619,6 +625,10 @@ public class EntityRocketSquid extends EntityWaterMob
             passenger.motionX += this.motionX * 1.5;
             passenger.motionY += this.motionY * 1.5;
             passenger.motionZ += this.motionZ * 1.5;
+        }
+        if(this.world.isRemote)
+        {
+            MinecraftForge.EVENT_BUS.unregister(this);
         }
     }
 
