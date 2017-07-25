@@ -135,6 +135,7 @@ public class EntityAISwimAround extends EntityAIBase
 
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
+        boolean hasVIPRider = this.squid.hasVIPRider();
         if (this.turning) {
             double trp = this.squid.getTargRotPitch();
             double Try = this.squid.getTargRotYaw();
@@ -144,7 +145,7 @@ public class EntityAISwimAround extends EntityAIBase
                 if (!this.squid.isBaby() && randomInt == 0) {
                     this.squid.setShaking(true);
                 } else {
-                    if (this.squid.hasVIPRider()) {
+                    if (hasVIPRider) {
                         if (!this.doTurn(true)) {
                             //Squid is pointing roughly where the rider is facing
                             this.squid.addForce(this.swimForce);
@@ -169,7 +170,7 @@ public class EntityAISwimAround extends EntityAIBase
                 if (!this.squid.isBaby() && randomInt == 0) {
                     this.squid.setShaking(true);
                 } else {
-                    if (this.squid.hasVIPRider()) {
+                    if (hasVIPRider) {
                         if (this.doTurn(true)) {
                             this.turning = true;
                         } else {
@@ -180,7 +181,7 @@ public class EntityAISwimAround extends EntityAIBase
                         if (randomInt < 5) {
                             this.squid.addForce(this.swimForce);
                         } else {
-                            this.doTurn(this.squid.hasVIPRider());
+                            this.doTurn(hasVIPRider);
                             this.turning = true;
                         }
                     }

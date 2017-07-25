@@ -198,6 +198,7 @@ public class SquidFirework extends Particle
         /**
          * Renders the particle
          */
+        @Override
         public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
         {
             float f = 0.25F;

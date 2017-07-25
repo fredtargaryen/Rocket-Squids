@@ -1,9 +1,8 @@
 /**
  * FEATURES TO THINK ABOUT
- * When high up and far enough away for squids to despawn, lots of squids are spawned each second
- * Rider-squid right-click interaction
+ * Shake
  * Good-sized non-griefing explosion for Tubes
- * Mega?
+ * Mega
  */
 package com.fredtargaryen.rocketsquids;
 
@@ -17,6 +16,8 @@ import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.init.Biomes;
@@ -41,7 +42,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
@@ -83,17 +84,104 @@ public class RocketSquidsBase
      * Says where the client and server 'proxy' code is loaded.
      */
     @SidedProxy(clientSide=DataReference.CLIENTPROXYPATH, serverSide=DataReference.SERVERPROXYPATH)
-	
     public static CommonProxy proxy;
 
-    //Code for the BeRocketSquid capability
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        //Capability
+        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
+        MinecraftForge.EVENT_BUS.register(this);
+
+        //CONFIG SETUP
+        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
+        spawnProb = config.getInt("spawnProb", "Spawning", 4, 1, 100, "Weighted probability of a group spawning");
+        minGrpSize = config.getInt("minGroupSize", "Spawning", 2, 1, 20, "Smallest possible size of a group");
+        maxGrpSize = config.getInt("maxGroupSize", "Spawning", 5, 1, 40, "Largest possible size of a group");
+        config.save();
+        if(maxGrpSize < minGrpSize)
+        {
+            maxGrpSize = minGrpSize;
+        }
+
+        //Making items
+    	nitroinksac = new ItemNitroInkSac()
+    	        .setMaxStackSize(64)
+                .setUnlocalizedName("nitroinksac")
+                .setRegistryName("nitroinksac")
+                .setCreativeTab(CreativeTabs.MISC);
+
+        turbotube = new ItemTurboTube()
+                .setMaxStackSize(64)
+                .setUnlocalizedName("turbotube")
+                .setRegistryName("turbotube")
+                .setCreativeTab(CreativeTabs.MISC);
+
+        //Making sounds
+        blastoff = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff");
+
+        //Registering items
+        ForgeRegistries.ITEMS.register(nitroinksac);
+        ForgeRegistries.ITEMS.register(turbotube);
+
+        //Registering sounds
+        ForgeRegistries.SOUND_EVENTS.register(blastoff);
+
+        proxy.registerRenderers();
+
+        //Make the firework
+        NBTTagList list = new NBTTagList();
+            NBTTagCompound f1 = new NBTTagCompound();
+            f1.setBoolean("Flicker", false);
+            f1.setBoolean("Trail", false);
+            f1.setIntArray("Colors", new int[]{15435844});
+            f1.setIntArray("FadeColors", new int[]{6719955});
+        list.appendTag(f1);
+        firework.setTag("Explosions", list);
+    }
+        
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event)
+    {
+        //Register Entities with EntityRegistry
+        //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
+        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
+        EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
+
+        //Other Rocket Squid info
+        EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
+                Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
+        EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
+        EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
+
+        proxy.registerModels();
+        MessageHandler.init();
+    }
+        
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        OreDictionary.registerOre("gunpowder", turbotube);
+        OreDictionary.registerOre("dyeOrange", nitroinksac);
+    }
+
+    /////////////////
+    //CAPABILIITIES//
+    /////////////////
+
+    /**
+     * Code for the BeRocketSquid capability
+     */
     @CapabilityInject(ISquidCapability.class)
     public static final Capability<ISquidCapability> SQUIDCAP = null;
 
     @SubscribeEvent
-    public void onEntityConstruct(AttachCapabilitiesEvent.Entity evt)
+    public void onEntityConstruct(AttachCapabilitiesEvent<Entity> evt)
     {
-        if(evt.getEntity() instanceof EntityRocketSquid) {
+        if(evt.getObject() instanceof EntityRocketSquid) {
             evt.addCapability(DataReference.SQUID_CAP_LOCATION,
                     //Full name ICapabilitySerializableProvider
                     new ICapabilitySerializable<NBTTagCompound>()
@@ -122,80 +210,5 @@ public class RocketSquidsBase
                     }
             );
         }
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        //Capability
-        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
-        MinecraftForge.EVENT_BUS.register(this);
-
-        //CONFIG SETUP
-        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
-        config.load();
-        spawnProb = config.getInt("spawnProb", "Spawning", 4, 1, 100, "Weighted probability of a group spawning");
-        minGrpSize = config.getInt("minGroupSize", "Spawning", 2, 1, 20, "Smallest possible size of a group");
-        maxGrpSize = config.getInt("maxGroupSize", "Spawning", 5, 1, 40, "Largest possible size of a group");
-        config.save();
-        if(maxGrpSize < minGrpSize)
-        {
-            maxGrpSize = minGrpSize;
-        }
-
-    	nitroinksac = new ItemNitroInkSac()
-    	        .setMaxStackSize(64)
-                .setUnlocalizedName("nitroinksac")
-                .setRegistryName("nitroinksac");
-
-        turbotube = new ItemTurboTube()
-                .setMaxStackSize(64)
-                .setUnlocalizedName("turbotube")
-                .setRegistryName("turbotube");
-
-        proxy.registerRenderers();
-
-        //Make the firework
-        NBTTagList list = new NBTTagList();
-            NBTTagCompound f1 = new NBTTagCompound();
-            f1.setBoolean("Flicker", false);
-            f1.setBoolean("Trail", false);
-            f1.setIntArray("Colors", new int[]{15435844});
-            f1.setIntArray("FadeColors", new int[]{6719955});
-        list.appendTag(f1);
-        firework.setTag("Explosions", list);
-
-        blastoff = GameRegistry.register(new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff"));
-    }
-        
-    @Mod.EventHandler
-    public void Init(FMLInitializationEvent event)
-    {
-        //Register Entities with EntityRegistry
-        //Last three params are for tracking: trackingRange, updateFrequency and sendsVelocityUpdates
-        EntityRegistry.registerModEntity(EntityRocketSquid.class, "rocketsquid", 0, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityThrownSac.class, "nitroinksac", 1, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityThrownTube.class, "turbotube", 2, instance, 64, 10, true);
-        EntityRegistry.registerModEntity(EntityBabyRocketSquid.class, "babyrs", 4, instance, 64, 10, true);
-
-        //Other Rocket Squid info
-        EntityRegistry.addSpawn(EntityRocketSquid.class, spawnProb, minGrpSize, maxGrpSize, EnumCreatureType.WATER_CREATURE,
-                Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
-        EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
-        EntityRegistry.registerEgg(EntityRocketSquid.class, 9838110, 16744192);
-
-        //Register items
-        GameRegistry.register(nitroinksac);
-        GameRegistry.register(turbotube);
-
-        proxy.registerModels();
-        MessageHandler.init();
-    }
-        
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        OreDictionary.registerOre("gunpowder", turbotube);
-        OreDictionary.registerOre("dyeOrange", nitroinksac);
     }
 }
