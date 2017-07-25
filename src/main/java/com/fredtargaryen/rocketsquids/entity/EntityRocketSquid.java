@@ -17,7 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -28,12 +27,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,12 +46,15 @@ import java.util.List;
 
 public class EntityRocketSquid extends EntityWaterMob
 {
+    ///////////////
+    //Client only//
+    ///////////////
     public float tentacleAngle;
     public float lastTentacleAngle;
-    private boolean playerRotated;
+    public boolean riderRotated;
+
 
     private boolean newPacketRequired;
-
     protected final ISquidCapability squidCap;
     protected boolean isBaby;
     protected short breedCooldown;
@@ -68,10 +69,7 @@ public class EntityRocketSquid extends EntityWaterMob
         //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
         this.setSize(0.99F, 0.99F);
         this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
-        this.playerRotated = false;
-        if(par1World.isRemote) {
-            MinecraftForge.EVENT_BUS.register(this);
-        }
+        this.riderRotated = false;
         this.isBaby = false;
     }
 
@@ -244,10 +242,10 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     /**
-     * Moves the entity based on the specified heading.  Args: strafe, forward
+     * Moves the entity based on strafe, forward (?) and something else
      */
     @Override
-    public void moveEntityWithHeading(float par1, float par2)
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
     {
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
@@ -275,7 +273,7 @@ public class EntityRocketSquid extends EntityWaterMob
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected SoundEvent getHurtSound()
+    protected SoundEvent getHurtSound(DamageSource ds)
     {
         return null;
     }
@@ -295,7 +293,7 @@ public class EntityRocketSquid extends EntityWaterMob
         if(!this.isBaby && !this.world.isRemote)
         {
             ItemStack stack = player.getHeldItem(hand);
-            if(stack == null)
+            if(stack == ItemStack.EMPTY)
             {
                 if (this.getSaddled() && !this.isBeingRidden())
                 {
@@ -319,6 +317,11 @@ public class EntityRocketSquid extends EntityWaterMob
                         this.setSaddled(true);
                     }
                     player.startRiding(this);
+                    return true;
+                }
+                else if(i == Items.FEATHER && this.hasVIPRider())
+                {
+                    this.setShaking(true);
                     return true;
                 }
                 else
@@ -364,6 +367,11 @@ public class EntityRocketSquid extends EntityWaterMob
         if(this.world.isRemote && this.squidCap.getForcedBlast())
         {
             this.doFireworkParticles();
+        }
+        Entity passenger = this.getControllingPassenger();
+        if(passenger != null)
+        {
+            this.removePassenger(passenger);
         }
         super.setDead();
     }
@@ -469,6 +477,10 @@ public class EntityRocketSquid extends EntityWaterMob
         if(this.getPassengers().size() == 0)
         {
             super.addPassenger(p);
+            if(this.world.isRemote)
+            {
+                MinecraftForge.EVENT_BUS.register(this);
+            }
         }
     }
 
@@ -488,11 +500,8 @@ public class EntityRocketSquid extends EntityWaterMob
     //Later check rider name
     public boolean hasVIPRider()
     {
-        if(this.isBaby)
+        if(!this.isBaby)
         {
-            return false;
-        }
-        else {
             Entity passenger = this.getControllingPassenger();
             if (passenger != null && passenger instanceof EntityPlayer) {
                 //return true;
@@ -617,8 +626,15 @@ public class EntityRocketSquid extends EntityWaterMob
             passenger.motionY += this.motionY * 1.5;
             passenger.motionZ += this.motionZ * 1.5;
         }
+        if(this.world.isRemote)
+        {
+            MinecraftForge.EVENT_BUS.unregister(this);
+        }
     }
 
+    /////////////////
+    //CLIENT EVENTS//
+    /////////////////
     /**
      * Add transformations to put player on back of squid.
      */
@@ -629,7 +645,7 @@ public class EntityRocketSquid extends EntityWaterMob
         EntityPlayer p = event.getEntityPlayer();
         if(this.isPassenger(p))
         {
-            this.playerRotated = true;
+            this.riderRotated = true;
             GlStateManager.pushMatrix();
 			GlStateManager.translate(0.0F, 0.08F, 0.0F);
             double prevPitch_r = this.squidCap.getPrevRotPitch();
@@ -642,16 +658,9 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
-    @SubscribeEvent(priority=EventPriority.LOWEST)
-    public void removeRotation(RenderPlayerEvent.Post event)
-    {
-        if(this.playerRotated)
-        {
-            GlStateManager.popMatrix();
-            this.playerRotated = false;
-        }
-    }
-
+    ///////
+    //NBT//
+    ///////
     @Override
     public void writeEntityToNBT(NBTTagCompound compound)
     {
