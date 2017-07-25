@@ -75,7 +75,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
 
             //Prepare to draw
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder vertexbuffer = tessellator.getBuffer();
+            VertexBuffer vertexbuffer = tessellator.getBuffer();
             GlStateManager.disableLighting();
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

@@ -241,11 +241,8 @@ public class EntityRocketSquid extends EntityWaterMob
         }
     }
 
-    /**
-     * Moves the entity based on strafe, forward (?) and something else
-     */
     @Override
-    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+    public void moveEntityWithHeading(float strafe, float forward)
     {
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
@@ -273,7 +270,7 @@ public class EntityRocketSquid extends EntityWaterMob
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected SoundEvent getHurtSound(DamageSource ds)
+    protected SoundEvent getHurtSound()
     {
         return null;
     }
@@ -655,6 +652,17 @@ public class EntityRocketSquid extends EntityWaterMob
             double exactPitch_d = exactPitch_r * 180 / Math.PI;
 			double yaw_r = this.squidCap.getRotYaw();
             GlStateManager.rotate((float) (exactPitch_d - 90.0F),   (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent(priority=EventPriority.LOWEST)
+    public void removeRotation(RenderPlayerEvent.Post event)
+    {
+        if(this.riderRotated)
+        {
+            GlStateManager.popMatrix();
+            this.riderRotated = false;
         }
     }
 
