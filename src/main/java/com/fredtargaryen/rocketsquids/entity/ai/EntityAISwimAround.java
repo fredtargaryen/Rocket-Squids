@@ -3,7 +3,6 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.Random;
 
