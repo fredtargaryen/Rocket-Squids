@@ -661,7 +661,18 @@ public class EntityRocketSquid extends EntityWaterMob
             GlStateManager.rotate((float) (exactPitch_d - 90.0F),   (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
         }
     }
-
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void removeRotation(RenderPlayerEvent.Post event)
+	{
+		if(this.riderRotated)
+		{
+			GlStateManager.popMatrix();
+			this.riderRotated = false;
+		}
+	}
+	
     ///////
     //NBT//
     ///////
