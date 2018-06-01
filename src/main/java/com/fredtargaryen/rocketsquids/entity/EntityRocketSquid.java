@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFirework;
-import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastOff;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastoff;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIShake;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
@@ -84,7 +84,7 @@ public class EntityRocketSquid extends EntityWaterMob
     public void initEntityAI()
     {
         super.initEntityAI();
-        this.tasks.addTask(0, new EntityAIBlastOff(this));
+        this.tasks.addTask(0, new EntityAIBlastoff(this));
         this.tasks.addTask(1, new EntityAIShake(this));
         this.tasks.addTask(2, new EntityAISwimAround(this, 0.35));
         this.tasks.addTask(3, new EntityAIGiveUp(this));
@@ -365,11 +365,11 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             this.doFireworkParticles();
         }
-        Entity passenger = this.getControllingPassenger();
-        if(passenger != null)
-        {
-            this.removePassenger(passenger);
-        }
+//        Entity passenger = this.getControllingPassenger();
+//        if(passenger != null)
+//        {
+//            this.removePassenger(passenger);
+//        }
         super.setDead();
     }
 

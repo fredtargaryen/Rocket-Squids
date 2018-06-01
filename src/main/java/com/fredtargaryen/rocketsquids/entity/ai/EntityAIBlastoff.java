@@ -4,7 +4,7 @@ import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.entity.ai.EntityAIBase;
 
-public class EntityAIBlastOff extends EntityAIBase
+public class EntityAIBlastoff extends EntityAIBase
 {
     private final EntityRocketSquid squid;
     private boolean blastStarted;
@@ -13,7 +13,7 @@ public class EntityAIBlastOff extends EntityAIBase
     private double prevMotionY;
     private double prevMotionZ;
 
-    public EntityAIBlastOff(EntityRocketSquid ers)
+    public EntityAIBlastoff(EntityRocketSquid ers)
     {
         super();
         this.squid = ers;
