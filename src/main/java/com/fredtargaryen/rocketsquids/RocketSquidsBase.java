@@ -1,11 +1,15 @@
 /**
- * FEATURES TO THINK ABOUT
- * Shake
- * Good-sized non-griefing explosion for Tubes
- * Mega
+ * TODO
+ * Whistling conch
+ * * Conch GUI visuals
+ *   * Can't fit all buttons on screen (check)
+ * * Block Model
+ * * Render conch as armour
+ * * Sounds
  */
 package com.fredtargaryen.rocketsquids;
 
+import com.fredtargaryen.rocketsquids.block.BlockConch;
 import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
@@ -16,16 +20,22 @@ import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
+import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.init.Biomes;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -33,6 +43,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -48,6 +59,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
+@Mod.EventBusSubscriber
 public class RocketSquidsBase
 {
 	/**
@@ -62,11 +74,24 @@ public class RocketSquidsBase
     private static int maxGrpSize;
 
     /**
+     * Declare all blocks here
+     */
+    public static Block blockConch;
+
+    /**
      * Declare all items here
      */
+    public static Item itemConch;
+    public static Item itemConch2;
+    public static Item itemConch3;
     public static Item nitroinksac;
     public static Item turbotube;
 
+    public static CreativeTabs squidsTab;
+
+    /**
+     * Declare sounds
+     */
     public static SoundEvent blastoff;
 
     /**
@@ -81,6 +106,8 @@ public class RocketSquidsBase
      *     |_TagIntArray    ("FadeColors")
      */
     public static final NBTTagCompound firework = new NBTTagCompound();
+
+    private static ConchGen conchGen;
 	
     /**   
      * Says where the client and server 'proxy' code is loaded.
@@ -107,25 +134,55 @@ public class RocketSquidsBase
             maxGrpSize = minGrpSize;
         }
 
+        //Making blocks
+        blockConch = new BlockConch()
+                .setUnlocalizedName("blockconch")
+                .setRegistryName("blockconch");
+
         //Making items
+        itemConch = new ItemConch()
+                .setMaxStackSize(4)
+                .setUnlocalizedName("conch")
+                .setRegistryName("conch");
+
+        itemConch2 = new ItemConch2()
+                .setMaxStackSize(1)
+                .setUnlocalizedName("conchtwo")
+                .setRegistryName("conchtwo");
+
+        itemConch3 = new ItemConch3()
+                .setMaxStackSize(1)
+                .setUnlocalizedName("conchthree")
+                .setRegistryName("conchthree");
+
     	nitroinksac = new ItemNitroInkSac()
     	        .setMaxStackSize(64)
                 .setUnlocalizedName("nitroinksac")
-                .setRegistryName("nitroinksac")
-                .setCreativeTab(CreativeTabs.MISC);
+                .setRegistryName("nitroinksac");
 
         turbotube = new ItemTurboTube()
                 .setMaxStackSize(64)
                 .setUnlocalizedName("turbotube")
-                .setRegistryName("turbotube")
-                .setCreativeTab(CreativeTabs.MISC);
+                .setRegistryName("turbotube");
+
+        //Making Creative Tab
+        squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "ftrsquids") {
+            ItemStack conch = new ItemStack(itemConch);
+
+            @Override
+            public ItemStack getTabIconItem() {
+                return this.conch;
+            }
+        };
+        itemConch.setCreativeTab(RocketSquidsBase.squidsTab);
+        itemConch2.setCreativeTab(RocketSquidsBase.squidsTab);
+        itemConch3.setCreativeTab(RocketSquidsBase.squidsTab);
+        nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
+        turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
+
 
         //Making sounds
         blastoff = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff");
-
-        //Registering items
-        ForgeRegistries.ITEMS.register(nitroinksac);
-        ForgeRegistries.ITEMS.register(turbotube);
 
         //Registering sounds
         ForgeRegistries.SOUND_EVENTS.register(blastoff);
@@ -141,6 +198,28 @@ public class RocketSquidsBase
             f1.setIntArray("FadeColors", new int[]{6719955});
         list.appendTag(f1);
         firework.setTag("Explosions", list);
+    }
+
+    ///////////////////
+    //REGISTRY EVENTS//
+    ///////////////////
+
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event)
+    {
+        event.getRegistry().registerAll(blockConch);
+    }
+
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event)
+    {
+        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube);
+    }
+
+    @SubscribeEvent
+    public static void registerModels(ModelRegistryEvent event)
+    {
+        proxy.registerModels();
     }
         
     @Mod.EventHandler
@@ -160,6 +239,9 @@ public class RocketSquidsBase
                 Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.RIVER, Biomes.SWAMPLAND);
         EntitySpawnPlacementRegistry.setPlacementType(EntityRocketSquid.class, EntityLiving.SpawnPlacementType.IN_WATER);
         EntityRegistry.registerEgg(squidResourceLocation, 9838110, 16744192);
+
+        conchGen = new ConchGen();
+        GameRegistry.registerWorldGenerator(conchGen, 3);
 
         proxy.registerModels();
         MessageHandler.init();

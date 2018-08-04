@@ -1,7 +1,6 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -13,11 +12,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
 public class ItemTurboTube extends Item {
-    public ItemTurboTube() {
-        super();
-        this.setCreativeTab(CreativeTabs.MATERIALS);
-    }
-
     /**
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */

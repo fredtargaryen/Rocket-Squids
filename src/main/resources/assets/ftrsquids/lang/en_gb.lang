@@ -1,0 +1,14 @@
+entity.rocketsquid.name=Rocket Squid
+
+item.conch.name=Whistling Conch
+item.conchtwo.name=Noteworthy Conch
+item.conchthree.name=§6[[Conchzilla, Blessed Conch of the Squidseeker]]
+item.nitroinksac.name=Nitro Ink Sac
+item.turbotube.name=Turbo Tube
+
+itemGroup.ftrsquids=Rocket Squids
+
+tile.blockconch.name=Whistling Conch
+
+/SUBTITLES
+subs.blastoff=Rocket Squid blastoff

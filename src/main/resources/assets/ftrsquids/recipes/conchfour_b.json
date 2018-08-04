@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ftrsquids",
+  "pattern": [
+    "3 ",
+    " 1"
+  ],
+  "key": {
+    "1": {
+      "item": "ftrsquids:conch"
+    },
+    "3": {
+      "item": "ftrsquids:conchthree"
+    }
+  },
+  "result": {
+    "item": "ftrsquids:conchfour",
+    "count": 1
+  }
+}

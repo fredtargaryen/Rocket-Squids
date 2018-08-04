@@ -5,4 +5,6 @@ public interface IProxy
     void registerRenderers();
 
     void registerModels();
+
+    void openConchClient(byte conchStage);
 }
