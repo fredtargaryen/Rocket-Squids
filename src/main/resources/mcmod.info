@@ -5,7 +5,7 @@
   "description": "They're not the squids you think they are at home. Oh, no no no.",
   "version": "1.0.1",
   "mcversion": "1.11.2",
-  "url": "",
+  "url": "https://minecraft.curseforge.com/projects/rocket-squids",
   "authorList": ["FredTargaryen"],
   "credits": "Inspired by watching squids when my latency was through the roof. Thank you to LapisSea for help with rider rotation code.",
   "logoFile": "assets/ftrsquids/textures/gui/banner.png"

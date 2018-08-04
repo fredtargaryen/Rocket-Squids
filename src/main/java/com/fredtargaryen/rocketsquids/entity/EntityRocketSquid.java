@@ -616,7 +616,7 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     public void removePassenger(Entity passenger)
     {
-        super.removePassenger(passenger);
+        passenger.dismountRidingEntity();
         if (this.getBlasting())
         {
             passenger.motionX += this.motionX * 1.5;
