@@ -37,7 +37,7 @@ public class ItemNitroInkSac extends Item
         if (!world.isRemote)
         {
             EntityThrownSac sac = new EntityThrownSac(world, player);
-            sac.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
+            sac.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
             world.spawnEntity(sac);
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);

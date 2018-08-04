@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFirework;
-import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastOff;
+import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastoff;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIShake;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
@@ -84,7 +84,7 @@ public class EntityRocketSquid extends EntityWaterMob
     public void initEntityAI()
     {
         super.initEntityAI();
-        this.tasks.addTask(0, new EntityAIBlastOff(this));
+        this.tasks.addTask(0, new EntityAIBlastoff(this));
         this.tasks.addTask(1, new EntityAIShake(this));
         this.tasks.addTask(2, new EntityAISwimAround(this, 0.35));
         this.tasks.addTask(3, new EntityAIGiveUp(this));
@@ -438,31 +438,27 @@ public class EntityRocketSquid extends EntityWaterMob
     protected void updateLeashedState()
     {
         super.updateLeashedState();
+        if(this.getLeashed()) {
+            Entity holder = this.getLeashHolder();
+            if (holder != null && holder.world == this.world) {
+                float f = this.getDistance(holder);
 
-        if (this.getLeashed() && this.getLeashedToEntity() != null && this.getLeashedToEntity().world == this.world)
-        {
-            Entity entity = this.getLeashedToEntity();
-            float f = this.getDistanceToEntity(entity);
+                if (f > 8.0F) {
+                    this.motionX = 0.0F;
+                    this.motionY = 0.0F;
+                    this.motionZ = 0.0F;
+                }
 
-            if (f > 8.0F)
-            {
-                this.motionX = 0.0F;
-                this.motionY = 0.0F;
-                this.motionZ = 0.0F;
-            }
-
-            if (f > 6.0F)
-            {
-                double d0 = (entity.posX - this.posX) / (double)f;
-                double d1 = (entity.posY - this.posY) / (double)f;
-                double d2 = (entity.posZ - this.posZ) / (double)f;
-                this.motionX += d0 * Math.abs(d0) * 0.4D;
-                this.motionY += d1 * Math.abs(d1) * 0.4D;
-                this.motionZ += d2 * Math.abs(d2) * 0.4D;
-            }
-            else
-            {
-                this.tasks.enableControlFlag(1);
+                if (f > 6.0F) {
+                    double d0 = (holder.posX - this.posX) / (double) f;
+                    double d1 = (holder.posY - this.posY) / (double) f;
+                    double d2 = (holder.posZ - this.posZ) / (double) f;
+                    this.motionX += d0 * Math.abs(d0) * 0.4D;
+                    this.motionY += d1 * Math.abs(d1) * 0.4D;
+                    this.motionZ += d2 * Math.abs(d2) * 0.4D;
+                } else {
+                    this.tasks.enableControlFlag(1);
+                }
             }
         }
     }
@@ -617,9 +613,9 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     @Override
-    public void removePassenger(Entity passenger)
+    protected void removePassenger(Entity passenger)
     {
-        super.removePassenger(passenger);
+        passenger.dismountRidingEntity();
         if (this.getBlasting())
         {
             passenger.motionX += this.motionX * 1.5;
