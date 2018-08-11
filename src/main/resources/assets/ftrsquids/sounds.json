@@ -3,5 +3,10 @@
   {
     "sounds": [{"name": "ftrsquids:blastoff","stream": false}],
     "subtitle": "subs.blastoff"
+  },
+  "conch":
+  {
+    "sounds": [{"name": "ftrsquids:conch","stream": false}],
+    "subtitle": "subs.conch"
   }
 }

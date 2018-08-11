@@ -1,11 +1,9 @@
 /**
  * TODO
- * Whistling conch
- * * Conch GUI visuals
- *   * Can't fit all buttons on screen (check)
- * * Block Model
- * * Render conch as armour
- * * Sounds
+ * Conch GUI Sounds
+ * Conch block random rotations
+ * Render conch as armour
+ * Make conch gui buttons look more musical
  */
 package com.fredtargaryen.rocketsquids;
 
@@ -93,6 +91,7 @@ public class RocketSquidsBase
      * Declare sounds
      */
     public static SoundEvent blastoff;
+    public static SoundEvent conch;
 
     /**
      * A custom firework that looks like a Rocket Squid.
@@ -183,9 +182,11 @@ public class RocketSquidsBase
 
         //Making sounds
         blastoff = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff");
+        conch = new SoundEvent(new ResourceLocation(DataReference.MODID, "conch")).setRegistryName("conch");
 
         //Registering sounds
         ForgeRegistries.SOUND_EVENTS.register(blastoff);
+        ForgeRegistries.SOUND_EVENTS.register(conch);
 
         proxy.registerRenderers();
 

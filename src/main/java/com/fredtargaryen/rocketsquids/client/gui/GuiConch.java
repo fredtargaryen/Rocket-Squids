@@ -1,7 +1,11 @@
 package com.fredtargaryen.rocketsquids.client.gui;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.SoundEvents;
 
 public class GuiConch extends GuiScreen {
     private byte conchStage;
@@ -51,5 +55,13 @@ public class GuiConch extends GuiScreen {
         public ConchButton(int buttonId, int x, int y, String buttonText) {
             super(buttonId, x, y, 20, 20, buttonText);
         }
+
+        public void playPressSound(SoundHandler soundHandlerIn) {
+            //Range 0.5 to 2.0
+            soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(RocketSquidsBase.conch, 0.5F + 1.5F * (this.id / 35.0F)));
+        }
     }
+
+    @Override
+    public boolean doesGuiPauseGame() { return false; }
 }
