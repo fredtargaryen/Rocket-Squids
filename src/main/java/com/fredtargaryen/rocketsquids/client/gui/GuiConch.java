@@ -1,11 +1,10 @@
 package com.fredtargaryen.rocketsquids.client.gui;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.Sounds;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.init.SoundEvents;
 
 public class GuiConch extends GuiScreen {
     private byte conchStage;
@@ -57,8 +56,7 @@ public class GuiConch extends GuiScreen {
         }
 
         public void playPressSound(SoundHandler soundHandlerIn) {
-            //Range 0.5 to 2.0
-            soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(RocketSquidsBase.conch, 0.5F + 1.5F * (this.id / 35.0F)));
+            soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(Sounds.CONCH_NOTES[this.id], 1.0F));
         }
     }
 

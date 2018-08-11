@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFirework;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIBlastoff;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
@@ -154,7 +155,7 @@ public class EntityRocketSquid extends EntityWaterMob
         }
         if(onFire || this.squidCap.getForcedBlast())
         {
-            this.playSound(RocketSquidsBase.blastoff, 1.0F, 1.0F);
+            this.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
             this.squidCap.setBlasting(true);
         }
 

@@ -88,12 +88,6 @@ public class RocketSquidsBase
     public static CreativeTabs squidsTab;
 
     /**
-     * Declare sounds
-     */
-    public static SoundEvent blastoff;
-    public static SoundEvent conch;
-
-    /**
      * A custom firework that looks like a Rocket Squid.
      * Firework structure:
      * TagCompound          (firework)
@@ -179,14 +173,7 @@ public class RocketSquidsBase
         nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
         turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
 
-
-        //Making sounds
-        blastoff = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff")).setRegistryName("blastoff");
-        conch = new SoundEvent(new ResourceLocation(DataReference.MODID, "conch")).setRegistryName("conch");
-
-        //Registering sounds
-        ForgeRegistries.SOUND_EVENTS.register(blastoff);
-        ForgeRegistries.SOUND_EVENTS.register(conch);
+        Sounds.constructAndRegisterSoundEvents();
 
         proxy.registerRenderers();
 
