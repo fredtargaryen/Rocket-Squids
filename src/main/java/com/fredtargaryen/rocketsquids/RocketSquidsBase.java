@@ -1,6 +1,8 @@
 /**
  * TODO
- * Conch GUI Sounds
+ * Need smaller conch hitbox
+ * No particle texture (check)
+ * Low and high octaves
  * Conch block random rotations
  * Render conch as armour
  * Make conch gui buttons look more musical
