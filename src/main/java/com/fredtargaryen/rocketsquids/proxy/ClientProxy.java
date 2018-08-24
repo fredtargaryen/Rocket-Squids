@@ -8,6 +8,7 @@ import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
@@ -40,5 +41,10 @@ public class ClientProxy extends CommonProxy
     @Override
     public void openConchClient(byte conchStage) {
         Minecraft.getMinecraft().displayGuiScreen(new GuiConch(conchStage));
+    }
+
+    @Override
+    public ModelBiped getConchModel() {
+        return new ModelBiped();
     }
 }
