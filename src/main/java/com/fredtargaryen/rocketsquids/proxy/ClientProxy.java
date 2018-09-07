@@ -8,9 +8,11 @@ import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
+import com.fredtargaryen.rocketsquids.network.MessageHandler;
+import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraft.client.Minecraft;
@@ -41,6 +43,12 @@ public class ClientProxy extends CommonProxy
     @Override
     public void openConchClient(byte conchStage) {
         Minecraft.getMinecraft().displayGuiScreen(new GuiConch(conchStage));
+    }
+
+    @Override
+    public void playNote(byte note) {
+        EntityPlayer ep = Minecraft.getMinecraft().player;
+        MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer(note, ep.posX, ep.posY, ep.posZ));
     }
 
     @Override

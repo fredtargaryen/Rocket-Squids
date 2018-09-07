@@ -15,4 +15,7 @@ public class ServerProxy extends CommonProxy
 
     @Override
     public ModelBiped getConchModel() { return null; }
+
+    @Override
+    public void playNote(byte note) {}
 }

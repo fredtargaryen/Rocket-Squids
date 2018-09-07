@@ -28,4 +28,10 @@ public interface ISquidCapability
 
     boolean getForcedBlast();
     void setForcedBlast(boolean b);
+
+    void processNote(byte note);
+    byte[] getLatestNotes();
+    void setLatestNotes(byte[] notes);
+    byte[] getTargetNotes();
+    void setTargetNotes(byte[] notes);
 }

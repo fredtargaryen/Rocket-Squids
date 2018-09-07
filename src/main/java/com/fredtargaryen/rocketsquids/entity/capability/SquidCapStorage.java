@@ -23,6 +23,8 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         comp.setBoolean("shaking", instance.getShaking());
         comp.setBoolean("blasting", instance.getBlasting());
         comp.setBoolean("forcedblast", instance.getForcedBlast());
+        comp.setByteArray("latestnotes", instance.getLatestNotes());
+        comp.setByteArray("targetnotes", instance.getTargetNotes());
         return comp;
     }
 
@@ -37,5 +39,7 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         instance.setShaking(comp.getBoolean("shaking"));
         instance.setBlasting(comp.getBoolean("blasting"));
         instance.setForcedBlast(comp.getBoolean("forcedblast"));
+        instance.setLatestNotes(comp.getByteArray("latestnotes"));
+        instance.setTargetNotes(comp.getByteArray("targetnotes"));
     }
 }

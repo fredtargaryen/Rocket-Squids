@@ -1,6 +1,8 @@
 package com.fredtargaryen.rocketsquids.network;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteClient;
+import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidCapData;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -13,5 +15,7 @@ public class MessageHandler
     public static void init()
     {
         INSTANCE.registerMessage(MessageSquidCapData.class, MessageSquidCapData.class, 0, Side.CLIENT);
+        INSTANCE.registerMessage(MessagePlayNoteServer.class, MessagePlayNoteServer.class, 1, Side.SERVER);
+        INSTANCE.registerMessage(MessagePlayNoteClient.class, MessagePlayNoteClient.class, 1, Side.CLIENT);
     }
 }

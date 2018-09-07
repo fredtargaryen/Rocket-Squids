@@ -11,4 +11,6 @@ public interface IProxy
     void openConchClient(byte conchStage);
 
     ModelBiped getConchModel();
+
+    void playNote(byte note);
 }

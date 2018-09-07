@@ -1,11 +1,9 @@
 /**
  * TODO
- * No particle texture (check)
- * Low and high octaves (check)
- * Conch block random rotations
- * Need smaller conch hitbox
+ * MessageSquidNote
  * Render conch as armour
- * Make conch gui buttons look more musical
+ * Conch block random rotations
+ * Shrine block
  */
 package com.fredtargaryen.rocketsquids;
 
