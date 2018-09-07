@@ -53,6 +53,6 @@ public class ClientProxy extends CommonProxy
 
     @Override
     public ModelBiped getConchModel() {
-        return new ModelBiped();
+        return new ModelConch();
     }
 }

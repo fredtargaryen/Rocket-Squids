@@ -2,6 +2,8 @@ package com.fredtargaryen.rocketsquids.client.gui;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.network.MessageHandler;
+import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -11,11 +13,16 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiConch extends GuiScreen {
     private byte conchStage;
+    private double x;
+    private double y;
+    private double z;
+
     protected static final ResourceLocation NOTE = new ResourceLocation(DataReference.MODID+":textures/gui/note.png");
 
     private static final String[] buttonNames = {
@@ -24,6 +31,10 @@ public class GuiConch extends GuiScreen {
 
     public GuiConch(byte conchStage) {
         this.conchStage = conchStage;
+        EntityPlayer ep = Minecraft.getMinecraft().player;
+        this.x = ep.posX;
+        this.y = ep.posY;
+        this.z = ep.posZ;
     }
 
     /**
@@ -69,6 +80,7 @@ public class GuiConch extends GuiScreen {
         @Override
         public void playPressSound(SoundHandler soundHandlerIn) {
             soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(Sounds.CONCH_NOTES[this.id], 1.0F));
+            MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, GuiConch.this.x, GuiConch.this.y, GuiConch.this.z));
         }
 
         /**

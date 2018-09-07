@@ -1,7 +1,6 @@
 /**
  * TODO
- * MessageSquidNote
- * Render conch as armour
+ * Worm conch cubes rotate independently instead of in a group
  * Conch block random rotations
  * Shrine block
  */

@@ -1,15 +1,19 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.network.MessageHandler;
+import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.Random;
 
 public class EntityAISwimAround extends EntityAIBase
 {
     private final EntityRocketSquid squid;
+    private byte noteIndex;
 
     //FOR TESTING
     //private boolean goHorizontal = false;
@@ -33,6 +37,7 @@ public class EntityAISwimAround extends EntityAIBase
         this.r = this.squid.getRNG();
         this.swimForce = swimForce;
         //this.currentAngle = 0;
+        this.noteIndex = 0;
     }
 
     @Override
@@ -140,6 +145,7 @@ public class EntityAISwimAround extends EntityAIBase
             double trp = this.squid.getTargRotPitch();
             double Try = this.squid.getTargRotYaw();
             if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
+                this.playNextNote();
                 //The last turn is as good as finished
                 int randomInt = this.r.nextInt(12);
                 if (!this.squid.isBaby() && randomInt == 0) {
@@ -164,7 +170,8 @@ public class EntityAISwimAround extends EntityAIBase
         } else {
             if (Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
                     && Math.abs(this.squid.motionZ) < 0.005) {
-                this.squid.isAirBorne = false;
+                this.playNextNote();
+                //this.squid.isAirBorne = false;
                 //Last forward swim is as good as finished
                 int randomInt = this.r.nextInt(12);
                 if (!this.squid.isBaby() && randomInt == 0) {
@@ -187,6 +194,17 @@ public class EntityAISwimAround extends EntityAIBase
                     }
                 }
             }
+        }
+    }
+
+    private void playNextNote() {
+        byte note = this.squid.getTargetNote(this.noteIndex);
+        MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote(note), new NetworkRegistry.TargetPoint(this.squid.dimension, this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F));
+        if(this.noteIndex == 2) {
+            this.noteIndex = 0;
+        }
+        else {
+            ++this.noteIndex;
         }
     }
 }

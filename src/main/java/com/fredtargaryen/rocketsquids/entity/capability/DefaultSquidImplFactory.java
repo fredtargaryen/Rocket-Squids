@@ -49,7 +49,6 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
                     note_ids[notePicker.nextInt(7)],
                     note_ids[notePicker.nextInt(7)]
             };
-            System.out.println(this.targetNotes[0]+", "+this.targetNotes[1]+", "+this.targetNotes[2]);
         }
 
         @Override
@@ -190,7 +189,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
             && this.latestNotes[1] == this.targetNotes[1]
             && this.latestNotes[2] == this.targetNotes[2]) {
                 //TODO
-                this.setShaking(true);
+                this.setForcedBlast(true);
             }
         }
 
