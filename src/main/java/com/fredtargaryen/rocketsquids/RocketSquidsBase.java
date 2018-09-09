@@ -1,6 +1,7 @@
 /**
  * TODO
- * Worm conch cubes rotate independently instead of in a group
+ * Conch rotating with body but not head
+ * * F3 rotation == head rotation == body rotation but somehow head not pointing in body direction
  * Conch block random rotations
  * Shrine block
  */
