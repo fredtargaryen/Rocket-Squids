@@ -14,6 +14,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -53,6 +54,8 @@ public class ClientProxy extends CommonProxy
 
     @Override
     public ModelBiped getConchModel() {
-        return new ModelConch();
+        ModelConch mc = new ModelConch();
+        mc.register();
+        return mc;
     }
 }

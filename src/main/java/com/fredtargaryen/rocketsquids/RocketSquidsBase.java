@@ -1,13 +1,18 @@
 /**
  * TODO
  * Conch rotating with body but not head
- * * F3 rotation == head rotation == body rotation but somehow head not pointing in body direction
+ * * Check Minecraft Forum
  * Conch block random rotations
- * Shrine block
+ * Statue block
+ * * Make placeable
+ * * Tabula addon
+ * * Finish Model
+ * * Finish Texture
  */
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.BlockConch;
+import com.fredtargaryen.rocketsquids.block.BlockStatue;
 import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
@@ -21,6 +26,8 @@ import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -75,6 +82,7 @@ public class RocketSquidsBase
      * Declare all blocks here
      */
     public static Block blockConch;
+    public static Block blockStatue;
 
     /**
      * Declare all items here
@@ -131,6 +139,10 @@ public class RocketSquidsBase
         blockConch = new BlockConch()
                 .setUnlocalizedName("blockconch")
                 .setRegistryName("blockconch");
+
+        blockStatue = new BlockStatue(Material.ROCK, MapColor.GOLD)
+                .setUnlocalizedName("statue")
+                .setRegistryName("statue");
 
         //Making items
         itemConch = new ItemConch()
@@ -195,7 +207,7 @@ public class RocketSquidsBase
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
-        event.getRegistry().registerAll(blockConch);
+        event.getRegistry().registerAll(blockConch, blockStatue);
     }
 
     @SubscribeEvent

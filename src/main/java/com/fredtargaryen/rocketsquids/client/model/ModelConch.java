@@ -5,10 +5,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Conch - FredTargaryen
@@ -23,6 +31,7 @@ public class ModelConch extends ModelBiped {
     public ModelRenderer shape6;
 
     public ModelConch() {
+        super();
         this.textureWidth = 16;
         this.textureHeight = 16;
         this.shape2 = new ModelRenderer(this, 0, 0);
@@ -48,12 +57,17 @@ public class ModelConch extends ModelBiped {
         this.shape1.render(f5);
     }
 
-    /**
-     * This is a helper function from Tabula to set the rotation of model parts
-     */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void getHeadAngles(RenderPlayerEvent.Pre rle) {
+        ModelRenderer head = rle.getRenderer().getMainModel().bipedHead;
+        copyModelAngles(head, this.shape2);
+        copyModelAngles(head, this.shape6);
+        copyModelAngles(head, this.shape3);
+        copyModelAngles(head, this.shape1);
+    }
+
+    public void register() {
+        MinecraftForge.EVENT_BUS.register(this);
     }
 }

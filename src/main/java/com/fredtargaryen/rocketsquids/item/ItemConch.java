@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.client.model.ModelConch;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -107,12 +108,12 @@ public class ItemConch extends ItemArmor {
     @SideOnly(Side.CLIENT)
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack stack, EntityEquipmentSlot armorSlot, ModelBiped defaultModel) {
         if(stack != null) {
-            if(stack.getItem() == this) {
+            if (stack.getItem() == this) {
                 EntityEquipmentSlot type = ((ItemArmor) stack.getItem()).armorType;
                 ModelBiped armorModel;
                 if (type == EntityEquipmentSlot.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
-                    armorModel.bipedHead.showModel = armorSlot == EntityEquipmentSlot.HEAD;
+                    armorModel.bipedHead.showModel = defaultModel.bipedHead.showModel;
                     armorModel.bipedHeadwear.showModel = armorSlot == EntityEquipmentSlot.HEAD;
 
                     armorModel.isSneak = defaultModel.isSneak;
