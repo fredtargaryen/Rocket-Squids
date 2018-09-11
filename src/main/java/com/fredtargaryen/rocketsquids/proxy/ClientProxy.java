@@ -14,7 +14,6 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -39,6 +38,7 @@ public class ClientProxy extends CommonProxy
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.itemConch3, 0, new ModelResourceLocation(DataReference.MODID + ":conchthree", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.nitroinksac, 0, new ModelResourceLocation(DataReference.MODID + ":nitroinksac", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.turbotube, 0, new ModelResourceLocation(DataReference.MODID + ":turbotube", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.iStatue, 0, new ModelResourceLocation(DataReference.MODID + ":statue", "inventory"));
     }
 
     @Override

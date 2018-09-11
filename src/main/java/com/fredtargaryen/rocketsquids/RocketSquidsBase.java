@@ -4,7 +4,8 @@
  * * Check Minecraft Forum
  * Conch block random rotations
  * Statue block
- * * Make placeable
+ * * Worldgen
+ * * Blast towards
  * * Tabula addon
  * * Finish Model
  * * Finish Texture
@@ -92,6 +93,7 @@ public class RocketSquidsBase
     public static Item itemConch3;
     public static Item nitroinksac;
     public static Item turbotube;
+    public static Item iStatue;
 
     public static CreativeTabs squidsTab;
 
@@ -170,6 +172,11 @@ public class RocketSquidsBase
                 .setUnlocalizedName("turbotube")
                 .setRegistryName("turbotube");
 
+        iStatue = new ItemBlock(blockStatue)
+                .setMaxStackSize(1)
+                .setUnlocalizedName("statue")
+                .setRegistryName("statue");
+
         //Making Creative Tab
         squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "ftrsquids") {
             ItemStack conch = new ItemStack(itemConch);
@@ -213,7 +220,7 @@ public class RocketSquidsBase
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube);
+        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue);
     }
 
     @SubscribeEvent

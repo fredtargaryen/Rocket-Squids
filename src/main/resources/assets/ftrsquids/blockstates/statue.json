@@ -1,6 +1,12 @@
 {
   "variants":
   {
-    "normal": { "model": "ftrsquids:statue" }
+    "normal": { "model": "ftrsquids:statue" },
+    "activation=up": { "model": "ftrsquids:statue" },
+    "activation=down": { "model": "ftrsquids:statue" },
+    "activation=north": { "model": "ftrsquids:statue" },
+    "activation=south": { "model": "ftrsquids:statue" },
+    "activation=east": { "model": "ftrsquids:statue" },
+    "activation=west": { "model": "ftrsquids:statue" }
   }
 }
