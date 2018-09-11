@@ -3,6 +3,7 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
+import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +15,11 @@ public class EntityAISwimAround extends EntityAIBase
 {
     private final EntityRocketSquid squid;
     private byte noteIndex;
+    private enum StatueBlastStage {
+        NONE,
+        LOCATE,
+        TURN
+    }
 
     //FOR TESTING
     //private boolean goHorizontal = false;
@@ -27,6 +33,7 @@ public class EntityAISwimAround extends EntityAIBase
 
     private final Random r;
 	private final double swimForce;
+	private StatueBlastStage statueBlastStage;
 
     public EntityAISwimAround(EntityRocketSquid ers, double swimForce)
     {
@@ -38,6 +45,7 @@ public class EntityAISwimAround extends EntityAIBase
         this.swimForce = swimForce;
         //this.currentAngle = 0;
         this.noteIndex = 0;
+        this.statueBlastStage = StatueBlastStage.NONE;
     }
 
     @Override
@@ -140,56 +148,100 @@ public class EntityAISwimAround extends EntityAIBase
 
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
-        boolean hasVIPRider = this.squid.hasVIPRider();
-        if (this.turning) {
-            double trp = this.squid.getTargRotPitch();
-            double Try = this.squid.getTargRotYaw();
-            if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
-                this.playNextNote();
-                //The last turn is as good as finished
-                int randomInt = this.r.nextInt(12);
-                if (!this.squid.isBaby() && randomInt == 0) {
-                    this.squid.setShaking(true);
-                } else {
-                    if (hasVIPRider) {
-                        if (!this.doTurn(true)) {
-                            //Squid is pointing roughly where the rider is facing
-                            this.squid.addForce(this.swimForce);
-                            this.turning = false;
-                        }
-                    } else {
-                        if (randomInt < 5) {
-                            this.doTurn(false);
+        if(this.squid.getBlastToStatue()) {
+            switch (this.statueBlastStage) {
+                case NONE:
+                    this.statueBlastStage = StatueBlastStage.LOCATE;
+                    break;
+                case LOCATE:
+                    //Find nearest statue
+                    int[] statueCoords = StatueManager.forWorld(this.squid.world).getNearestStatuePos(this.squid.posX, this.squid.posY, this.squid.posZ);
+                    if(statueCoords[3] < 1) {
+                        //StatueManager doesn't have any statues loaded
+                        this.statueBlastStage = StatueBlastStage.NONE;
+                        this.squid.setBlastToStatue(false);
+                    }
+                    else {
+                        double zDistance = statueCoords[4] - this.squid.posZ;
+                        double xDistance = statueCoords[2] - this.squid.posX;
+                        double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
+                        //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
+                        this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
+                        if (hozDistanceSquared > 6400.0) {
+                            //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
+                            //A squid can go about 80 blocks at surface level and 45 degrees so this should prevent some annoying overshooting
+                            this.squid.setTargetRotPitch(Math.PI / 4.0);
                         } else {
-                            this.squid.addForce(this.swimForce);
-                            this.turning = false;
+                            //Less than 80 blocks away; blast directly towards the statue
+                            this.squid.setTargetRotPitch(Math.atan2(statueCoords[3] - this.squid.posY, Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
+                        }
+                        this.statueBlastStage = StatueBlastStage.TURN;
+                    }
+                    break;
+                case TURN:
+                    double trp = this.squid.getTargRotPitch();
+                    double Try = this.squid.getTargRotYaw();
+                    if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
+                        this.squid.setShaking(true);
+                        this.statueBlastStage = StatueBlastStage.NONE;
+                        this.squid.setBlastToStatue(false);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            boolean hasVIPRider = this.squid.hasVIPRider();
+            if (this.turning) {
+                double trp = this.squid.getTargRotPitch();
+                double Try = this.squid.getTargRotYaw();
+                if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
+                    this.playNextNote();
+                    //The last turn is as good as finished
+                    int randomInt = this.r.nextInt(12);
+                    if (!this.squid.isBaby() && randomInt == 0) {
+                        this.squid.setShaking(true);
+                    } else {
+                        if (hasVIPRider) {
+                            if (!this.doTurn(true)) {
+                                //Squid is pointing roughly where the rider is facing
+                                this.squid.addForce(this.swimForce);
+                                this.turning = false;
+                            }
+                        } else {
+                            if (randomInt < 5) {
+                                this.doTurn(false);
+                            } else {
+                                this.squid.addForce(this.swimForce);
+                                this.turning = false;
+                            }
                         }
                     }
                 }
-            }
-        } else {
-            if (Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
-                    && Math.abs(this.squid.motionZ) < 0.005) {
-                this.playNextNote();
-                //this.squid.isAirBorne = false;
-                //Last forward swim is as good as finished
-                int randomInt = this.r.nextInt(12);
-                if (!this.squid.isBaby() && randomInt == 0) {
-                    this.squid.setShaking(true);
-                } else {
-                    if (hasVIPRider) {
-                        if (this.doTurn(true)) {
-                            this.turning = true;
-                        } else {
-                            //Squid is pointing roughly where the rider is facing
-                            this.squid.addForce(this.swimForce);
-                        }
+            } else {
+                if (Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
+                        && Math.abs(this.squid.motionZ) < 0.005) {
+                    this.playNextNote();
+                    //Last forward swim is as good as finished
+                    int randomInt = this.r.nextInt(12);
+                    if (!this.squid.isBaby() && randomInt == 0) {
+                        this.squid.setShaking(true);
                     } else {
-                        if (randomInt < 5) {
-                            this.squid.addForce(this.swimForce);
+                        if (hasVIPRider) {
+                            if (this.doTurn(true)) {
+                                this.turning = true;
+                            } else {
+                                //Squid is pointing roughly where the rider is facing
+                                this.squid.addForce(this.swimForce);
+                            }
                         } else {
-                            this.doTurn(hasVIPRider);
-                            this.turning = true;
+                            if (randomInt < 5) {
+                                this.squid.addForce(this.swimForce);
+                            } else {
+                                this.doTurn(hasVIPRider);
+                                this.turning = true;
+                            }
                         }
                     }
                 }

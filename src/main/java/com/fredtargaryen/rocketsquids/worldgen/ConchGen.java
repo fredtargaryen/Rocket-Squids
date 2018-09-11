@@ -1,8 +1,10 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import net.minecraft.block.BlockSand;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -24,15 +26,15 @@ public class ConchGen implements IWorldGenerator {
      *
      */
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        int maxConches = random.nextInt(3);
+        int maxConches = random.nextInt(2) + 2; //was 3
         int blockX = chunkX * 16;
         int blockZ = chunkZ * 16;
         for (int conches = 0; conches < maxConches; ++conches) {
             int conchX = blockX + random.nextInt(16);
             int conchZ = blockZ + random.nextInt(16);
-            BlockPos conchPos = world.getTopSolidOrLiquidBlock(new BlockPos(conchX, 0, conchZ));
+            BlockPos conchPos = world.getTopSolidOrLiquidBlock(new BlockPos(conchX, 0, conchZ)).down();
             IBlockState blockState = world.getBlockState(conchPos);
-            if (blockState.getMaterial() == Material.SAND) {
+            if (blockState.getBlock() instanceof BlockSand) {
                 world.setBlockState(conchPos.up(), RocketSquidsBase.blockConch.getDefaultState());
             }
             else if(blockState.getMaterial() == Material.WATER) {

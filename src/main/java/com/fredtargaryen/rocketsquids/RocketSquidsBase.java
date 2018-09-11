@@ -2,10 +2,11 @@
  * TODO
  * Conch rotating with body but not head
  * * Check Minecraft Forum
+ * Conch gen (check)
  * Conch block random rotations
  * Statue block
- * * Worldgen
- * * Blast towards
+ * * Worldgen (check)
+ * * shouldSideBeRendered not working (check)
  * * Tabula addon
  * * Finish Model
  * * Finish Texture
@@ -25,6 +26,7 @@ import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
+import com.fredtargaryen.rocketsquids.worldgen.StatueGen;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -111,6 +113,7 @@ public class RocketSquidsBase
     public static final NBTTagCompound firework = new NBTTagCompound();
 
     private static ConchGen conchGen;
+    private static StatueGen statueGen;
 	
     /**   
      * Says where the client and server 'proxy' code is loaded.
@@ -142,7 +145,7 @@ public class RocketSquidsBase
                 .setUnlocalizedName("blockconch")
                 .setRegistryName("blockconch");
 
-        blockStatue = new BlockStatue(Material.ROCK, MapColor.GOLD)
+        blockStatue = new BlockStatue(Material.ROCK)
                 .setUnlocalizedName("statue")
                 .setRegistryName("statue");
 
@@ -249,6 +252,8 @@ public class RocketSquidsBase
 
         conchGen = new ConchGen();
         GameRegistry.registerWorldGenerator(conchGen, 3);
+        statueGen = new StatueGen();
+        GameRegistry.registerWorldGenerator(statueGen, 3);
 
         proxy.registerModels();
         MessageHandler.init();

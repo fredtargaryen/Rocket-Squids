@@ -19,6 +19,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
     private class DefaultSquidImpl implements ISquidCapability {
         private boolean shaking;
         private boolean blasting;
+        private boolean blastToStatue;
         private boolean forcedBlast;
         private byte[] latestNotes;
         private byte[] targetNotes;
@@ -49,6 +50,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
                     note_ids[notePicker.nextInt(7)],
                     note_ids[notePicker.nextInt(7)]
             };
+            this.blastToStatue = false;
         }
 
         @Override
@@ -169,6 +171,17 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         }
 
         @Override
+        public boolean getBlastToStatue() {
+            //return this.blastToStatue;
+            return true;
+        }
+
+        @Override
+        public void setBlastToStatue(boolean blast) {
+            this.blastToStatue = blast;
+        }
+
+        @Override
         public boolean getForcedBlast()
         {
             return this.forcedBlast;
@@ -188,8 +201,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
             if(this.latestNotes[0] == this.targetNotes[0]
             && this.latestNotes[1] == this.targetNotes[1]
             && this.latestNotes[2] == this.targetNotes[2]) {
-                //TODO
-                this.setForcedBlast(true);
+                this.blastToStatue = true;
             }
         }
 

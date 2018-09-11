@@ -37,13 +37,14 @@ public class ItemConch extends ItemArmor {
      */
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-//        if (worldIn.isRemote) RocketSquidsBase.proxy.openConchClient((byte) 1);
-//        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-        System.out.println("Yaw = "+playerIn.rotationYaw);
-        System.out.println("Head Yaw = "+playerIn.getRotationYawHead());
-        Vec3d look = playerIn.getLookVec();
-        System.out.println("Math.atan2 = "+Math.atan2(look.z, look.x));
-        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+        if (worldIn.isRemote) RocketSquidsBase.proxy.openConchClient((byte) 1);
+        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+        //FOR CONCH ARMOUR DEBUGGING
+//        System.out.println("Yaw = "+playerIn.rotationYaw);
+//        System.out.println("Head Yaw = "+playerIn.getRotationYawHead());
+//        Vec3d look = playerIn.getLookVec();
+//        System.out.println("Math.atan2 = "+Math.atan2(look.z, look.x));
+//        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
     /**

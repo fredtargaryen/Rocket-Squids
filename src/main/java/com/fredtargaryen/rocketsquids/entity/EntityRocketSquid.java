@@ -754,6 +754,10 @@ public class EntityRocketSquid extends EntityWaterMob
 
     public double getTargRotYaw() { return this.squidCap.getTargetRotYaw(); }
 
+    public boolean getBlastToStatue() { return this.squidCap.getBlastToStatue(); }
+
+    public void setBlastToStatue(boolean blast) { this.squidCap.setBlastToStatue(blast); }
+
     public boolean getForcedBlast() { return this.squidCap.getForcedBlast(); }
 
     public byte getTargetNote(byte index) {
