@@ -1,9 +1,12 @@
 package com.fredtargaryen.rocketsquids.block;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -18,7 +21,18 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockConch extends Block {
-    private static final AxisAlignedBB CONCH_AABB = new AxisAlignedBB(0.2, 0.0, 0.4, 0.4, 0.5, 0.6);
+    private static final AxisAlignedBB CONCH_AABB_EAST = new AxisAlignedBB(0.1875, 0.0, 0.125, 0.375, 0.125, 0.5);
+    private static final AxisAlignedBB CONCH_AABB_SOUTH = new AxisAlignedBB(0.5, 0.0, 0.1875, 0.125, 0.125, 0.375);
+    private static final AxisAlignedBB CONCH_AABB_WEST = new AxisAlignedBB(0.375, 0.0, 0.5, 0.1875, 0.125, 0.125);
+    private static final AxisAlignedBB CONCH_AABB_NORTH = new AxisAlignedBB(0.125, 0.0, 0.375, 0.5, 0.125, 0.1875);
+
+    public static final PropertyDirection FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>()
+    {
+        public boolean apply(@Nullable EnumFacing p_apply_1_)
+        {
+            return p_apply_1_ != EnumFacing.DOWN && p_apply_1_ != EnumFacing.UP;
+        }
+    });
 
     public BlockConch() {
         super(Material.PLANTS);
@@ -56,7 +70,16 @@ public class BlockConch extends Block {
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return new AxisAlignedBB(0.1875, 0.0, 0.125, 0.375, 0.125, 0.5);
+        switch(state.getValue(FACING)) {
+            case NORTH:
+                return CONCH_AABB_NORTH;
+            case SOUTH:
+                return CONCH_AABB_SOUTH;
+            case WEST:
+                return CONCH_AABB_WEST;
+            default:
+                return CONCH_AABB_EAST;
+        }
     }
 
     /**
@@ -71,5 +94,32 @@ public class BlockConch extends Block {
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
         return BlockFaceShape.UNDEFINED;
+    }
+
+    ////////////////////
+    //BLOCKSTATE STUFF//
+    ////////////////////
+    @Override
+    public BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        switch(meta) {
+            case 2:
+                return this.getDefaultState().withProperty(FACING, EnumFacing.NORTH);
+            case 3:
+                return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
+            case 4:
+                return this.getDefaultState().withProperty(FACING, EnumFacing.WEST);
+            default:
+                return this.getDefaultState().withProperty(FACING, EnumFacing.EAST);
+        }
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).ordinal();
     }
 }

@@ -1,13 +1,10 @@
 /**
  * TODO
+ * Conch block random rotations
+ * Placing conches at different rotations
+ * Squid notes are wrong
  * Conch rotating with body but not head
  * * Check Minecraft Forum
- * Conch block random rotations
- * Conch texture
- * Statue block
- * * Tabula addon
- * * Finish Model
- * * Finish Texture
  */
 package com.fredtargaryen.rocketsquids;
 

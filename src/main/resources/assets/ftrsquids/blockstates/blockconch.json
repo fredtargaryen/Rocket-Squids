@@ -1,6 +1,8 @@
 {
-  "variants":
-  {
-    "normal": { "model": "ftrsquids:conch" }
+  "variants": {
+    "facing=east": { "model": "ftrsquids:conch" },
+    "facing=south": { "model": "ftrsquids:conch", "y": 90 },
+    "facing=west": { "model": "ftrsquids:conch", "y": 180 },
+    "facing=north": { "model": "ftrsquids:conch", "y": 270 }
   }
 }

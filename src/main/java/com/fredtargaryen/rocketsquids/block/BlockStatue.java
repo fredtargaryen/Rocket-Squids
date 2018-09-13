@@ -1,9 +1,9 @@
 package com.fredtargaryen.rocketsquids.block;
 
 import com.fredtargaryen.rocketsquids.world.StatueManager;
+import com.google.common.base.Predicate;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -17,9 +17,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public class BlockStatue extends BlockFalling {
     private static final AxisAlignedBB tallAABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 2.0, 1.0);
-    public static final PropertyDirection ACTIVATION = PropertyDirection.create("activation");
+    public static final PropertyDirection ACTIVATION = PropertyDirection.create("activation", new Predicate<EnumFacing>()
+    {
+        public boolean apply(@Nullable EnumFacing p_apply_1_)
+        {
+            return p_apply_1_ != EnumFacing.DOWN && p_apply_1_ != EnumFacing.UP;
+        }
+    });
     public BlockStatue(Material blockMaterialIn) {
         super(blockMaterialIn);
     }
@@ -41,16 +49,14 @@ public class BlockStatue extends BlockFalling {
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         IBlockState def = this.getDefaultState();
         switch(meta) {
-            case 1:
-                return def.withProperty(ACTIVATION, EnumFacing.NORTH);
             case 2:
-                return def.withProperty(ACTIVATION, EnumFacing.EAST);
+                return def.withProperty(ACTIVATION, EnumFacing.NORTH);
             case 3:
                 return def.withProperty(ACTIVATION, EnumFacing.SOUTH);
             case 4:
                 return def.withProperty(ACTIVATION, EnumFacing.WEST);
             default:
-                return this.getDefaultState().withProperty(ACTIVATION, EnumFacing.UP);
+                return def.withProperty(ACTIVATION, EnumFacing.EAST);
         }
     }
 
@@ -68,13 +74,13 @@ public class BlockStatue extends BlockFalling {
         {
             switch(state.getValue(ACTIVATION)) {
                 case NORTH:
-                    return 1;
-                case EAST:
                     return 2;
                 case SOUTH:
                     return 3;
                 case WEST:
                     return 4;
+                case EAST:
+                    return 5;
                 default:
                     return 0;
             }
