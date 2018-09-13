@@ -39,7 +39,7 @@ public class MessagePlayNoteServer implements IMessage, IMessageHandler<MessageP
             @Override
             public void run() {
                 MessageHandler.INSTANCE.sendToAllAround(new MessagePlayNoteClient(message.note), new NetworkRegistry.TargetPoint(epmp.dimension, message.x, message.y, message.z, 64.0));
-                List<Entity> l = Minecraft.getMinecraft().world.getLoadedEntityList();
+                List<Entity> l = epmp.world.getLoadedEntityList();
                 Iterator<Entity> squidFinder = l.iterator();
                 Entity e;
                 while(squidFinder.hasNext())

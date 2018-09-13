@@ -25,6 +25,7 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         comp.setBoolean("forcedblast", instance.getForcedBlast());
         comp.setByteArray("latestnotes", instance.getLatestNotes());
         comp.setByteArray("targetnotes", instance.getTargetNotes());
+        comp.setBoolean("blasttostatue", instance.getBlastToStatue());
         return comp;
     }
 
@@ -41,5 +42,6 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
         instance.setForcedBlast(comp.getBoolean("forcedblast"));
         instance.setLatestNotes(comp.getByteArray("latestnotes"));
         instance.setTargetNotes(comp.getByteArray("targetnotes"));
+        instance.setBlastToStatue(comp.getBoolean("blasttostatue"));
     }
 }

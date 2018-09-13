@@ -26,7 +26,7 @@ public class ConchGen implements IWorldGenerator {
      *
      */
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        int maxConches = random.nextInt(2) + 2; //was 3
+        int maxConches = random.nextInt(3); //was 3
         int blockX = chunkX * 16;
         int blockZ = chunkZ * 16;
         for (int conches = 0; conches < maxConches; ++conches) {

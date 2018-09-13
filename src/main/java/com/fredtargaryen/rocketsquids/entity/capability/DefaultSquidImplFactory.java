@@ -172,8 +172,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
 
         @Override
         public boolean getBlastToStatue() {
-            //return this.blastToStatue;
-            return true;
+            return this.blastToStatue;
         }
 
         @Override
@@ -195,9 +194,9 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
 
         @Override
         public void processNote(byte note) {
-            this.latestNotes[2] = this.latestNotes[1];
-            this.latestNotes[1] = this.latestNotes[0];
-            this.latestNotes[0] = note;
+            this.latestNotes[0] = this.latestNotes[1];
+            this.latestNotes[1] = this.latestNotes[2];
+            this.latestNotes[2] = note;
             if(this.latestNotes[0] == this.targetNotes[0]
             && this.latestNotes[1] == this.targetNotes[1]
             && this.latestNotes[2] == this.targetNotes[2]) {
@@ -212,7 +211,9 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
 
         @Override
         public void setLatestNotes(byte[] notes) {
-            this.latestNotes = notes;
+            this.latestNotes[0] = notes[0];
+            this.latestNotes[1] = notes[1];
+            this.latestNotes[2] = notes[2];
         }
 
         @Override

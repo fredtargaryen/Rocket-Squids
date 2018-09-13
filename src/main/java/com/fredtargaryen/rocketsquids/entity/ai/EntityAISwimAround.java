@@ -162,11 +162,32 @@ public class EntityAISwimAround extends EntityAIBase
                         this.squid.setBlastToStatue(false);
                     }
                     else {
+                        //TargetPoint for playing notes related to distance
+                        NetworkRegistry.TargetPoint squidPoint = new NetworkRegistry.TargetPoint(this.squid.dimension, this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F);
                         double zDistance = statueCoords[4] - this.squid.posZ;
                         double xDistance = statueCoords[2] - this.squid.posX;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
                         //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
                         this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
+                        //Play a celebratory chord
+                        if (hozDistanceSquared > 640000.0) {
+                            //More than 50 chunks away (50 * 16 = 800 blocks). Low C Major
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)0), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)4), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)7), squidPoint);
+                        }
+                        else if (hozDistanceSquared > 25600.0) {
+                            //10-50 chunks away (10 * 16 = 160 blocks). Middle C Major
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)12), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)16), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)19), squidPoint);
+                        }
+                        else {
+                            //Less than 10 chunks away. High C Major
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)24), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)28), squidPoint);
+                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)31), squidPoint);
+                        }
                         if (hozDistanceSquared > 6400.0) {
                             //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
                             //A squid can go about 80 blocks at surface level and 45 degrees so this should prevent some annoying overshooting

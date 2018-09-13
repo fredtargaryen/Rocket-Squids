@@ -2,11 +2,9 @@
  * TODO
  * Conch rotating with body but not head
  * * Check Minecraft Forum
- * Conch gen (check)
  * Conch block random rotations
+ * Conch texture
  * Statue block
- * * Worldgen (check)
- * * shouldSideBeRendered not working (check)
  * * Tabula addon
  * * Finish Model
  * * Finish Texture
