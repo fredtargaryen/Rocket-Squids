@@ -9,7 +9,9 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -22,9 +24,9 @@ import java.util.Random;
 
 public class BlockConch extends Block {
     private static final AxisAlignedBB CONCH_AABB_EAST = new AxisAlignedBB(0.1875, 0.0, 0.125, 0.375, 0.125, 0.5);
-    private static final AxisAlignedBB CONCH_AABB_SOUTH = new AxisAlignedBB(0.5, 0.0, 0.1875, 0.125, 0.125, 0.375);
-    private static final AxisAlignedBB CONCH_AABB_WEST = new AxisAlignedBB(0.375, 0.0, 0.5, 0.1875, 0.125, 0.125);
-    private static final AxisAlignedBB CONCH_AABB_NORTH = new AxisAlignedBB(0.125, 0.0, 0.375, 0.5, 0.125, 0.1875);
+    private static final AxisAlignedBB CONCH_AABB_SOUTH = new AxisAlignedBB(0.5, 0.0, 0.1875, 0.875, 0.125, 0.375);
+    private static final AxisAlignedBB CONCH_AABB_WEST = new AxisAlignedBB(0.625, 0.0, 0.5, 0.8125, 0.125, 0.875);
+    private static final AxisAlignedBB CONCH_AABB_NORTH = new AxisAlignedBB(0.125, 0.0, 0.625, 0.5, 0.125, 0.8125);
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", new Predicate<EnumFacing>()
     {
@@ -121,5 +123,28 @@ public class BlockConch extends Block {
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING).ordinal();
+    }
+
+    /**
+     * Called by ItemBlocks after a block is set in the world, to allow post-place logic
+     */
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        EnumFacing facing = placer.getHorizontalFacing();
+        IBlockState def = this.getDefaultState();
+        switch(facing) {
+            case NORTH:
+                worldIn.setBlockState(pos, def.withProperty(FACING, EnumFacing.EAST));
+                break;
+            case SOUTH:
+                worldIn.setBlockState(pos, def.withProperty(FACING, EnumFacing.WEST));
+                break;
+            case WEST:
+                worldIn.setBlockState(pos, def.withProperty(FACING, EnumFacing.NORTH));
+                break;
+            default:
+                worldIn.setBlockState(pos, def.withProperty(FACING, EnumFacing.SOUTH));
+                break;
+        }
     }
 }

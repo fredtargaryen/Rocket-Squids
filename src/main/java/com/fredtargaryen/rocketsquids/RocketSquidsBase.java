@@ -1,7 +1,5 @@
 /**
  * TODO
- * Conch block random rotations
- * Placing conches at different rotations
  * Squid notes are wrong
  * Conch rotating with body but not head
  * * Check Minecraft Forum

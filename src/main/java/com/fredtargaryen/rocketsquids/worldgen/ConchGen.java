@@ -35,12 +35,12 @@ public class ConchGen implements IWorldGenerator {
             BlockPos conchPos = world.getTopSolidOrLiquidBlock(new BlockPos(conchX, 0, conchZ)).down();
             IBlockState blockState = world.getBlockState(conchPos);
             if (blockState.getBlock() instanceof BlockSand) {
-                world.setBlockState(conchPos.up(), RocketSquidsBase.blockConch.getDefaultState());
+                world.setBlockState(conchPos.up(), RocketSquidsBase.blockConch.getStateFromMeta(random.nextInt(3) + 2));
             }
             else if(blockState.getMaterial() == Material.WATER) {
                 BlockPos down = conchPos.down();
                 if (world.getBlockState(down.down()).getMaterial() == Material.SAND) {
-                    world.setBlockState(down, RocketSquidsBase.blockConch.getDefaultState(), 2);
+                    world.setBlockState(down, RocketSquidsBase.blockConch.getStateFromMeta(random.nextInt(3) + 2), 2);
                 }
             }
         }
