@@ -1,6 +1,10 @@
 /**
  * TODO
  * Squid notes are wrong
+ * * See if high-quality stretching keeps the duration the same or not
+ * * Otherwise attempt sliding shift + change pitch
+ * * Otherwise try decimals in sliding scale
+ * * Otherwise keep I guess
  * Conch rotating with body but not head
  * * Check Minecraft Forum
  */
