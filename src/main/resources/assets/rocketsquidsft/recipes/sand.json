@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "group": "ftrsquids",
+  "group": "rocketsquidsft",
   "pattern": [
     "sss",
     "sss",
@@ -8,7 +8,7 @@
   ],
   "key": {
     "s": {
-      "item": "ftrsquids:conch",
+      "item": "rocketsquidsft:conch",
       "data": 0
     }
   },

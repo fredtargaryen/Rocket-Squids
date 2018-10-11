@@ -2,7 +2,7 @@
     "parent": "minecraft:block/block",
     "ambientocclusion": false,
     "textures": {
-        "particle": "ftrsquids:blocks/statue"
+        "particle": "rocketsquidsft:blocks/statue"
     },
     "elements": [
         {   "__comment": "EastFin",

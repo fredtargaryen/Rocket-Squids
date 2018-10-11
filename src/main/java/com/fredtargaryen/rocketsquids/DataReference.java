@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 public class DataReference
 {
     //MAIN MOD DETAILS
-    public static final String MODID = "ftrsquids";
+    public static final String MODID = "rocketsquidsft";
     public static final String MODNAME = "Rocket Squids";
     public static final String VERSION = "1.1";
     //PROXY PATHS

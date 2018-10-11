@@ -1,12 +1,8 @@
 /**
  * TODO
- * Squid notes are wrong
- * * See if high-quality stretching keeps the duration the same or not
- * * Otherwise attempt sliding shift + change pitch
- * * Otherwise try decimals in sliding scale
- * * Otherwise keep I guess
  * Conch rotating with body but not head
  * * Check Minecraft Forum
+ * Conch and statue textures are bad!
  */
 package com.fredtargaryen.rocketsquids;
 
@@ -178,7 +174,7 @@ public class RocketSquidsBase
                 .setRegistryName("statue");
 
         //Making Creative Tab
-        squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "ftrsquids") {
+        squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "rocketsquidsft") {
             ItemStack conch = new ItemStack(itemConch);
 
             @Override
