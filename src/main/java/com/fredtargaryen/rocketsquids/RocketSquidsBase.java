@@ -302,4 +302,96 @@ public class RocketSquidsBase
             );
         }
     }
+
+    ////////////////////////
+    //FOR THE MODID CHANGE//
+    ////////////////////////
+    @SubscribeEvent
+    public void handleMissingMappings(RegistryEvent.MissingMappings evt) {
+        String fullName = evt.getName().toString();
+        if(fullName.equals("minecraft:blocks")) {
+            for(Object mapping : evt.getAllMappings()) {
+                RegistryEvent.MissingMappings.Mapping trueMapping = (RegistryEvent.MissingMappings.Mapping) mapping;
+                if(trueMapping.key.getResourceDomain().equals("ftrsquids")) {
+                    switch (trueMapping.key.getResourcePath()) {
+                        case "blockconch":
+                            trueMapping.remap(blockConch);
+                            break;
+                        case "statue":
+                            trueMapping.remap(blockStatue);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        else if(fullName.equals("minecraft:entities")) {
+            for(Object mapping : evt.getAllMappings()) {
+                RegistryEvent.MissingMappings.Mapping trueMapping = (RegistryEvent.MissingMappings.Mapping) mapping;
+                if(trueMapping.key.getResourceDomain().equals("ftrsquids")) {
+                    EntityRegistry entityRegistry = EntityRegistry.instance();
+                    switch (trueMapping.key.getResourcePath()) {
+                        case "turbotube":
+                            trueMapping.remap(EntityRegistry.getEntry(EntityThrownTube.class));
+                            break;
+                        case "babyrocketsquid":
+                            trueMapping.remap(EntityRegistry.getEntry(EntityBabyRocketSquid.class));
+                            break;
+                        case "rocketsquid":
+                            trueMapping.remap(EntityRegistry.getEntry(EntityRocketSquid.class));
+                            break;
+                        case "nitroinksac":
+                            trueMapping.remap(EntityRegistry.getEntry(EntityThrownSac.class));
+                            break;
+                    }
+                }
+            }
+        }
+        else if(fullName.equals("minecraft:items")) {
+            for(Object mapping : evt.getAllMappings()) {
+                RegistryEvent.MissingMappings.Mapping trueMapping = (RegistryEvent.MissingMappings.Mapping) mapping;
+                if (trueMapping.key.getResourceDomain().equals("ftrsquids")) {
+                    switch (trueMapping.key.getResourcePath()) {
+                        case "conch":
+                            trueMapping.remap(itemConch);
+                            break;
+                        case "conchtwo":
+                            trueMapping.remap(itemConch2);
+                            break;
+                        case "conchthree":
+                            trueMapping.remap(itemConch3);
+                            break;
+                        case "nitroinksac":
+                            trueMapping.remap(nitroinksac);
+                            break;
+                        case "turbotube":
+                            trueMapping.remap(turbotube);
+                            break;
+                        case "statue":
+                            trueMapping.remap(iStatue);
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        else if(fullName.equals("minecraft:soundevents")) {
+            for(Object mapping : evt.getAllMappings()) {
+                RegistryEvent.MissingMappings.Mapping trueMapping = (RegistryEvent.MissingMappings.Mapping) mapping;
+                if (trueMapping.key.getResourceDomain().equals("ftrsquids")) {
+                    String soundName = trueMapping.key.getResourcePath();
+                    if(soundName.equals("blastoff")) trueMapping.remap(Sounds.BLASTOFF);
+                    else {
+                        for (int i = 0; i < 36; ++i) {
+                            //Check the note name (e.g. "concha#5") of the missing mapping is equal to the note name of any notes
+                            if (soundName.equals(Sounds.CONCH_NOTES[i].getSoundName().getResourcePath())) {
+                                trueMapping.remap(Sounds.CONCH_NOTES[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
