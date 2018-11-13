@@ -1,10 +1,10 @@
 # eclipse
-bin
+.classpath
 *.launch
 .settings
 .metadata
-.classpath
 .project
+bin
 
 # idea
 out
@@ -14,8 +14,12 @@ out
 .idea
 
 # gradle
-build
 .gradle
+build
+gradle
+gradle.properties
+gradlew
+gradlew.bat
 
 # other
 eclipse
