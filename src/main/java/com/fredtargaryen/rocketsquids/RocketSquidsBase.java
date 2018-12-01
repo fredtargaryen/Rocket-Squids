@@ -1,5 +1,6 @@
 /**
  * TODO
+ * Can't dismount squids
  * Conch rotating with body but not head
  * * Check Minecraft Forum
  * Conch and statue textures are bad!
