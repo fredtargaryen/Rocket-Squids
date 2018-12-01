@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.entity;
 
+import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFirework;
@@ -298,12 +299,15 @@ public class EntityRocketSquid extends EntityWaterMob
                     if(stack.getItemDamage() == 0) {
                         //The squeleporter is inactive so store the squid here if possible
                         if (stack.hasCapability(RocketSquidsBase.SQUELEPORTER, null)) {
-                            //TODO Put a teleport sound in
-                            //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-                            stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).setSquid(this);
-                            //Set squeleporter to active
-                            stack.setItemDamage(1);
-                            return true;
+                            if(this.canDespawn()) {
+                                //TODO Put a teleport sound in
+                                //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+                                stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).setSquid(this);
+                                //Set squeleporter to active
+                                stack.setItemDamage(1);
+                                this.setDead();
+                                return true;
+                            }
                         }
                     }
                 }
@@ -666,6 +670,12 @@ public class EntityRocketSquid extends EntityWaterMob
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
+        if(this.isBaby) {
+            compound.setString("id", DataReference.MODID + ":babyrocketsquid");
+        }
+        else {
+            compound.setString("id", DataReference.MODID + ":rocketsquid");
+        }
         compound.setBoolean("Saddle", this.getSaddled());
         compound.setShort("Breed Cooldown", this.breedCooldown);
     }
