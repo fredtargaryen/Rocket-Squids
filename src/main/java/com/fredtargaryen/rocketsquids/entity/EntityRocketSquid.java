@@ -22,6 +22,7 @@ import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -289,53 +290,56 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     @Override
-    protected boolean processInteract(EntityPlayer player, EnumHand hand)
-    {
-        if(!this.isBaby && !this.world.isRemote)
-        {
+    protected boolean processInteract(EntityPlayer player, EnumHand hand) {
+        if(!this.world.isRemote) {
             ItemStack stack = player.getHeldItem(hand);
-            if(stack == ItemStack.EMPTY)
-            {
-                if (this.getSaddled() && !this.isBeingRidden())
-                {
-                    player.startRiding(this);
-                    return true;
+            if(stack != ItemStack.EMPTY) {
+                if(stack.getItem() == RocketSquidsBase.squeleporter) {
+                    if(stack.getItemDamage() == 0) {
+                        //The squeleporter is inactive so store the squid here if possible
+                        if (stack.hasCapability(RocketSquidsBase.SQUELEPORTER, null)) {
+                            //TODO Put a teleport sound in
+                            //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+                            stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).setSquid(this);
+                            //Set squeleporter to active
+                            stack.setItemDamage(1);
+                            return true;
+                        }
+                    }
                 }
             }
-            else
-            {
-                Item i = stack.getItem();
-                if(i == Items.FLINT_AND_STEEL)
-                {
-                    stack.damageItem(1, player);
-                    this.squidCap.setForcedBlast(true);
-                    return true;
-                }
-                else if(i == Items.SADDLE)
-                {
-                    if(!this.getSaddled()) {
-                        stack.damageItem(1, player);
-                        this.setSaddled(true);
-                    }
-                    player.startRiding(this);
-                    return true;
-                }
-                else if(i == Items.FEATHER && this.hasVIPRider())
-                {
-                    this.setShaking(true);
-                    return true;
-                }
-                else
-                {
-                    if (this.getSaddled() && !this.isBeingRidden())
-                    {
+            if (!this.isBaby) {
+                if (stack == ItemStack.EMPTY) {
+                    if (this.getSaddled() && !this.isBeingRidden()) {
                         player.startRiding(this);
                         return true;
+                    }
+                } else {
+                    Item i = stack.getItem();
+                    if (i == Items.FLINT_AND_STEEL) {
+                        stack.damageItem(1, player);
+                        this.squidCap.setForcedBlast(true);
+                        return true;
+                    } else if (i == Items.SADDLE) {
+                        if (!this.getSaddled()) {
+                            stack.damageItem(1, player);
+                            this.setSaddled(true);
+                        }
+                        player.startRiding(this);
+                        return true;
+                    } else if (i == Items.FEATHER && this.hasVIPRider()) {
+                        this.setShaking(true);
+                        return true;
+                    } else {
+                        if (this.getSaddled() && !this.isBeingRidden()) {
+                            player.startRiding(this);
+                            return true;
+                        }
                     }
                 }
             }
         }
-        return false;
+        return super.processInteract(player, hand);
     }
 
     public void explode()

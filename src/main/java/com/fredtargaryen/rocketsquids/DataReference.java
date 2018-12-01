@@ -16,5 +16,6 @@ public class DataReference
     public static final String CLIENTPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ClientProxy";
     public static final String SERVERPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ServerProxy";
 
+    public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "ISqueleporter");
     public static final ResourceLocation SQUID_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ISquidCapability");
 }

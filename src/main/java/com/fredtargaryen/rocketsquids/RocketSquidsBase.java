@@ -17,6 +17,9 @@ import com.fredtargaryen.rocketsquids.entity.capability.DefaultSquidImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
 import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
 import com.fredtargaryen.rocketsquids.item.*;
+import com.fredtargaryen.rocketsquids.item.capability.DefaultSqueleporterImplFactory;
+import com.fredtargaryen.rocketsquids.item.capability.ISqueleporter;
+import com.fredtargaryen.rocketsquids.item.capability.SqueleporterCapStorage;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
@@ -39,10 +42,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -59,6 +59,9 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
 @Mod.EventBusSubscriber
@@ -90,6 +93,7 @@ public class RocketSquidsBase
     public static Item nitroinksac;
     public static Item turbotube;
     public static Item iStatue;
+    public static Item squeleporter;
 
     public static CreativeTabs squidsTab;
 
@@ -120,6 +124,7 @@ public class RocketSquidsBase
     {
         //Capability
         CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
+        CapabilityManager.INSTANCE.register(ISqueleporter.class, new SqueleporterCapStorage(), new DefaultSqueleporterImplFactory());
         MinecraftForge.EVENT_BUS.register(this);
 
         //CONFIG SETUP
@@ -174,6 +179,11 @@ public class RocketSquidsBase
                 .setUnlocalizedName("statue")
                 .setRegistryName("statue");
 
+        squeleporter = new ItemSqueleporter()
+                .setMaxStackSize(1)
+                .setUnlocalizedName("squeleporter")
+                .setRegistryName("squeleporter");
+
         //Making Creative Tab
         squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "rocketsquidsft") {
             ItemStack conch = new ItemStack(itemConch);
@@ -188,6 +198,7 @@ public class RocketSquidsBase
         itemConch3.setCreativeTab(RocketSquidsBase.squidsTab);
         nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
         turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
+        squeleporter.setCreativeTab(RocketSquidsBase.squidsTab);
 
         Sounds.constructAndRegisterSoundEvents();
 
@@ -217,7 +228,8 @@ public class RocketSquidsBase
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue);
+        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue,
+                squeleporter);
     }
 
     @SubscribeEvent
@@ -269,6 +281,43 @@ public class RocketSquidsBase
      */
     @CapabilityInject(ISquidCapability.class)
     public static final Capability<ISquidCapability> SQUIDCAP = null;
+
+    /**
+     * Code for the Squeleporter capability
+     */
+    @CapabilityInject(ISqueleporter.class)
+    public static final Capability<ISqueleporter> SQUELEPORTER = null;
+
+    @SubscribeEvent
+    public void onItemStackConstruct(AttachCapabilitiesEvent<ItemStack> evt) {
+        if(evt.getObject().getItem() == squeleporter) {
+            evt.addCapability(DataReference.SQUELEPORTER_LOCATION,
+                    new ICapabilitySerializable<NBTTagCompound>() {
+                        ISqueleporter inst = SQUELEPORTER.getDefaultInstance();
+
+                        @Override
+                        public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
+                            return capability == SQUELEPORTER;
+                        }
+
+                        @Nullable
+                        @Override
+                        public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+                            return capability == SQUELEPORTER ? SQUELEPORTER.<T>cast(inst) : null;
+                        }
+
+                        @Override
+                        public NBTTagCompound serializeNBT() {
+                            return (NBTTagCompound) SQUELEPORTER.getStorage().writeNBT(SQUELEPORTER, inst, null);
+                        }
+
+                        @Override
+                        public void deserializeNBT(NBTTagCompound nbt) {
+                            SQUELEPORTER.getStorage().readNBT(SQUELEPORTER, inst, null, nbt);
+                        }
+                    });
+        }
+    }
 
     @SubscribeEvent
     public void onEntityConstruct(AttachCapabilitiesEvent<Entity> evt)
