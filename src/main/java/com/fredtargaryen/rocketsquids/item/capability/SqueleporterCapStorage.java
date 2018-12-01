@@ -17,7 +17,8 @@ public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter
     public NBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side)
     {
         NBTTagCompound comp = new NBTTagCompound();
-        instance.getSquid().writeEntityToNBT(comp);
+        EntityRocketSquid ers = instance.getSquid();
+        if(ers != null) ers.writeEntityToNBT(comp);
         return comp;
     }
 
