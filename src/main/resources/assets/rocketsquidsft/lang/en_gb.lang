@@ -13,5 +13,12 @@ tile.blockconch.name=Whistling Conch
 tile.statue.name=Squid Statue
 
 /SUBTITLES
+subs.blank=
 subs.blastoff=Rocket Squid blastoff
-subs.conch=Conch
+subs.conchc=§6C
+subs.conchd=§6D
+subs.conche=§6E
+subs.conchf=§6F
+subs.conchg=§6G
+subs.concha=§6A
+subs.conchb=§6B
