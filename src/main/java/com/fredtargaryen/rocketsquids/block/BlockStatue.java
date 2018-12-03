@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.block;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
 import com.google.common.base.Predicate;
 import net.minecraft.block.BlockFalling;
@@ -8,6 +9,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -106,5 +108,25 @@ public class BlockStatue extends BlockFalling {
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         super.breakBlock(worldIn, pos, state);
         StatueManager.forWorld(worldIn).removeStatue(pos);
+    }
+
+    public void dispenseGift(World world, BlockPos pos, EnumFacing facing) {
+        switch(facing) {
+            case NORTH:
+                EntityItem squav = new EntityItem(world);
+                squav.setItem(new ItemStack(RocketSquidsBase.squavigator));
+                squav.setPosition(pos.getX(), pos.getY(), pos.getZ());
+                //North is negative Z I think
+                squav.setVelocity(0.0, 0.2, -0.2);
+                world.spawnEntity(squav);
+                EntityItem squel = new EntityItem(world);
+                squel.setItem(new ItemStack(RocketSquidsBase.squeleporter));
+                squel.setPosition(pos.getX(), pos.getY(), pos.getZ());
+                squel.setVelocity(0.0, 0.2, -0.2);
+                world.spawnEntity(squel);
+                break;
+            default:
+                break;
+        }
     }
 }

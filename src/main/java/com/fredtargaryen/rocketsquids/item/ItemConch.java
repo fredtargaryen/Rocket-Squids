@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.block.BlockStatue;
 import com.fredtargaryen.rocketsquids.client.model.ModelConch;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
@@ -51,11 +52,9 @@ public class ItemConch extends ItemArmor {
      * Called when a Block is right-clicked with this Item
      */
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        IBlockState iblockstate = worldIn.getBlockState(pos);
+        Block block = iblockstate.getBlock();
         if(player.isSneaking()) {
-            //Place a conch block
-            IBlockState iblockstate = worldIn.getBlockState(pos);
-            Block block = iblockstate.getBlock();
-
             if (!block.isReplaceable(worldIn, pos)) {
                 pos = pos.offset(facing);
             }
@@ -78,7 +77,17 @@ public class ItemConch extends ItemArmor {
             }
         }
         else {
-            return this.onItemRightClick(worldIn, player, hand).getType();
+            if(block == RocketSquidsBase.blockStatue) {
+                if(iblockstate.getValue(BlockStatue.ACTIVATION) == EnumFacing.UP) {
+                    if(facing == EnumFacing.NORTH) {
+                        worldIn.setBlockState(pos, iblockstate.withProperty(BlockStatue.ACTIVATION, EnumFacing.NORTH));
+                        player.getHeldItem(hand).grow(-1);
+                        ((BlockStatue) block).dispenseGift(worldIn, pos, facing);
+                        return EnumActionResult.SUCCESS;
+                    }
+                }
+            }
+            return EnumActionResult.FAIL;
         }
     }
 
