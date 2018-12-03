@@ -500,9 +500,11 @@ public class EntityRocketSquid extends EntityWaterMob
         if(!this.isBaby)
         {
             Entity passenger = this.getControllingPassenger();
-            if (passenger != null && passenger instanceof EntityPlayer) {
-                //return true;
-                return passenger.getName().equals("Djymne");
+            if (passenger instanceof EntityPlayer) {
+                return ((EntityPlayer) passenger).getHeldItem(EnumHand.MAIN_HAND)
+                            .getItem() == RocketSquidsBase.squavigator
+                        || ((EntityPlayer) passenger)
+                            .getHeldItem(EnumHand.OFF_HAND).getItem() == RocketSquidsBase.squavigator;
             }
         }
         return false;
