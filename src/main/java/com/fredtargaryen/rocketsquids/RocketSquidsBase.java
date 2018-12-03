@@ -90,6 +90,7 @@ public class RocketSquidsBase
     public static Item nitroinksac;
     public static Item turbotube;
     public static Item iStatue;
+    public static Item squavigator;
 
     public static CreativeTabs squidsTab;
 
@@ -174,6 +175,11 @@ public class RocketSquidsBase
                 .setUnlocalizedName("statue")
                 .setRegistryName("statue");
 
+        squavigator = new Item()
+                .setMaxStackSize(1)
+                .setUnlocalizedName("squavigator")
+                .setRegistryName("squavigator");
+
         //Making Creative Tab
         squidsTab = new CreativeTabs(CreativeTabs.getNextID(), "rocketsquidsft") {
             ItemStack conch = new ItemStack(itemConch);
@@ -188,6 +194,7 @@ public class RocketSquidsBase
         itemConch3.setCreativeTab(RocketSquidsBase.squidsTab);
         nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
         turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
+        squavigator.setCreativeTab(RocketSquidsBase.squidsTab);
 
         Sounds.constructAndRegisterSoundEvents();
 
@@ -217,7 +224,8 @@ public class RocketSquidsBase
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue);
+        event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue,
+                squavigator);
     }
 
     @SubscribeEvent
