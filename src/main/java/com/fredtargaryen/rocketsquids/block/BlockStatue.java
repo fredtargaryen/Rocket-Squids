@@ -21,13 +21,8 @@ import javax.annotation.Nullable;
 
 public class BlockStatue extends BlockFalling {
     private static final AxisAlignedBB tallAABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 2.0, 1.0);
-    public static final PropertyDirection ACTIVATION = PropertyDirection.create("activation", new Predicate<EnumFacing>()
-    {
-        public boolean apply(@Nullable EnumFacing p_apply_1_)
-        {
-            return p_apply_1_ != EnumFacing.DOWN && p_apply_1_ != EnumFacing.UP;
-        }
-    });
+    //A simple EnumFacing property. UP means not activated yet.
+    public static final PropertyDirection ACTIVATION = PropertyDirection.create("activation");
     public BlockStatue(Material blockMaterialIn) {
         super(blockMaterialIn);
     }
@@ -47,44 +42,15 @@ public class BlockStatue extends BlockFalling {
      */
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        IBlockState def = this.getDefaultState();
-        switch(meta) {
-            case 2:
-                return def.withProperty(ACTIVATION, EnumFacing.NORTH);
-            case 3:
-                return def.withProperty(ACTIVATION, EnumFacing.SOUTH);
-            case 4:
-                return def.withProperty(ACTIVATION, EnumFacing.WEST);
-            default:
-                return def.withProperty(ACTIVATION, EnumFacing.EAST);
-        }
+        return this.getDefaultState().withProperty(ACTIVATION, EnumFacing.getFront(meta));
     }
 
     /**
      * Convert the BlockState into the correct metadata value
      */
     @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        if (state.getPropertyKeys().isEmpty())
-        {
-            return 0;
-        }
-        else
-        {
-            switch(state.getValue(ACTIVATION)) {
-                case NORTH:
-                    return 2;
-                case SOUTH:
-                    return 3;
-                case WEST:
-                    return 4;
-                case EAST:
-                    return 5;
-                default:
-                    return 0;
-            }
-        }
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(ACTIVATION).ordinal();
     }
 
     /**
