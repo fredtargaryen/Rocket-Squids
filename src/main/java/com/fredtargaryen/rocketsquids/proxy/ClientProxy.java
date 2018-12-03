@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.jws.WebParam;
 import javax.xml.crypto.Data;
 
 @SideOnly(Side.CLIENT)
@@ -41,6 +42,7 @@ public class ClientProxy extends CommonProxy
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.nitroinksac, 0, new ModelResourceLocation(DataReference.MODID + ":nitroinksac", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.turbotube, 0, new ModelResourceLocation(DataReference.MODID + ":turbotube", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.iStatue, 0, new ModelResourceLocation(DataReference.MODID + ":statue", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.squavigator, 0, new ModelResourceLocation(DataReference.MODID + ":squavigator", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.squeleporter, 0, new ModelResourceLocation(DataReference.MODID + ":squeleporter_inactive", "inventory"));
         ModelLoader.setCustomModelResourceLocation(RocketSquidsBase.squeleporter, 1, new ModelResourceLocation(DataReference.MODID + ":squeleporter_active", "inventory"));
     }

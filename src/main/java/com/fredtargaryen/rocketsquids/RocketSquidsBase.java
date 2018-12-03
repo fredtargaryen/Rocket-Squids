@@ -26,9 +26,7 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.CommonProxy;
 import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
 import com.fredtargaryen.rocketsquids.worldgen.StatueGen;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -41,7 +39,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
@@ -54,11 +51,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -95,6 +90,7 @@ public class RocketSquidsBase
     public static Item nitroinksac;
     public static Item turbotube;
     public static Item iStatue;
+    public static Item squavigator;
     public static Item squeleporter;
 
     public static CreativeTabs squidsTab;
@@ -181,6 +177,11 @@ public class RocketSquidsBase
                 .setUnlocalizedName("statue")
                 .setRegistryName("statue");
 
+        squavigator = new Item()
+                .setMaxStackSize(1)
+                .setUnlocalizedName("squavigator")
+                .setRegistryName("squavigator");
+
         squeleporter = new ItemSqueleporter()
                 .setMaxStackSize(1)
                 .setUnlocalizedName("squeleporter")
@@ -200,6 +201,7 @@ public class RocketSquidsBase
         itemConch3.setCreativeTab(RocketSquidsBase.squidsTab);
         nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
         turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
+        squavigator.setCreativeTab(RocketSquidsBase.squidsTab);
         squeleporter.setCreativeTab(RocketSquidsBase.squidsTab);
 
         Sounds.constructAndRegisterSoundEvents();
@@ -231,7 +233,7 @@ public class RocketSquidsBase
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         event.getRegistry().registerAll(itemConch, itemConch2, itemConch3, nitroinksac, turbotube, iStatue,
-                squeleporter);
+                squavigator, squeleporter);
     }
 
     @SubscribeEvent
