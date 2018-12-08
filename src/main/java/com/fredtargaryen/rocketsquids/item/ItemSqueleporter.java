@@ -31,11 +31,14 @@ public class ItemSqueleporter extends Item {
                     EntityRocketSquid ers = stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).getSquid();
                     NBTTagCompound squidTags = new NBTTagCompound();
                     ers.writeEntityToNBT(squidTags);
-                    Entity newSquid = EntityList.createEntityFromNBT(squidTags, worldIn);
+                    EntityRocketSquid newSquid = (EntityRocketSquid) EntityList.createEntityFromNBT(squidTags, worldIn);
                     if(newSquid != null) {
                         newSquid.setPosition(playerIn.posX, playerIn.posY, playerIn.posZ);
                         worldIn.spawnEntity(newSquid);
-                        //TODO If the squid is saddled start riding it
+                        if(newSquid.getSaddled()) {
+                            playerIn.startRiding(newSquid);
+                        }
+                        //Set the squeleporter to inactive
                         stack.setItemDamage(0);
                         playerIn.getCooldownTracker().setCooldown(this, 10);
                         return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
