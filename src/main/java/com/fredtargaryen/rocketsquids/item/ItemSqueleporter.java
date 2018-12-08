@@ -36,6 +36,7 @@ public class ItemSqueleporter extends Item {
                         worldIn.spawnEntity(newSquid);
                         //TODO If the squid is saddled start riding it
                         stack.setItemDamage(0);
+                        playerIn.getCooldownTracker().setCooldown(this, 10);
                         return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
                     }
                 }

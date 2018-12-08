@@ -305,6 +305,7 @@ public class EntityRocketSquid extends EntityWaterMob
                                 stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).setSquid(this);
                                 //Set squeleporter to active
                                 stack.setItemDamage(1);
+                                player.getCooldownTracker().setCooldown(stack.getItem(), 10);
                                 this.setDead();
                                 return true;
                             }
