@@ -1,6 +1,5 @@
 /**
  * TODO
- * Respawned squid doesn't appear
  * Can't dismount squids
  * Conch rotating with body but not head
  * * Check Minecraft Forum

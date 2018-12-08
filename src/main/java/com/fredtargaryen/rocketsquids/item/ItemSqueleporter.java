@@ -33,6 +33,7 @@ public class ItemSqueleporter extends Item {
                     ers.writeEntityToNBT(squidTags);
                     Entity newSquid = EntityList.createEntityFromNBT(squidTags, worldIn);
                     if(newSquid != null) {
+                        newSquid.setPosition(playerIn.posX, playerIn.posY, playerIn.posZ);
                         worldIn.spawnEntity(newSquid);
                         //TODO If the squid is saddled start riding it
                         stack.setItemDamage(0);
