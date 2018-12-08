@@ -4,7 +4,7 @@
     "normal": { "model": "rocketsquidsft:statue" },
     "activation=up": { "model": "rocketsquidsft:statue" },
     "activation=down": { "model": "rocketsquidsft:statue" },
-    "activation=north": { "model": "rocketsquidsft:statue" },
+    "activation=north": { "model": "rocketsquidsft:statue_north" },
     "activation=south": { "model": "rocketsquidsft:statue" },
     "activation=east": { "model": "rocketsquidsft:statue" },
     "activation=west": { "model": "rocketsquidsft:statue" }

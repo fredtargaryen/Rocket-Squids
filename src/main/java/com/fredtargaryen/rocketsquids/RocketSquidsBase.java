@@ -1,5 +1,6 @@
 /**
  * TODO
+ * Open statue has x flipped for some reason
  * Squeleporter instantly tries to respawn squid when despawning it
  * Respawned squid doesn't appear
  * Can't dismount squids
