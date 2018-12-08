@@ -679,6 +679,9 @@ public class EntityRocketSquid extends EntityWaterMob
         else {
             compound.setString("id", DataReference.MODID + ":rocketsquid");
         }
+        compound.setDouble("motionx", this.motionX);
+        compound.setDouble("motiony", this.motionY);
+        compound.setDouble("motionz", this.motionZ);
         compound.setBoolean("Saddle", this.getSaddled());
         compound.setShort("Breed Cooldown", this.breedCooldown);
     }
@@ -687,6 +690,7 @@ public class EntityRocketSquid extends EntityWaterMob
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
+        this.setVelocity(compound.getDouble("motionx"), compound.getDouble("motiony"), compound.getDouble("motionz"));
         this.setSaddled(compound.getBoolean("Saddle"));
         this.breedCooldown = compound.getShort("Breed Cooldown");
     }
