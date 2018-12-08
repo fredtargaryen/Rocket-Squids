@@ -115,14 +115,14 @@ public class BlockStatue extends BlockFalling {
             case NORTH:
                 EntityItem squav = new EntityItem(world);
                 squav.setItem(new ItemStack(RocketSquidsBase.squavigator));
-                squav.setPosition(pos.getX(), pos.getY(), pos.getZ());
+                squav.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() - 1.0D);
                 //North is negative Z I think
-                squav.setVelocity(0.0, 0.2, -0.2);
+                squav.setVelocity(0.0, 0.2, -0.1);
                 world.spawnEntity(squav);
                 EntityItem squel = new EntityItem(world);
                 squel.setItem(new ItemStack(RocketSquidsBase.squeleporter));
-                squel.setPosition(pos.getX(), pos.getY(), pos.getZ());
-                squel.setVelocity(0.0, 0.2, -0.2);
+                squel.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() - 1.0D);
+                squel.setVelocity(0.0, 0.2, -0.1);
                 world.spawnEntity(squel);
                 break;
             default:
