@@ -38,7 +38,7 @@ public class ItemConch extends ItemArmor {
      */
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if (worldIn.isRemote) RocketSquidsBase.proxy.openConchClient((byte) 1);
+        if (worldIn.isRemote && !playerIn.isSneaking()) RocketSquidsBase.proxy.openConchClient((byte) 1);
         return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         //FOR CONCH ARMOUR DEBUGGING
 //        System.out.println("Yaw = "+playerIn.rotationYaw);
