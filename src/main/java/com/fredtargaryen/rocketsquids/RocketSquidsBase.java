@@ -197,9 +197,10 @@ public class RocketSquidsBase
         itemConch2.setCreativeTab(RocketSquidsBase.squidsTab);
         itemConch3.setCreativeTab(RocketSquidsBase.squidsTab);
         nitroinksac.setCreativeTab(RocketSquidsBase.squidsTab);
-        turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
         squavigator.setCreativeTab(RocketSquidsBase.squidsTab);
         squeleporter.setCreativeTab(RocketSquidsBase.squidsTab);
+        blockStatue.setCreativeTab(RocketSquidsBase.squidsTab);
+        turbotube.setCreativeTab(RocketSquidsBase.squidsTab);
 
         Sounds.constructAndRegisterSoundEvents();
 
