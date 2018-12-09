@@ -33,9 +33,10 @@ public class ItemSqueleporter extends Item {
                     ers.writeEntityToNBT(squidTags);
                     EntityRocketSquid newSquid = (EntityRocketSquid) EntityList.createEntityFromNBT(squidTags, worldIn);
                     if(newSquid != null) {
-                        newSquid.setVelocity(playerIn.motionX + squidTags.getDouble("motionx"),
-                                            playerIn.motionY + squidTags.getDouble("motiony"),
-                                            playerIn.motionZ + squidTags.getDouble("motionz"));
+                        newSquid.forceRotPitch((playerIn.rotationPitch + 90.0F) * Math.PI / 180.0F);
+                        newSquid.forceRotYaw((float) (playerIn.getRotationYawHead() * Math.PI / 180.0F));
+                        newSquid.addVelocity(playerIn.motionX, playerIn.motionY, playerIn.motionZ);
+                        newSquid.addForce(squidTags.getDouble("force"));
                         newSquid.setPosition(playerIn.posX, playerIn.posY, playerIn.posZ);
                         worldIn.spawnEntity(newSquid);
                         if(newSquid.getSaddled()) {

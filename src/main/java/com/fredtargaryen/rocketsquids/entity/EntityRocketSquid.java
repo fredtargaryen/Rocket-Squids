@@ -682,9 +682,7 @@ public class EntityRocketSquid extends EntityWaterMob
         else {
             compound.setString("id", DataReference.MODID + ":rocketsquid");
         }
-        compound.setDouble("motionx", this.motionX);
-        compound.setDouble("motiony", this.motionY);
-        compound.setDouble("motionz", this.motionZ);
+        compound.setDouble("force", Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ));
         compound.setBoolean("Saddle", this.getSaddled());
         compound.setShort("Breed Cooldown", this.breedCooldown);
     }
@@ -693,7 +691,6 @@ public class EntityRocketSquid extends EntityWaterMob
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
-        this.setVelocity(compound.getDouble("motionx"), compound.getDouble("motiony"), compound.getDouble("motionz"));
         this.setSaddled(compound.getBoolean("Saddle"));
         this.breedCooldown = compound.getShort("Breed Cooldown");
     }
@@ -756,6 +753,16 @@ public class EntityRocketSquid extends EntityWaterMob
     public double getRotYaw()
     {
         return this.squidCap.getRotYaw();
+    }
+
+    public void forceRotPitch(double rotPitch) {
+        this.squidCap.setRotPitch(rotPitch);
+        this.squidCap.setTargetRotPitch(rotPitch);
+    }
+
+    public void forceRotYaw(double rotYaw) {
+        this.squidCap.setRotYaw(rotYaw);
+        this.squidCap.setTargetRotYaw(rotYaw);
     }
 
     public void setTargetRotPitch(double targPitch)
