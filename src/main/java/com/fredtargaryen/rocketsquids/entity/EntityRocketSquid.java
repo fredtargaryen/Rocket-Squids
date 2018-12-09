@@ -368,10 +368,18 @@ public class EntityRocketSquid extends EntityWaterMob
         {
             this.doFireworkParticles();
         }
-        Entity passenger = this.getControllingPassenger();
-        if(passenger != null)
+        if (this.getBlasting())
         {
-            this.removePassenger(passenger);
+            Entity passenger = this.getControllingPassenger();
+            if(passenger != null) {
+                passenger.motionX += this.motionX * 1.5;
+                passenger.motionY += this.motionY * 1.5;
+                passenger.motionZ += this.motionZ * 1.5;
+            }
+        }
+        if(this.world.isRemote)
+        {
+            MinecraftForge.EVENT_BUS.unregister(this);
         }
         super.setDead();
     }
@@ -610,22 +618,6 @@ public class EntityRocketSquid extends EntityWaterMob
     public boolean shouldDismountInWater(Entity rider)
     {
         return false;
-    }
-
-    @Override
-    protected void removePassenger(Entity passenger)
-    {
-        passenger.dismountRidingEntity();
-        if (this.getBlasting())
-        {
-            passenger.motionX += this.motionX * 1.5;
-            passenger.motionY += this.motionY * 1.5;
-            passenger.motionZ += this.motionZ * 1.5;
-        }
-        if(this.world.isRemote)
-        {
-            MinecraftForge.EVENT_BUS.unregister(this);
-        }
     }
 
     /////////////////
