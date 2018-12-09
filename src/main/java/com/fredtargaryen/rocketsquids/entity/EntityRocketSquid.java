@@ -332,7 +332,7 @@ public class EntityRocketSquid extends EntityWaterMob
                         }
                         player.startRiding(this);
                         return true;
-                    } else if (i == Items.FEATHER && this.hasVIPRider()) {
+                    } else if (i == Items.FEATHER) {
                         this.setShaking(true);
                         return true;
                     } else {
