@@ -29,7 +29,9 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,7 +40,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -49,18 +54,18 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
 @Mod.EventBusSubscriber
-public class RocketSquidsBase
-{
+@ObjectHolder(DataReference.MODID)
+public class RocketSquidsBase {
 	/**
 	 * The instance of your mod that Forge uses.
 	 */
@@ -72,22 +77,28 @@ public class RocketSquidsBase
     private static int minGrpSize;
     private static int maxGrpSize;
 
-    /**
-     * Declare all blocks here
-     */
+    //Declare all blocks here
+    @ObjectHolder("blockconch")
     public static Block blockConch;
+    @ObjectHolder("statue")
     public static Block blockStatue;
 
-    /**
-     * Declare all items here
-     */
+    //Declare all items here
+    @ObjectHolder("conch")
     public static Item itemConch;
+    @ObjectHolder("conchtwo")
     public static Item itemConch2;
+    @ObjectHolder("conchthree")
     public static Item itemConch3;
+    @ObjectHolder("nitroinksac")
     public static Item nitroinksac;
+    @ObjectHolder("turbotube")
     public static Item turbotube;
+    @ObjectHolder("statue")
     public static Item iStatue;
+    @ObjectHolder("squavigator")
     public static Item squavigator;
+    @ObjectHolder("squeleporter")
     public static Item squeleporter;
 
     public static CreativeTabs squidsTab;
