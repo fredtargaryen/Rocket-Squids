@@ -1,9 +1,3 @@
-/**
- * TODO
- * Conch rotating with body but not head
- * * Check Minecraft Forum
- * Conch and statue textures are bad!
- */
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.BlockConch;
@@ -54,9 +48,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -66,7 +58,6 @@ import static net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @Mod(modid=DataReference.MODID, name=DataReference.MODNAME, version=DataReference.VERSION)
 @Mod.EventBusSubscriber
-@ObjectHolder(DataReference.MODID)
 public class RocketSquidsBase {
 	/**
 	 * The instance of your mod that Forge uses.
