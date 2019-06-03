@@ -1,31 +1,28 @@
 package com.fredtargaryen.rocketsquids.entity;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
-public class EntityThrownTube extends EntityThrowable
-{
-
+public class EntityThrownTube extends EntityThrowable {
     public EntityThrownTube(World w) {
-        super(w);
+        super(RocketSquidsBase.TUBE_TYPE, w);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public EntityThrownTube(World w, EntityLivingBase elb)
+    public EntityThrownTube(EntityLivingBase elb, World w)
     {
-        super(w, elb);
+        super(RocketSquidsBase.TUBE_TYPE, elb, w);
     }
 
     @Override
     protected void onImpact(RayTraceResult result) {
-        if (!this.world.isRemote)
-        {
+        if (!this.world.isRemote) {
             this.world.createExplosion(this.getThrower(), this.posX, this.posY, this.posZ, 0.1F, true);
-            this.setDead();
+            this.remove();
         }
     }
 }

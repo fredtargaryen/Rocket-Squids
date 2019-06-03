@@ -8,10 +8,16 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemConch3 extends Item {
+    public ItemConch3() {
+        super(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(1));
+    }
+
     /**
      * Called when the equipped item is right clicked.
      */
@@ -30,7 +36,7 @@ public class ItemConch3 extends Item {
      * Note that if you override this method, you generally want to also call the super version (on {@link Item}) to get
      * the glint for enchanted items. Of course, that is unnecessary if the overwritten version always returns true.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean hasEffect(ItemStack stack)
     {
         return true;

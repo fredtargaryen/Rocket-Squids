@@ -1,24 +1,16 @@
 package com.fredtargaryen.rocketsquids.entity;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.client.model.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAIGiveUp;
 import com.fredtargaryen.rocketsquids.entity.ai.EntityAISwimAround;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
-public class EntityBabyRocketSquid extends EntityRocketSquid
-{
-    public EntityBabyRocketSquid(World w)
-    {
+public class EntityBabyRocketSquid extends EntityRocketSquid {
+    public EntityBabyRocketSquid(World w) {
         super(w);
         this.setSize(0.4F, 0.4F);
         if(w.isRemote)
@@ -29,8 +21,7 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     }
 
     @Override
-    public void initEntityAI()
-    {
+    public void initEntityAI() {
         super.initEntityAI();
         this.tasks.taskEntries.clear();
         this.tasks.addTask(0, new EntityAISwimAround(this, 0.15));
@@ -38,10 +29,9 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     }
 
     @Override
-    protected void applyEntityAttributes()
-    {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1.0D);
+    protected void registerAttributes() {
+        super.registerAttributes();
+        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1.0D);
     }
 
     @Override
@@ -51,10 +41,10 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
-        super.writeEntityToNBT(compound);
+    public boolean writeUnlessRemoved(NBTTagCompound compound) {
+        super.writeUnlessRemoved(compound);
         compound.setBoolean("Saddle", false);
+        return true;
     }
 
     /**
@@ -62,14 +52,11 @@ public class EntityBabyRocketSquid extends EntityRocketSquid
      * use this to react to sunlight and start to burn.
      */
     @Override
-    public void onLivingUpdate()
-    {
-        super.onLivingUpdate();
-        if(this.ticksExisted > 72000)
-        {
-            if(!this.world.isRemote)
-            {
-                this.setDead();
+    public void livingTick() {
+        super.livingTick();
+        if(this.ticksExisted > 72000) {
+            if(!this.world.isRemote) {
+                this.remove();
                 EntityRocketSquid adult = new EntityRocketSquid(this.world);
                 adult.setLocationAndAngles(this.posX, this.posY, this.posZ, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
                 this.world.spawnEntity(adult);

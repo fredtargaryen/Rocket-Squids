@@ -1,11 +1,7 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
 
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**

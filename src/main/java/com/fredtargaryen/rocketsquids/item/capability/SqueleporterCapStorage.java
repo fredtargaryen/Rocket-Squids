@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,20 +14,19 @@ import net.minecraftforge.common.capabilities.Capability;
 public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter>
 {
     @Override
-    public NBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side)
+    public INBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side)
     {
         NBTTagCompound comp = new NBTTagCompound();
         EntityRocketSquid ers = instance.getSquid();
-        if(ers != null) ers.writeEntityToNBT(comp);
+        if(ers != null) ers.writeUnlessRemoved(comp);
         return comp;
     }
 
     @Override
-    public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side, NBTBase nbt)
-    {
+    public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side, INBTBase nbt) {
         NBTTagCompound comp = (NBTTagCompound) nbt;
         EntityRocketSquid ers = new EntityRocketSquid(null);
-        ers.readEntityFromNBT(comp);
+        ers.read(comp);
         instance.setSquid(ers);
     }
 }

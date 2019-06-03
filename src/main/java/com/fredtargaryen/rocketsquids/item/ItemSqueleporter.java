@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ItemSqueleporter extends Item {
     public ItemSqueleporter() {
-        super();
+        super(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(1));
     }
 
     /**

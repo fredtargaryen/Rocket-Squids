@@ -5,11 +5,9 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderPrimalSquidAFactory implements IRenderFactory<EntityPrimalSquidA>
-{
+public class RenderPrimalSquidAFactory implements IRenderFactory<EntityPrimalSquidA> {
     @Override
-    public Render<? super EntityPrimalSquidA> createRenderFor(RenderManager manager)
-    {
+    public Render<? super EntityPrimalSquidA> createRenderFor(RenderManager manager) {
         return new RenderPrimalSquidA(manager, new ModelPrimalSquidA());
     }
 }

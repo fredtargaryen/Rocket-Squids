@@ -2,7 +2,8 @@ package com.fredtargaryen.rocketsquids;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class Sounds {
     /**
@@ -11,11 +12,10 @@ public class Sounds {
     public static SoundEvent BLASTOFF;
     public static SoundEvent[] CONCH_NOTES;
 
-    public static void constructAndRegisterSoundEvents() {
-        //Making sounds
+    public static void constructAndRegisterSoundEvents(RegistryEvent.Register<SoundEvent> event) {
         BLASTOFF = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff"))
                 .setRegistryName("blastoff");
-        CONCH_NOTES = new SoundEvent[] {
+        CONCH_NOTES = new SoundEvent[]{
                 new SoundEvent(new ResourceLocation(DataReference.MODID, "conchc3"))
                         .setRegistryName("conchc3"),
                 new SoundEvent(new ResourceLocation(DataReference.MODID, "conchc#3"))
@@ -87,13 +87,12 @@ public class Sounds {
                 new SoundEvent(new ResourceLocation(DataReference.MODID, "concha#5"))
                         .setRegistryName("concha#5"),
                 new SoundEvent(new ResourceLocation(DataReference.MODID, "conchb5"))
-                        .setRegistryName("conchb5"),
+                        .setRegistryName("conchb5")
         };
-
-        //Registering sounds
-        ForgeRegistries.SOUND_EVENTS.register(BLASTOFF);
-        for(SoundEvent se : CONCH_NOTES) {
-            ForgeRegistries.SOUND_EVENTS.register(se);
+        IForgeRegistry<SoundEvent> reg = event.getRegistry();
+        reg.register(BLASTOFF);
+        for(SoundEvent soundEvent : CONCH_NOTES) {
+            reg.register(soundEvent);
         }
     }
 }

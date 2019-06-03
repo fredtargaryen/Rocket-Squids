@@ -1,8 +1,9 @@
 package com.fredtargaryen.rocketsquids.entity;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -12,26 +13,22 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class EntityThrownSac extends EntityThrowable
-{
-    private static final Potion blindnessPotion = Potion.getPotionFromResourceLocation("blindness");
+public class EntityThrownSac extends EntityThrowable {
+    private static final Potion blindnessPotion = MobEffects.BLINDNESS;
 
-    public EntityThrownSac(World w) { super(w); }
-    public EntityThrownSac(World w, EntityPlayer p)
+    public EntityThrownSac(World w) { super(RocketSquidsBase.SAC_TYPE, w); }
+    public EntityThrownSac(EntityLivingBase elb, World w)
     {
-        super(w, p);
+        super(RocketSquidsBase.SAC_TYPE, elb, w);
     }
 
     @Override
-    protected void onImpact(RayTraceResult result)
-    {
-        if (result.entityHit != null)
-        {
-            result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
+    protected void onImpact(RayTraceResult result) {
+        if (result.entity != null) {
+            result.entity.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
         }
-        if (!this.world.isRemote)
-        {
-            AxisAlignedBB axisalignedbb = this.getEntityBoundingBox().expand(2.0D, 2.0D, 2.0D);
+        if (!this.world.isRemote) {
+            AxisAlignedBB axisalignedbb = this.getBoundingBox().expand(2.0D, 2.0D, 2.0D);
             List<EntityLivingBase> list1 = this.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
 
             if (!list1.isEmpty())
@@ -44,7 +41,7 @@ public class EntityThrownSac extends EntityThrowable
                     }
                 }
             }
-            this.setDead();
+            this.remove();
         }
     }
 }

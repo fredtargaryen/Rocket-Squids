@@ -7,8 +7,7 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
-{
+public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/brs.png");
     public RenderBabyRS(RenderManager rm, ModelBabyRocketSquid model)
     {
@@ -20,14 +19,12 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float handleRotationFloat(EntityBabyRocketSquid squid, float partialTicks)
-    {
+    protected float handleRotationFloat(EntityBabyRocketSquid squid, float partialTicks) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void applyRotations(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks)
-    {
+    protected void applyRotations(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks) {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();
         //Also convert to degrees.
@@ -35,11 +32,11 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid>
         double pry = ers.getPrevRotYaw();
         float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
         //0.5F for adults
-        GlStateManager.translate(0.0F, 0.15F, 0.0F);
-        GlStateManager.rotate(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(exactPitch, -1.0F, 0.0F, 0.0F);
+        GlStateManager.translatef(0.0F, 0.15F, 0.0F);
+        GlStateManager.rotatef(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotatef(exactPitch, -1.0F, 0.0F, 0.0F);
         //1.2F for adults
-        GlStateManager.translate(0.0F, -1.3F, 0.0F);
+        GlStateManager.translatef(0.0F, -1.3F, 0.0F);
     }
 
     @Override

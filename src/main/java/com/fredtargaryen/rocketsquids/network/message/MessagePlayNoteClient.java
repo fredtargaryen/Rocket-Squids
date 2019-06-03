@@ -2,15 +2,13 @@ package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.Sounds;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessagePlayNoteClient implements IMessage, IMessageHandler<MessagePlayNoteClient, IMessage> {
+import java.util.function.Supplier;
+
+public class MessagePlayNoteClient {
     private byte note;
 
     public MessagePlayNoteClient() {}
@@ -19,20 +17,18 @@ public class MessagePlayNoteClient implements IMessage, IMessageHandler<MessageP
         this.note = note;
     }
 
-    public IMessage onMessage(final MessagePlayNoteClient message, MessageContext ctx) {
-        final IThreadListener clientListener = Minecraft.getMinecraft();
-        clientListener.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                Minecraft mc = (Minecraft) clientListener;
-                EntityPlayer ep = mc.player;
-                mc.world.playSound(ep.posX, ep.posY, ep.posZ, Sounds.CONCH_NOTES[message.note], SoundCategory.PLAYERS, 1.0F, 1.0F, true);
-            }
+    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+                EntityPlayer ep = ctx.get().getSender();
+                ep.world.playSound(ep.posX, ep.posY, ep.posZ, Sounds.CONCH_NOTES[this.note], SoundCategory.PLAYERS, 1.0F, 1.0F, true);
         });
-        return null;
+        ctx.get().setPacketHandled(true);
     }
 
-    public void fromBytes(ByteBuf buf)
+    /**
+     * Effectively fromBytes from 1.12.2
+     */
+    public MessagePlayNoteClient(ByteBuf buf)
     {
         this.note = buf.readByte();
     }

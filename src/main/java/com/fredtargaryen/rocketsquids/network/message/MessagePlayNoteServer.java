@@ -3,21 +3,15 @@ package com.fredtargaryen.rocketsquids.network.message;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.function.Supplier;
 
-public class MessagePlayNoteServer implements IMessage, IMessageHandler<MessagePlayNoteServer, IMessage> {
+public class MessagePlayNoteServer {
     private byte note;
     private double x;
     private double y;
@@ -32,30 +26,24 @@ public class MessagePlayNoteServer implements IMessage, IMessageHandler<MessageP
         this.z = z;
     }
 
-    public IMessage onMessage(final MessagePlayNoteServer message, MessageContext ctx) {
-        final EntityPlayerMP epmp = ctx.getServerHandler().player;
-        final IThreadListener serverListener = epmp.getServerWorld();
-        serverListener.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                MessageHandler.INSTANCE.sendToAllAround(new MessagePlayNoteClient(message.note), new NetworkRegistry.TargetPoint(epmp.dimension, message.x, message.y, message.z, 64.0));
-                List<Entity> l = epmp.world.getLoadedEntityList();
-                Iterator<Entity> squidFinder = l.iterator();
-                Entity e;
-                while(squidFinder.hasNext())
-                {
-                    e = squidFinder.next();
-                    if(e.hasCapability(RocketSquidsBase.SQUIDCAP, null)) {
-                        //Can assume e is a rocket squid
-                        e.getCapability(RocketSquidsBase.SQUIDCAP, null).processNote(message.note);
-                    }
-                }
+    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            EntityPlayer player = ctx.get().getSender();
+            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.dimension)), new MessagePlayNoteClient(this.note));
+            Iterator<Entity> squidFinder = player.world.loadedEntityList.iterator();
+            Entity e;
+            while(squidFinder.hasNext()) {
+                e = squidFinder.next();
+                e.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap -> cap.processNote(this.note));
             }
         });
-        return null;
+        ctx.get().setPacketHandled(true);
     }
 
-    public void fromBytes(ByteBuf buf) {
+    /**
+     * Effectively fromBytes from 1.12.2
+     */
+    public MessagePlayNoteServer(ByteBuf buf) {
         this.note = buf.readByte();
         this.x = buf.readDouble();
         this.y = buf.readDouble();

@@ -12,8 +12,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import java.util.Random;
 
-public class RenderRS extends RenderLiving<EntityRocketSquid>
-{
+public class RenderRS extends RenderLiving<EntityRocketSquid> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rs.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rsb.png");
 
@@ -41,10 +40,10 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
         float exactPitch = (float) ((prp + (rp - prp) * partialTicks) * 180 / Math.PI);
         double pry = ers.getPrevRotYaw();
         float exactYaw = (float) ((pry + (ers.getRotYaw() - pry) * partialTicks) * 180 / Math.PI);
-        GlStateManager.translate(0.0F, 0.5F, 0.0F);
-        GlStateManager.rotate(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(exactPitch, -1.0F, 0.0F, 0.0F);
-        GlStateManager.translate(0.0F, -1.2F, 0.0F);
+        GlStateManager.translatef(0.0F, 0.5F, 0.0F);
+        GlStateManager.rotatef(180.0F - exactYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotatef(exactPitch, -1.0F, 0.0F, 0.0F);
+        GlStateManager.translatef(0.0F, -1.2F, 0.0F);
     }
 
     public void doRender(EntityRocketSquid par1EntitySquid, double x, double y, double z, float par8, float partialTicks)
@@ -59,7 +58,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
         else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater())
         {
             //Choose texture
-            TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
+            TextureMap texturemap = Minecraft.getInstance().getTextureMap();
             TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
 
             //Calculate and set translation-rotation matrix
@@ -67,18 +66,18 @@ public class RenderRS extends RenderLiving<EntityRocketSquid>
             double yaw_r = par1EntitySquid.getRotYaw();
             double pitch_r = par1EntitySquid.getRotPitch();
             double adjusted_h_flame_offset = 0.35 * Math.sin(pitch_r);
-            GlStateManager.translate(
+            GlStateManager.translated(
                     x + (adjusted_h_flame_offset * Math.sin(yaw_r)),
                     y + 0.5 - (0.3 * Math.cos(pitch_r)),
                     z - (adjusted_h_flame_offset * Math.cos(yaw_r)));
-            GlStateManager.rotate((float)(pitch_r * 180 / Math.PI), (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
+            GlStateManager.rotatef((float)(pitch_r * 180 / Math.PI), (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
 
             //Prepare to draw
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder vertexbuffer = tessellator.getBuffer();
             GlStateManager.disableLighting();
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            //OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f); TODO Needed?
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 

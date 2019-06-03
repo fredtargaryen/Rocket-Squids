@@ -5,7 +5,7 @@ import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -31,7 +31,7 @@ public class GuiConch extends GuiScreen {
 
     public GuiConch(byte conchStage) {
         this.conchStage = conchStage;
-        EntityPlayer ep = Minecraft.getMinecraft().player;
+        EntityPlayer ep = Minecraft.getInstance().player;
         this.x = ep.posX;
         this.y = ep.posY;
         this.z = ep.posZ;
@@ -79,7 +79,7 @@ public class GuiConch extends GuiScreen {
 
         @Override
         public void playPressSound(SoundHandler soundHandlerIn) {
-            soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(Sounds.CONCH_NOTES[this.id], 1.0F));
+            Minecraft.getInstance().getSoundHandler().play(SimpleSound.getMasterRecord(Sounds.CONCH_NOTES[this.id], 1.0F));
             MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, GuiConch.this.x, GuiConch.this.y, GuiConch.this.z));
         }
 
@@ -87,21 +87,18 @@ public class GuiConch extends GuiScreen {
          * Draws this button to the screen.
          */
         @Override
-        public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        public void render(int mouseX, int mouseY, float partialTicks) {
             FontRenderer fontrenderer = mc.fontRenderer;
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             float hoverColour = this.hovered ? 0.1F : 0.0F;
             float red = 0.9F + hoverColour;
             float green = 0.9F * this.id / 36.0F;
             int i = this.getHoverState(this.hovered);
-//            GlStateManager.enableBlend();
-//            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             this.drawNote(this.x, this.y, red, green, hoverColour);
             int j = 14737632;
 
-            if (packedFGColour != 0) {
-                j = packedFGColour;
+            if (packedFGColor != 0) {
+                j = packedFGColor;
             }
             else if (!this.enabled) {
                 j = 10526880;

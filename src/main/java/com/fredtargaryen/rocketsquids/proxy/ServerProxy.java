@@ -1,14 +1,10 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
-import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.model.ModelBiped;
 
-public class ServerProxy extends CommonProxy
-{
+public class ServerProxy implements IProxy {
     @Override
     public void registerRenderers(){}
-
-    @Override
-    public void registerModels(){}
 
     @Override
     public void openConchClient(byte conchStage){}

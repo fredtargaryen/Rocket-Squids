@@ -10,6 +10,10 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public class ItemConch2 extends Item {
+    public ItemConch2() {
+        super(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(1));
+    }
+
     /**
      * Called when the equipped item is right clicked.
      */

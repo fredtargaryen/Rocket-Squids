@@ -9,55 +9,46 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemDye;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Almost all code here was copied from ParticleFirework as I couldn't extend
  */
-@SideOnly(Side.CLIENT)
-public class SquidFirework extends Particle
-{
+@OnlyIn(Dist.CLIENT)
+public class SquidFirework extends Particle {
     private int age;
     private final ParticleManager effects;
     private final NBTTagList explosions;
     private static final double squareLength = 1.0 / 7.0;
 
-    public SquidFirework(WorldClient world, double x, double y, double z, ParticleManager manager)
-    {
+    public SquidFirework(WorldClient world, double x, double y, double z, ParticleManager manager) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         this.effects = manager;
-        this.explosions = RocketSquidsBase.firework.getTagList("Explosions", 10);
+        this.explosions = RocketSquidsBase.firework.getList("Explosions", 10);
     }
 
-    public void onUpdate()
-    {
-        if (this.age == 0 && this.explosions != null)
-        {
+    public void onUpdate() {
+        if (this.age == 0 && this.explosions != null) {
             //Is the firework far away
             boolean flag = this.isFarFromCamera();
             //Is the firework big
             boolean flag1 = false;
 
-            if (this.explosions.tagCount() >= 3)
-            {
+            if (this.explosions.size() >= 3) {
                 flag1 = true;
             }
-            else
-            {
-                for (int i = 0; i < this.explosions.tagCount(); ++i)
-                {
-                    NBTTagCompound nbttagcompound = this.explosions.getCompoundTagAt(i);
+            else {
+                for (int i = 0; i < this.explosions.size(); ++i) {
+                    NBTTagCompound nbttagcompound = this.explosions.getCompound(i);
 
-                    if (nbttagcompound.getByte("Type") == 1)
-                    {
+                    if (nbttagcompound.getByte("Type") == 1) {
                         flag1 = true;
                         break;
                     }
@@ -66,30 +57,26 @@ public class SquidFirework extends Particle
 
             SoundEvent soundevent1;
 
-            if (flag1)
-            {
-                soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_LARGE_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_LARGE_BLAST;
+            if (flag1) {
+                soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST;
             }
-            else
-            {
-                soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_BLAST;
+            else {
+                soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST;
             }
 
             this.world.playSound(this.posX, this.posY, this.posZ, soundevent1, SoundCategory.AMBIENT, 20.0F, 0.95F + this.rand.nextFloat() * 0.1F, true);
         }
 
-        if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.tagCount())
-        {
+        if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
             int k = this.age / 2;
-            NBTTagCompound nbttagcompound1 = this.explosions.getCompoundTagAt(k);
+            NBTTagCompound nbttagcompound1 = this.explosions.getCompound(k);
             boolean flag4 = nbttagcompound1.getBoolean("Trail");
             boolean flag2 = nbttagcompound1.getBoolean("Flicker");
             int[] aint = nbttagcompound1.getIntArray("Colors");
             int[] aint1 = nbttagcompound1.getIntArray("FadeColors");
 
-            if (aint.length == 0)
-            {
-                aint = new int[] {ItemDye.DYE_COLORS[0]};
+            if (aint.length == 0) {
+                aint = new int[] { 0 };
             }
 
             this.createShaped(0.5D, new double[][] {
@@ -108,16 +95,16 @@ public class SquidFirework extends Particle
             float f1 = (float)((j & 65280) >> 8) / 255.0F;
             float f2 = (float)(j & 255) / 255.0F;
             OverlayCopy o = new OverlayCopy(this.world, this.posX, this.posY, this.posZ);
-            o.setRBGColorF(f, f1, f2);
+            o.setColor(f, f1, f2);
             this.effects.addEffect(o);
         }
 
         ++this.age;
 
-        if (this.age > this.particleMaxAge)
+        if (this.age > this.maxAge)
         {
             boolean flag3 = this.isFarFromCamera();
-            SoundEvent soundevent = flag3 ? SoundEvents.ENTITY_FIREWORK_TWINKLE_FAR : SoundEvents.ENTITY_FIREWORK_TWINKLE;
+            SoundEvent soundevent = flag3 ? SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE;
             this.world.playSound(this.posX, this.posY, this.posZ, soundevent, SoundCategory.AMBIENT, 20.0F, 0.9F + this.rand.nextFloat() * 0.15F, true);
             this.setExpired();
         }
@@ -125,7 +112,7 @@ public class SquidFirework extends Particle
 
     private boolean isFarFromCamera()
     {
-        Minecraft minecraft = Minecraft.getMinecraft();
+        Minecraft minecraft = Minecraft.getInstance();
         return minecraft == null || minecraft.getRenderViewEntity() == null || minecraft.getRenderViewEntity().getDistanceSq(this.posX, this.posY, this.posZ) >= 256.0D;
     }
 
@@ -192,7 +179,7 @@ public class SquidFirework extends Particle
         protected OverlayCopy(World p_i46466_1_, double p_i46466_2_, double p_i46466_4_, double p_i46466_6_)
         {
             super(p_i46466_1_, p_i46466_2_, p_i46466_4_, p_i46466_6_);
-            this.particleMaxAge = 4;
+            this.maxAge = 4;
         }
 
         /**
@@ -205,8 +192,8 @@ public class SquidFirework extends Particle
             float f1 = 0.5F;
             float f2 = 0.125F;
             float f3 = 0.375F;
-            float f4 = 7.1F * MathHelper.sin(((float)this.particleAge + partialTicks - 1.0F) * 0.25F * (float)Math.PI);
-            this.setAlphaF(0.6F - ((float)this.particleAge + partialTicks - 1.0F) * 0.25F * 0.5F);
+            float f4 = 7.1F * MathHelper.sin(((float)this.age + partialTicks - 1.0F) * 0.25F * (float)Math.PI);
+            this.setAlphaF(0.6F - ((float)this.age + partialTicks - 1.0F) * 0.25F * 0.5F);
             float f5 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
             float f6 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
             float f7 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);

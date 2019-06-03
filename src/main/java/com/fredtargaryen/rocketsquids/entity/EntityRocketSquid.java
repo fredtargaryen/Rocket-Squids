@@ -16,6 +16,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
@@ -23,7 +24,7 @@ import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.init.Particles;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,17 +33,17 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -58,34 +59,33 @@ public class EntityRocketSquid extends EntityWaterMob
 
 
     private boolean newPacketRequired;
-    protected final ISquidCapability squidCap;
+    protected ISquidCapability squidCap;
     protected boolean isBaby;
     protected short breedCooldown;
 
     //May have to remove and use capability instead
     private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityRocketSquid.class, DataSerializers.BOOLEAN);
 
-    public EntityRocketSquid(World par1World)
-    {
-        super(par1World);
+    public EntityRocketSquid(World par1World) {
+        super(RocketSquidsBase.SQUID_TYPE, par1World);
         //Set size of bounding box. par1=length and width; par2=height.
         //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
         this.setSize(0.99F, 0.99F);
-        this.squidCap = this.getCapability(RocketSquidsBase.SQUIDCAP, null);
+        this.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap -> EntityRocketSquid.this.squidCap = cap);
         this.riderRotated = false;
         this.isBaby = false;
     }
 
     @Override
-    protected void entityInit()
-    {
-        super.entityInit();
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData entityLivingData, @Nullable NBTTagCompound itemNbt) {
+        IEntityLivingData ield = super.onInitialSpawn(difficulty, entityLivingData, itemNbt);
         this.dataManager.register(SADDLED, Boolean.valueOf(false));
+        return ield;
     }
 
     @Override
-    public void initEntityAI()
-    {
+    public void initEntityAI() {
         super.initEntityAI();
         this.tasks.addTask(0, new EntityAIBlastoff(this));
         this.tasks.addTask(1, new EntityAIShake(this));
@@ -94,52 +94,44 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     @Override
-    protected void applyEntityAttributes()
-    {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
+    protected void registerAttributes() {
+        super.registerAttributes();
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
     }
 
-    public boolean isBaby()
-    {
+    public boolean isBaby() {
         return this.isBaby;
     }
 
     @Override
-    protected Item getDropItem(){return RocketSquidsBase.nitroinksac;}
+    protected Item getDropItem(){return RocketSquidsBase.NITRO_SAC;}
 
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
      */
 	@Override
-	public void onLivingUpdate()
-    {
-        super.onLivingUpdate();
+	public void livingTick() {
+        super.livingTick();
 
         //Do on client and server
         //Fraction of distance to target rotation to rotate by each server tick
         double rotateSpeed;
-        if(this.inWater)
-        {
+        if(this.inWater) {
             this.motionX *= 0.9;
             this.motionY *= 0.9;
             this.motionZ *= 0.9;
             rotateSpeed = 0.1;
         }
-        else
-        {
-            if(this.recentlyHit > 0)
-            {
+        else {
+            if(this.recentlyHit > 0) {
                 this.motionX = 0.0D;
                 this.motionZ = 0.0D;
             }
-            if (this.isPotionActive(MobEffects.LEVITATION))
-            {
+            if (this.isPotionActive(MobEffects.LEVITATION)) {
                 this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
             }
-            else if (!this.hasNoGravity())
-            {
+            else if (!this.hasNoGravity()) {
                 this.motionY -= 0.08D;
             }
             this.motionX *= 0.9800000190734863D;
@@ -149,14 +141,12 @@ public class EntityRocketSquid extends EntityWaterMob
         }
 
         boolean onFire = false;
-        if(this.isBurning() || this.isInLava())
-        {
+        if(this.isBurning() || this.isInLava()) {
             onFire = true;
             this.squidCap.setForcedBlast(true);
             this.newPacketRequired = true;
         }
-        if(onFire || this.squidCap.getForcedBlast())
-        {
+        if(onFire || this.squidCap.getForcedBlast()) {
             this.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
             this.squidCap.setBlasting(true);
         }
@@ -164,8 +154,7 @@ public class EntityRocketSquid extends EntityWaterMob
         //Rotate towards target pitch
         double trp = this.squidCap.getTargetRotPitch();
         double rp = this.squidCap.getRotPitch();
-        if(trp != rp)
-        {
+        if(trp != rp) {
             //Squids rotate <= 180 degrees either way.
             //The squid can rotate out of the interval [-PI, PI].
             rp += (trp - rp) * rotateSpeed;
@@ -176,69 +165,56 @@ public class EntityRocketSquid extends EntityWaterMob
         //Rotate towards target yaw
         double trY = this.squidCap.getTargetRotYaw();
         double ry = this.squidCap.getRotYaw();
-        if(trY != ry)
-        {
+        if(trY != ry) {
             ry += (trY - ry) * rotateSpeed;
             this.squidCap.setRotYaw(ry);
             this.newPacketRequired = true;
         }
 
-        if(this.world.isRemote)
-        {
+        if(this.world.isRemote) {
             //Client side
             //Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
-            if(this.squidCap.getShaking())
-            {
+            if(this.squidCap.getShaking()) {
                 //Tentacles stick out at 60 degrees
                 this.tentacleAngle = (float) Math.PI / 3;
             }
-            else if(this.squidCap.getBlasting())
-            {
+            else if(this.squidCap.getBlasting()) {
                 //Tentacles quickly close up
                 this.tentacleAngle = 0;
             }
-            else
-            {
-                if(this.inWater)
-                {
+            else {
+                if(this.inWater) {
                     //If in water, tentacles oscillate normally
                     this.tentacleAngle = this.inWater ? (float) ((Math.PI / 6) + (MathHelper.sin((float) Math.toRadians(4 * (this.ticksExisted % 360))) * Math.PI / 6)) : 0;
                 }
-                else
-                {
+                else {
                     this.tentacleAngle = 0;
                 }
             }
-            if(this.squidCap.getBlasting())
-            {
-                if(this.inWater)
-                {
+            if(this.squidCap.getBlasting()) {
+                if(this.inWater) {
                     double smallerX = this.posX - 0.25;
                     double largerX = this.posX + 0.25;
                     double smallerZ = this.posZ - 0.25;
                     double largerZ = this.posZ + 0.25;
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(Particles.BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(Particles.BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(Particles.BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(Particles.BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
                 }
                 else
                 {
-                    this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+                    this.world.spawnParticle(Particles.LARGE_SMOKE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
                 }
             }
         }
-        else
-        {
-            if(this.breedCooldown > 0)
-            {
+        else {
+            if(this.breedCooldown > 0) {
                 --this.breedCooldown;
             }
-            if(this.newPacketRequired)
-            {
-                MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
-                        new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64));
+            if(this.newPacketRequired) {
+                MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.posX, this.posY, this.posZ, 64, this.dimension)), new MessageSquidCapData(this.getUniqueID(), this.squidCap));
                 this.newPacketRequired = false;
             }
         }
@@ -295,21 +271,20 @@ public class EntityRocketSquid extends EntityWaterMob
         if(!this.world.isRemote) {
             ItemStack stack = player.getHeldItem(hand);
             if(stack != ItemStack.EMPTY) {
-                if(stack.getItem() == RocketSquidsBase.squeleporter) {
-                    if(stack.getItemDamage() == 0) {
+                if(stack.getItem() == RocketSquidsBase.SQUELEPORTER) {
+                    if(stack.getDamage() == 0) {
                         //The squeleporter is inactive so store the squid here if possible
-                        if (stack.hasCapability(RocketSquidsBase.SQUELEPORTER, null)) {
+                        stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                             if(this.canDespawn()) {
                                 //TODO Put a teleport sound in
                                 //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-                                stack.getCapability(RocketSquidsBase.SQUELEPORTER, null).setSquid(this);
+                                cap.setSquid(this);
                                 //Set squeleporter to active
-                                stack.setItemDamage(1);
+                                stack.setDamage(1);
                                 player.getCooldownTracker().setCooldown(stack.getItem(), 10);
-                                this.setDead();
-                                return true;
+                                this.remove();
                             }
-                        }
+                        });
                     }
                 }
             }
@@ -354,28 +329,26 @@ public class EntityRocketSquid extends EntityWaterMob
             int noSacs = 3 + this.rand.nextInt(3);
             int noTubes = 2 + this.rand.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
-                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.nitroinksac));
+                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.NITRO_SAC));
                 entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 entityitem.motionY = -0.2;
                 entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 this.world.spawnEntity(entityitem);
             }
             for (int x = 0; x < noTubes; ++x) {
-                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
+                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.TURBO_TUBE));
                 entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 entityitem.motionY = -0.2;
                 entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 this.world.spawnEntity(entityitem);
             }
         }
-        this.setDead();
+        this.remove();
     }
 
     @Override
-    public void setDead()
-    {
-        if(this.world.isRemote && this.squidCap.getForcedBlast())
-        {
+    public void remove() {
+        if(this.world.isRemote && this.squidCap.getForcedBlast()) {
             this.doFireworkParticles();
         }
         if(this.getBlasting()) {
@@ -389,13 +362,12 @@ public class EntityRocketSquid extends EntityWaterMob
         if(this.world.isRemote) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
-        super.setDead();
+        super.remove();
     }
 
-    @SideOnly(Side.CLIENT)
-    private void doFireworkParticles()
-    {
-        ParticleManager effectRenderer = Minecraft.getMinecraft().effectRenderer;
+    @OnlyIn(Dist.CLIENT)
+    private void doFireworkParticles() {
+        ParticleManager effectRenderer = Minecraft.getInstance().particles;
         effectRenderer.addEffect(new SquidFirework(
                 (WorldClient) this.world, this.posX, this.posY, this.posZ, effectRenderer));
     }
@@ -403,16 +375,12 @@ public class EntityRocketSquid extends EntityWaterMob
     /**
      * Applies a velocity to the entities (unless they're riding), to push them away from each other.
      */
-    public void applyEntityCollision(Entity obstacle)
-    {
+    public void applyEntityCollision(Entity obstacle) {
         Entity passenger = this.getControllingPassenger();
-        if(passenger == null || passenger != obstacle)
-        {
+        if(passenger == null || passenger != obstacle) {
             //Obstacle is not the rider, so apply collision
-            if (!obstacle.noClip && !this.noClip)
-            {
-                if(!this.world.isRemote && !this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0)
-                {
+            if (!obstacle.noClip && !this.noClip) {
+                if(!this.world.isRemote && !this.isBaby && obstacle instanceof EntityRocketSquid && !((EntityRocketSquid)obstacle).isBaby && this.breedCooldown == 0) {
                     this.breedCooldown = 3600;
                     EntityBabyRocketSquid baby = new EntityBabyRocketSquid(this.world);
                     baby.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
@@ -451,8 +419,7 @@ public class EntityRocketSquid extends EntityWaterMob
     /**
      * Applies logic related to leashes, for example dragging the entity or breaking the leash.
      */
-    protected void updateLeashedState()
-    {
+    protected void updateLeashedState() {
         super.updateLeashedState();
         if(this.getLeashed()) {
             Entity holder = this.getLeashHolder();
@@ -484,24 +451,19 @@ public class EntityRocketSquid extends EntityWaterMob
     //////////////////
 
     @Override
-    protected void addPassenger(Entity p)
-    {
-        if(this.getPassengers().size() == 0)
-        {
+    protected void addPassenger(Entity p) {
+        if(this.getPassengers().size() == 0) {
             super.addPassenger(p);
-            if(this.world.isRemote)
-            {
+            if(this.world.isRemote) {
                 MinecraftForge.EVENT_BUS.register(this);
             }
         }
     }
 
     @Nullable
-    public Entity getControllingPassenger()
-    {
+    public Entity getControllingPassenger() {
         List passengers = this.getPassengers();
-        if(passengers.isEmpty())
-        {
+        if(passengers.isEmpty()) {
             return null;
         }
         else {
@@ -510,16 +472,14 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     //Later check rider name
-    public boolean hasVIPRider()
-    {
-        if(!this.isBaby)
-        {
+    public boolean hasVIPRider() {
+        if(!this.isBaby) {
             Entity passenger = this.getControllingPassenger();
             if (passenger instanceof EntityPlayer) {
                 return ((EntityPlayer) passenger).getHeldItem(EnumHand.MAIN_HAND)
-                            .getItem() == RocketSquidsBase.squavigator
+                            .getItem() == RocketSquidsBase.SQUAVIGATOR
                         || ((EntityPlayer) passenger)
-                            .getHeldItem(EnumHand.OFF_HAND).getItem() == RocketSquidsBase.squavigator;
+                            .getHeldItem(EnumHand.OFF_HAND).getItem() == RocketSquidsBase.SQUAVIGATOR;
             }
         }
         return false;
@@ -530,10 +490,8 @@ public class EntityRocketSquid extends EntityWaterMob
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
      */
     @Override
-    public void fall(float dist, float damMult)
-    {
-        if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865)
-        {
+    public void fall(float dist, float damMult) {
+        if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865) {
             super.fall(dist, damMult);
         }
     }
@@ -541,10 +499,9 @@ public class EntityRocketSquid extends EntityWaterMob
     /**
      * Can assume e is the passenger.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void applyOrientationToEntity(Entity e)
-    {
+    public void applyOrientationToEntity(Entity e) {
         if(!this.hasVIPRider()) {
             float yawDifference = (float) ((this.squidCap.getRotYaw() - this.squidCap.getPrevRotYaw()) * 180 / Math.PI);
             e.prevRotationYaw += yawDifference;
@@ -557,8 +514,7 @@ public class EntityRocketSquid extends EntityWaterMob
      * Should keep the passenger on, or at least around, the squid's back.
      */
     @Override
-    public void updatePassenger(Entity passenger)
-    {
+    public void updatePassenger(Entity passenger) {
         if(this.isPassenger(passenger)) {
             passenger.setPosition(this.posX, this.posY + 0.355, this.posZ);
         }
@@ -567,57 +523,47 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
-        if (this.getBlasting())
-        {
+        if (this.getBlasting()) {
             passenger.motionX += this.motionX * 1.5;
             passenger.motionY += this.motionY * 1.5;
             passenger.motionZ += this.motionZ * 1.5;
         }
-        if(this.world.isRemote)
-        {
+        if(this.world.isRemote) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
     }
 
     @Override
-    public boolean startRiding(Entity entityIn, boolean force)
-    {
+    public boolean startRiding(Entity entityIn, boolean force) {
         return false;
     }
 
     @Override
-    protected boolean canBeRidden(Entity entityIn)
-    {
+    protected boolean canBeRidden(Entity entityIn) {
         return this.getPassengers().size() == 0;
     }
 
-    public boolean getSaddled()
-    {
+    public boolean getSaddled() {
         return ((Boolean)this.dataManager.get(SADDLED)).booleanValue();
     }
 
     /**
      * Set or remove the saddle of the squid.
      */
-    private void setSaddled(boolean saddled)
-    {
-        if (saddled)
-        {
+    private void setSaddled(boolean saddled) {
+        if (saddled) {
             this.dataManager.set(SADDLED, Boolean.valueOf(true));
         }
-        else
-        {
+        else {
             this.dataManager.set(SADDLED, Boolean.valueOf(false));
         }
     }
 
-    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier)
-    {
+    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
         super.dropEquipment(wasRecentlyHit, lootingModifier);
 
-        if (this.getSaddled())
-        {
-            this.dropItem(Items.SADDLE, 1);
+        if (this.getSaddled()) {
+            this.entityDropItem(Items.SADDLE);
         }
     }
 
@@ -628,8 +574,7 @@ public class EntityRocketSquid extends EntityWaterMob
      * @return if the entity can be interacted with from a rider
      */
     @Override
-    public boolean canRiderInteract()
-    {
+    public boolean canRiderInteract() {
         return true;
     }
 
@@ -640,9 +585,8 @@ public class EntityRocketSquid extends EntityWaterMob
      * @return if the entity should be dismounted when under water
      */
     @Override
-    public boolean shouldDismountInWater(Entity rider)
-    {
-        return false;
+    public boolean canBeRiddenInWater(Entity rider) {
+        return true;
     }
 
     /////////////////
@@ -651,23 +595,21 @@ public class EntityRocketSquid extends EntityWaterMob
     /**
      * Add transformations to put player on back of squid.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void addRotation(RenderPlayerEvent.Pre event)
-    {
+    public void addRotation(RenderPlayerEvent.Pre event) {
         EntityPlayer p = event.getEntityPlayer();
-        if(this.isPassenger(p))
-        {
+        if(this.isPassenger(p)) {
             this.riderRotated = true;
             GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, 0.08F, 0.0F);
+			GlStateManager.translatef(0.0F, 0.08F, 0.0F);
             double prevPitch_r = this.squidCap.getPrevRotPitch();
             double pitch_r = this.squidCap.getRotPitch();
 			float partialTick = event.getPartialRenderTick();
             double exactPitch_r = prevPitch_r + (pitch_r - prevPitch_r) * partialTick;
             double exactPitch_d = exactPitch_r * 180 / Math.PI;
 			double yaw_r = this.squidCap.getRotYaw();
-            GlStateManager.rotate((float) (exactPitch_d - 90.0F),   (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
+            GlStateManager.rotatef((float) (exactPitch_d - 90.0F),   (float) Math.cos(yaw_r), 0.0F, (float) Math.sin(yaw_r));
         }
     }
 
@@ -675,9 +617,8 @@ public class EntityRocketSquid extends EntityWaterMob
     //NBT//
     ///////
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
-        super.writeEntityToNBT(compound);
+    public boolean writeUnlessRemoved(NBTTagCompound compound) {
+        super.writeUnlessRemoved(compound);
         if(this.isBaby) {
             compound.setString("id", DataReference.MODID + ":babyrocketsquid");
         }
@@ -687,18 +628,17 @@ public class EntityRocketSquid extends EntityWaterMob
         compound.setDouble("force", Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ));
         compound.setBoolean("Saddle", this.getSaddled());
         compound.setShort("Breed Cooldown", this.breedCooldown);
+        return true;
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
-        super.readEntityFromNBT(compound);
+    public void read(NBTTagCompound compound) {
+        super.read(compound);
         this.setSaddled(compound.getBoolean("Saddle"));
         this.breedCooldown = compound.getShort("Breed Cooldown");
     }
 
-    public void pointToWhereFlying()
-    {
+    public void pointToWhereFlying() {
         if(!(Math.abs(this.motionY) < 0.0785 && this.motionX == 0.0 && this.motionZ == 0.0)) {
             //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.
             //The global z movement is given by this.motionZ.
@@ -711,49 +651,41 @@ public class EntityRocketSquid extends EntityWaterMob
     }
 
     //CAPABILITY METHODS
-    public boolean getBlasting()
-    {
+    public boolean getBlasting() {
         return this.squidCap.getBlasting();
     }
 
-    public void setBlasting(boolean b)
-    {
+    public void setBlasting(boolean b) {
         if(b != this.squidCap.getBlasting()) {
             this.squidCap.setBlasting(b);
             this.newPacketRequired = true;
         }
     }
 
-    public boolean getShaking()
-    {
+    public boolean getShaking() {
         return this.squidCap.getShaking();
     }
 
-    public void setShaking(boolean b)
-    {
+    public void setShaking(boolean b) {
         if(b != this.squidCap.getShaking()) {
             this.squidCap.setShaking(b);
             this.newPacketRequired = true;
         }
     }
 
-    public double getPrevRotPitch()
-    {
+    public double getPrevRotPitch() {
         return this.squidCap.getPrevRotPitch();
     }
 
-    public double getPrevRotYaw()
-    {
+    public double getPrevRotYaw() {
         return this.squidCap.getPrevRotYaw();
     }
 
-    public double getRotPitch()
-    {
+    public double getRotPitch() {
         return this.squidCap.getRotPitch();
     }
 
-    public double getRotYaw()
-    {
+    public double getRotYaw() {
         return this.squidCap.getRotYaw();
     }
 
@@ -767,16 +699,14 @@ public class EntityRocketSquid extends EntityWaterMob
         this.squidCap.setTargetRotYaw(rotYaw);
     }
 
-    public void setTargetRotPitch(double targPitch)
-    {
+    public void setTargetRotPitch(double targPitch) {
         if(targPitch != this.squidCap.getTargetRotPitch()) {
             this.squidCap.setTargetRotPitch(targPitch);
             this.newPacketRequired = true;
         }
     }
 
-    public void setTargetRotYaw(double targYaw)
-    {
+    public void setTargetRotYaw(double targYaw) {
         if (targYaw != this.squidCap.getTargetRotYaw()) {
             this.squidCap.setTargetRotYaw(targYaw);
             this.newPacketRequired = true;

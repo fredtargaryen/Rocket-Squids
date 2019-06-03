@@ -1,8 +1,8 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.entity.model.ModelBase;
+import net.minecraft.client.renderer.entity.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
 /**
@@ -118,8 +118,7 @@ public class ModelRocketSquid extends ModelBase {
         modelRenderer.rotateAngleZ = z;
     }
 
-    public void setRotationAngles(float time, float maxSpeed, float whatever, float rotationYaw, float rotationPitch, float scale, Entity entity)
-    {
+    public void setRotationAngles(float time, float maxSpeed, float whatever, float rotationYaw, float rotationPitch, float scale, Entity entity) {
         super.setRotationAngles(time, maxSpeed, whatever, rotationYaw, rotationPitch, scale, entity);
         this.Tent0.rotateAngleX = whatever;
         this.Tent1.rotateAngleX = whatever;

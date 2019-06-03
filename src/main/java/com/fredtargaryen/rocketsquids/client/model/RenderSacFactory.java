@@ -6,17 +6,15 @@ import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderSnowball;
+import net.minecraft.client.renderer.entity.RenderSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderSacFactory implements IRenderFactory<EntityThrownSac>
-{
+public class RenderSacFactory implements IRenderFactory<EntityThrownSac> {
     private static final ResourceLocation sactex = new ResourceLocation(DataReference.MODID + ":textures/items/nitroinksac.png");
 
     @Override
-    public Render<? super EntityThrownSac> createRenderFor(RenderManager manager)
-    {
-        return new RenderSnowball<EntityThrownSac>(manager, RocketSquidsBase.nitroinksac, Minecraft.getMinecraft().getRenderItem());
+    public Render<? super EntityThrownSac> createRenderFor(RenderManager manager) {
+        return new RenderSprite<>(manager, RocketSquidsBase.NITRO_SAC, Minecraft.getInstance().getItemRenderer());
     }
 }

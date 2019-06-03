@@ -6,13 +6,11 @@ import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Random;
 
-public class EntityAISwimAround extends EntityAIBase
-{
+public class EntityAISwimAround extends EntityAIBase {
     private final EntityRocketSquid squid;
     private byte noteIndex;
     private enum StatueBlastStage {
@@ -35,8 +33,7 @@ public class EntityAISwimAround extends EntityAIBase
 	private final double swimForce;
 	private StatueBlastStage statueBlastStage;
 
-    public EntityAISwimAround(EntityRocketSquid ers, double swimForce)
-    {
+    public EntityAISwimAround(EntityRocketSquid ers, double swimForce) {
         super();
         this.squid = ers;
         this.setMutexBits(1);
@@ -49,8 +46,7 @@ public class EntityAISwimAround extends EntityAIBase
     }
 
     @Override
-    public boolean shouldExecute()
-    {
+    public boolean shouldExecute() {
         return this.squid.isInWater() && !this.squid.getShaking() && !this.squid.getBlasting();
     }
 
@@ -59,10 +55,8 @@ public class EntityAISwimAround extends EntityAIBase
      * @param hasVIPRider whether there is a rider who is a VIP
      * @return whether a turn will be executed. It won't if the squid is pointing roughly where the rider is facing.
      */
-    public boolean doTurn(boolean hasVIPRider)
-    {
-        if(hasVIPRider)
-        {
+    public boolean doTurn(boolean hasVIPRider) {
+        if(hasVIPRider) {
             Entity pass = this.squid.getControllingPassenger();
             float pp = (float) ((pass.rotationPitch + 90.0F) * Math.PI / 180.0F);
             float py = (float) (pass.getRotationYawHead() * Math.PI / 180.0F);
@@ -95,7 +89,7 @@ public class EntityAISwimAround extends EntityAIBase
      * 7/12 - goes from turning to swimming forward or vice versa
      */
     @Override
-    public void updateTask() {
+    public void tick() {
         //Code for testing squid swimming and visuals.
         //If all uncommented, will swim in an octagon without shaking.
 //		if(this.turning)
@@ -163,7 +157,7 @@ public class EntityAISwimAround extends EntityAIBase
                     }
                     else {
                         //TargetPoint for playing notes related to distance
-                        NetworkRegistry.TargetPoint squidPoint = new NetworkRegistry.TargetPoint(this.squid.dimension, this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F);
+                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F, this.squid.dimension);
                         double zDistance = statueCoords[4] - this.squid.posZ;
                         double xDistance = statueCoords[2] - this.squid.posX;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
@@ -172,21 +166,21 @@ public class EntityAISwimAround extends EntityAIBase
                         //Play a celebratory chord
                         if (hozDistanceSquared > 640000.0) {
                             //More than 50 chunks away (50 * 16 = 800 blocks). Low C Major
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)0), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)4), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)7), squidPoint);
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)0));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)4));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)7));
                         }
                         else if (hozDistanceSquared > 25600.0) {
                             //10-50 chunks away (10 * 16 = 160 blocks). Middle C Major
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)12), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)16), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)19), squidPoint);
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)12));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)16));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)19));
                         }
                         else {
                             //Less than 10 chunks away. High C Major
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)24), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)28), squidPoint);
-                            MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote((byte)31), squidPoint);
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)24));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)28));
+                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte)31));
                         }
                         if (hozDistanceSquared > 6400.0) {
                             //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
@@ -272,7 +266,7 @@ public class EntityAISwimAround extends EntityAIBase
 
     private void playNextNote() {
         byte note = this.squid.getTargetNote(this.noteIndex);
-        MessageHandler.INSTANCE.sendToAllAround(new MessageSquidNote(note), new NetworkRegistry.TargetPoint(this.squid.dimension, this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F));
+        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F, this.squid.dimension)), new MessageSquidNote(note));
         if(this.noteIndex == 2) {
             this.noteIndex = 0;
         }

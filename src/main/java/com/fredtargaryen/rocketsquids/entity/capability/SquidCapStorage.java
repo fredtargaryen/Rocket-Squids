@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.entity.capability;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -13,8 +13,7 @@ import net.minecraftforge.common.capabilities.Capability;
 public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
 {
     @Override
-    public NBTBase writeNBT(Capability<ISquidCapability> capability, ISquidCapability instance, EnumFacing side)
-    {
+    public INBTBase writeNBT(Capability<ISquidCapability> capability, ISquidCapability instance, EnumFacing side) {
         NBTTagCompound comp = new NBTTagCompound();
         comp.setDouble("pitch", instance.getRotPitch());
         comp.setDouble("yaw", instance.getRotYaw());
@@ -30,8 +29,7 @@ public class SquidCapStorage implements Capability.IStorage<ISquidCapability>
     }
 
     @Override
-    public void readNBT(Capability<ISquidCapability> capability, ISquidCapability instance, EnumFacing side, NBTBase nbt)
-    {
+    public void readNBT(Capability<ISquidCapability> capability, ISquidCapability instance, EnumFacing side, INBTBase nbt) {
         NBTTagCompound comp = (NBTTagCompound) nbt;
         instance.setRotPitch(comp.getDouble("pitch"));
         instance.setRotYaw(comp.getDouble("yaw"));

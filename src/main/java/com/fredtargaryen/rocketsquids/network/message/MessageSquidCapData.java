@@ -6,63 +6,72 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public class MessageSquidCapData implements IMessage, IMessageHandler<MessageSquidCapData, IMessage>
-{
+public class MessageSquidCapData {
     private UUID squidToUpdate;
     private NBTTagCompound capData;
 
     public MessageSquidCapData() {}
 
-    public MessageSquidCapData(UUID id, ISquidCapability cap)
-    {
+    public MessageSquidCapData(UUID id, ISquidCapability cap) {
         this.squidToUpdate = id;
         this.capData = (NBTTagCompound) RocketSquidsBase.SQUIDCAP.writeNBT(cap, null);
     }
 
-    public IMessage onMessage(final MessageSquidCapData message, MessageContext ctx)
-    {
-        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
-            @Override
-            public void run()
-            {
-                List<Entity> l = Minecraft.getMinecraft().world.getLoadedEntityList();
-                Iterator<Entity> squidFinder = l.iterator();
-                Entity e;
-                while(squidFinder.hasNext())
-                {
-                    e = squidFinder.next();
-                    if(e.getPersistentID().equals(message.squidToUpdate))
-                    {
-                        if(e.hasCapability(RocketSquidsBase.SQUIDCAP, null)) {
-                            //Can assume e is a rocket squid
-                            RocketSquidsBase.SQUIDCAP.readNBT(e.getCapability(RocketSquidsBase.SQUIDCAP, null), null, message.capData);
-                        }
-                    }
+    public void onMessage(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            List<Entity> l = Minecraft.getInstance().world.loadedEntityList;
+            Iterator<Entity> squidFinder = l.iterator();
+            Entity e;
+            while(squidFinder.hasNext()) {
+                e = squidFinder.next();
+                if(e.getUniqueID().equals(this.squidToUpdate)) {
+                    e.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap ->
+                        //Can assume e is a rocket squid
+                        RocketSquidsBase.SQUIDCAP.readNBT(cap, null, this.capData));
                 }
             }
         });
-        return null;
+        ctx.get().setPacketHandled(true);
     }
 
-    public void fromBytes(ByteBuf buf)
-    {
+    /**
+     * Effectively fromBytes from 1.12.2
+     */
+    public MessageSquidCapData(ByteBuf buf) {
         this.squidToUpdate = new UUID(buf.readLong(), buf.readLong());
-        this.capData = ByteBufUtils.readTag(buf);
+        //Unfortunately have to manually read from the buffer now
+        this.capData.setDouble("pitch", buf.readDouble());
+        this.capData.setDouble("yaw", buf.readDouble());
+        this.capData.setDouble("targetPitch", buf.readDouble());
+        this.capData.setDouble("targetYaw", buf.readDouble());
+        this.capData.setBoolean("shaking", buf.readBoolean());
+        this.capData.setBoolean("blasting", buf.readBoolean());
+        this.capData.setBoolean("forcedblast", buf.readBoolean());
+        this.capData.setByteArray("latestnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
+        this.capData.setByteArray("targetnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
+        this.capData.setBoolean("blasttostatue", buf.readBoolean());
     }
 
-    public void toBytes(ByteBuf buf)
-    {
+    public void toBytes(ByteBuf buf) {
         buf.writeLong(this.squidToUpdate.getMostSignificantBits());
         buf.writeLong(this.squidToUpdate.getLeastSignificantBits());
-        ByteBufUtils.writeTag(buf, this.capData);
+        //Unfortunately have to manually write to the buffer now
+        buf.writeDouble(this.capData.getDouble("pitch"));
+        buf.writeDouble(this.capData.getDouble("yaw"));
+        buf.writeDouble(this.capData.getDouble("targetPitch"));
+        buf.writeDouble(this.capData.getDouble("targetYaw"));
+        buf.writeBoolean(this.capData.getBoolean("shaking"));
+        buf.writeBoolean(this.capData.getBoolean("blasting"));
+        buf.writeBoolean(this.capData.getBoolean("forcedblast"));
+        buf.writeBytes(this.capData.getByteArray("latestnotes"));
+        buf.writeBytes(this.capData.getByteArray("targetnotes"));
+        buf.writeBoolean(this.capData.getBoolean("blasttostatue"));
     }
 }

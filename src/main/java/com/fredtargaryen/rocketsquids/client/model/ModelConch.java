@@ -2,21 +2,15 @@ package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.model.ModelBiped;
+import net.minecraft.client.renderer.entity.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * Conch - FredTargaryen
@@ -50,14 +44,14 @@ public class ModelConch extends ModelBiped {
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(CONCH_TEX);
+        Minecraft.getInstance().getTextureManager().bindTexture(CONCH_TEX);
         this.shape2.render(f5);
         this.shape6.render(f5);
         this.shape3.render(f5);
         this.shape1.render(f5);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void getHeadAngles(RenderPlayerEvent.Pre rle) {
         ModelRenderer head = rle.getRenderer().getMainModel().bipedHead;

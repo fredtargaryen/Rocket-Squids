@@ -5,11 +5,9 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderRSFactory implements IRenderFactory<EntityRocketSquid>
-{
+public class RenderRSFactory implements IRenderFactory<EntityRocketSquid> {
     @Override
-    public Render<? super EntityRocketSquid> createRenderFor(RenderManager manager)
-    {
+    public Render<? super EntityRocketSquid> createRenderFor(RenderManager manager) {
         return new RenderRS(manager, new ModelRocketSquid());
     }
 }

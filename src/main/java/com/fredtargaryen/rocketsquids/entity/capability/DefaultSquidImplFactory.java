@@ -32,8 +32,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         private double targRotPitch;
         private double targRotYaw;
 
-        public DefaultSquidImpl()
-        {
+        public DefaultSquidImpl() {
             this.shaking = false;
             this.blasting = false;
             this.prevRotPitch = 0.0;
@@ -85,8 +84,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         }
 
         @Override
-        public void setRotPitch(double d)
-        {
+        public void setRotPitch(double d) {
             this.prevRotPitch = this.rotPitch;
             this.rotPitch = d;
         }
@@ -98,8 +96,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         }
 
         @Override
-        public void setRotYaw(double d)
-        {
+        public void setRotYaw(double d) {
             this.prevRotYaw = this.rotYaw;
             this.rotYaw = d;
         }
@@ -110,28 +107,23 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         }
 
         @Override
-        public void setTargetRotPitch(double d)
-        {
+        public void setTargetRotPitch(double d) {
             //Set current rotation to be within [-PI, PI].
             //Any operations on current rotation are also applied to target rotation.
             //Target rotation can be outside the interval; it will be
             //current rotation and brought back in next time this method is called.
-            while(this.rotPitch < -Math.PI)
-            {
+            while(this.rotPitch < -Math.PI) {
                 this.rotPitch += doublePi;
 
             }
-            while(d < -Math.PI)
-            {
+            while(d < -Math.PI) {
                 d += doublePi;
             }
-            while(this.rotPitch > Math.PI)
-            {
+            while(this.rotPitch > Math.PI) {
                 this.rotPitch -= doublePi;
                 d -= doublePi;
             }
-            while(d > Math.PI)
-            {
+            while(d > Math.PI) {
                 d -= doublePi;
             }
             this.prevRotPitch = this.rotPitch;
@@ -144,26 +136,21 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         }
 
         @Override
-        public void setTargetRotYaw(double d)
-        {
+        public void setTargetRotYaw(double d) {
             //Set current rotation to be within [-PI, PI].
             //Any operations on current rotation are also applied to target rotation.
             //Target rotation can be outside the interval; it will be
             //current rotation and brought back in next time this method is called.
-            while(this.rotYaw < -Math.PI)
-            {
+            while(this.rotYaw < -Math.PI) {
                 this.rotYaw += doublePi;
             }
-            while(d < -Math.PI)
-            {
+            while(d < -Math.PI) {
                 d += doublePi;
             }
-            while(this.rotYaw > Math.PI)
-            {
+            while(this.rotYaw > Math.PI) {
                 this.rotYaw -= doublePi;
             }
-            while(d > Math.PI)
-            {
+            while(d > Math.PI) {
                 d -= doublePi;
             }
             this.prevRotYaw = this.rotYaw;

@@ -1,12 +1,10 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.entity.ai.EntityAIBase;
 
-public class EntityAIBlastoff extends EntityAIBase
-{
+public class EntityAIBlastoff extends EntityAIBase {
     private final EntityRocketSquid squid;
     private boolean blastStarted;
     private boolean horizontal;
@@ -30,16 +28,13 @@ public class EntityAIBlastoff extends EntityAIBase
     }
 
     @Override
-    public void updateTask()
-    {
-        if (this.blastStarted)
-        {
+    public void tick() {
+        if (this.blastStarted) {
             //The squid is part of the way through a blast
             if((this.horizontal
                     && this.motionHasPeaked(this.prevMotionX, this.squid.motionX)
                     && this.motionHasPeaked(this.prevMotionZ, this.squid.motionZ))
-                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, this.squid.motionY)))
-            {
+                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, this.squid.motionY))) {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
@@ -50,13 +45,11 @@ public class EntityAIBlastoff extends EntityAIBase
                     this.squid.explode();
                 }
             }
-            else
-            {
+            else {
                 this.squid.pointToWhereFlying();
             }
         }
-        else
-        {
+        else {
             //Blast has not started yet
             this.squid.setShaking(false);
             this.squid.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
@@ -69,8 +62,7 @@ public class EntityAIBlastoff extends EntityAIBase
         this.prevMotionZ = this.squid.motionZ;
     }
 
-    private boolean motionHasPeaked(double prev, double current)
-    {
+    private boolean motionHasPeaked(double prev, double current) {
         return (prev >= 0 && current <= 0) || (prev <= 0 && current >= 0);
     }
 }

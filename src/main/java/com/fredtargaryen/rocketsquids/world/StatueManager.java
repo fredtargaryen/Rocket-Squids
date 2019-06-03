@@ -1,12 +1,13 @@
 package com.fredtargaryen.rocketsquids.world;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.MapStorage;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.fml.common.FMLLog;
+import net.minecraft.world.storage.WorldSavedDataStorage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,29 +23,30 @@ public class StatueManager extends WorldSavedData {
 
     public static StatueManager forWorld(World world) {
         //Retrieves the StatueManager instance for the given world, creating it if necessary
-        MapStorage storage = world.getPerWorldStorage();
-        StatueManager data = (StatueManager) storage.getOrLoadData(StatueManager.class, DataReference.MODID);
+        WorldSavedDataStorage storage = world.getMapStorage();
+        DimensionType dt = world.getDimension().getType();
+        StatueManager data = (StatueManager) storage.func_212426_a(dt, StatueManager::new, DataReference.MODID); //getOrLoadData
         if(data == null) {
-            FMLLog.warning("[ROCKETSQUIDS-SERVER] No statue data was found for this world. Creating new statue data.");
+            RocketSquidsBase.warn("[ROCKETSQUIDS-SERVER] No statue data was found for this world. Creating new statue data.");
             data = new StatueManager(DataReference.MODID);
-            storage.setData(DataReference.MODID, data);
+            storage.func_212424_a(dt, DataReference.MODID, data); //setData
         }
         return data;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void read(NBTTagCompound nbt) {
         this.statues = new ArrayList<>();
-        int amount = nbt.getInteger("amount");
+        int amount = nbt.getInt("amount");
         for(int i = 0; i < amount; ++i) {
             this.statues.add(nbt.getIntArray(String.valueOf(i)));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound write(NBTTagCompound compound) {
         int amount = this.statues.size();
-        compound.setInteger("amount", this.statues.size());
+        compound.setInt("amount", this.statues.size());
         for(int i = 0; i < amount; ++i) {
             compound.setIntArray(String.valueOf(i), this.statues.get(i));
         }
