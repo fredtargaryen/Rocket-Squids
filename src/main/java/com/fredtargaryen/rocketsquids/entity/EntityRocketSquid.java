@@ -48,8 +48,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EntityRocketSquid extends EntityWaterMob
-{
+public class EntityRocketSquid extends EntityWaterMob {
     ///////////////
     //Client only//
     ///////////////
@@ -80,8 +79,12 @@ public class EntityRocketSquid extends EntityWaterMob
     @Nullable
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData entityLivingData, @Nullable NBTTagCompound itemNbt) {
         IEntityLivingData ield = super.onInitialSpawn(difficulty, entityLivingData, itemNbt);
-        this.dataManager.register(SADDLED, Boolean.valueOf(false));
         return ield;
+    }
+
+    protected void registerData() {
+        super.registerData();
+        this.dataManager.register(SADDLED, false);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class EntityRocketSquid extends EntityWaterMob
     @Override
     protected void registerAttributes() {
         super.registerAttributes();
-        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
+        this.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
     }
 
     public boolean isBaby() {
@@ -271,21 +274,19 @@ public class EntityRocketSquid extends EntityWaterMob
         if(!this.world.isRemote) {
             ItemStack stack = player.getHeldItem(hand);
             if(stack != ItemStack.EMPTY) {
-                if(stack.getItem() == RocketSquidsBase.SQUELEPORTER) {
-                    if(stack.getDamage() == 0) {
-                        //The squeleporter is inactive so store the squid here if possible
-                        stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
-                            if(this.canDespawn()) {
-                                //TODO Put a teleport sound in
-                                //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-                                cap.setSquid(this);
-                                //Set squeleporter to active
-                                stack.setDamage(1);
-                                player.getCooldownTracker().setCooldown(stack.getItem(), 10);
-                                this.remove();
-                            }
-                        });
-                    }
+                if(stack.getItem() == RocketSquidsBase.SQUELEPORTER_INACTIVE) {
+                    //The squeleporter is inactive so store the squid here
+                    ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.getDefaultInstance();
+                    newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
+                        if(this.canDespawn()) {
+                            //TODO Put a teleport sound in
+                            //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+                            cap.setSquid(this);
+                            this.remove();
+                        }
+                    });
+                    player.setHeldItem(hand, newStack);
+                    player.getCooldownTracker().setCooldown(newStack.getItem(), 10);
                 }
             }
             if (!this.isBaby) {

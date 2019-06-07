@@ -16,8 +16,5 @@ public class GeneralConfig {
                 .defineInRange("spawn.min", 2, 1, 20);
         MAX_GROUP_SIZE = serverBuilder.comment("Largest possible size of a group")
                 .defineInRange("spawn.max", 5, 1, 40);
-        if(MAX_GROUP_SIZE.get() < MIN_GROUP_SIZE.get()) {
-            MAX_GROUP_SIZE = MIN_GROUP_SIZE;
-        }
     }
 }

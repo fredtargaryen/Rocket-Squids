@@ -26,14 +26,12 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float handleRotationFloat(EntityRocketSquid squid, float partialTicks)
-    {
+    protected float handleRotationFloat(EntityRocketSquid squid, float partialTicks) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void applyRotations(EntityRocketSquid ers, float yaw, float pitch, float partialTicks)
-    {
+    protected void applyRotations(EntityRocketSquid ers, float yaw, float pitch, float partialTicks) {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();
         //Also convert to degrees.
@@ -46,8 +44,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
         GlStateManager.translatef(0.0F, -1.2F, 0.0F);
     }
 
-    public void doRender(EntityRocketSquid par1EntitySquid, double x, double y, double z, float par8, float partialTicks)
-    {
+    public void doRender(EntityRocketSquid par1EntitySquid, double x, double y, double z, float par8, float partialTicks) {
         if (par1EntitySquid.getShaking())
         {
             Random r = par1EntitySquid.getRNG();
@@ -55,11 +52,10 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
             y += r.nextGaussian() * 0.02D;
             z += r.nextGaussian() * 0.02D;
         }
-        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater())
-        {
+        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
             //Choose texture
             TextureMap texturemap = Minecraft.getInstance().getTextureMap();
-            TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:blocks/fire_layer_1");
+            TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:block/fire_0");
 
             //Calculate and set translation-rotation matrix
             GlStateManager.pushMatrix();
@@ -76,7 +72,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder vertexbuffer = tessellator.getBuffer();
             GlStateManager.disableLighting();
-            //OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f); TODO Needed?
+            OpenGlHelper.glMultiTexCoord2f(OpenGlHelper.GL_TEXTURE1, 240f, 240f);
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);

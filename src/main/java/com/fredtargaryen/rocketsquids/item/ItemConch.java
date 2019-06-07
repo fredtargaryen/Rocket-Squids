@@ -127,6 +127,9 @@ public class ItemConch extends ItemArmor {
                 }
             }
         }
+        else {
+            this.onItemRightClick(context.getWorld(), context.getPlayer(), EnumHand.MAIN_HAND);
+        }
         return EnumActionResult.FAIL;
     }
 

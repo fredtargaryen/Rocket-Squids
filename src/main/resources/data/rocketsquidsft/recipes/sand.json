@@ -8,12 +8,11 @@
   ],
   "key": {
     "s": {
-      "item": "rocketsquidsft:conch",
-      "data": 0
+      "item": "rocketsquidsft:conch"
     }
   },
   "result": {
     "item": "minecraft:sand",
-    "data": 0
+    "count": 1
   }
 }

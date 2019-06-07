@@ -17,10 +17,10 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockConch extends Block {
-    private static final VoxelShape CONCH_EAST = Block.makeCuboidShape(0.1875, 0.0, 0.125, 0.375, 0.125, 0.5);
-    private static final VoxelShape CONCH_SOUTH = Block.makeCuboidShape(0.5, 0.0, 0.1875, 0.875, 0.125, 0.375);
-    private static final VoxelShape CONCH_WEST = Block.makeCuboidShape(0.625, 0.0, 0.5, 0.8125, 0.125, 0.875);
-    private static final VoxelShape CONCH_NORTH = Block.makeCuboidShape(0.125, 0.0, 0.625, 0.5, 0.125, 0.8125);
+    private static final VoxelShape CONCH_EAST = Block.makeCuboidShape(3.0, 0.0, 2.0, 6.0, 2.0, 8.0);
+    private static final VoxelShape CONCH_SOUTH = Block.makeCuboidShape(8.0, 0.0, 3.0, 14.0, 2.0, 6.0);
+    private static final VoxelShape CONCH_WEST = Block.makeCuboidShape(10.0, 0.0, 8.0, 13.0, 2.0, 14.0);
+    private static final VoxelShape CONCH_NORTH = Block.makeCuboidShape(2.0, 0.0, 10.0, 8.0, 2.0, 13.0);
 
     public BlockConch() {
         super(Block.Properties.create(Material.PLANTS));

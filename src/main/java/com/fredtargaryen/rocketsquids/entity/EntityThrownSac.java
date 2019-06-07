@@ -28,15 +28,12 @@ public class EntityThrownSac extends EntityThrowable {
             result.entity.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
         }
         if (!this.world.isRemote) {
-            AxisAlignedBB axisalignedbb = this.getBoundingBox().expand(2.0D, 2.0D, 2.0D);
+            AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(2.0D, 2.0D, 2.0D);
             List<EntityLivingBase> list1 = this.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
 
-            if (!list1.isEmpty())
-            {
-                for (EntityLivingBase entitylivingbase : list1)
-                {
-                    if (entitylivingbase.canBeHitWithPotion())
-                    {
+            if (!list1.isEmpty()) {
+                for (EntityLivingBase entitylivingbase : list1) {
+                    if (entitylivingbase.canBeHitWithPotion()) {
                         entitylivingbase.addPotionEffect(new PotionEffect(blindnessPotion, 60));
                     }
                 }

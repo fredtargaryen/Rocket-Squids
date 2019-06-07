@@ -1,11 +1,3 @@
-/**
- * CHECKLIST
- * Do conches get waterlogged properly?
- * Can blocks render through statues?
- * Are squid fires bright enough?
- * Do sacs and tubes look right?
- * Does crafting with gunpowder and dye work? (Optional, as long as no errors on startup)
- */
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.BlockConch;
@@ -40,7 +32,6 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
@@ -96,9 +87,11 @@ public class RocketSquidsBase {
     public static Item ITEM_STATUE;
     @ObjectHolder("squavigator")
     public static Item SQUAVIGATOR;
-    @ObjectHolder("squeleporter")
-    public static Item SQUELEPORTER;
-    @ObjectHolder("egg")
+    @ObjectHolder("squeleporter_active")
+    public static Item SQUELEPORTER_ACTIVE;
+    @ObjectHolder("squeleporter_inactive")
+    public static Item SQUELEPORTER_INACTIVE;
+    @ObjectHolder("rs_spawn_egg")
     public static Item SQUID_EGG;
 
     //Declare all EntityTypes here
@@ -112,6 +105,8 @@ public class RocketSquidsBase {
     public static EntityType BABY_SQUID_TYPE;
     @ObjectHolder("primala")
     public static EntityType PRIMAL_A_TYPE;
+
+    private static EntityType SQUID_EARLYREG;
 
     /**
      * The creative tab for all items from Rocket Squids.
@@ -172,6 +167,11 @@ public class RocketSquidsBase {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
+        SQUID_EARLYREG = EntityType.Builder.create(EntityRocketSquid.class, EntityRocketSquid::new)
+                .tracker(128, 10, true)
+                .build(DataReference.MODID)
+                //.setRegistryName(new ResourceLocation(DataReference.MODID, "rocketsquid")),
+                .setRegistryName("rocketsquid");
         event.getRegistry().registerAll(
                 new ItemConch()
                         .setRegistryName("conch"),
@@ -187,42 +187,40 @@ public class RocketSquidsBase {
                         .setRegistryName("statue"),
                 new Item(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(1))
                         .setRegistryName("squavigator"),
-                new ItemSqueleporter()
-                        .setRegistryName("squeleporter"),
-                new ItemSpawnEgg(SQUID_TYPE,9838110, 16744192, new Item.Properties())
-                        .setRegistryName("egg")
+                new ItemSqueleporter(new Item.Properties())
+                        .setRegistryName("squeleporter_active"),
+                new ItemSqueleporter(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB))
+                        .setRegistryName("squeleporter_inactive"),
+                new ItemSpawnEgg(SQUID_EARLYREG,9838110, 16744192, new Item.Properties().group(SQUIDS_TAB))
+                        .setRegistryName("rs_spawn_egg")
         );
     }
 
     @SubscribeEvent
     public static void registerEntities(RegistryEvent.Register<EntityType<?>> event) {
         event.getRegistry().registerAll(
-                EntityType.Builder.create(EntityRocketSquid.class, EntityRocketSquid::new)
-                        .tracker(128, 10, true)
-                        .build(DataReference.MODID)
-                        .setRegistryName(new ResourceLocation(DataReference.MODID, "rocketsquid")),
+                SQUID_EARLYREG,
                 EntityType.Builder.create(EntityBabyRocketSquid.class, EntityBabyRocketSquid::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        .setRegistryName(new ResourceLocation(DataReference.MODID, "babyrs")),
+                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "babyrs")),
+                        .setRegistryName("babyrs"),
                 EntityType.Builder.create(EntityThrownSac.class, EntityThrownSac::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        .setRegistryName(new ResourceLocation(DataReference.MODID, "nitroinksac")),
+                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "nitroinksac")),
+                        .setRegistryName("nitroinksac"),
                 EntityType.Builder.create(EntityThrownTube.class, EntityThrownTube::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        .setRegistryName(new ResourceLocation(DataReference.MODID, "turbotube"))
+                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "turbotube"))
+                        .setRegistryName("turbotube")
         );
     }
 
     @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
         Sounds.constructAndRegisterSoundEvents(event);
-        event.getRegistry().registerAll(
-                new SoundEvent(new ResourceLocation(DataReference.MODID, "greened")).setRegistryName("greened"),
-                new SoundEvent(new ResourceLocation(DataReference.MODID, "tp")).setRegistryName("tp"),
-                new SoundEvent(new ResourceLocation(DataReference.MODID, "flick")).setRegistryName("flick"));
     }
 
     /**
@@ -249,6 +247,10 @@ public class RocketSquidsBase {
         list.add(f1);
         firework.setTag("Explosions", list);
 
+        //Validate the config
+        if(GeneralConfig.MAX_GROUP_SIZE.get() < GeneralConfig.MIN_GROUP_SIZE.get()) {
+            GeneralConfig.MAX_GROUP_SIZE = GeneralConfig.MIN_GROUP_SIZE;
+        }
 
         //Other Rocket Squid info
         EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.SpawnPlacementType.IN_WATER, Heightmap.Type.OCEAN_FLOOR, null);
@@ -279,7 +281,7 @@ public class RocketSquidsBase {
 
     @SubscribeEvent
     public void onItemStackConstruct(AttachCapabilitiesEvent<ItemStack> evt) {
-        if(evt.getObject().getItem() == SQUELEPORTER) {
+        if(evt.getObject().getItem() == SQUELEPORTER_ACTIVE) {
             evt.addCapability(DataReference.SQUELEPORTER_LOCATION,
                     new ICapabilitySerializable<NBTTagCompound>() {
                         ISqueleporter inst = SQUELEPORTER_CAP.getDefaultInstance();
@@ -411,7 +413,7 @@ public class RocketSquidsBase {
                     else {
                         for (int i = 0; i < 36; ++i) {
                             //Check the note name (e.g. "concha#5") of the missing mapping is equal to the note name of any notes
-                            if (soundName.equals(Sounds.CONCH_NOTES[i].getName().getPath())) {
+                            if (soundName.equals(Sounds.CONCH_NOTES[i].getName().getPath().replace('s', '#'))) {
                                 trueMapping.remap(Sounds.CONCH_NOTES[i]);
                             }
                         }

@@ -5,9 +5,11 @@
     "item.rocketsquidsft.conchtwo": "Noteworthy Conch",
     "item.rocketsquidsft.conchthree": "§6[[Conchzilla, Blessed Conch of the Squidseeker]]",
     "item.rocketsquidsft.nitroinksac": "Nitro Ink Sac",
-    "item.rocketsquidsft.squeleporter": "Squeleporter",
+    "item.rocketsquidsft.squeleporter_active": "Squeleporter",
+    "item.rocketsquidsft.squeleporter_inactive": "Squeleporter",
     "item.rocketsquidsft.turbotube": "Turbo Tube",
     "item.rocketsquidsft.squavigator": "Squavigator",
+    "item.rocketsquidsft.rs_spawn_egg": "Rocket Squid Spawn Egg",
 
     "itemGroup.rocketsquidsft": "Rocket Squids",
 

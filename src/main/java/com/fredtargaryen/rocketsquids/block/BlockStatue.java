@@ -5,6 +5,7 @@ import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -12,20 +13,24 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReaderBase;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 public class BlockStatue extends BlockFalling {
-    private static final VoxelShape TALLBOX = Block.makeCuboidShape(0.0, 0.0, 0.0, 1.0, 2.0, 1.0);
+    private static final VoxelShape TALLBOX = Block.makeCuboidShape(0.0, 0.0, 0.0, 16.0, 32.0, 16.0);
 
     public BlockStatue() {
         super(Block.Properties.create(Material.ROCK));
+        this.setDefaultState(this.getStateContainer().getBaseState().with(BlockStateProperties.FACING, EnumFacing.UP));
     }
 
     /**
@@ -48,8 +53,7 @@ public class BlockStatue extends BlockFalling {
     @Override
     @Deprecated
     public boolean isValidPosition(IBlockState state, IWorldReaderBase worldIn, BlockPos pos) {
-        return worldIn.getBlockState(pos).getBlock().isNormalCube(state, worldIn, pos)
-                && worldIn.getBlockState(pos.up()).getBlock().isAir(state, worldIn, pos);
+        return worldIn.getBlockState(pos.down()).isNormalCube() && worldIn.getBlockState(pos.up()).isAir(worldIn, pos);
     }
 
     /**
@@ -77,7 +81,7 @@ public class BlockStatue extends BlockFalling {
                 squav.setVelocity(0.0, 0.2, -0.1);
                 world.spawnEntity(squav);
                 EntityItem squel = new EntityItem(world);
-                squel.setItem(RocketSquidsBase.SQUAVIGATOR.getDefaultInstance());
+                squel.setItem(RocketSquidsBase.SQUELEPORTER_INACTIVE.getDefaultInstance());
                 squel.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() - 1.0D);
                 squel.setVelocity(0.0, 0.2, -0.1);
                 world.spawnEntity(squel);
@@ -85,5 +89,21 @@ public class BlockStatue extends BlockFalling {
             default:
                 break;
         }
+    }
+
+    /**
+     * Allows other blocks to render around it.
+     */
+    @Override
+    @Deprecated
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public BlockRenderLayer getRenderLayer()
+    {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 }

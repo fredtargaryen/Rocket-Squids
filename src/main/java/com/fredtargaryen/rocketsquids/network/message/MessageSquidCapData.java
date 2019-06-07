@@ -47,6 +47,7 @@ public class MessageSquidCapData {
     public MessageSquidCapData(ByteBuf buf) {
         this.squidToUpdate = new UUID(buf.readLong(), buf.readLong());
         //Unfortunately have to manually read from the buffer now
+        this.capData = new NBTTagCompound();
         this.capData.setDouble("pitch", buf.readDouble());
         this.capData.setDouble("yaw", buf.readDouble());
         this.capData.setDouble("targetPitch", buf.readDouble());

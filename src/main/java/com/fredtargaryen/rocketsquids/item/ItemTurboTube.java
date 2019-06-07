@@ -23,14 +23,14 @@ public class ItemTurboTube extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (!player.capabilities.isCreativeMode) {
+        if (!player.isCreative()) {
             stack.grow(-1);
         }
 
         world.playSound(null, player.posX, player.posY, player.posZ,
-                SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+                SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
-            EntityThrownTube tube = new EntityThrownTube(world, player);
+            EntityThrownTube tube = new EntityThrownTube(player, world);
             tube.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
             world.spawnEntity(tube);
         }
