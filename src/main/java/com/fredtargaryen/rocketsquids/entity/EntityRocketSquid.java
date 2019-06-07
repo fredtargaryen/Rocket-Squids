@@ -33,6 +33,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
@@ -227,8 +228,7 @@ public class EntityRocketSquid extends EntityWaterMob {
      * Moves the entity based on strafe, forward (?) and something else
      */
     @Override
-    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
-    {
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_) {
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
 
@@ -238,8 +238,7 @@ public class EntityRocketSquid extends EntityWaterMob {
         return false;
     }
 
-    public void addForce(double n)
-    {
+    public void addForce(double n) {
         if(!this.world.isRemote) {
             double rp = this.squidCap.getRotPitch();
             double ry = this.squidCap.getRotYaw();
@@ -279,8 +278,7 @@ public class EntityRocketSquid extends EntityWaterMob {
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.getDefaultInstance();
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                         if(this.canDespawn()) {
-                            //TODO Put a teleport sound in
-                            //player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+                            player.world.playSound(null, player.posX, player.posY, player.posZ, Sounds.SQUIDTP_IN, SoundCategory.PLAYERS, 1.0F, 1.0F);
                             cap.setSquid(this);
                             this.remove();
                         }
@@ -320,11 +318,10 @@ public class EntityRocketSquid extends EntityWaterMob {
                 }
             }
         }
-        return super.processInteract(player, hand);
+        return true;
     }
 
-    public void explode()
-    {
+    public void explode() {
         if(!this.world.isRemote) {
             this.world.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
             int noSacs = 3 + this.rand.nextInt(3);
@@ -599,8 +596,7 @@ public class EntityRocketSquid extends EntityWaterMob {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-        EntityPlayer p = event.getEntityPlayer();
-        if(this.isPassenger(p)) {
+        if(this.isPassenger(event.getEntityPlayer())) {
             this.riderRotated = true;
             GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.08F, 0.0F);
@@ -614,12 +610,20 @@ public class EntityRocketSquid extends EntityWaterMob {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void popRotation(RenderPlayerEvent.Post event) {
+        if(!this.riderRotated) {
+            GlStateManager.popMatrix();
+        }
+    }
+
     ///////
     //NBT//
     ///////
     @Override
-    public boolean writeUnlessRemoved(NBTTagCompound compound) {
-        super.writeUnlessRemoved(compound);
+    public void writeAdditional(NBTTagCompound compound) {
+        super.writeAdditional(compound);
         if(this.isBaby) {
             compound.setString("id", DataReference.MODID + ":babyrocketsquid");
         }
@@ -629,12 +633,12 @@ public class EntityRocketSquid extends EntityWaterMob {
         compound.setDouble("force", Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ));
         compound.setBoolean("Saddle", this.getSaddled());
         compound.setShort("Breed Cooldown", this.breedCooldown);
-        return true;
     }
 
     @Override
-    public void read(NBTTagCompound compound) {
-        super.read(compound);
+    public void readAdditional(NBTTagCompound compound) {
+        super.readAdditional(compound);
+        //Force comes from reading motion tags
         this.setSaddled(compound.getBoolean("Saddle"));
         this.breedCooldown = compound.getShort("Breed Cooldown");
     }

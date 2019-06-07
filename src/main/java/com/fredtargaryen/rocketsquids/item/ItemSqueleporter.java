@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
 public class ItemSqueleporter extends Item {
@@ -28,6 +30,7 @@ public class ItemSqueleporter extends Item {
                 //The squeleporter is active so a squid is stored.
                 stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                     EntityRocketSquid ers = cap.getSquid();
+                    ers.removed = false;
                     NBTTagCompound squidTags = new NBTTagCompound();
                     ers.writeUnlessRemoved(squidTags);
                     EntityRocketSquid newSquid = (EntityRocketSquid) EntityType.create(squidTags, worldIn);
@@ -41,6 +44,7 @@ public class ItemSqueleporter extends Item {
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
                         }
+                        worldIn.playSound(null, playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.SQUIDTP_OUT, SoundCategory.PLAYERS, 1.0F, 1.0F);
                         //Set the squeleporter to inactive
                         playerIn.setHeldItem(handIn, RocketSquidsBase.SQUELEPORTER_INACTIVE.getDefaultInstance());
                         playerIn.getCooldownTracker().setCooldown(this, 10);

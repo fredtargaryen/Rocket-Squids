@@ -11,14 +11,12 @@ import net.minecraftforge.common.capabilities.Capability;
  * This storage class was designed for exclusive use with this item; correct
  * operation is not guaranteed in any other context!
  */
-public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter>
-{
+public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter> {
     @Override
-    public INBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side)
-    {
+    public INBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side) {
         NBTTagCompound comp = new NBTTagCompound();
         EntityRocketSquid ers = instance.getSquid();
-        if(ers != null) ers.writeUnlessRemoved(comp);
+        if(ers != null) ers.writeAdditional(comp);
         return comp;
     }
 
@@ -26,7 +24,7 @@ public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter
     public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side, INBTBase nbt) {
         NBTTagCompound comp = (NBTTagCompound) nbt;
         EntityRocketSquid ers = new EntityRocketSquid(null);
-        ers.read(comp);
+        ers.readAdditional(comp);
         instance.setSquid(ers);
     }
 }

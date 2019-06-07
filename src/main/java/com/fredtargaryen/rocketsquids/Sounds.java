@@ -4,17 +4,24 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.lwjgl.system.CallbackI;
 
 public class Sounds {
-    /**
-     * Declare sounds
-     */
+    //////////////////
+    //Declare sounds//
+    //////////////////
     public static SoundEvent BLASTOFF;
+    public static SoundEvent SQUIDTP_IN;
+    public static SoundEvent SQUIDTP_OUT;
     public static SoundEvent[] CONCH_NOTES;
 
     public static void constructAndRegisterSoundEvents(RegistryEvent.Register<SoundEvent> event) {
         BLASTOFF = new SoundEvent(new ResourceLocation(DataReference.MODID, "blastoff"))
                 .setRegistryName("blastoff");
+        SQUIDTP_IN = new SoundEvent(new ResourceLocation(DataReference.MODID, "tpin"))
+                .setRegistryName("tpin");
+        SQUIDTP_OUT = new SoundEvent(new ResourceLocation(DataReference.MODID, "tpout"))
+                .setRegistryName("tpout");
         CONCH_NOTES = new SoundEvent[]{
                 new SoundEvent(new ResourceLocation(DataReference.MODID, "conchc3"))
                         .setRegistryName("conchc3"),
@@ -90,7 +97,7 @@ public class Sounds {
                         .setRegistryName("conchb5")
         };
         IForgeRegistry<SoundEvent> reg = event.getRegistry();
-        reg.register(BLASTOFF);
+        reg.registerAll(BLASTOFF, SQUIDTP_IN, SQUIDTP_OUT);
         for(SoundEvent soundEvent : CONCH_NOTES) {
             reg.register(soundEvent);
         }

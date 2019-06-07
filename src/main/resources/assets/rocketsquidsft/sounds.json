@@ -2,7 +2,17 @@
   "blastoff":
   {
     "sounds": [{"name": "rocketsquidsft:blastoff","stream": false}],
-    "subtitle": "subs.blastoff"
+    "subtitle": "subs.rocketsquidsft.blastoff"
+  },
+  "tpin":
+  {
+    "sounds": [{"name": "rocketsquidsft:tpin","stream": false}],
+    "subtitle": "subs.rocketsquidsft.tpin"
+  },
+  "tpout":
+  {
+    "sounds": [{"name": "rocketsquidsft:tpout","stream": false}],
+    "subtitle": "subs.rocketsquidsft.tpout"
   },
   "conchc3":
   {
@@ -55,7 +65,7 @@
   "conchc4":
   {
     "sounds": [{"name": "rocketsquidsft:conchc4","stream": false}],
-    "subtitle": "subs.conchc"
+    "subtitle": "subs.rocketsquidsft.conchc"
   },
   "conchcs4":
   {
@@ -64,7 +74,7 @@
   "conchd4":
   {
     "sounds": [{"name": "rocketsquidsft:conchd4","stream": false}],
-    "subtitle": "subs.conchd"
+    "subtitle": "subs.rocketsquidsft.conchd"
   },
   "conchds4":
   {
@@ -73,12 +83,12 @@
   "conche4":
   {
     "sounds": [{"name": "rocketsquidsft:conche4","stream": false}],
-    "subtitle": "subs.conche"
+    "subtitle": "subs.rocketsquidsft.conche"
   },
   "conchf4":
   {
     "sounds": [{"name": "rocketsquidsft:conchf4","stream": false}],
-    "subtitle": "subs.conchf"
+    "subtitle": "subs.rocketsquidsft.conchf"
   },
   "conchfs4":
   {
@@ -87,7 +97,7 @@
   "conchg4":
   {
     "sounds": [{"name": "rocketsquidsft:conchg4","stream": false}],
-    "subtitle": "subs.conchg"
+    "subtitle": "subs.rocketsquidsft.conchg"
   },
   "conchgs4":
   {
@@ -96,7 +106,7 @@
   "concha4":
   {
     "sounds": [{"name": "rocketsquidsft:concha4","stream": false}],
-    "subtitle": "subs.concha"
+    "subtitle": "subs.rocketsquidsft.concha"
   },
   "conchas4":
   {
@@ -105,7 +115,7 @@
   "conchb4":
   {
     "sounds": [{"name": "rocketsquidsft:conchb4","stream": false}],
-    "subtitle": "subs.conchb"
+    "subtitle": "subs.rocketsquidsft.conchb"
   },
   "conchc5":
   {
