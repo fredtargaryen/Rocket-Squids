@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
+import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -22,7 +22,7 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 
 
     private boolean newPacketRequired;
-    protected ISquidCapability squidCap;
+    protected IAdultCapability squidCap;
     protected boolean isBaby;
     protected short breedCooldown;
 
@@ -34,7 +34,7 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
         //Set size of bounding box. par1=length and width; par2=height.
         //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
         this.setSize(0.99F, 0.99F);
-        this.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap -> EntityPrimalSquidA.this.squidCap = cap);
+        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> EntityPrimalSquidA.this.squidCap = cap);
         this.riderRotated = false;
         this.isBaby = false;
     }
@@ -195,7 +195,7 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 //            }
 //            if(this.newPacketRequired)
 //            {
-//                MessageHandler.INSTANCE.sendToAllAround(new MessageSquidCapData(this.getPersistentID(), this.squidCap),
+//                MessageHandler.INSTANCE.sendToAllAround(new MessageAdultCapData(this.getPersistentID(), this.squidCap),
 //                        new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64));
 //                this.newPacketRequired = false;
 //            }

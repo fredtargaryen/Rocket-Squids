@@ -1,22 +1,22 @@
-package com.fredtargaryen.rocketsquids.entity.capability;
+package com.fredtargaryen.rocketsquids.entity.capability.adult;
 
 import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**
- * The implementation of ISquidCapability for all official Rocket Squids.
+ * The implementation of IAdultCapability for all official adult Rocket Squids.
  * This implementation was designed for exclusive use with this mod;
  * correct operation is not guaranteed in any other context!
  */
-public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
+public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
     private static final byte[] note_ids = {12, 14, 16, 17, 19, 21, 23};
     private static final double doublePi = Math.PI * 2;
-    public ISquidCapability call()
+    public IAdultCapability call()
     {
-        return new DefaultSquidImpl();
+        return new DefaultAdultImpl();
     }
 
-    private class DefaultSquidImpl implements ISquidCapability {
+    private class DefaultAdultImpl implements IAdultCapability {
         private boolean shaking;
         private boolean blasting;
         private boolean blastToStatue;
@@ -32,7 +32,7 @@ public class DefaultSquidImplFactory implements Callable<ISquidCapability> {
         private double targRotPitch;
         private double targRotYaw;
 
-        public DefaultSquidImpl() {
+        public DefaultAdultImpl() {
             this.shaking = false;
             this.blasting = false;
             this.prevRotPitch = 0.0;

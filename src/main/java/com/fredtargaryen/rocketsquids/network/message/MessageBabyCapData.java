@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
+import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class MessageSquidCapData {
+public class MessageBabyCapData {
     private UUID squidToUpdate;
     private NBTTagCompound capData;
 
-    public MessageSquidCapData() {}
+    public MessageBabyCapData() {}
 
-    public MessageSquidCapData(UUID id, ISquidCapability cap) {
+    public MessageBabyCapData(UUID id, IBabyCapability cap) {
         this.squidToUpdate = id;
-        this.capData = (NBTTagCompound) RocketSquidsBase.SQUIDCAP.writeNBT(cap, null);
+        this.capData = (NBTTagCompound) RocketSquidsBase.BABYCAP.writeNBT(cap, null);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
@@ -32,9 +32,9 @@ public class MessageSquidCapData {
             while(squidFinder.hasNext()) {
                 e = squidFinder.next();
                 if(e.getUniqueID().equals(this.squidToUpdate)) {
-                    e.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap ->
-                        //Can assume e is a rocket squid
-                        RocketSquidsBase.SQUIDCAP.readNBT(cap, null, this.capData));
+                    e.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap ->
+                            //Can assume e is a baby rocket squid
+                            RocketSquidsBase.BABYCAP.readNBT(cap, null, this.capData));
                 }
             }
         });
@@ -44,7 +44,7 @@ public class MessageSquidCapData {
     /**
      * Effectively fromBytes from 1.12.2
      */
-    public MessageSquidCapData(ByteBuf buf) {
+    public MessageBabyCapData(ByteBuf buf) {
         this.squidToUpdate = new UUID(buf.readLong(), buf.readLong());
         //Unfortunately have to manually read from the buffer now
         this.capData = new NBTTagCompound();
@@ -52,12 +52,6 @@ public class MessageSquidCapData {
         this.capData.setDouble("yaw", buf.readDouble());
         this.capData.setDouble("targetPitch", buf.readDouble());
         this.capData.setDouble("targetYaw", buf.readDouble());
-        this.capData.setBoolean("shaking", buf.readBoolean());
-        this.capData.setBoolean("blasting", buf.readBoolean());
-        this.capData.setBoolean("forcedblast", buf.readBoolean());
-        this.capData.setByteArray("latestnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
-        this.capData.setByteArray("targetnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
-        this.capData.setBoolean("blasttostatue", buf.readBoolean());
     }
 
     public void toBytes(ByteBuf buf) {
@@ -68,11 +62,5 @@ public class MessageSquidCapData {
         buf.writeDouble(this.capData.getDouble("yaw"));
         buf.writeDouble(this.capData.getDouble("targetPitch"));
         buf.writeDouble(this.capData.getDouble("targetYaw"));
-        buf.writeBoolean(this.capData.getBoolean("shaking"));
-        buf.writeBoolean(this.capData.getBoolean("blasting"));
-        buf.writeBoolean(this.capData.getBoolean("forcedblast"));
-        buf.writeBytes(this.capData.getByteArray("latestnotes"));
-        buf.writeBytes(this.capData.getByteArray("targetnotes"));
-        buf.writeBoolean(this.capData.getBoolean("blasttostatue"));
     }
 }

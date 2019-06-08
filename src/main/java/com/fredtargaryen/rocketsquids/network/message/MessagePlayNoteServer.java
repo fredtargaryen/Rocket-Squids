@@ -34,7 +34,7 @@ public class MessagePlayNoteServer {
             Entity e;
             while(squidFinder.hasNext()) {
                 e = squidFinder.next();
-                e.getCapability(RocketSquidsBase.SQUIDCAP).ifPresent(cap -> cap.processNote(this.note));
+                e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note));
             }
         });
         ctx.get().setPacketHandled(true);

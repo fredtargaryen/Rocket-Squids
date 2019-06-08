@@ -9,7 +9,7 @@ import java.util.Random;
  * ===DESCRIPTION OF MESSAGE CHANNELS===
  * MessagePlayNoteClient: When received on the client, the note is played
  * MessagePlayNoteServer: sent to server when a note is played. When received, a MessagePlayNoteClient is sent to everyone nearby
- * MessageSquidCapData: The ISquidCapability data for Rocket Squids
+ * MessageAdultCapData: The IAdultCapability data for Rocket Squids
  * MessageSquidNote: sent to clients whose players are wearing conches, when a Rocket Squid is broadcasting a note
  *
  * When changing version number, change in: DataReference, build.gradle, mods.toml
@@ -24,7 +24,8 @@ public class DataReference {
     public static final String VERSION = "1.1.1";
 
     public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
-    public static final ResourceLocation SQUID_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "isquidcapability");
+    public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");
+    public static final ResourceLocation ADULT_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "iadult");
 
     public static EnumFacing randomHorizontalFacing(Random rand) {
         switch(rand.nextInt(4)) {

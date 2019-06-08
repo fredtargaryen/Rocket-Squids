@@ -5,7 +5,7 @@ import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import java.util.concurrent.Callable;
 
 /**
- * The implementation of ISquidCapability for all official Rocket Squids.
+ * The implementation of IAdultCapability for all official Rocket Squids.
  * This implementation was designed for exclusive use with this mod;
  * correct operation is not guaranteed in any other context!
  */

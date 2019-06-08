@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.entity.capability;
+package com.fredtargaryen.rocketsquids.entity.capability.adult;
 
 /**
  * The capability used by all official Rocket Squids.
@@ -6,7 +6,7 @@ package com.fredtargaryen.rocketsquids.entity.capability;
  * with this mod; correct operation is not guaranteed
  * in any other context!
  */
-public interface ISquidCapability
+public interface IAdultCapability
 {
     boolean getShaking();
     void setShaking(boolean b);

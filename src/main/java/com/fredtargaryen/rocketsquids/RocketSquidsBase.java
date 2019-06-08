@@ -8,9 +8,12 @@ import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
 import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
-import com.fredtargaryen.rocketsquids.entity.capability.DefaultSquidImplFactory;
-import com.fredtargaryen.rocketsquids.entity.capability.ISquidCapability;
-import com.fredtargaryen.rocketsquids.entity.capability.SquidCapStorage;
+import com.fredtargaryen.rocketsquids.entity.capability.adult.DefaultAdultImplFactory;
+import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
+import com.fredtargaryen.rocketsquids.entity.capability.adult.AdultCapStorage;
+import com.fredtargaryen.rocketsquids.entity.capability.baby.BabyCapStorage;
+import com.fredtargaryen.rocketsquids.entity.capability.baby.DefaultBabyImplFactory;
+import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.item.capability.DefaultSqueleporterImplFactory;
 import com.fredtargaryen.rocketsquids.item.capability.ISqueleporter;
@@ -170,7 +173,6 @@ public class RocketSquidsBase {
         SQUID_EARLYREG = EntityType.Builder.create(EntityRocketSquid.class, EntityRocketSquid::new)
                 .tracker(128, 10, true)
                 .build(DataReference.MODID)
-                //.setRegistryName(new ResourceLocation(DataReference.MODID, "rocketsquid")),
                 .setRegistryName("rocketsquid");
         event.getRegistry().registerAll(
                 new ItemConch()
@@ -203,17 +205,14 @@ public class RocketSquidsBase {
                 EntityType.Builder.create(EntityBabyRocketSquid.class, EntityBabyRocketSquid::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "babyrs")),
                         .setRegistryName("babyrs"),
                 EntityType.Builder.create(EntityThrownSac.class, EntityThrownSac::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "nitroinksac")),
                         .setRegistryName("nitroinksac"),
                 EntityType.Builder.create(EntityThrownTube.class, EntityThrownTube::new)
                         .tracker(64, 10, true)
                         .build(DataReference.MODID)
-                        //.setRegistryName(new ResourceLocation(DataReference.MODID, "turbotube"))
                         .setRegistryName("turbotube")
         );
     }
@@ -231,7 +230,8 @@ public class RocketSquidsBase {
         MessageHandler.init();
 
         //Capability
-        CapabilityManager.INSTANCE.register(ISquidCapability.class, new SquidCapStorage(), new DefaultSquidImplFactory());
+        CapabilityManager.INSTANCE.register(IBabyCapability.class, new BabyCapStorage(), new DefaultBabyImplFactory());
+        CapabilityManager.INSTANCE.register(IAdultCapability.class, new AdultCapStorage(), new DefaultAdultImplFactory());
         CapabilityManager.INSTANCE.register(ISqueleporter.class, new SqueleporterCapStorage(), new DefaultSqueleporterImplFactory());
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -266,12 +266,10 @@ public class RocketSquidsBase {
     /////////////////
     //CAPABILIITIES//
     /////////////////
-
-    /**
-     * Code for the BeRocketSquid capability
-     */
-    @CapabilityInject(ISquidCapability.class)
-    public static final Capability<ISquidCapability> SQUIDCAP = null;
+    @CapabilityInject(IBabyCapability.class)
+    public static final Capability<IBabyCapability> BABYCAP = null;
+    @CapabilityInject(IAdultCapability.class)
+    public static final Capability<IAdultCapability> ADULTCAP = null;
 
     /**
      * Code for the Squeleporter capability
@@ -307,25 +305,48 @@ public class RocketSquidsBase {
 
     @SubscribeEvent
     public void onEntityConstruct(AttachCapabilitiesEvent<Entity> evt) {
-        if(evt.getObject() instanceof EntityRocketSquid) {
-            evt.addCapability(DataReference.SQUID_CAP_LOCATION,
+        Entity e = evt.getObject();
+        if(e instanceof EntityBabyRocketSquid) {
+            evt.addCapability(DataReference.BABY_CAP_LOCATION,
                     //Full name ICapabilitySerializableProvider
                     new ICapabilitySerializable<NBTTagCompound>() {
-                        ISquidCapability inst = SQUIDCAP.getDefaultInstance();
+                        IBabyCapability inst = BABYCAP.getDefaultInstance();
 
                         @Override
                         public <T> LazyOptional<T> getCapability(Capability<T> capability, EnumFacing facing) {
-                            return capability == SQUIDCAP ? LazyOptional.of(() -> (T)inst) : LazyOptional.empty();
+                            return capability == BABYCAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
                         }
 
                         @Override
                         public NBTTagCompound serializeNBT() {
-                            return (NBTTagCompound) SQUIDCAP.getStorage().writeNBT(SQUIDCAP, inst, null);
+                            return (NBTTagCompound) BABYCAP.getStorage().writeNBT(BABYCAP, inst, null);
                         }
 
                         @Override
                         public void deserializeNBT(NBTTagCompound nbt) {
-                            SQUIDCAP.getStorage().readNBT(SQUIDCAP, inst, null, nbt);
+                            BABYCAP.getStorage().readNBT(BABYCAP, inst, null, nbt);
+                        }
+                    });
+        }
+        else if(e instanceof EntityRocketSquid) {
+            evt.addCapability(DataReference.ADULT_CAP_LOCATION,
+                    //Full name ICapabilitySerializableProvider
+                    new ICapabilitySerializable<NBTTagCompound>() {
+                        IAdultCapability inst = ADULTCAP.getDefaultInstance();
+
+                        @Override
+                        public <T> LazyOptional<T> getCapability(Capability<T> capability, EnumFacing facing) {
+                            return capability == ADULTCAP ? LazyOptional.of(() -> (T)inst) : LazyOptional.empty();
+                        }
+
+                        @Override
+                        public NBTTagCompound serializeNBT() {
+                            return (NBTTagCompound) ADULTCAP.getStorage().writeNBT(ADULTCAP, inst, null);
+                        }
+
+                        @Override
+                        public void deserializeNBT(NBTTagCompound nbt) {
+                            ADULTCAP.getStorage().readNBT(ADULTCAP, inst, null, nbt);
                         }
                     }
             );

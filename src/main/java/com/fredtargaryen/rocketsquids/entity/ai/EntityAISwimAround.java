@@ -80,12 +80,9 @@ public class EntityAISwimAround extends EntityAIBase {
     /**
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
-     * Adult odds:
+     * Odds:
      * 1/12 - starts to shake (hands over to EntityAIShake)
      * 4/12 - repeats action
-     * 7/12 - goes from turning to swimming forward or vice versa
-     * Baby odds:
-     * 5/12 - repeats action
      * 7/12 - goes from turning to swimming forward or vice versa
      */
     @Override
@@ -215,7 +212,7 @@ public class EntityAISwimAround extends EntityAIBase {
                     this.playNextNote();
                     //The last turn is as good as finished
                     int randomInt = this.r.nextInt(12);
-                    if (!this.squid.isBaby() && randomInt == 0) {
+                    if (randomInt == 0) {
                         this.squid.setShaking(true);
                     } else {
                         if (hasVIPRider) {
@@ -240,7 +237,7 @@ public class EntityAISwimAround extends EntityAIBase {
                     this.playNextNote();
                     //Last forward swim is as good as finished
                     int randomInt = this.r.nextInt(12);
-                    if (!this.squid.isBaby() && randomInt == 0) {
+                    if (randomInt == 0) {
                         this.squid.setShaking(true);
                     } else {
                         if (hasVIPRider) {
