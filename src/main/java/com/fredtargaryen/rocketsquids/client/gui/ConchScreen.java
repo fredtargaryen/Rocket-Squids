@@ -8,16 +8,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 
-public class GuiConch extends GuiScreen {
+public class ConchScreen extends Screen {
     private byte conchStage;
     private double x;
     private double y;
@@ -29,9 +30,10 @@ public class GuiConch extends GuiScreen {
             "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
     };
 
-    public GuiConch(byte conchStage) {
+    public ConchScreen(byte conchStage) {
+        super(new StringTextComponent(""));
         this.conchStage = conchStage;
-        EntityPlayer ep = Minecraft.getInstance().player;
+        PlayerEntity ep = Minecraft.getInstance().player;
         this.x = ep.posX;
         this.y = ep.posY;
         this.z = ep.posZ;
@@ -41,7 +43,7 @@ public class GuiConch extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void init() {
         int minx = this.width / 2 - 144;
         int column;
         int bottomY = this.height / 2 + 100;
@@ -71,16 +73,20 @@ public class GuiConch extends GuiScreen {
         }
     }
 
-    private class ConchButton extends GuiButton {
-
+    private class ConchButton extends Button {
+        private int id;
+        private Minecraft mc;
+        
         public ConchButton(int buttonId, int x, int y, String buttonText) {
-            super(buttonId, x, y, 20, 20, buttonText);
+            super(x, y, 20, 20, buttonText, (button) -> {});
+            this.id = buttonId;
+            this.mc = Minecraft.getInstance();
         }
 
         @Override
-        public void playPressSound(SoundHandler soundHandlerIn) {
-            Minecraft.getInstance().getSoundHandler().play(SimpleSound.getMasterRecord(Sounds.CONCH_NOTES[this.id], 1.0F));
-            MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, GuiConch.this.x, GuiConch.this.y, GuiConch.this.z));
+        public void playDownSound(SoundHandler soundHandlerIn) {
+            soundHandlerIn.play(SimpleSound.master(Sounds.CONCH_NOTES[this.id], 1.0F));
+            MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
         }
 
         /**
@@ -89,25 +95,24 @@ public class GuiConch extends GuiScreen {
         @Override
         public void render(int mouseX, int mouseY, float partialTicks) {
             FontRenderer fontrenderer = mc.fontRenderer;
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            float hoverColour = this.hovered ? 0.1F : 0.0F;
+            this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            float hoverColour = this.isHovered ? 0.1F : 0.0F;
             float red = 0.9F + hoverColour;
             float green = 0.9F * this.id / 36.0F;
-            int i = this.getHoverState(this.hovered);
             this.drawNote(this.x, this.y, red, green, hoverColour);
             int j = 14737632;
 
             if (packedFGColor != 0) {
                 j = packedFGColor;
             }
-            else if (!this.enabled) {
+            else if (!this.active) {
                 j = 10526880;
             }
-            else if (this.hovered) {
+            else if (this.isHovered) {
                 j = 16777120;
             }
 
-            this.drawCenteredString(fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
+            this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
         }
 
         private void drawNote(int x, int y, float red, float green, float blue) {
@@ -125,5 +130,5 @@ public class GuiConch extends GuiScreen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() { return false; }
+    public boolean isPauseScreen() { return false; }
 }

@@ -1,26 +1,15 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.entity.EntityPrimalSquidA;
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.fredtargaryen.rocketsquids.entity.PrimalSquidAEntity;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Random;
-
-public class RenderPrimalSquidA extends RenderLiving<EntityPrimalSquidA> {
+public class RenderPrimalSquidA extends MobRenderer<PrimalSquidAEntity, PrimalSquidAModel> {
     private static final ResourceLocation texture = new ResourceLocation(DataReference.MODID + ":textures/entity/primal_a.png");
 
-    public RenderPrimalSquidA(RenderManager rm, ModelPrimalSquidA model)
+    public RenderPrimalSquidA(EntityRendererManager rm, PrimalSquidAModel model)
     {
         super(rm, model, 6.0F);
     }
@@ -30,13 +19,13 @@ public class RenderPrimalSquidA extends RenderLiving<EntityPrimalSquidA> {
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float handleRotationFloat(EntityPrimalSquidA squid, float partialTicks)
+    protected float handleRotationFloat(PrimalSquidAEntity squid, float partialTicks)
     {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
 //    @Override
-//    protected void applyRotations(EntityPrimalSquidA ers, float yaw, float pitch, float partialTicks)
+//    protected void applyRotations(PrimalSquidAEntity ers, float yaw, float pitch, float partialTicks)
 //    {
 //        double prp = ers.getPrevRotPitch();
 //        double rp = ers.getRotPitch();
@@ -50,7 +39,7 @@ public class RenderPrimalSquidA extends RenderLiving<EntityPrimalSquidA> {
 //        GlStateManager.translatef(0.0F, -1.2F, 0.0F);
 //    }
 //
-//    public void doRender(EntityPrimalSquidA par1EntitySquid, double x, double y, double z, float par8, float partialTicks)
+//    public void doRender(PrimalSquidAEntity par1EntitySquid, double x, double y, double z, float par8, float partialTicks)
 //    {
 //        if (par1EntitySquid.getShaking())
 //        {
@@ -122,7 +111,7 @@ public class RenderPrimalSquidA extends RenderLiving<EntityPrimalSquidA> {
 //    }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityPrimalSquidA entity) {
+    protected ResourceLocation getEntityTexture(PrimalSquidAEntity entity) {
         return texture;
     }
 }

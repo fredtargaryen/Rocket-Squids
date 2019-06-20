@@ -1,22 +1,26 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+
 import java.util.Random;
 
-public class RenderRS extends RenderLiving<EntityRocketSquid> {
+public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rs.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rsb.png");
 
-    public RenderRS(RenderManager rm, ModelRocketSquid model)
+    public RenderRS(EntityRendererManager rm, RocketSquidModel model)
     {
         super(rm, model, 0.9F);
     }
@@ -26,12 +30,12 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float handleRotationFloat(EntityRocketSquid squid, float partialTicks) {
+    protected float handleRotationFloat(RocketSquidEntity squid, float partialTicks) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void applyRotations(EntityRocketSquid ers, float yaw, float pitch, float partialTicks) {
+    protected void applyRotations(RocketSquidEntity ers, float yaw, float pitch, float partialTicks) {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();
         //Also convert to degrees.
@@ -44,7 +48,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
         GlStateManager.translatef(0.0F, -1.2F, 0.0F);
     }
 
-    public void doRender(EntityRocketSquid par1EntitySquid, double x, double y, double z, float par8, float partialTicks) {
+    public void doRender(RocketSquidEntity par1EntitySquid, double x, double y, double z, float par8, float partialTicks) {
         if (par1EntitySquid.getShaking())
         {
             Random r = par1EntitySquid.getRNG();
@@ -54,7 +58,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
         }
         else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
             //Choose texture
-            TextureMap texturemap = Minecraft.getInstance().getTextureMap();
+            AtlasTexture texturemap = Minecraft.getInstance().getTextureMap();
             TextureAtlasSprite tas = texturemap.getAtlasSprite("minecraft:block/fire_0");
 
             //Calculate and set translation-rotation matrix
@@ -72,10 +76,10 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder vertexbuffer = tessellator.getBuffer();
             GlStateManager.disableLighting();
-            OpenGlHelper.glMultiTexCoord2f(OpenGlHelper.GL_TEXTURE1, 240f, 240f);
+            GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240f, 240f);
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
             //Draw the faces. Advised not to touch any of this; creates a pretty cross of fire which is adjusted to be
             //visible even when squid is blasting directly away from viewer.
@@ -114,7 +118,7 @@ public class RenderRS extends RenderLiving<EntityRocketSquid> {
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityRocketSquid entity) {
+    protected ResourceLocation getEntityTexture(RocketSquidEntity entity) {
         return entity.getBlasting() || entity.getShaking() ? blasting : normal;
     }
 }

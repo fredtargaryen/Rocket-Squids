@@ -5,7 +5,7 @@ import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Iterator;
@@ -15,18 +15,18 @@ import java.util.function.Supplier;
 
 public class MessageBabyCapData {
     private UUID squidToUpdate;
-    private NBTTagCompound capData;
+    private CompoundNBT capData;
 
     public MessageBabyCapData() {}
 
     public MessageBabyCapData(UUID id, IBabyCapability cap) {
         this.squidToUpdate = id;
-        this.capData = (NBTTagCompound) RocketSquidsBase.BABYCAP.writeNBT(cap, null);
+        this.capData = (CompoundNBT) RocketSquidsBase.BABYCAP.writeNBT(cap, null);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            List<Entity> l = Minecraft.getInstance().world.loadedEntityList;
+            Iterable<Entity> l = Minecraft.getInstance().world.func_217416_b();
             Iterator<Entity> squidFinder = l.iterator();
             Entity e;
             while(squidFinder.hasNext()) {
@@ -47,11 +47,11 @@ public class MessageBabyCapData {
     public MessageBabyCapData(ByteBuf buf) {
         this.squidToUpdate = new UUID(buf.readLong(), buf.readLong());
         //Unfortunately have to manually read from the buffer now
-        this.capData = new NBTTagCompound();
-        this.capData.setDouble("pitch", buf.readDouble());
-        this.capData.setDouble("yaw", buf.readDouble());
-        this.capData.setDouble("targetPitch", buf.readDouble());
-        this.capData.setDouble("targetYaw", buf.readDouble());
+        this.capData = new CompoundNBT();
+        this.capData.putDouble("pitch", buf.readDouble());
+        this.capData.putDouble("yaw", buf.readDouble());
+        this.capData.putDouble("targetPitch", buf.readDouble());
+        this.capData.putDouble("targetYaw", buf.readDouble());
     }
 
     public void toBytes(ByteBuf buf) {

@@ -5,7 +5,7 @@ import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Iterator;
@@ -15,18 +15,18 @@ import java.util.function.Supplier;
 
 public class MessageAdultCapData {
     private UUID squidToUpdate;
-    private NBTTagCompound capData;
+    private CompoundNBT capData;
 
     public MessageAdultCapData() {}
 
     public MessageAdultCapData(UUID id, IAdultCapability cap) {
         this.squidToUpdate = id;
-        this.capData = (NBTTagCompound) RocketSquidsBase.ADULTCAP.writeNBT(cap, null);
+        this.capData = (CompoundNBT) RocketSquidsBase.ADULTCAP.writeNBT(cap, null);
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            List<Entity> l = Minecraft.getInstance().world.loadedEntityList;
+            Iterable<Entity> l = Minecraft.getInstance().world.func_217416_b();
             Iterator<Entity> squidFinder = l.iterator();
             Entity e;
             while(squidFinder.hasNext()) {
@@ -47,17 +47,17 @@ public class MessageAdultCapData {
     public MessageAdultCapData(ByteBuf buf) {
         this.squidToUpdate = new UUID(buf.readLong(), buf.readLong());
         //Unfortunately have to manually read from the buffer now
-        this.capData = new NBTTagCompound();
-        this.capData.setDouble("pitch", buf.readDouble());
-        this.capData.setDouble("yaw", buf.readDouble());
-        this.capData.setDouble("targetPitch", buf.readDouble());
-        this.capData.setDouble("targetYaw", buf.readDouble());
-        this.capData.setBoolean("shaking", buf.readBoolean());
-        this.capData.setBoolean("blasting", buf.readBoolean());
-        this.capData.setBoolean("forcedblast", buf.readBoolean());
-        this.capData.setByteArray("latestnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
-        this.capData.setByteArray("targetnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
-        this.capData.setBoolean("blasttostatue", buf.readBoolean());
+        this.capData = new CompoundNBT();
+        this.capData.putDouble("pitch", buf.readDouble());
+        this.capData.putDouble("yaw", buf.readDouble());
+        this.capData.putDouble("targetPitch", buf.readDouble());
+        this.capData.putDouble("targetYaw", buf.readDouble());
+        this.capData.putBoolean("shaking", buf.readBoolean());
+        this.capData.putBoolean("blasting", buf.readBoolean());
+        this.capData.putBoolean("forcedblast", buf.readBoolean());
+        this.capData.putByteArray("latestnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
+        this.capData.putByteArray("targetnotes", new byte[] { buf.readByte(), buf.readByte(), buf.readByte() });
+        this.capData.putBoolean("blasttostatue", buf.readBoolean());
     }
 
     public void toBytes(ByteBuf buf) {

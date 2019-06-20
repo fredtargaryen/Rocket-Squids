@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 
 import java.util.concurrent.Callable;
 
@@ -16,19 +16,19 @@ public class DefaultSqueleporterImplFactory implements Callable<ISqueleporter> {
     }
 
     private class DefaultSqueleporterImpl implements ISqueleporter {
-        private EntityRocketSquid squid;
+        private RocketSquidEntity squid;
 
         public DefaultSqueleporterImpl() {
 
         }
 
         @Override
-        public EntityRocketSquid getSquid() {
+        public RocketSquidEntity getSquid() {
             return this.squid;
         }
 
         @Override
-        public void setSquid(EntityRocketSquid ers) {
+        public void setSquid(RocketSquidEntity ers) {
             this.squid = ers;
         }
     }

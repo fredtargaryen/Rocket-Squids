@@ -1,15 +1,17 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.entity.ai.EntityAIBase;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import net.minecraft.entity.ai.goal.Goal;
 
-public class EntityAIGiveUp extends EntityAIBase {
-    private final EntityRocketSquid squid;
+import java.util.EnumSet;
 
-    public EntityAIGiveUp(EntityRocketSquid ers) {
+public class AdultFlopAroundGoal extends Goal {
+    private final RocketSquidEntity squid;
+
+    public AdultFlopAroundGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
-        this.setMutexBits(1);
+        this.setMutexFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
@@ -21,7 +23,7 @@ public class EntityAIGiveUp extends EntityAIBase {
     public void tick() {
         if (this.squid.onGround) {
             this.squid.setTargetRotPitch(Math.PI / 2);
-        } else if(Math.abs(this.squid.motionY) > 0.008){
+        } else if(Math.abs(this.squid.getMotion().y) > 0.008){
             this.squid.pointToWhereFlying();
         }
     }

@@ -1,15 +1,13 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class ItemTurboTube extends Item {
@@ -21,19 +19,22 @@ public class ItemTurboTube extends Item {
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (!player.isCreative()) {
+        if (!player.playerAbilities.isCreativeMode) {
             stack.grow(-1);
         }
 
         world.playSound(null, player.posX, player.posY, player.posZ,
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
-            EntityThrownTube tube = new EntityThrownTube(player, world);
+            ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
+            tube.func_213884_b(stack);
             tube.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
-            world.spawnEntity(tube);
+            world.func_217376_c(tube);
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+
+        player.addStat(Stats.ITEM_USED.get(this));
+        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
     }
 }

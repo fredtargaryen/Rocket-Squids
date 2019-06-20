@@ -1,12 +1,12 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.EntityWaterMob;
+import net.minecraft.entity.passive.WaterMobEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 
-public abstract class EntityAbstractSquid extends EntityWaterMob {
+public abstract class AbstractSquidEntity extends WaterMobEntity {
     protected boolean newPacketRequired;
 
     ///////////////
@@ -15,7 +15,7 @@ public abstract class EntityAbstractSquid extends EntityWaterMob {
     public float tentacleAngle;
     public float lastTentacleAngle;
 
-    public EntityAbstractSquid(EntityType<?> type, World world) {
+    public AbstractSquidEntity(EntityType<? extends WaterMobEntity> type, World world) {
         super(type, world);
     }
 

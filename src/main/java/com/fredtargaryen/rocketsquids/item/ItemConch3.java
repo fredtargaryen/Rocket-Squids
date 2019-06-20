@@ -1,12 +1,12 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,10 +20,9 @@ public class ItemConch3 extends Item {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if(worldIn.isRemote) RocketSquidsBase.proxy.openConchClient((byte) 3);
-        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.PASS, playerIn.getHeldItem(handIn));
     }
 
     /**

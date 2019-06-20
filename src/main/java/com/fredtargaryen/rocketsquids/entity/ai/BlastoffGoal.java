@@ -1,22 +1,25 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.Sounds;
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.entity.ai.EntityAIBase;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.math.Vec3d;
 
-public class EntityAIBlastoff extends EntityAIBase {
-    private final EntityRocketSquid squid;
+import java.util.EnumSet;
+
+public class BlastoffGoal extends Goal {
+    private final RocketSquidEntity squid;
     private boolean blastStarted;
     private boolean horizontal;
     private double prevMotionX;
     private double prevMotionY;
     private double prevMotionZ;
 
-    public EntityAIBlastoff(EntityRocketSquid ers)
+    public BlastoffGoal(RocketSquidEntity ers)
     {
         super();
         this.squid = ers;
-        this.setMutexBits(1);
+        this.setMutexFlags(EnumSet.of(Flag.MOVE));
         this.blastStarted = false;
         this.horizontal = true;
     }
@@ -29,12 +32,13 @@ public class EntityAIBlastoff extends EntityAIBase {
 
     @Override
     public void tick() {
+        Vec3d motion = this.squid.getMotion();
         if (this.blastStarted) {
             //The squid is part of the way through a blast
             if((this.horizontal
-                    && this.motionHasPeaked(this.prevMotionX, this.squid.motionX)
-                    && this.motionHasPeaked(this.prevMotionZ, this.squid.motionZ))
-                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, this.squid.motionY))) {
+                    && this.motionHasPeaked(this.prevMotionX, motion.x)
+                    && this.motionHasPeaked(this.prevMotionZ, motion.z))
+                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, motion.y))) {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
@@ -54,12 +58,12 @@ public class EntityAIBlastoff extends EntityAIBase {
             this.squid.setShaking(false);
             this.squid.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
             this.squid.addForce(2.952);
-            this.horizontal = Math.abs(this.squid.motionY) < 0.08;
+            this.horizontal = Math.abs(motion.y) < 0.08;
             this.blastStarted = true;
         }
-        this.prevMotionX = this.squid.motionX;
-        this.prevMotionY = this.squid.motionY;
-        this.prevMotionZ = this.squid.motionZ;
+        this.prevMotionX = motion.x;
+        this.prevMotionY = motion.y;
+        this.prevMotionZ = motion.z;
     }
 
     private boolean motionHasPeaked(double prev, double current) {

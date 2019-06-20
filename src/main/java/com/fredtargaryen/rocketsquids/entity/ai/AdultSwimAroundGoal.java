@@ -1,17 +1,19 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.EnumSet;
 import java.util.Random;
 
-public class EntityAISwimAround extends EntityAIBase {
-    private final EntityRocketSquid squid;
+public class AdultSwimAroundGoal extends Goal {
+    private final RocketSquidEntity squid;
     private byte noteIndex;
     private enum StatueBlastStage {
         NONE,
@@ -33,10 +35,10 @@ public class EntityAISwimAround extends EntityAIBase {
 	private final double swimForce;
 	private StatueBlastStage statueBlastStage;
 
-    public EntityAISwimAround(EntityRocketSquid ers, double swimForce) {
+    public AdultSwimAroundGoal(RocketSquidEntity ers, double swimForce) {
         super();
         this.squid = ers;
-        this.setMutexBits(1);
+        this.setMutexFlags(EnumSet.of(Flag.MOVE));
         this.turning = false;
         this.r = this.squid.getRNG();
         this.swimForce = swimForce;
@@ -81,7 +83,7 @@ public class EntityAISwimAround extends EntityAIBase {
      * When the current action (swimming or turning) is finished (approximately),
      * decides which action to take next.
      * Odds:
-     * 1/12 - starts to shake (hands over to EntityAIShake)
+     * 1/12 - starts to shake (hands over to ShakeGoal)
      * 4/12 - repeats action
      * 7/12 - goes from turning to swimming forward or vice versa
      */
@@ -232,8 +234,9 @@ public class EntityAISwimAround extends EntityAIBase {
                     }
                 }
             } else {
-                if (Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
-                        && Math.abs(this.squid.motionZ) < 0.005) {
+                Vec3d motion = this.squid.getMotion();
+                if (Math.abs(motion.x) < 0.005 && Math.abs(motion.y) < 0.005
+                        && Math.abs(motion.z) < 0.005) {
                     this.playNextNote();
                     //Last forward swim is as good as finished
                     int randomInt = this.r.nextInt(12);

@@ -2,35 +2,36 @@ package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.block.BlockStatue;
+import com.fredtargaryen.rocketsquids.block.StatueBlock;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.entity.model.ModelBiped;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ItemConch extends ItemArmor {
+public class ItemConch extends ArmorItem {
     public static final IArmorMaterial MATERIAL_CONCH = new IArmorMaterial() {
         @Override
-        public int getDurability(EntityEquipmentSlot slotIn) {
+        public int getDurability(EquipmentSlotType slotIn) {
             return 2;
         }
 
         @Override
-        public int getDamageReductionAmount(EntityEquipmentSlot slotIn) {
+        public int getDamageReductionAmount(EquipmentSlotType slotIn) {
             return 0;
         }
 
@@ -61,16 +62,16 @@ public class ItemConch extends ItemArmor {
     };
 
     public ItemConch() {
-        super(MATERIAL_CONCH, EntityEquipmentSlot.HEAD, new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(4));
+        super(MATERIAL_CONCH, EquipmentSlotType.HEAD, new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(4));
     }
 
     /**
      * Called when the equipped item is right clicked.
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (worldIn.isRemote && !playerIn.isSneaking()) RocketSquidsBase.proxy.openConchClient((byte) 1);
-        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.PASS, playerIn.getHeldItem(handIn));
         //FOR CONCH ARMOUR DEBUGGING
 //        System.out.println("Yaw = "+playerIn.rotationYaw);
 //        System.out.println("Head Yaw = "+playerIn.getRotationYawHead());
@@ -83,21 +84,21 @@ public class ItemConch extends ItemArmor {
      * Called when a Block is right-clicked with this Item
      */
     @Override
-    public EnumActionResult onItemUse(ItemUseContext context) {
+    public ActionResultType onItemUse(ItemUseContext context) {
         World worldIn = context.getWorld();
-        EntityPlayer player = context.getPlayer();
+        PlayerEntity player = context.getPlayer();
         BlockPos pos = context.getPos();
-        EnumFacing facing = context.getFace();
+        Direction facing = context.getFace();
         if(!worldIn.isRemote && player.isSneaking()) {
-            IBlockState iblockstate = worldIn.getBlockState(pos);
+            BlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
             if (block == RocketSquidsBase.BLOCK_STATUE) {
-                if (iblockstate.get(BlockStateProperties.FACING) == EnumFacing.DOWN) {
-                    if (facing == EnumFacing.NORTH) {
-                        worldIn.setBlockState(pos, iblockstate.with(BlockStateProperties.FACING, EnumFacing.NORTH));
+                if (iblockstate.get(BlockStateProperties.FACING) == Direction.DOWN) {
+                    if (facing == Direction.NORTH) {
+                        worldIn.setBlockState(pos, iblockstate.with(BlockStateProperties.FACING, Direction.NORTH));
                         context.getItem().grow(-1);
-                        ((BlockStatue) block).dispenseGift(worldIn, pos, facing);
-                        return EnumActionResult.SUCCESS;
+                        ((StatueBlock) block).dispenseGift(worldIn, pos, facing);
+                        return ActionResultType.SUCCESS;
                     }
                 }
             } else {
@@ -109,28 +110,30 @@ public class ItemConch extends ItemArmor {
 
                 BlockItemUseContext blockContext = new BlockItemUseContext(context);
                 if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && blockContext.canPlace()) {
-                    float hitX = context.getHitX();
-                    float hitY = context.getHitY();
-                    float hitZ = context.getHitZ();
-                    IBlockState conchstate = RocketSquidsBase.BLOCK_CONCH.getStateForPlacement(blockContext);
+                    //TODO Just guessing; does this work?
+                    Vec3d hitVec = context.func_221532_j();
+                    float hitX = (float) hitVec.x;
+                    float hitY = (float) hitVec.y;
+                    float hitZ = (float) hitVec.z;
+                    BlockState conchstate = RocketSquidsBase.BLOCK_CONCH.getStateForPlacement(blockContext);
 
                     if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, conchstate)) {
-                        IBlockState iblockstate1 = worldIn.getBlockState(pos);
+                        BlockState iblockstate1 = worldIn.getBlockState(pos);
                         SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
                         worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                         itemstack.shrink(1);
                     }
 
-                    return EnumActionResult.SUCCESS;
+                    return ActionResultType.SUCCESS;
                 } else {
-                    return EnumActionResult.FAIL;
+                    return ActionResultType.FAIL;
                 }
             }
         }
         else {
-            this.onItemRightClick(context.getWorld(), context.getPlayer(), EnumHand.MAIN_HAND);
+            this.onItemRightClick(context.getWorld(), context.getPlayer(), Hand.MAIN_HAND);
         }
-        return EnumActionResult.FAIL;
+        return ActionResultType.FAIL;
     }
 
     /**
@@ -141,15 +144,15 @@ public class ItemConch extends ItemArmor {
      * @param player The player who is placing the block. Can be null if the block is not being placed by a player.
      * @param side The side the player (or machine) right-clicked on.
      */
-    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState) {
+    public boolean placeBlockAt(ItemStack stack, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, BlockState newState) {
         if (!world.setBlockState(pos, newState, 11)) return false;
 
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         if (state.getBlock() == RocketSquidsBase.BLOCK_CONCH) {
             RocketSquidsBase.BLOCK_CONCH.onBlockPlacedBy(world, pos, state, player, stack);
 
-            if (player instanceof EntityPlayerMP)
-                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, stack);
+            if (player instanceof ServerPlayerEntity)
+                CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos, stack);
         }
 
         return true;
@@ -157,21 +160,20 @@ public class ItemConch extends ItemArmor {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack stack, EntityEquipmentSlot armorSlot, ModelBiped defaultModel) {
+    public BipedModel getArmorModel(LivingEntity entityLiving, ItemStack stack, EquipmentSlotType armorSlot, BipedModel defaultModel) {
         if(stack != null) {
             if (stack.getItem() == this) {
-                EntityEquipmentSlot type = ((ItemArmor) stack.getItem()).getEquipmentSlot();
-                ModelBiped armorModel;
-                if (type == EntityEquipmentSlot.HEAD) {
+                EquipmentSlotType type = ((ArmorItem) stack.getItem()).getEquipmentSlot();
+                BipedModel armorModel;
+                if (type == EquipmentSlotType.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
-                    armorModel.bipedHead.showModel = defaultModel.bipedHead.showModel;
-                    armorModel.bipedHeadwear.showModel = armorSlot == EntityEquipmentSlot.HEAD;
+                    armorModel.field_78116_c.showModel = defaultModel.field_78116_c.showModel; //Head, I hope
+                    armorModel.field_178720_f.showModel = armorSlot == EquipmentSlotType.HEAD; //Headwear, I hope
 
                     armorModel.isSneak = defaultModel.isSneak;
-                    armorModel.isRiding = defaultModel.isRiding;
-                    armorModel.isChild = defaultModel.isChild;
-                    armorModel.rightArmPose = defaultModel.rightArmPose;
-                    armorModel.leftArmPose = defaultModel.leftArmPose;
+                    armorModel.field_205061_a = defaultModel.field_205061_a; //Don't know what this is
+                    armorModel.field_187075_l = defaultModel.field_187075_l; //Arm pose (probably right)
+                    armorModel.field_187076_m = defaultModel.field_187076_m; //Arm pose (probably left)
 
                     return armorModel;
                 }

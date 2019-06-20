@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
-import net.minecraft.client.renderer.entity.model.ModelBiped;
+import net.minecraft.client.renderer.entity.model.BipedModel;
 
 public interface IProxy
 {
@@ -8,7 +8,7 @@ public interface IProxy
 
     void openConchClient(byte conchStage);
 
-    ModelBiped getConchModel();
+    BipedModel getConchModel();
 
     void playNote(byte note);
 }

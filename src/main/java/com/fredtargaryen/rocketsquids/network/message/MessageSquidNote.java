@@ -3,7 +3,8 @@ package com.fredtargaryen.rocketsquids.network.message;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -22,7 +23,7 @@ public class MessageSquidNote {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            EntityPlayer ep = ctx.get().getSender();
+            PlayerEntity ep = Minecraft.getInstance().player;
             //Check player is wearing the conch
             Iterable<ItemStack> armour = ep.getArmorInventoryList();
             Iterator<ItemStack> iter = armour.iterator();

@@ -1,15 +1,15 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
+import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid> {
+public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/brs.png");
-    public RenderBabyRS(RenderManager rm, ModelBabyRocketSquid model)
+    public RenderBabyRS(EntityRendererManager rm, BabyRocketSquidModel model)
     {
         super(rm, model, 0.4F);
     }
@@ -19,12 +19,12 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid> {
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float handleRotationFloat(EntityBabyRocketSquid squid, float partialTicks) {
+    protected float handleRotationFloat(BabyRocketSquidEntity squid, float partialTicks) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void applyRotations(EntityBabyRocketSquid ers, float yaw, float pitch, float partialTicks) {
+    protected void applyRotations(BabyRocketSquidEntity ers, float yaw, float pitch, float partialTicks) {
         double prp = ers.getPrevRotPitch();
         double rp = ers.getRotPitch();
         //Also convert to degrees.
@@ -40,7 +40,7 @@ public class RenderBabyRS extends RenderLiving<EntityBabyRocketSquid> {
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityBabyRocketSquid entity) {
+    protected ResourceLocation getEntityTexture(BabyRocketSquidEntity entity) {
         return normal;
     }
 }

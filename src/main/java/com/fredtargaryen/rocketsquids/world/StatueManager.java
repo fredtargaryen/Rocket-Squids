@@ -2,12 +2,13 @@ package com.fredtargaryen.rocketsquids.world;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraft.world.storage.WorldSavedDataStorage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,26 +17,19 @@ public class StatueManager extends WorldSavedData {
     //5 integers; 2 integers for index of 100x100 chunk area; 3 integers for exact coords
     private ArrayList<int[]> statues;
 
-    public StatueManager(String key) {
-        super(key);
+    public StatueManager() {
+        super(DataReference.MODID);
         this.statues = new ArrayList<>();
     }
 
     public static StatueManager forWorld(World world) {
-        //Retrieves the StatueManager instance for the given world, creating it if necessary
-        WorldSavedDataStorage storage = world.getMapStorage();
-        DimensionType dt = world.getDimension().getType();
-        StatueManager data = (StatueManager) storage.func_212426_a(dt, StatueManager::new, DataReference.MODID); //getOrLoadData
-        if(data == null) {
-            RocketSquidsBase.warn("[ROCKETSQUIDS-SERVER] No statue data was found for this world. Creating new statue data.");
-            data = new StatueManager(DataReference.MODID);
-            storage.func_212424_a(dt, DataReference.MODID, data); //setData
-        }
-        return data;
+        ServerWorld serverWorld = world.getServer().getWorld(DimensionType.OVERWORLD);
+        DimensionSavedDataManager storage = serverWorld.func_217481_x();
+        return storage.func_215752_a(StatueManager::new, DataReference.MODID);
     }
 
     @Override
-    public void read(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         this.statues = new ArrayList<>();
         int amount = nbt.getInt("amount");
         for(int i = 0; i < amount; ++i) {
@@ -44,11 +38,11 @@ public class StatueManager extends WorldSavedData {
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound compound) {
+    public CompoundNBT write(CompoundNBT compound) {
         int amount = this.statues.size();
-        compound.setInt("amount", this.statues.size());
+        compound.putInt("amount", this.statues.size());
         for(int i = 0; i < amount; ++i) {
-            compound.setIntArray(String.valueOf(i), this.statues.get(i));
+            compound.putIntArray(String.valueOf(i), this.statues.get(i));
         }
         return compound;
     }

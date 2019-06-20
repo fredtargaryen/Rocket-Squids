@@ -4,7 +4,8 @@ import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -28,14 +29,10 @@ public class MessagePlayNoteServer {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            EntityPlayer player = ctx.get().getSender();
+            PlayerEntity player = ctx.get().getSender();
             MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.dimension)), new MessagePlayNoteClient(this.note));
-            Iterator<Entity> squidFinder = player.world.loadedEntityList.iterator();
-            Entity e;
-            while(squidFinder.hasNext()) {
-                e = squidFinder.next();
-                e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note));
-            }
+            ((ServerWorld)player.world).getEntities().forEach(e ->
+                    e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note)));
         });
         ctx.get().setPacketHandled(true);
     }

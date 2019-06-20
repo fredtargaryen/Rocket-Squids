@@ -2,17 +2,19 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ILivingEntityData;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class EntityPrimalSquidA extends EntityAbstractSquid {
+public class PrimalSquidAEntity extends AbstractSquidEntity {
     ///////////////
     //Client only//
     ///////////////
@@ -27,22 +29,19 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
     protected short breedCooldown;
 
     //May have to remove and use capability instead
-    private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityPrimalSquidA.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> SADDLED = EntityDataManager.createKey(PrimalSquidAEntity.class, DataSerializers.field_187198_h); //BOOLEAN
 
-    public EntityPrimalSquidA(World par1World) {
+    public PrimalSquidAEntity(World par1World) {
         super(RocketSquidsBase.PRIMAL_A_TYPE, par1World);
-        //Set size of bounding box. par1=length and width; par2=height.
-        //Normal squids are 0.8F, 0.8F. Previous: 1.1F, 1.1F
-        this.setSize(0.99F, 0.99F);
-        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> EntityPrimalSquidA.this.squidCap = cap);
+        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> PrimalSquidAEntity.this.squidCap = cap);
         this.riderRotated = false;
         this.isBaby = false;
     }
 
     @Override
     @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData entityLivingData, @Nullable NBTTagCompound itemNbt) {
-        IEntityLivingData ield = super.onInitialSpawn(difficulty, entityLivingData, itemNbt);
+    public ILivingEntityData onInitialSpawn(IWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData livingEntityData, @Nullable CompoundNBT itemNbt) {
+        ILivingEntityData ield = super.onInitialSpawn(world, difficulty, reason, livingEntityData, itemNbt);
         this.dataManager.register(SADDLED, Boolean.valueOf(false));
         return ield;
     }
@@ -57,11 +56,6 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
     protected void registerAttributes() {
 //        super.applyEntityAttributes();
 //        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
-    }
-
-    public boolean isBaby()
-    {
-        return this.isBaby;
     }
 
 //    @Override
@@ -315,14 +309,14 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 //                entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
 //                entityitem.motionY = -0.2;
 //                entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-//                this.world.spawnEntity(entityitem);
+//                this.world.func_217376_c(entityitem);
 //            }
 //            for (int x = 0; x < noTubes; ++x) {
 //                EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.turbotube));
 //                entityitem.motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
 //                entityitem.motionY = -0.2;
 //                entityitem.motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
-//                this.world.spawnEntity(entityitem);
+//                this.world.func_217376_c(entityitem);
 //            }
 //        }
 //        this.setDead();
@@ -353,7 +347,7 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 //    private void doFireworkParticles()
 //    {
 //        ParticleManager effectRenderer = Minecraft.getInstance().effectRenderer;
-//        effectRenderer.addEffect(new SquidFirework(
+//        effectRenderer.addEffect(new SquidFireworkParticle(
 //                (WorldClient) this.world, this.posX, this.posY, this.posZ, effectRenderer));
 //    }
 //
@@ -368,12 +362,12 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 //            //Obstacle is not the rider, so apply collision
 //            if (!obstacle.noClip && !this.noClip)
 //            {
-//                if(!this.world.isRemote && !this.isBaby && obstacle instanceof EntityPrimalSquidA && !((EntityPrimalSquidA)obstacle).isBaby && this.breedCooldown == 0)
+//                if(!this.world.isRemote && !this.isBaby && obstacle instanceof PrimalSquidAEntity && !((PrimalSquidAEntity)obstacle).isBaby && this.breedCooldown == 0)
 //                {
 //                    this.breedCooldown = 3600;
-//                    EntityBabyRocketSquid baby = new EntityBabyRocketSquid(this.world);
+//                    BabyRocketSquidEntity baby = new BabyRocketSquidEntity(this.world);
 //                    baby.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
-//                    this.world.spawnEntity(baby);
+//                    this.world.func_217376_c(baby);
 //                }
 //                double xDist = obstacle.posX - this.posX;
 //                double zDist = obstacle.posZ - this.posZ;
@@ -634,14 +628,14 @@ public class EntityPrimalSquidA extends EntityAbstractSquid {
 //    {
 //        super.writeEntityToNBT(compound);
 //        if(this.isBaby) {
-//            compound.setString("id", DataReference.MODID + ":babyrocketsquid");
+//            compound.putString("id", DataReference.MODID + ":babyrocketsquid");
 //        }
 //        else {
-//            compound.setString("id", DataReference.MODID + ":rocketsquid");
+//            compound.putString("id", DataReference.MODID + ":rocketsquid");
 //        }
-//        compound.setDouble("force", Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ));
-//        compound.setBoolean("Saddle", this.getSaddled());
-//        compound.setShort("Breed Cooldown", this.breedCooldown);
+//        compound.putDouble("force", Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ));
+//        compound.putBoolean("Saddle", this.getSaddled());
+//        compound.putShort("Breed Cooldown", this.breedCooldown);
 //    }
 //
 //    @Override

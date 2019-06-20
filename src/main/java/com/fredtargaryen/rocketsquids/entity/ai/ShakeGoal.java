@@ -1,17 +1,19 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.entity.ai.EntityAIBase;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import net.minecraft.entity.ai.goal.Goal;
 
-public class EntityAIShake extends EntityAIBase {
-    private final EntityRocketSquid squid;
+import java.util.EnumSet;
+
+public class ShakeGoal extends Goal {
+    private final RocketSquidEntity squid;
     private int ticksLeft;
 
-    public EntityAIShake(EntityRocketSquid ers) {
+    public ShakeGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
         this.ticksLeft = -1;
-        this.setMutexBits(1);
+        this.setMutexFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override

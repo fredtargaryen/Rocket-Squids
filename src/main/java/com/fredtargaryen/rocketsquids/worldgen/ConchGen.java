@@ -2,23 +2,24 @@ package com.fredtargaryen.rocketsquids.worldgen;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.block.BlockSand;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import com.mojang.datafixers.Dynamic;
+import net.minecraft.block.Blocks;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.IChunkGenSettings;
-import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraftforge.fml.common.IWorldGenerator;
 
 import java.util.Random;
+import java.util.function.Function;
 
 public class ConchGen extends Feature<ConchGenConfig> {
+
+    public ConchGen(Function<Dynamic<?>, ? extends ConchGenConfig> p_i49878_1_) {
+        super(p_i49878_1_);
+    }
+
     /**
      * Generate the feature at the given BlockPos (which was validated by an IPatchPlacement instance).
      * @param world
@@ -29,7 +30,7 @@ public class ConchGen extends Feature<ConchGenConfig> {
      * @return
      */
     @Override
-    public boolean func_212245_a(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGen, Random random, BlockPos pos, ConchGenConfig config) {
+    public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGen, Random random, BlockPos pos, ConchGenConfig config) {
         world.setBlockState(pos, RocketSquidsBase.BLOCK_CONCH.getDefaultState()
                 .with(BlockStateProperties.HORIZONTAL_FACING, DataReference.randomHorizontalFacing(random))
                 .with(BlockStateProperties.WATERLOGGED, world.getBlockState(pos).getBlock() == Blocks.WATER), 3);

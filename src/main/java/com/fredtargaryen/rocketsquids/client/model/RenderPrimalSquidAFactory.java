@@ -1,13 +1,13 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.entity.EntityPrimalSquidA;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
+import com.fredtargaryen.rocketsquids.entity.PrimalSquidAEntity;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderPrimalSquidAFactory implements IRenderFactory<EntityPrimalSquidA> {
+public class RenderPrimalSquidAFactory implements IRenderFactory<PrimalSquidAEntity> {
     @Override
-    public Render<? super EntityPrimalSquidA> createRenderFor(RenderManager manager) {
-        return new RenderPrimalSquidA(manager, new ModelPrimalSquidA());
+    public EntityRenderer<? super PrimalSquidAEntity> createRenderFor(EntityRendererManager manager) {
+        return new RenderPrimalSquidA(manager, new PrimalSquidAModel());
     }
 }

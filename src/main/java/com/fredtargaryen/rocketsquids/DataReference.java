@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Random;
@@ -9,7 +9,8 @@ import java.util.Random;
  * ===DESCRIPTION OF MESSAGE CHANNELS===
  * MessagePlayNoteClient: When received on the client, the note is played
  * MessagePlayNoteServer: sent to server when a note is played. When received, a MessagePlayNoteClient is sent to everyone nearby
- * MessageAdultCapData: The IAdultCapability data for Rocket Squids
+ * MessageAdultCapData: The capability for adult Rocket Squids
+ * MessageBabyCapData: The capability for baby Rocket Squids
  * MessageSquidNote: sent to clients whose players are wearing conches, when a Rocket Squid is broadcasting a note
  *
  * When changing version number, change in: DataReference, build.gradle, mods.toml
@@ -27,17 +28,17 @@ public class DataReference {
     public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");
     public static final ResourceLocation ADULT_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "iadult");
 
-    public static EnumFacing randomHorizontalFacing(Random rand) {
+    public static Direction randomHorizontalFacing(Random rand) {
         switch(rand.nextInt(4)) {
             case 0:
-                return EnumFacing.NORTH;
+                return Direction.NORTH;
             case 1:
-                return EnumFacing.EAST;
+                return Direction.EAST;
             case 2:
-                return EnumFacing.SOUTH;
+                return Direction.SOUTH;
             case 3:
-                return EnumFacing.WEST;
+                return Direction.WEST;
         }
-        return EnumFacing.NORTH;
+        return Direction.NORTH;
     }
 }

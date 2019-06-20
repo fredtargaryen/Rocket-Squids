@@ -1,12 +1,14 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
-import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
-import net.minecraft.entity.ai.EntityAIBase;
+import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.math.Vec3d;
 
+import java.util.EnumSet;
 import java.util.Random;
 
-public class EntityAIBabySwimAround extends EntityAIBase {
-    private final EntityBabyRocketSquid squid;
+public class BabySwimAroundGoal extends Goal {
+    private final BabyRocketSquidEntity squid;
 
     //FOR TESTING
     //private boolean goHorizontal = false;
@@ -21,10 +23,10 @@ public class EntityAIBabySwimAround extends EntityAIBase {
     private final Random r;
     private final double swimForce;
 
-    public EntityAIBabySwimAround(EntityBabyRocketSquid ebrs, double swimForce) {
+    public BabySwimAroundGoal(BabyRocketSquidEntity ebrs, double swimForce) {
         super();
         this.squid = ebrs;
-        this.setMutexBits(1);
+        this.setMutexFlags(EnumSet.of(Flag.MOVE));
         this.turning = false;
         this.r = this.squid.getRNG();
         this.swimForce = swimForce;
@@ -124,8 +126,9 @@ public class EntityAIBabySwimAround extends EntityAIBase {
             }
         }
         else {
-            if (Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
-                    && Math.abs(this.squid.motionZ) < 0.005) {
+            Vec3d motion = this.squid.getMotion();
+            if (Math.abs(motion.x) < 0.005 && Math.abs(motion.y) < 0.005
+                    && Math.abs(motion.z) < 0.005) {
                 //Last forward swim is as good as finished
                 int randomInt = this.r.nextInt(12);
                 if (randomInt < 5) {

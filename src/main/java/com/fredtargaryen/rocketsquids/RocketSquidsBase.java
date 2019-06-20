@@ -1,16 +1,21 @@
+/**
+ * CHECKLIST
+ * NullPointerException when statue is placed
+ * Redundant description of firework particle (rocketsquidsft:firework not added as a key to a map from resourcelocations to particle descriptions) (bookmarks 1,2)
+ */
 package com.fredtargaryen.rocketsquids;
 
-import com.fredtargaryen.rocketsquids.block.BlockConch;
-import com.fredtargaryen.rocketsquids.block.BlockStatue;
+import com.fredtargaryen.rocketsquids.block.ConchBlock;
+import com.fredtargaryen.rocketsquids.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
-import com.fredtargaryen.rocketsquids.entity.EntityBabyRocketSquid;
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import com.fredtargaryen.rocketsquids.entity.EntityThrownSac;
-import com.fredtargaryen.rocketsquids.entity.EntityThrownTube;
+import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
+import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
+import com.fredtargaryen.rocketsquids.entity.capability.adult.AdultCapStorage;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.DefaultAdultImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
-import com.fredtargaryen.rocketsquids.entity.capability.adult.AdultCapStorage;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.BabyCapStorage;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.DefaultBabyImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
@@ -22,22 +27,20 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
 import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
-import com.fredtargaryen.rocketsquids.worldgen.ConchGen;
 import com.fredtargaryen.rocketsquids.worldgen.FeatureManager;
-import com.fredtargaryen.rocketsquids.worldgen.StatueGen;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.ParticleType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.biome.Biomes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -52,6 +55,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -108,8 +112,11 @@ public class RocketSquidsBase {
     public static EntityType BABY_SQUID_TYPE;
     @ObjectHolder("primala")
     public static EntityType PRIMAL_A_TYPE;
-
     private static EntityType SQUID_EARLYREG;
+
+    //Declare all ParticleTypes here
+    @ObjectHolder("firework")
+    public static BasicParticleType FIREWORK_TYPE;
 
     /**
      * The creative tab for all items from Rocket Squids.
@@ -132,10 +139,7 @@ public class RocketSquidsBase {
      *     |_TagIntArray    ("Colors")
      *     |_TagIntArray    ("FadeColors")
      */
-    public static final NBTTagCompound firework = new NBTTagCompound();
-
-    private static ConchGen conchGen;
-    private static StatueGen statueGen;
+    public static final CompoundNBT firework = new CompoundNBT();
 	
     /**   
      * Says where the client and server 'proxy' code is loaded.
@@ -150,6 +154,7 @@ public class RocketSquidsBase {
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the setup method for modloading
         loadingBus.addListener(this::postRegistration);
+        loadingBus.addListener(this::clientSetup);
 
         // Register ourselves for server, registry and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -161,17 +166,20 @@ public class RocketSquidsBase {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-                new BlockConch()
+                new ConchBlock()
                         .setRegistryName("conch"),
-                new BlockStatue()
+                new StatueBlock()
                         .setRegistryName("statue")
         );
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        SQUID_EARLYREG = EntityType.Builder.create(EntityRocketSquid.class, EntityRocketSquid::new)
-                .tracker(128, 10, true)
+        SQUID_EARLYREG = EntityType.Builder.create((type, world) -> new RocketSquidEntity(world), EntityClassification.WATER_CREATURE)
+                .size(0.99F, 0.99F)
+                .setTrackingRange(128)
+                .setUpdateInterval(10)
+                .setShouldReceiveVelocityUpdates(true)
                 .build(DataReference.MODID)
                 .setRegistryName("rocketsquid");
         event.getRegistry().registerAll(
@@ -185,7 +193,7 @@ public class RocketSquidsBase {
                         .setRegistryName("nitroinksac"),
                 new ItemTurboTube()
                         .setRegistryName("turbotube"),
-                new ItemBlock(BLOCK_STATUE, new Item.Properties().group(SQUIDS_TAB).maxStackSize(1))
+                new BlockItem(BLOCK_STATUE, new Item.Properties().group(SQUIDS_TAB).maxStackSize(1))
                         .setRegistryName("statue"),
                 new Item(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB).maxStackSize(1))
                         .setRegistryName("squavigator"),
@@ -193,7 +201,7 @@ public class RocketSquidsBase {
                         .setRegistryName("squeleporter_active"),
                 new ItemSqueleporter(new Item.Properties().group(RocketSquidsBase.SQUIDS_TAB))
                         .setRegistryName("squeleporter_inactive"),
-                new ItemSpawnEgg(SQUID_EARLYREG,9838110, 16744192, new Item.Properties().group(SQUIDS_TAB))
+                new SpawnEggItem(SQUID_EARLYREG,9838110, 16744192, new Item.Properties().group(SQUIDS_TAB))
                         .setRegistryName("rs_spawn_egg")
         );
     }
@@ -202,24 +210,45 @@ public class RocketSquidsBase {
     public static void registerEntities(RegistryEvent.Register<EntityType<?>> event) {
         event.getRegistry().registerAll(
                 SQUID_EARLYREG,
-                EntityType.Builder.create(EntityBabyRocketSquid.class, EntityBabyRocketSquid::new)
-                        .tracker(64, 10, true)
+                EntityType.Builder.create((type, world) -> new BabyRocketSquidEntity(world), EntityClassification.WATER_CREATURE)
+                        .size(0.4F, 0.4F)
+                        .setTrackingRange(64)
+                        .setUpdateInterval(10)
+                        .setShouldReceiveVelocityUpdates(true)
                         .build(DataReference.MODID)
                         .setRegistryName("babyrs"),
-                EntityType.Builder.create(EntityThrownSac.class, EntityThrownSac::new)
-                        .tracker(64, 10, true)
+                EntityType.Builder.create((type, world) -> new ThrownSacEntity(world), EntityClassification.MISC)
+                        .setTrackingRange(64)
+                        .setUpdateInterval(10)
+                        .setShouldReceiveVelocityUpdates(true)
+                        .setCustomClientFactory(ThrownSacEntity::new)
                         .build(DataReference.MODID)
                         .setRegistryName("nitroinksac"),
-                EntityType.Builder.create(EntityThrownTube.class, EntityThrownTube::new)
-                        .tracker(64, 10, true)
+                EntityType.Builder.create((type, world) -> new ThrownTubeEntity(world), EntityClassification.MISC)
+                        .setTrackingRange(128)
+                        .setUpdateInterval(10)
+                        .setShouldReceiveVelocityUpdates(true)
+                        .setCustomClientFactory(ThrownTubeEntity::new)
                         .build(DataReference.MODID)
                         .setRegistryName("turbotube")
         );
     }
 
     @SubscribeEvent
+    public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
+//        event.getRegistry().register(
+//                new BasicParticleType(false)
+//                        .setRegistryName("firework")
+//        );
+    }
+
+    @SubscribeEvent
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
         Sounds.constructAndRegisterSoundEvents(event);
+    }
+
+    public void clientSetup(FMLClientSetupEvent event) {
+        proxy.registerRenderers();
     }
 
     /**
@@ -235,17 +264,15 @@ public class RocketSquidsBase {
         CapabilityManager.INSTANCE.register(ISqueleporter.class, new SqueleporterCapStorage(), new DefaultSqueleporterImplFactory());
         MinecraftForge.EVENT_BUS.register(this);
 
-        proxy.registerRenderers();
-
         //Make the firework
-        NBTTagList list = new NBTTagList();
-            NBTTagCompound f1 = new NBTTagCompound();
-            f1.setBoolean("Flicker", false);
-            f1.setBoolean("Trail", false);
-            f1.setIntArray("Colors", new int[]{15435844});
-            f1.setIntArray("FadeColors", new int[]{6719955});
+        ListNBT list = new ListNBT();
+            CompoundNBT f1 = new CompoundNBT();
+            f1.putBoolean("Flicker", false);
+            f1.putBoolean("Trail", false);
+            f1.putIntArray("Colors", new int[]{15435844});
+            f1.putIntArray("FadeColors", new int[]{6719955});
         list.add(f1);
-        firework.setTag("Explosions", list);
+        firework.put("Explosions", list);
 
         //Validate the config
         if(GeneralConfig.MAX_GROUP_SIZE.get() < GeneralConfig.MIN_GROUP_SIZE.get()) {
@@ -253,12 +280,12 @@ public class RocketSquidsBase {
         }
 
         //Other Rocket Squid info
-        EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.SpawnPlacementType.IN_WATER, Heightmap.Type.OCEAN_FLOOR, null);
-        Biomes.DEEP_OCEAN.getSpawns(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.OCEAN.getSpawns(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.RIVER.getSpawns(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.SWAMP.getSpawns(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.FROZEN_OCEAN.getSpawns(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
+        //EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.SpawnPlacementType.IN_WATER, Heightmap.Type.OCEAN_FLOOR, null); TODO
+        Biomes.DEEP_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
+        Biomes.OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
+        Biomes.RIVER.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
+        Biomes.SWAMP.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
+        Biomes.FROZEN_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
 
         new FeatureManager().registerGenerators();
     }
@@ -281,22 +308,22 @@ public class RocketSquidsBase {
     public void onItemStackConstruct(AttachCapabilitiesEvent<ItemStack> evt) {
         if(evt.getObject().getItem() == SQUELEPORTER_ACTIVE) {
             evt.addCapability(DataReference.SQUELEPORTER_LOCATION,
-                    new ICapabilitySerializable<NBTTagCompound>() {
+                    new ICapabilitySerializable<CompoundNBT>() {
                         ISqueleporter inst = SQUELEPORTER_CAP.getDefaultInstance();
 
                         @Nullable
                         @Override
-                        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+                        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
                             return capability == SQUELEPORTER_CAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
                         }
 
                         @Override
-                        public NBTTagCompound serializeNBT() {
-                            return (NBTTagCompound) SQUELEPORTER_CAP.getStorage().writeNBT(SQUELEPORTER_CAP, inst, null);
+                        public CompoundNBT serializeNBT() {
+                            return (CompoundNBT) SQUELEPORTER_CAP.getStorage().writeNBT(SQUELEPORTER_CAP, inst, null);
                         }
 
                         @Override
-                        public void deserializeNBT(NBTTagCompound nbt) {
+                        public void deserializeNBT(CompoundNBT nbt) {
                             SQUELEPORTER_CAP.getStorage().readNBT(SQUELEPORTER_CAP, inst, null, nbt);
                         }
                     });
@@ -306,46 +333,46 @@ public class RocketSquidsBase {
     @SubscribeEvent
     public void onEntityConstruct(AttachCapabilitiesEvent<Entity> evt) {
         Entity e = evt.getObject();
-        if(e instanceof EntityBabyRocketSquid) {
+        if(e instanceof BabyRocketSquidEntity) {
             evt.addCapability(DataReference.BABY_CAP_LOCATION,
                     //Full name ICapabilitySerializableProvider
-                    new ICapabilitySerializable<NBTTagCompound>() {
+                    new ICapabilitySerializable<CompoundNBT>() {
                         IBabyCapability inst = BABYCAP.getDefaultInstance();
 
                         @Override
-                        public <T> LazyOptional<T> getCapability(Capability<T> capability, EnumFacing facing) {
+                        public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
                             return capability == BABYCAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
                         }
 
                         @Override
-                        public NBTTagCompound serializeNBT() {
-                            return (NBTTagCompound) BABYCAP.getStorage().writeNBT(BABYCAP, inst, null);
+                        public CompoundNBT serializeNBT() {
+                            return (CompoundNBT) BABYCAP.getStorage().writeNBT(BABYCAP, inst, null);
                         }
 
                         @Override
-                        public void deserializeNBT(NBTTagCompound nbt) {
+                        public void deserializeNBT(CompoundNBT nbt) {
                             BABYCAP.getStorage().readNBT(BABYCAP, inst, null, nbt);
                         }
                     });
         }
-        else if(e instanceof EntityRocketSquid) {
+        else if(e instanceof RocketSquidEntity) {
             evt.addCapability(DataReference.ADULT_CAP_LOCATION,
                     //Full name ICapabilitySerializableProvider
-                    new ICapabilitySerializable<NBTTagCompound>() {
+                    new ICapabilitySerializable<CompoundNBT>() {
                         IAdultCapability inst = ADULTCAP.getDefaultInstance();
 
                         @Override
-                        public <T> LazyOptional<T> getCapability(Capability<T> capability, EnumFacing facing) {
+                        public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
                             return capability == ADULTCAP ? LazyOptional.of(() -> (T)inst) : LazyOptional.empty();
                         }
 
                         @Override
-                        public NBTTagCompound serializeNBT() {
-                            return (NBTTagCompound) ADULTCAP.getStorage().writeNBT(ADULTCAP, inst, null);
+                        public CompoundNBT serializeNBT() {
+                            return (CompoundNBT) ADULTCAP.getStorage().writeNBT(ADULTCAP, inst, null);
                         }
 
                         @Override
-                        public void deserializeNBT(NBTTagCompound nbt) {
+                        public void deserializeNBT(CompoundNBT nbt) {
                             ADULTCAP.getStorage().readNBT(ADULTCAP, inst, null, nbt);
                         }
                     }

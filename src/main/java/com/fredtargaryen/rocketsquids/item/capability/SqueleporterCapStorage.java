@@ -1,9 +1,9 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
-import com.fredtargaryen.rocketsquids.entity.EntityRocketSquid;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 
 /**
@@ -13,17 +13,17 @@ import net.minecraftforge.common.capabilities.Capability;
  */
 public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter> {
     @Override
-    public INBTBase writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side) {
-        NBTTagCompound comp = new NBTTagCompound();
-        EntityRocketSquid ers = instance.getSquid();
+    public INBT writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side) {
+        CompoundNBT comp = new CompoundNBT();
+        RocketSquidEntity ers = instance.getSquid();
         if(ers != null) ers.writeAdditional(comp);
         return comp;
     }
 
     @Override
-    public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, EnumFacing side, INBTBase nbt) {
-        NBTTagCompound comp = (NBTTagCompound) nbt;
-        EntityRocketSquid ers = new EntityRocketSquid(null);
+    public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side, INBT nbt) {
+        CompoundNBT comp = (CompoundNBT) nbt;
+        RocketSquidEntity ers = new RocketSquidEntity(null);
         ers.readAdditional(comp);
         instance.setSquid(ers);
     }
