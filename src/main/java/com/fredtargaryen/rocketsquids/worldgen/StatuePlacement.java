@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
+import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
 import com.mojang.datafixers.Dynamic;
 import net.minecraft.util.math.BlockPos;
@@ -22,21 +23,22 @@ public class StatuePlacement extends Placement<StatuePlacementConfig> {
 
     @Override
     public Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, StatuePlacementConfig placementConfig, BlockPos pos) {
-        StatueManager statueManager = StatueManager.forWorld((World) world);
+        StatueManager statueManager = StatueManager.forWorld(world.getWorld());
         int chunkX = pos.getX() / 16;
         int chunkZ = pos.getZ() / 16;
-        int chunkAreaX = chunkX / 100;
-        int chunkAreaZ = chunkZ / 100;
+        int chunkAreaX = chunkX / DataReference.CHUNK_AREA_SIZE;
+        int chunkAreaZ = chunkZ / DataReference.CHUNK_AREA_SIZE;
         int[] statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
         if(statueLocation == null) {
             //A statue location hasn't been decided for this chunk area. Decide one
             statueLocation = new int[] {chunkAreaX, chunkAreaZ,
-                    //Random chunk in the 100x100 area
-                    (chunkAreaX * 100 + random.nextInt(100))
+                    //Random chunk in the sizexsize area
+                    (chunkAreaX * DataReference.CHUNK_AREA_SIZE + random.nextInt(DataReference.CHUNK_AREA_SIZE))
                             //Random block in the 16x16 chunk
                             * 16 + random.nextInt(16),
-                    random.nextInt(80) + 1,
-                    (chunkAreaZ * 100 + random.nextInt(100)) * 16 + random.nextInt(16)};
+                    random.nextInt(254) + 1,
+                    (chunkAreaZ * DataReference.CHUNK_AREA_SIZE + random.nextInt(DataReference.CHUNK_AREA_SIZE))
+                            * 16 + random.nextInt(16)};
             statueManager.addStatue(new BlockPos(statueLocation[2], statueLocation[3], statueLocation[4]));
         }
         if(chunkX == statueLocation[2] / 16 && chunkZ == statueLocation[4] / 16) {

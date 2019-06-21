@@ -36,7 +36,7 @@ public class ConchPlacement extends Placement<ConchPlacementConfig> {
             else if(blockState.getMaterial() == Material.WATER) {
                 BlockPos down = conchPos.down();
                 if (world.getBlockState(down.down()).getMaterial() == Material.SAND) {
-                    return Stream.of(down);
+                    return Stream.of(conchPos);
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.Sounds;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -19,7 +20,7 @@ public class MessagePlayNoteClient {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-                PlayerEntity ep = ctx.get().getSender();
+                PlayerEntity ep = Minecraft.getInstance().player;
                 ep.world.playSound(ep.posX, ep.posY, ep.posZ, Sounds.CONCH_NOTES[this.note], SoundCategory.PLAYERS, 1.0F, 1.0F, true);
         });
         ctx.get().setPacketHandled(true);

@@ -3,6 +3,7 @@ package com.fredtargaryen.rocketsquids.item;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
+import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -93,7 +94,8 @@ public class ItemConch extends ArmorItem {
             BlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
             if (block == RocketSquidsBase.BLOCK_STATUE) {
-                if (iblockstate.get(BlockStateProperties.FACING) == Direction.DOWN) {
+                if (iblockstate.get(BlockStateProperties.FACING) == Direction.UP) {
+                    StatueManager.forWorld(worldIn).removeStatue(pos);
                     if (facing == Direction.NORTH) {
                         worldIn.setBlockState(pos, iblockstate.with(BlockStateProperties.FACING, Direction.NORTH));
                         context.getItem().grow(-1);

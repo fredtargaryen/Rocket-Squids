@@ -9,4 +9,8 @@ public class StatuePlacementConfig implements IPlacementConfig {
     public <T> Dynamic<T> func_214719_a(DynamicOps<T> p_214719_1_) {
         return null;
     }
+
+    public static StatuePlacementConfig factory(Dynamic data) {
+        return new StatuePlacementConfig();
+    }
 }

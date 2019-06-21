@@ -1,7 +1,9 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
-import com.fredtargaryen.rocketsquids.client.model.*;
+import com.fredtargaryen.rocketsquids.client.model.ConchModel;
+import com.fredtargaryen.rocketsquids.client.model.RenderBabyRSFactory;
+import com.fredtargaryen.rocketsquids.client.model.RenderRSFactory;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
@@ -38,8 +40,6 @@ public class ClientProxy implements IProxy {
 
     @Override
     public BipedModel getConchModel() {
-        ConchModel mc = new ConchModel();
-        mc.register();
-        return mc;
+        return new ConchModel();
     }
 }

@@ -11,21 +11,25 @@ public class FeatureManager {
         //Create the feature, its config, the placement controller and its config
         ConchGenConfig cgc = new ConchGenConfig();
         ConchGen cg = new ConchGen(ConchGenConfig::factory);
+        ConchPlacementConfig cpc = new ConchPlacementConfig();
+        ConchPlacement cp = new ConchPlacement(ConchPlacementConfig::factory);
         //Register these in all Biomes necessary
         Iterator<Biome> i = Biome.BIOMES.iterator();
         while(i.hasNext()) {
             Biome b = i.next();
-            b.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, new ConfiguredFeature<>(cg, cgc));
+            b.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, Biome.func_222280_a(cg, cgc, cp, cpc));
         }
         
         //Create the feature, its config, the placement controller and its config
         StatueGenConfig sgc = new StatueGenConfig();
         StatueGen sg = new StatueGen(StatueGenConfig::factory);
+        StatuePlacementConfig spc = new StatuePlacementConfig();
+        StatuePlacement sp = new StatuePlacement(StatuePlacementConfig::factory);
         //Register these in all Biomes necessary
         Iterator<Biome> i2 = Biome.BIOMES.iterator();
         while(i2.hasNext()) {
             Biome b = i2.next();
-            b.addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, new ConfiguredFeature<>(sg, sgc));
+            b.addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, Biome.func_222280_a(sg, sgc, sp, spc));
         }
     }
 }

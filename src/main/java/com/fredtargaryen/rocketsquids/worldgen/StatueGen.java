@@ -1,14 +1,13 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.world.StatueManager;
 import com.mojang.datafixers.Dynamic;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.feature.Feature;
 
 import java.util.Random;
@@ -31,10 +30,13 @@ public class StatueGen extends Feature<StatueGenConfig> {
      */
     @Override
     public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGen, Random random, BlockPos pos, StatueGenConfig config) {
-        world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 3);
-        BlockState state = RocketSquidsBase.BLOCK_STATUE.getDefaultState();
-        world.setBlockState(pos, state, 3);
-        RocketSquidsBase.BLOCK_STATUE.tick(state, (World) world, pos, random);
+        //Simulate the block falling down onto a solid block
+        StatueManager.forWorld(world.getWorld()).removeStatue(pos);
+        BlockPos pos2;
+        for(pos2 = pos; !world.getBlockState(pos2.down()).getMaterial().isSolid(); pos2 = pos2.down());
+        world.setBlockState(pos2.up(), Blocks.AIR.getDefaultState(), 3);
+        world.setBlockState(pos2, RocketSquidsBase.BLOCK_STATUE.getDefaultState(), 3);
+        StatueManager.forWorld(world.getWorld()).addStatue(pos2);
         return true;
     }
 }

@@ -23,7 +23,7 @@ public class ConchBlock extends Block {
     private static final VoxelShape CONCH_NORTH = Block.makeCuboidShape(2.0, 0.0, 10.0, 8.0, 2.0, 13.0);
 
     public ConchBlock() {
-        super(Block.Properties.create(Material.PLANTS));
+        super(Block.Properties.create(Material.SAND));
     }
 
     @Override
@@ -64,19 +64,18 @@ public class ConchBlock extends Block {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         Direction facing = placer.getHorizontalFacing();
-        BlockState def = this.getDefaultState();
         switch(facing) {
             case NORTH:
-                worldIn.setBlockState(pos, def.with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
+                worldIn.setBlockState(pos, state.with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST));
                 break;
             case SOUTH:
-                worldIn.setBlockState(pos, def.with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+                worldIn.setBlockState(pos, state.with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
                 break;
             case WEST:
-                worldIn.setBlockState(pos, def.with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+                worldIn.setBlockState(pos, state.with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
                 break;
             default:
-                worldIn.setBlockState(pos, def.with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+                worldIn.setBlockState(pos, state.with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
                 break;
         }
     }

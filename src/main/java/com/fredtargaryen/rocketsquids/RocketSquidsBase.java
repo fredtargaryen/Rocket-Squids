@@ -1,8 +1,3 @@
-/**
- * CHECKLIST
- * NullPointerException when statue is placed
- * Redundant description of firework particle (rocketsquidsft:firework not added as a key to a map from resourcelocations to particle descriptions) (bookmarks 1,2)
- */
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.ConchBlock;
