@@ -13,5 +13,8 @@ public class ServerProxy implements IProxy {
     public BipedModel getConchModel() { return null; }
 
     @Override
-    public void playNote(byte note) {}
+    public void playNoteFromMessage(byte note) {}
+
+    @Override
+    public void playNoteFromMessageConchNeeded(byte note) {}
 }

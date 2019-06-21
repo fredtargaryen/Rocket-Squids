@@ -1,5 +1,7 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.ConchModel;
 import com.fredtargaryen.rocketsquids.client.model.RenderBabyRSFactory;
@@ -14,9 +16,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+
+import java.util.Iterator;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientProxy implements IProxy {
@@ -33,13 +39,28 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public void playNote(byte note) {
-        PlayerEntity ep = Minecraft.getInstance().player;
-        MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer(note, ep.posX, ep.posY, ep.posZ));
+    public BipedModel getConchModel() {
+        return new ConchModel();
     }
 
     @Override
-    public BipedModel getConchModel() {
-        return new ConchModel();
+    public void playNoteFromMessage(byte note) {
+        PlayerEntity ep = Minecraft.getInstance().player;
+        ep.world.playSound(ep.posX, ep.posY, ep.posZ, Sounds.CONCH_NOTES[note], SoundCategory.PLAYERS, 1.0F, 1.0F, true);
+    }
+
+    @Override
+    public void playNoteFromMessageConchNeeded(byte note) {
+        PlayerEntity ep = Minecraft.getInstance().player;
+        //Check player is wearing the conch
+        Iterable<ItemStack> armour = ep.getArmorInventoryList();
+        Iterator<ItemStack> iter = armour.iterator();
+        iter.next();
+        iter.next();
+        iter.next();
+        ItemStack helmet = iter.next();
+        if(helmet.getItem() == RocketSquidsBase.ITEM_CONCH) {
+            ep.world.playSound(ep.posX, ep.posY, ep.posZ, Sounds.CONCH_NOTES[note], SoundCategory.NEUTRAL, 1.0F, 1.0F, true);
+        }
     }
 }

@@ -6,14 +6,14 @@ import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
-import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
-import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.AdultCapStorage;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.DefaultAdultImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.BabyCapStorage;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.DefaultBabyImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
+import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
+import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.item.capability.DefaultSqueleporterImplFactory;
 import com.fredtargaryen.rocketsquids.item.capability.ISqueleporter;
@@ -26,6 +26,7 @@ import com.fredtargaryen.rocketsquids.worldgen.FeatureManager;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -36,6 +37,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -275,7 +277,7 @@ public class RocketSquidsBase {
         }
 
         //Other Rocket Squid info
-        //EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.SpawnPlacementType.IN_WATER, Heightmap.Type.OCEAN_FLOOR, null); TODO
+        EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.PlacementType.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
         Biomes.DEEP_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
         Biomes.OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
         Biomes.RIVER.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));

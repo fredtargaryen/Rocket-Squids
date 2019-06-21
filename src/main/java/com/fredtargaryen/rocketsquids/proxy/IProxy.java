@@ -10,5 +10,7 @@ public interface IProxy
 
     BipedModel getConchModel();
 
-    void playNote(byte note);
+    void playNoteFromMessage(byte note);
+
+    void playNoteFromMessageConchNeeded(byte note);
 }

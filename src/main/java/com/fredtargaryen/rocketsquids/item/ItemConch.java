@@ -112,7 +112,6 @@ public class ItemConch extends ArmorItem {
 
                 BlockItemUseContext blockContext = new BlockItemUseContext(context);
                 if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && blockContext.canPlace()) {
-                    //TODO Just guessing; does this work?
                     Vec3d hitVec = context.func_221532_j();
                     float hitX = (float) hitVec.x;
                     float hitY = (float) hitVec.y;
