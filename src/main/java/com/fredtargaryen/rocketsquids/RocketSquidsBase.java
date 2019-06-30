@@ -277,7 +277,7 @@ public class RocketSquidsBase {
         }
 
         //Other Rocket Squid info
-        EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.PlacementType.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
+        //EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.PlacementType.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
         Biomes.DEEP_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
         Biomes.OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
         Biomes.RIVER.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
@@ -406,16 +406,16 @@ public class RocketSquidsBase {
                 if(trueMapping.key.getNamespace().equals("ftrsquids")) {
                     switch (trueMapping.key.getPath()) {
                         case "turbotube":
-                            trueMapping.remap(ForgeRegistries.ENTITIES.getValue(TUBE_TYPE.getRegistryName()));
+                            trueMapping.remap(TUBE_TYPE);
                             break;
                         case "babyrocketsquid":
-                            trueMapping.remap(ForgeRegistries.ENTITIES.getValue(BABY_SQUID_TYPE.getRegistryName()));
+                            trueMapping.remap(BABY_SQUID_TYPE);
                             break;
                         case "rocketsquid":
-                            trueMapping.remap(ForgeRegistries.ENTITIES.getValue(SQUID_TYPE.getRegistryName()));
+                            trueMapping.remap(SQUID_TYPE);
                             break;
                         case "nitroinksac":
-                            trueMapping.remap(ForgeRegistries.ENTITIES.getValue(SAC_TYPE.getRegistryName()));
+                            trueMapping.remap(SAC_TYPE);
                             break;
                     }
                 }

@@ -50,7 +50,7 @@ public class BlastoffGoal extends Goal {
                 }
             }
             else {
-                this.squid.pointToWhereFlying();
+                this.squid.pointToWhereMoving();
             }
         }
         else {

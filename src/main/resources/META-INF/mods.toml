@@ -1,8 +1,8 @@
-# mods.toml file for Rocket Squids 1.13.2-1.1.1
+# mods.toml file for Rocket Squids 1.14.3-1.2
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml"
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[24,)" #(24 is current forge version)
+loaderVersion="[27]" #(27 is current forge version)
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/fredtargaryen/Rocket-Squids/issues"
 # A URL for the "homepage" for this mod, displayed in the mod UI

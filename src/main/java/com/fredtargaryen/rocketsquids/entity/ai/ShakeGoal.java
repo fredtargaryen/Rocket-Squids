@@ -7,12 +7,10 @@ import java.util.EnumSet;
 
 public class ShakeGoal extends Goal {
     private final RocketSquidEntity squid;
-    private int ticksLeft;
 
     public ShakeGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
-        this.ticksLeft = -1;
         this.setMutexFlags(EnumSet.of(Flag.MOVE));
     }
 
@@ -24,16 +22,17 @@ public class ShakeGoal extends Goal {
 
     @Override
     public void tick() {
-        if(this.ticksLeft == -1) {
+        int ticksLeft = this.squid.getShakeTicks();
+        if(ticksLeft == -1) {
             //No shake in progress; start one
-            this.ticksLeft = 15 + this.squid.getRNG().nextInt(45);
+            this.squid.setShakeTicks(40);
         }
-        else if(this.ticksLeft == 0) {
+        else if(ticksLeft == 0) {
             this.squid.setBlasting(true);
-            this.ticksLeft = -1;
+            this.squid.setShakeTicks(-1);
         }
         else {
-            --this.ticksLeft;
+            this.squid.setShakeTicks(ticksLeft - 1);
         }
     }
 }

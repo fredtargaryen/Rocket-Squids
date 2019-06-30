@@ -24,7 +24,7 @@ public class AdultFlopAroundGoal extends Goal {
         if (this.squid.onGround) {
             this.squid.setTargetRotPitch(Math.PI / 2);
         } else if(Math.abs(this.squid.getMotion().y) > 0.008){
-            this.squid.pointToWhereFlying();
+            this.squid.pointToWhereMoving();
         }
     }
 }

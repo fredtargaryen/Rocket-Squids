@@ -112,7 +112,7 @@ public class ItemConch extends ArmorItem {
 
                 BlockItemUseContext blockContext = new BlockItemUseContext(context);
                 if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && blockContext.canPlace()) {
-                    Vec3d hitVec = context.func_221532_j();
+                    Vec3d hitVec = context.getHitVec();
                     float hitX = (float) hitVec.x;
                     float hitY = (float) hitVec.y;
                     float hitZ = (float) hitVec.z;
@@ -169,12 +169,12 @@ public class ItemConch extends ArmorItem {
                 if (type == EquipmentSlotType.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
                     armorModel.field_78116_c.showModel = defaultModel.field_78116_c.showModel; //Head, I hope
-                    armorModel.field_178720_f.showModel = armorSlot == EquipmentSlotType.HEAD; //Headwear, I hope
+                    armorModel.bipedHeadwear.showModel = armorSlot == EquipmentSlotType.HEAD;
 
                     armorModel.isSneak = defaultModel.isSneak;
                     armorModel.field_205061_a = defaultModel.field_205061_a; //Don't know what this is
-                    armorModel.field_187075_l = defaultModel.field_187075_l; //Arm pose (probably right)
-                    armorModel.field_187076_m = defaultModel.field_187076_m; //Arm pose (probably left)
+                    armorModel.rightArmPose = defaultModel.rightArmPose;
+                    armorModel.leftArmPose = defaultModel.leftArmPose;
 
                     return armorModel;
                 }

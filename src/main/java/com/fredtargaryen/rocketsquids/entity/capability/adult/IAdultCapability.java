@@ -6,10 +6,12 @@ package com.fredtargaryen.rocketsquids.entity.capability.adult;
  * with this mod; correct operation is not guaranteed
  * in any other context!
  */
-public interface IAdultCapability
-{
+public interface IAdultCapability {
     boolean getShaking();
     void setShaking(boolean b);
+    int getShakeTicks();
+    void setShakeTicks(int ticks);
+
     boolean getBlasting();
     void setBlasting(boolean b);
 

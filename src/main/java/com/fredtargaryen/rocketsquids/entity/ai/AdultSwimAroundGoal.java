@@ -15,36 +15,33 @@ import java.util.Random;
 public class AdultSwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
     private byte noteIndex;
+    private int tickCounter;
+    private int nextScheduledMove;
+    private int nextScheduledNote;
+
     private enum StatueBlastStage {
         NONE,
         LOCATE,
         TURN
     }
 
-    //FOR TESTING
-    //private boolean goHorizontal = false;
-    //private double[] angles = new double[]{-Math.PI, -3*Math.PI / 4, -Math.PI / 2, -Math.PI / 4, 0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4};
-    //private int currentAngle;
-
-    /**
-     * True if turning; false if swimming forwards
-     */
-    private boolean turning;
-
     private final Random r;
 	private final double swimForce;
 	private StatueBlastStage statueBlastStage;
 
-    public AdultSwimAroundGoal(RocketSquidEntity ers, double swimForce) {
+    public AdultSwimAroundGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
         this.setMutexFlags(EnumSet.of(Flag.MOVE));
-        this.turning = false;
         this.r = this.squid.getRNG();
-        this.swimForce = swimForce;
-        //this.currentAngle = 0;
+        this.swimForce = 0.25;
         this.noteIndex = 0;
         this.statueBlastStage = StatueBlastStage.NONE;
+        this.tickCounter = 0;
+        this.nextScheduledMove = 0;
+        this.nextScheduledNote = 0;
+        this.scheduleNextMove();
+        this.scheduleNextNote();
     }
 
     @Override
@@ -55,93 +52,75 @@ public class AdultSwimAroundGoal extends Goal {
     /**
      * Do a turn.
      * @param hasVIPRider whether there is a rider who is a VIP
+     * @param blocked in the directions the squid is mainly pointing in, whether there are blocks in the way
      * @return whether a turn will be executed. It won't if the squid is pointing roughly where the rider is facing.
      */
-    public boolean doTurn(boolean hasVIPRider) {
+    public boolean doTurn(boolean hasVIPRider, boolean blocked) {
         if(hasVIPRider) {
+            //Rider rotations are clamped to [-PI, PI]; squid rotations are not.
+            //Therefore need to work in terms of this range, or risk squids spinning ridiculous amounts if they have
+            //turned around many times before being ridden.
             Entity pass = this.squid.getControllingPassenger();
             float pp = (float) ((pass.rotationPitch + 90.0F) * Math.PI / 180.0F);
             float py = (float) (pass.getRotationYawHead() * Math.PI / 180.0F);
-            float sp = (float) this.squid.getRotPitch();
-            float sy = (float) this.squid.getRotYaw();
-            if(Math.abs(pp - sp) >= 0.005 || Math.abs(py - sy) >= 0.005) {
-                this.squid.setTargetRotPitch(pp);
-                this.squid.setTargetRotYaw(py);
+            float unclamped_sp = (float) this.squid.getRotPitch();
+            float unclamped_sy = (float) this.squid.getRotYaw();
+            //Clamp them to [-2PI, 2PI]
+            float clamped_sp = unclamped_sp;
+            while(clamped_sp > Math.PI * 2) clamped_sp -= Math.PI * 2;
+            while(clamped_sp < -Math.PI * 2) clamped_sp += Math.PI * 2;
+            float clamped_sy = unclamped_sy;
+            while(clamped_sy > Math.PI * 2) clamped_sy -= Math.PI * 2;
+            while(clamped_sy < -Math.PI * 2) clamped_sy += Math.PI * 2;
+            float pitchDiff = pp - clamped_sp;
+            float yawDiff = py - clamped_sy;
+            if(Math.abs(pitchDiff) >= 0.005 || Math.abs(yawDiff) >= 0.005) {
+                //Player rotation is sufficiently far from squid rotation for the squid to start a new turn
+                //Turn by the difference in rotations, to avoid having to spin into the [-PI, PI] range
+                this.squid.setTargetRotPitch(unclamped_sp + pitchDiff);
+                this.squid.setTargetRotYaw(unclamped_sy + yawDiff);
                 return true;
             }
             return false;
         }
         else {
-            //Random doubles between -PI and PI, added to current rotation
-            this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
-            this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1)));
+            if(blocked) {
+                //Just point the opposite way
+                Vec3d direction = this.squid.getDirectionAsVector();
+                this.squid.pointToVector(new Vec3d(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
+            }
+            else {
+                //Random doubles between -PI and PI, added to current rotation
+                this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+            }
             return true;
         }
     }
 
     /**
-     * When the current action (swimming or turning) is finished (approximately),
-     * decides which action to take next.
-     * Odds:
-     * 1/12 - starts to shake (hands over to ShakeGoal)
-     * 4/12 - repeats action
-     * 7/12 - goes from turning to swimming forward or vice versa
+     * Schedule the next move for 1-3 seconds in the future.
+     * Need to allow some time for the move to finish, as well as some time for the squid to just hover for a bit
      */
+    private void scheduleNextMove() {
+        this.nextScheduledMove += 20 + this.r.nextInt(80);
+    }
+
+    /**
+     * Schedule the next note for 2-3 seconds in the future.
+     * Need to allow some time for the note to play, as well as some silent time
+     */
+    private void scheduleNextNote() {
+        this.nextScheduledNote += 40 + this.r.nextInt(20);
+    }
+
     @Override
     public void tick() {
-        //Code for testing squid swimming and visuals.
-        //If all uncommented, will swim in an octagon without shaking.
-//		if(this.turning)
-//		{
-//            double rp = this.squid.getRotPitch();
-//            double trp = this.squid.getTargRotPitch();
-//            double ry = this.squid.getRotYaw();
-//            double Try = this.squid.getTargRotYaw();
-//            if (Math.abs(Try - ry) < 0.005 && Math.abs(trp - rp) < 0.005)
-//            {
-//                this.squid.addForce(0.25);
-//                this.turning = false;
-//            }
-//        }
-//        else
-//        {
-//            if(Math.abs(this.squid.motionX) < 0.005 && Math.abs(this.squid.motionY) < 0.005
-//                    && Math.abs(this.squid.motionZ) < 0.005)
-//            {
-//                if (this.goHorizontal)
-//                {
-//                    this.squid.setTargetRotPitch(Math.PI / 2);
-//                    if (this.currentAngle == 7)
-//                    {
-//                        this.currentAngle = 0;
-//                    }
-//                    else
-//                    {
-//                        ++this.currentAngle;
-//                    }
-//                    this.squid.setTargetRotYaw(this.angles[this.currentAngle]);
-//                }
-//                else
-//                {
-//                    this.squid.setTargetRotYaw(0);
-//                    if (this.currentAngle == 7)
-//                    {
-//                        this.currentAngle = 0;
-//                    }
-//                    else
-//                    {
-//                        ++this.currentAngle;
-//                    }
-//                    this.squid.setTargetRotPitch(this.angles[this.currentAngle]);
-//                }
-//                this.turning = true;
-//            }
-//        }
-
-
+        ++this.tickCounter;
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
         if(this.squid.getBlastToStatue()) {
+            //Override all behaviour if it heard its target notes and needs to find and blast to a statue
             switch (this.statueBlastStage) {
                 case NONE:
                     this.statueBlastStage = StatueBlastStage.LOCATE;
@@ -206,59 +185,25 @@ public class AdultSwimAroundGoal extends Goal {
             }
         }
         else {
-            boolean hasVIPRider = this.squid.hasVIPRider();
-            if (this.turning) {
-                double trp = this.squid.getTargRotPitch();
-                double Try = this.squid.getTargRotYaw();
-                if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
-                    this.playNextNote();
-                    //The last turn is as good as finished
-                    int randomInt = this.r.nextInt(12);
-                    if (randomInt == 0) {
-                        this.squid.setShaking(true);
-                    } else {
-                        if (hasVIPRider) {
-                            if (!this.doTurn(true)) {
-                                //Squid is pointing roughly where the rider is facing
-                                this.squid.addForce(this.swimForce);
-                                this.turning = false;
-                            }
-                        } else {
-                            if (randomInt < 5) {
-                                this.doTurn(false);
-                            } else {
-                                this.squid.addForce(this.swimForce);
-                                this.turning = false;
-                            }
-                        }
-                    }
-                }
-            } else {
-                Vec3d motion = this.squid.getMotion();
-                if (Math.abs(motion.x) < 0.005 && Math.abs(motion.y) < 0.005
-                        && Math.abs(motion.z) < 0.005) {
-                    this.playNextNote();
-                    //Last forward swim is as good as finished
-                    int randomInt = this.r.nextInt(12);
-                    if (randomInt == 0) {
-                        this.squid.setShaking(true);
-                    } else {
-                        if (hasVIPRider) {
-                            if (this.doTurn(true)) {
-                                this.turning = true;
-                            } else {
-                                //Squid is pointing roughly where the rider is facing
-                                this.squid.addForce(this.swimForce);
-                            }
-                        } else {
-                            if (randomInt < 5) {
-                                this.squid.addForce(this.swimForce);
-                            } else {
-                                this.doTurn(hasVIPRider);
-                                this.turning = true;
-                            }
-                        }
-                    }
+            //Move and play notes if scheduled
+            if(this.tickCounter == this.nextScheduledMove) {
+                if(!this.squid.areBlocksInWay()) this.squid.addForce(this.swimForce);
+                this.scheduleNextMove();
+            }
+            if(this.tickCounter == this.nextScheduledNote) {
+                this.playNextNote();
+                this.scheduleNextNote();
+            }
+
+            double trp = this.squid.getTargRotPitch();
+            double Try = this.squid.getTargRotYaw();
+            if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
+                //The last turn is as good as finished
+                int randomInt = this.r.nextInt(12);
+                if (randomInt == 0) {
+                    if(!this.squid.areBlocksInWay()) this.squid.setShaking(true);
+                } else {
+                    this.doTurn(this.squid.hasVIPRider(), this.squid.areBlocksInWay());
                 }
             }
         }

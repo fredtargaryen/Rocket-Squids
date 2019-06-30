@@ -19,7 +19,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import java.util.List;
 
 public class ThrownSacEntity extends ProjectileItemEntity {
-    private static final Effect blindnessPotion = Effects.field_76440_q; //BLINDNESS
+    private static final Effect blindnessPotion = Effects.BLINDNESS;
 
     public ThrownSacEntity(World w) { super(RocketSquidsBase.SAC_TYPE, w); }
     public ThrownSacEntity(LivingEntity elb, World w)

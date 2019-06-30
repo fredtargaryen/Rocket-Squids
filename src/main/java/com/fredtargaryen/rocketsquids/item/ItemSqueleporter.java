@@ -35,7 +35,7 @@ public class ItemSqueleporter extends Item {
                     ers.removed = false;
                     CompoundNBT squidTags = new CompoundNBT();
                     ers.writeUnlessRemoved(squidTags);
-                    EntityType.func_220330_a(squidTags, worldIn).ifPresent(entity -> {
+                    EntityType.loadEntityUnchecked(squidTags, worldIn).ifPresent(entity -> {
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                         newSquid.forceRotPitch((playerIn.rotationPitch + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getRotationYawHead() * Math.PI / 180.0F));
@@ -43,7 +43,7 @@ public class ItemSqueleporter extends Item {
                         newSquid.addVelocity(playerMotion.x, playerMotion.y, playerMotion.z);
                         newSquid.addForce(squidTags.getDouble("force"));
                         newSquid.setPosition(playerIn.posX, playerIn.posY, playerIn.posZ);
-                        worldIn.func_217376_c(newSquid);
+                        worldIn.addEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
                         }

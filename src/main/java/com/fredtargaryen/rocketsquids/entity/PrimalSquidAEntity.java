@@ -29,7 +29,7 @@ public class PrimalSquidAEntity extends AbstractSquidEntity {
     protected short breedCooldown;
 
     //May have to remove and use capability instead
-    private static final DataParameter<Boolean> SADDLED = EntityDataManager.createKey(PrimalSquidAEntity.class, DataSerializers.field_187198_h); //BOOLEAN
+    private static final DataParameter<Boolean> SADDLED = EntityDataManager.createKey(PrimalSquidAEntity.class, DataSerializers.BOOLEAN);
 
     public PrimalSquidAEntity(World par1World) {
         super(RocketSquidsBase.PRIMAL_A_TYPE, par1World);
@@ -47,9 +47,9 @@ public class PrimalSquidAEntity extends AbstractSquidEntity {
     }
 
     @Override
-    public void initEntityAI()
+    public void registerGoals()
     {
-        super.initEntityAI();
+        super.registerGoals();
     }
 
     @Override
@@ -58,8 +58,25 @@ public class PrimalSquidAEntity extends AbstractSquidEntity {
 //        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
     }
 
-//    @Override
-//    protected Item getDropItem(){return RocketSquidsBase.nitroinksac;}
+    @Override
+    public double getRotPitch() {
+        return 0;
+    }
+
+    @Override
+    public double getRotYaw() {
+        return 0;
+    }
+
+    @Override
+    public void setTargetRotPitch(double target) {
+
+    }
+
+    @Override
+    public void setTargetRotYaw(double target) {
+
+    }
 
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
@@ -646,7 +663,7 @@ public class PrimalSquidAEntity extends AbstractSquidEntity {
 //        this.breedCooldown = compound.getShort("Breed Cooldown");
 //    }
 //
-//    public void pointToWhereFlying()
+//    public void pointToWhereMoving()
 //    {
 //        if(!(Math.abs(this.motionY) < 0.0785 && this.motionX == 0.0 && this.motionZ == 0.0)) {
 //            //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.

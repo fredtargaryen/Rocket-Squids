@@ -6,7 +6,7 @@ import net.minecraft.world.gen.feature.IFeatureConfig;
 
 public class ConchGenConfig implements IFeatureConfig {
     @Override
-    public <T> Dynamic<T> func_214634_a(DynamicOps<T> p_214634_1_) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> p_214634_1_) {
         return null;
     }
 

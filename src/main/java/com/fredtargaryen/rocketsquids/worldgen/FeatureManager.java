@@ -17,7 +17,7 @@ public class FeatureManager {
         Iterator<Biome> i = Biome.BIOMES.iterator();
         while(i.hasNext()) {
             Biome b = i.next();
-            b.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, Biome.func_222280_a(cg, cgc, cp, cpc));
+            b.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, Biome.createDecoratedFeature(cg, cgc, cp, cpc));
         }
         
         //Create the feature, its config, the placement controller and its config
@@ -29,7 +29,7 @@ public class FeatureManager {
         Iterator<Biome> i2 = Biome.BIOMES.iterator();
         while(i2.hasNext()) {
             Biome b = i2.next();
-            b.addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, Biome.func_222280_a(sg, sgc, sp, spc));
+            b.addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION, Biome.createDecoratedFeature(sg, sgc, sp, spc));
         }
     }
 }

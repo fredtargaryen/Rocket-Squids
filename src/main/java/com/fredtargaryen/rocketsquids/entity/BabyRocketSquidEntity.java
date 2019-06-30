@@ -24,10 +24,10 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
     }
 
     @Override
-    public void initEntityAI() {
-        super.initEntityAI();
-        this.field_70714_bg.addTask(0, new BabySwimAroundGoal(this, 0.15));
-        this.field_70714_bg.addTask(1, new BabyFlopAroundGoal(this));
+    public void registerGoals() {
+        super.registerGoals();
+        this.goalSelector.addGoal(0, new BabySwimAroundGoal(this, 0.15));
+        this.goalSelector.addGoal(1, new BabyFlopAroundGoal(this));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
                 this.remove();
                 RocketSquidEntity adult = new RocketSquidEntity(this.world);
                 adult.setLocationAndAngles(this.posX, this.posY, this.posZ, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
-                this.world.func_217376_c(adult);
+                this.world.addEntity(adult);
             }
         }
         else {
@@ -64,7 +64,7 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
             if(this.inWater) {
                 Vec3d motion = this.getMotion();
                 this.setMotion(motion.x * 0.9, motion.y * 0.9, motion.z * 0.9);
-                rotateSpeed = 0.1;
+                rotateSpeed = 0.06;
             }
             else {
                 Vec3d oldMotion = this.getMotion();
@@ -75,8 +75,8 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
                     motionX = 0.0D;
                     motionZ = 0.0D;
                 }
-                if (this.isPotionActive(Effects.field_188424_y)) { //levitation
-                    motionY += 0.05D * (double)(this.getActivePotionEffect(Effects.field_188424_y).getAmplifier() + 1) - motionY; //levitation
+                if (this.isPotionActive(Effects.LEVITATION)) {
+                    motionY += 0.05D * (double)(this.getActivePotionEffect(Effects.LEVITATION).getAmplifier() + 1) - motionY;
                 }
                 else if (!this.hasNoGravity()) {
                     motionY -= 0.08D;
@@ -116,6 +116,10 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
                 this.tentacleAngle = this.inWater ? (float) ((Math.PI / 6) + (MathHelper.sin((float) Math.toRadians(4 * (this.ticksExisted % 360))) * Math.PI / 6)) : 0;
             }
             else {
+                //Server side
+                if(this.isInWater()) {
+                    this.moveToWherePointing();
+                }
                 if(this.newPacketRequired) {
                     MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.posX, this.posY, this.posZ, 64, this.dimension)), new MessageBabyCapData(this.getUniqueID(), this.squidCap));
                     this.newPacketRequired = false;
@@ -139,39 +143,6 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
     //////////////////////
     //CAPABILITY METHODS//
     //////////////////////
-    //////////////////
-    //FLYING METHODS//
-    //////////////////
-    public void addForce(double n) {
-        if(!this.world.isRemote) {
-            Vec3d motion = this.getMotion();
-            double rp = this.squidCap.getRotPitch();
-            double ry = this.squidCap.getRotYaw();
-            double motionYAdd = n * Math.cos(rp);
-            double horizontalForce = n * Math.sin(rp);
-            double motionZAdd = horizontalForce * Math.cos(ry);
-            double motionXAdd = horizontalForce * -Math.sin(ry);
-            this.setMotion(motion.x + motionXAdd, motion.y + motionYAdd, motion.z + motionZAdd);
-            this.isAirBorne = true;
-        }
-    }
-
-    public void pointToWhereFlying() {
-        Vec3d motion = this.getMotion();
-        if(!(Math.abs(motion.y) < 0.0785 && motion.x == 0.0 && motion.z == 0.0)) {
-            //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.
-            //The global z movement is given by this.motionZ.
-            //In addForce, this.motionZ is given by horizontalForce * cos(yaw).
-            //By rearranging, horizontalForce = this.motionZ / cos(yaw).
-            //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
-            double speed = motion.z / Math.cos(this.squidCap.getRotYaw());
-            this.setTargetRotPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
-        }
-    }
-
-    //////////////////////
-    //CAPABILITY METHODS//
-    //////////////////////
     public double getPrevRotPitch() {
         return this.squidCap.getPrevRotPitch();
     }
@@ -186,16 +157,6 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
 
     public double getRotYaw() {
         return this.squidCap.getRotYaw();
-    }
-
-    public void forceRotPitch(double rotPitch) {
-        this.squidCap.setRotPitch(rotPitch);
-        this.squidCap.setTargetRotPitch(rotPitch);
-    }
-
-    public void forceRotYaw(double rotYaw) {
-        this.squidCap.setRotYaw(rotYaw);
-        this.squidCap.setTargetRotYaw(rotYaw);
     }
 
     public void setTargetRotPitch(double targPitch) {

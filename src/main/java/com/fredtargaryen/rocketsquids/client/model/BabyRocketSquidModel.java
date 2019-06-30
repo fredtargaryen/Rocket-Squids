@@ -72,7 +72,7 @@ public class BabyRocketSquidModel extends EntityModel<BabyRocketSquidEntity> {
     @Override
     public void render(BabyRocketSquidEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
-        func_212844_a_(entity, f, f1, f2, f3, f4, f5);
+        setRotationAngles(entity, f, f1, f2, f3, f4, f5);
         this.Head.render(f5);
         this.Tent1.render(f5);
         this.Tent2.render(f5);
@@ -94,8 +94,8 @@ public class BabyRocketSquidModel extends EntityModel<BabyRocketSquidEntity> {
     }
 
     @Override
-    public void func_212844_a_(BabyRocketSquidEntity entity, float time, float maxSpeed, float whatever, float rotationYaw, float rotationPitch, float scale) {
-        super.func_212844_a_(entity, time, maxSpeed, whatever, rotationYaw, rotationPitch, scale);
+    public void setRotationAngles(BabyRocketSquidEntity entity, float time, float maxSpeed, float whatever, float rotationYaw, float rotationPitch, float scale) {
+        super.setRotationAngles(entity, time, maxSpeed, whatever, rotationYaw, rotationPitch, scale);
         this.Tent1.rotateAngleX = whatever;
         this.Tent2.rotateAngleX = whatever;
         this.Tent3.rotateAngleX = whatever;

@@ -18,6 +18,7 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
 
     private class DefaultAdultImpl implements IAdultCapability {
         private boolean shaking;
+        private int shakeTicks;
         private boolean blasting;
         private boolean blastToStatue;
         private boolean forcedBlast;
@@ -34,6 +35,7 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
 
         public DefaultAdultImpl() {
             this.shaking = false;
+            this.shakeTicks = -1;
             this.blasting = false;
             this.prevRotPitch = 0.0;
             this.prevRotYaw = 0.0;
@@ -60,6 +62,16 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
         @Override
         public void setShaking(boolean b) {
             this.shaking = b;
+        }
+
+        @Override
+        public int getShakeTicks() {
+            return this.shakeTicks;
+        }
+
+        @Override
+        public void setShakeTicks(int ticks) {
+            this.shakeTicks = ticks;
         }
 
         @Override
@@ -108,25 +120,6 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
 
         @Override
         public void setTargetRotPitch(double d) {
-            //Set current rotation to be within [-PI, PI].
-            //Any operations on current rotation are also applied to target rotation.
-            //Target rotation can be outside the interval; it will be
-            //current rotation and brought back in next time this method is called.
-            while(this.rotPitch < -Math.PI) {
-                this.rotPitch += doublePi;
-
-            }
-            while(d < -Math.PI) {
-                d += doublePi;
-            }
-            while(this.rotPitch > Math.PI) {
-                this.rotPitch -= doublePi;
-                d -= doublePi;
-            }
-            while(d > Math.PI) {
-                d -= doublePi;
-            }
-            this.prevRotPitch = this.rotPitch;
             this.targRotPitch = d;
         }
 
@@ -137,23 +130,6 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
 
         @Override
         public void setTargetRotYaw(double d) {
-            //Set current rotation to be within [-PI, PI].
-            //Any operations on current rotation are also applied to target rotation.
-            //Target rotation can be outside the interval; it will be
-            //current rotation and brought back in next time this method is called.
-            while(this.rotYaw < -Math.PI) {
-                this.rotYaw += doublePi;
-            }
-            while(d < -Math.PI) {
-                d += doublePi;
-            }
-            while(this.rotYaw > Math.PI) {
-                this.rotYaw -= doublePi;
-            }
-            while(d > Math.PI) {
-                d -= doublePi;
-            }
-            this.prevRotYaw = this.rotYaw;
             this.targRotYaw = d;
         }
 

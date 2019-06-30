@@ -10,8 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
  * This storage class was designed for exclusive use with this mod;
  * correct operation is not guaranteed in any other context!
  */
-public class AdultCapStorage implements Capability.IStorage<IAdultCapability>
-{
+public class AdultCapStorage implements Capability.IStorage<IAdultCapability> {
     @Override
     public INBT writeNBT(Capability<IAdultCapability> capability, IAdultCapability instance, Direction side) {
         CompoundNBT comp = new CompoundNBT();
@@ -20,6 +19,7 @@ public class AdultCapStorage implements Capability.IStorage<IAdultCapability>
         comp.putDouble("targetPitch", instance.getTargetRotPitch());
         comp.putDouble("targetYaw", instance.getTargetRotYaw());
         comp.putBoolean("shaking", instance.getShaking());
+        comp.putInt("shaketicks", instance.getShakeTicks());
         comp.putBoolean("blasting", instance.getBlasting());
         comp.putBoolean("forcedblast", instance.getForcedBlast());
         comp.putByteArray("latestnotes", instance.getLatestNotes());
@@ -36,6 +36,7 @@ public class AdultCapStorage implements Capability.IStorage<IAdultCapability>
         instance.setTargetRotPitch(comp.getDouble("targetPitch"));
         instance.setTargetRotYaw(comp.getDouble("targetYaw"));
         instance.setShaking(comp.getBoolean("shaking"));
+        instance.setShakeTicks(comp.getInt("shaketicks"));
         instance.setBlasting(comp.getBoolean("blasting"));
         instance.setForcedBlast(comp.getBoolean("forcedblast"));
         instance.setLatestNotes(comp.getByteArray("latestnotes"));

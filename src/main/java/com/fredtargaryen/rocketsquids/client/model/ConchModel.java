@@ -20,7 +20,7 @@ public class ConchModel extends BipedModel<LivingEntity> {
         this.textureWidth = 16;
         this.textureHeight = 16;
         this.field_78116_c = new RendererModel(this, 0, 0);
-        this.field_178720_f = new RendererModel(this, 32, 0);
+        this.bipedHeadwear = new RendererModel(this, 32, 0);
         this.shape2 = new RendererModel(this, 0, 0);
         this.shape2.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.shape2.addBox(-5.0F, -4.0F, 0.0F, 2, 1, 1, 0.0F);
@@ -42,6 +42,6 @@ public class ConchModel extends BipedModel<LivingEntity> {
     @Override
     public void render(LivingEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
-        func_212844_a_(entity, f, f1, f2, f3, f4, f5);
+        setRotationAngles(entity, f, f1, f2, f3, f4, f5);
     }
 }

@@ -23,9 +23,9 @@ public class StatueManager extends WorldSavedData {
     }
 
     public static StatueManager forWorld(World world) {
-        ServerWorld serverWorld = world.getServer().getWorld(DimensionType.OVERWORLD);
-        DimensionSavedDataManager storage = serverWorld.func_217481_x();
-        return storage.func_215752_a(StatueManager::new, DataReference.MODID);
+        ServerWorld serverWorld = world.getServer().getWorld(DimensionType.field_223227_a_); //OVERWORLD
+        DimensionSavedDataManager storage = serverWorld.getSavedData();
+        return storage.get(StatueManager::new, DataReference.MODID);
     }
 
     @Override

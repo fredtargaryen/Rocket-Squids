@@ -6,7 +6,7 @@ import net.minecraft.world.gen.placement.IPlacementConfig;
 
 public class ConchPlacementConfig implements IPlacementConfig {
     @Override
-    public <T> Dynamic<T> func_214719_a(DynamicOps<T> p_214719_1_) {
+    public <T> Dynamic<T> serialize(DynamicOps<T> p_214719_1_) {
         return null;
     }
 

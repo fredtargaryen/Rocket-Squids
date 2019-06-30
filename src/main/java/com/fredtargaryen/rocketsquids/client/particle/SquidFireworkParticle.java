@@ -33,8 +33,9 @@ public class SquidFireworkParticle {
             this.maxAge = 4;
         }
 
-        public IParticleRenderType func_217558_b() {
-            return IParticleRenderType.field_217603_c;
+        @Override
+        public IParticleRenderType getRenderType() {
+            return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
         }
 
         /**
@@ -252,7 +253,7 @@ public class SquidFireworkParticle {
 
         private boolean isFarFromCamera() {
             Minecraft minecraft = Minecraft.getInstance();
-            return minecraft.gameRenderer.func_215316_n().func_216785_c().squareDistanceTo(this.posX, this.posY, this.posZ) >= 256.0D;
+            return minecraft.gameRenderer.getActiveRenderInfo().getProjectedView().squareDistanceTo(this.posX, this.posY, this.posZ) >= 256.0D;
         }
 
         private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {

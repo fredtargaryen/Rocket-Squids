@@ -49,8 +49,7 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel> {
     }
 
     public void doRender(RocketSquidEntity par1EntitySquid, double x, double y, double z, float par8, float partialTicks) {
-        if (par1EntitySquid.getShaking())
-        {
+        if (par1EntitySquid.getShaking()) {
             Random r = par1EntitySquid.getRNG();
             x += r.nextGaussian() * 0.02D;
             y += r.nextGaussian() * 0.02D;

@@ -92,11 +92,11 @@ public class StatueBlock extends FallingBlock {
                 squav.setItem(RocketSquidsBase.SQUAVIGATOR.getDefaultInstance());
                 //North is negative Z I think
                 squav.setVelocity(0.0, 0.05, -0.1);
-                world.func_217376_c(squav);
+                world.addEntity(squav);
                 ItemEntity squel = new ItemEntity(world,x + 0.5D, y + 0.5D, z - 0.5D);
                 squel.setItem(RocketSquidsBase.SQUELEPORTER_INACTIVE.getDefaultInstance());
                 squel.setVelocity(0.0, 0.05, -0.1);
-                world.func_217376_c(squel);
+                world.addEntity(squel);
                 break;
             default:
                 break;

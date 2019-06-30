@@ -21,7 +21,7 @@ public class ItemTurboTube extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (!player.playerAbilities.isCreativeMode) {
+        if (!player.abilities.isCreativeMode) {
             stack.grow(-1);
         }
 
@@ -31,7 +31,7 @@ public class ItemTurboTube extends Item {
             ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
             tube.func_213884_b(stack);
             tube.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
-            world.func_217376_c(tube);
+            world.addEntity(tube);
         }
 
         player.addStat(Stats.ITEM_USED.get(this));
