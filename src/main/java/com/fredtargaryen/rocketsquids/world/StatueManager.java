@@ -1,7 +1,6 @@
 package com.fredtargaryen.rocketsquids.world;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorld;
@@ -25,7 +24,7 @@ public class StatueManager extends WorldSavedData {
     public static StatueManager forWorld(World world) {
         ServerWorld serverWorld = world.getServer().getWorld(DimensionType.field_223227_a_); //OVERWORLD
         DimensionSavedDataManager storage = serverWorld.getSavedData();
-        return storage.get(StatueManager::new, DataReference.MODID);
+        return storage.getOrCreate(StatueManager::new, DataReference.MODID);
     }
 
     @Override

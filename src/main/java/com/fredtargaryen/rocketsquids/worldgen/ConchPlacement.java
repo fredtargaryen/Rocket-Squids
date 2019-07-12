@@ -28,16 +28,10 @@ public class ConchPlacement extends Placement<ConchPlacementConfig> {
         for (int conches = 0; conches < maxConches; ++conches) {
             int conchX = blockX + random.nextInt(16);
             int conchZ = blockZ + random.nextInt(16);
-            BlockPos conchPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, new BlockPos(conchX, 0, conchZ)).down();
-            BlockState blockState = world.getBlockState(conchPos);
-            if (blockState.getBlock() instanceof SandBlock) {
-                return Stream.of(conchPos);
-            }
-            else if(blockState.getMaterial() == Material.WATER) {
-                BlockPos down = conchPos.down();
-                if (world.getBlockState(down.down()).getMaterial() == Material.SAND) {
-                    return Stream.of(conchPos);
-                }
+            BlockPos groundPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, new BlockPos(conchX, 0, conchZ)).down();
+            BlockState blockState = world.getBlockState(groundPos);
+            if (blockState.getMaterial() == Material.SAND) {
+                return Stream.of(groundPos.up());
             }
         }
         return Stream.empty();

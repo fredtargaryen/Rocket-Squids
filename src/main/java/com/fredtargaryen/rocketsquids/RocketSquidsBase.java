@@ -22,11 +22,10 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
 import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
-import com.fredtargaryen.rocketsquids.worldgen.FeatureManager;
+import com.fredtargaryen.rocketsquids.worldgen.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -37,7 +36,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -56,7 +56,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,9 +110,21 @@ public class RocketSquidsBase {
     public static EntityType PRIMAL_A_TYPE;
     private static EntityType SQUID_EARLYREG;
 
+    //Declare all Features here
+    @ObjectHolder("conchgen")
+    public static ConchGen CONCH_GEN;
+    @ObjectHolder("statuegen")
+    public static StatueGen STATUE_GEN;
+
     //Declare all ParticleTypes here
     @ObjectHolder("firework")
     public static BasicParticleType FIREWORK_TYPE;
+
+    //Declare all Placements here
+    @ObjectHolder("conchplace")
+    public static ConchPlacement CONCH_PLACE;
+    @ObjectHolder("statueplace")
+    public static StatuePlacement STATUE_PLACE;
 
     /**
      * The creative tab for all items from Rocket Squids.
@@ -232,11 +243,31 @@ public class RocketSquidsBase {
     }
 
     @SubscribeEvent
+    public static void registerFeatures(RegistryEvent.Register<Feature<?>> event) {
+        event.getRegistry().registerAll(
+                new ConchGen(ConchGenConfig::factory)
+                .setRegistryName("conchgen"),
+                new StatueGen(StatueGenConfig::factory)
+                .setRegistryName("statuegen")
+        );
+    }
+
+    @SubscribeEvent
     public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
 //        event.getRegistry().register(
 //                new BasicParticleType(false)
 //                        .setRegistryName("firework")
 //        );
+    }
+
+    @SubscribeEvent
+    public static void registerDecorators(RegistryEvent.Register<Placement<?>> event) {
+        event.getRegistry().registerAll(
+                new ConchPlacement(ConchPlacementConfig::factory)
+                .setRegistryName("conchplace"),
+                new StatuePlacement(StatuePlacementConfig::factory)
+                .setRegistryName("statueplace")
+        );
     }
 
     @SubscribeEvent
