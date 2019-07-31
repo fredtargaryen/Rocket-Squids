@@ -3,17 +3,16 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 public class BlastoffGoal extends Goal {
     private final RocketSquidEntity squid;
     private boolean blastStarted;
     private boolean horizontal;
-    private double prevMotionX;
-    private double prevMotionY;
-    private double prevMotionZ;
 
     public BlastoffGoal(RocketSquidEntity ers)
     {
@@ -36,9 +35,9 @@ public class BlastoffGoal extends Goal {
         if (this.blastStarted) {
             //The squid is part of the way through a blast
             if((this.horizontal
-                    && this.motionHasPeaked(this.prevMotionX, motion.x)
-                    && this.motionHasPeaked(this.prevMotionZ, motion.z))
-                    || (!this.horizontal && this.motionHasPeaked(this.prevMotionY, motion.y))) {
+                    && this.motionHasPeaked(motion.x)
+                    && this.motionHasPeaked(motion.z))
+                    || (!this.horizontal && this.motionHasPeaked(motion.y))) {
                 //Squid has blasted but slowed down, i.e. end of blast
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
@@ -58,15 +57,13 @@ public class BlastoffGoal extends Goal {
             this.squid.setShaking(false);
             this.squid.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
             this.squid.addForce(2.952);
-            this.horizontal = Math.abs(motion.y) < 0.08;
+            ArrayList<Direction> directionsPointing = this.squid.getDirectionsPointing();
+            this.horizontal = !directionsPointing.contains(Direction.UP) && !directionsPointing.contains(Direction.DOWN);
             this.blastStarted = true;
         }
-        this.prevMotionX = motion.x;
-        this.prevMotionY = motion.y;
-        this.prevMotionZ = motion.z;
     }
 
-    private boolean motionHasPeaked(double prev, double current) {
-        return (prev >= 0 && current <= 0) || (prev <= 0 && current >= 0);
+    private boolean motionHasPeaked(double motion) {
+        return Math.abs(motion) < 0.05;
     }
 }

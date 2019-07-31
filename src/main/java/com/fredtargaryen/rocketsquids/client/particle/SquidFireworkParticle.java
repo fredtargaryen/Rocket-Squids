@@ -46,23 +46,23 @@ public class SquidFireworkParticle {
             super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
         }
 
-        public float func_217561_b(float p_217561_1_) {
+        public float getScale(float p_217561_1_) {
             return 7.1F * MathHelper.sin(((float)this.age + p_217561_1_ - 1.0F) * 0.25F * (float)Math.PI);
         }
     }
 
     @OnlyIn(Dist.CLIENT)
     public static class OverlayCopyFactory implements IParticleFactory<BasicParticleType> {
-        private final IAnimatedSprite field_217529_a;
+        private final IAnimatedSprite spriteSet;
 
         public OverlayCopyFactory(IAnimatedSprite p_i50889_1_) {
-            this.field_217529_a = p_i50889_1_;
+            this.spriteSet = p_i50889_1_;
         }
 
         public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            SquidFireworkParticle.OverlayCopy fireworkparticle$overlay = new SquidFireworkParticle.OverlayCopy(worldIn, x, y, z);
-            fireworkparticle$overlay.func_217568_a(this.field_217529_a);
-            return fireworkparticle$overlay;
+            SquidFireworkParticle.OverlayCopy overlay = new SquidFireworkParticle.OverlayCopy(worldIn, x, y, z);
+            overlay.selectSpriteRandomly(this.spriteSet);
+            return overlay;
         }
     }
 
@@ -84,7 +84,7 @@ public class SquidFireworkParticle {
             this.effectRenderer = p_i50884_14_;
             this.particleScale *= 0.75F;
             this.maxAge = 48 + this.rand.nextInt(12);
-            this.func_217566_b(p_i50884_15_);
+            this.selectSpriteWithAge(p_i50884_15_);
         }
 
         public void setTrail(boolean trailIn) {
@@ -132,14 +132,14 @@ public class SquidFireworkParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class SparkFactory implements IParticleFactory<BasicParticleType> {
-        private final IAnimatedSprite field_217530_a;
+        private final IAnimatedSprite spriteSet;
 
         public SparkFactory(IAnimatedSprite p_i50883_1_) {
-            this.field_217530_a = p_i50883_1_;
+            this.spriteSet = p_i50883_1_;
         }
 
         public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particles, this.field_217530_a);
+            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particles, this.spriteSet);
             fireworkparticle$spark.setSlightAlpha();
             return fireworkparticle$spark;
         }
@@ -148,7 +148,7 @@ public class SquidFireworkParticle {
     @OnlyIn(Dist.CLIENT)
     public static class SquidStarter extends MetaParticle {
         private int age;
-        private final ParticleManager effects;
+        private final ParticleManager manager;
         private ListNBT explosions;
         private boolean twinkle;
         private static final double squareLength = 1.0 / 7.0;
@@ -158,7 +158,7 @@ public class SquidFireworkParticle {
             this.motionX = 0.0;
             this.motionY = 0.0;
             this.motionZ = 0.0;
-            this.effects = manager;
+            this.manager = manager;
             this.maxAge = 8;
             this.explosions = RocketSquidsBase.firework.getList("Explosions", 10);
             if (this.explosions.isEmpty()) {
@@ -238,7 +238,7 @@ public class SquidFireworkParticle {
                 float f2 = (float) (j & 255) / 255.0F;
                 OverlayCopy o = new OverlayCopy(this.world, this.posX, this.posY, this.posZ);
                 o.setColor(f, f1, f2);
-                this.effects.addEffect(o);
+                this.manager.addEffect(o);
             }
 
             ++this.age;
@@ -293,18 +293,15 @@ public class SquidFireworkParticle {
          * Creates a single particle.
          */
         private void createParticle(double p_92034_1_, double p_92034_3_, double p_92034_5_, double p_92034_7_, double p_92034_9_, double p_92034_11_, int[] p_92034_13_, int[] p_92034_14_, boolean p_92034_15_, boolean p_92034_16_) {
-            SquidFireworkParticle.Spark particlefirework$spark = (SquidFireworkParticle.Spark)this.effects.addParticle(RocketSquidsBase.FIREWORK_TYPE, p_92034_1_, p_92034_3_, p_92034_5_, p_92034_7_, p_92034_9_, p_92034_11_);
-            particlefirework$spark.setSlightAlpha();
-            particlefirework$spark.setTrail(p_92034_15_);
-            particlefirework$spark.setTwinkle(p_92034_16_);
+            SquidFireworkParticle.Spark fireworkparticle$spark = (SquidFireworkParticle.Spark) this.manager.addParticle(RocketSquidsBase.FIREWORK_TYPE, p_92034_1_, p_92034_3_, p_92034_5_, p_92034_7_, p_92034_9_, p_92034_11_);
+            fireworkparticle$spark.setTrail(p_92034_15_);
+            fireworkparticle$spark.setTwinkle(p_92034_16_);
+            fireworkparticle$spark.setSlightAlpha();
             int i = this.rand.nextInt(p_92034_13_.length);
-            particlefirework$spark.setColor(p_92034_13_[i]);
-
-            if (p_92034_14_ != null && p_92034_14_.length > 0) {
-                particlefirework$spark.setColorFade(p_92034_14_[this.rand.nextInt(p_92034_14_.length)]);
+            fireworkparticle$spark.setColor(p_92034_13_[i]);
+            if (p_92034_14_.length > 0) {
+                fireworkparticle$spark.setColorFade(p_92034_14_[this.rand.nextInt(p_92034_14_.length)]);
             }
-
-            this.effects.addEffect(particlefirework$spark);
         }
     }
 }

@@ -26,7 +26,7 @@ public class MessageBabyCapData {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Iterable<Entity> l = Minecraft.getInstance().world.func_217416_b();
+            Iterable<Entity> l = Minecraft.getInstance().world.getAllEntities();
             Iterator<Entity> squidFinder = l.iterator();
             Entity e;
             while(squidFinder.hasNext()) {

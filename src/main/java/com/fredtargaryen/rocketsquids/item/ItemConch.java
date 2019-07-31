@@ -168,11 +168,10 @@ public class ItemConch extends ArmorItem {
                 BipedModel armorModel;
                 if (type == EquipmentSlotType.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
-                    armorModel.field_78116_c.showModel = defaultModel.field_78116_c.showModel; //Head, I hope
+                    armorModel.bipedHead.showModel = defaultModel.bipedHead.showModel; //Head, I hope
                     armorModel.bipedHeadwear.showModel = armorSlot == EquipmentSlotType.HEAD;
 
                     armorModel.isSneak = defaultModel.isSneak;
-                    armorModel.field_205061_a = defaultModel.field_205061_a; //Don't know what this is
                     armorModel.rightArmPose = defaultModel.rightArmPose;
                     armorModel.leftArmPose = defaultModel.leftArmPose;
 
