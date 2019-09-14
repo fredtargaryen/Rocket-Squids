@@ -27,46 +27,6 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public class SquidFireworkParticle {
     @OnlyIn(Dist.CLIENT)
-    public static class OverlayCopy extends SpriteTexturedParticle {
-        private OverlayCopy(World p_i46466_1_, double p_i46466_2_, double p_i46466_4_, double p_i46466_6_) {
-            super(p_i46466_1_, p_i46466_2_, p_i46466_4_, p_i46466_6_);
-            this.maxAge = 4;
-        }
-
-        @Override
-        public IParticleRenderType getRenderType() {
-            return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-        }
-
-        /**
-         * Renders the particle
-         */
-        public void renderParticle(BufferBuilder buffer, ActiveRenderInfo entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-            this.setAlphaF(0.6F - ((float)this.age + partialTicks - 1.0F) * 0.25F * 0.5F);
-            super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
-        }
-
-        public float getScale(float p_217561_1_) {
-            return 7.1F * MathHelper.sin(((float)this.age + p_217561_1_ - 1.0F) * 0.25F * (float)Math.PI);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class OverlayCopyFactory implements IParticleFactory<BasicParticleType> {
-        private final IAnimatedSprite spriteSet;
-
-        public OverlayCopyFactory(IAnimatedSprite p_i50889_1_) {
-            this.spriteSet = p_i50889_1_;
-        }
-
-        public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            SquidFireworkParticle.OverlayCopy overlay = new SquidFireworkParticle.OverlayCopy(worldIn, x, y, z);
-            overlay.selectSpriteRandomly(this.spriteSet);
-            return overlay;
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
     static class Spark extends SimpleAnimatedParticle {
         private boolean trail;
         private boolean twinkle;
@@ -138,6 +98,7 @@ public class SquidFireworkParticle {
             this.spriteSet = p_i50883_1_;
         }
 
+        @Override
         public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particles, this.spriteSet);
             fireworkparticle$spark.setSlightAlpha();
@@ -233,12 +194,6 @@ public class SquidFireworkParticle {
                         aint, aint1, flag4, flag2, true);
 
                 int j = aint[0];
-                float f = (float) ((j & 16711680) >> 16) / 255.0F;
-                float f1 = (float) ((j & 65280) >> 8) / 255.0F;
-                float f2 = (float) (j & 255) / 255.0F;
-                OverlayCopy o = new OverlayCopy(this.world, this.posX, this.posY, this.posZ);
-                o.setColor(f, f1, f2);
-                this.manager.addEffect(o);
             }
 
             ++this.age;

@@ -136,7 +136,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
             this.newPacketRequired = true;
         }
         if(onFire || this.squidCap.getForcedBlast()) {
-            this.playSound(Sounds.BLASTOFF, 1.0F, 1.0F);
+            this.playSound(Sounds.BLASTOFF, 0.5F, 1.0F);
             this.squidCap.setBlasting(true);
         }
 
@@ -301,7 +301,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     @Override
     public void remove() {
         if(this.world.isRemote && this.squidCap.getForcedBlast()) {
-            //this.doFireworkParticles();
+            this.doFireworkParticles();
         }
         if(this.getBlasting()) {
             Entity passenger = this.getControllingPassenger();

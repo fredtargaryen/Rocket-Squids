@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.ConchBlock;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
+import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
@@ -24,6 +25,8 @@ import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.worldgen.*;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -38,6 +41,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.placement.Placement;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -243,6 +247,19 @@ public class RocketSquidsBase {
     }
 
     @SubscribeEvent
+    public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
+        event.getRegistry().register(
+                new BasicParticleType(false)
+                        .setRegistryName("firework")
+        );
+    }
+
+    @SubscribeEvent
+    public static void registerFactories(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particles.registerFactory(FIREWORK_TYPE, SquidFireworkParticle.SparkFactory::new);
+    }
+
+    @SubscribeEvent
     public static void registerFeatures(RegistryEvent.Register<Feature<?>> event) {
         event.getRegistry().registerAll(
                 new ConchGen(ConchGenConfig::factory)
@@ -250,14 +267,6 @@ public class RocketSquidsBase {
                 new StatueGen(StatueGenConfig::factory)
                 .setRegistryName("statuegen")
         );
-    }
-
-    @SubscribeEvent
-    public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
-//        event.getRegistry().register(
-//                new BasicParticleType(false)
-//                        .setRegistryName("firework")
-//        );
     }
 
     @SubscribeEvent
