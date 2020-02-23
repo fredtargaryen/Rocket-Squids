@@ -624,7 +624,10 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     public double getTargRotYaw() { return this.squidCap.getTargetRotYaw(); }
 
     public boolean getBlasting() {
-        return this.squidCap.getBlasting();
+        if(this.squidCap != null) {
+            return this.squidCap.getBlasting();
+        }
+        return false;
     }
 
     public void setBlasting(boolean b) {
