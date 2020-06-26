@@ -42,12 +42,13 @@ public class ItemSqueleporter extends Item {
                         Vec3d playerMotion = playerIn.getMotion();
                         newSquid.addVelocity(playerMotion.x, playerMotion.y, playerMotion.z);
                         newSquid.addForce(squidTags.getDouble("force"));
-                        newSquid.setPosition(playerIn.posX, playerIn.posY, playerIn.posZ);
+                        Vec3d playerPos = playerIn.getPositionVec();
+                        newSquid.setPosition(playerPos.x, playerPos.y, playerPos.z);
                         worldIn.addEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
                         }
-                        worldIn.playSound(null, playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.SQUIDTP_OUT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                        worldIn.playSound(null, playerPos.x, playerPos.y, playerPos.z, Sounds.SQUIDTP_OUT, SoundCategory.PLAYERS, 1.0F, 1.0F);
                         //Set the squeleporter to inactive
                         playerIn.setHeldItem(handIn, RocketSquidsBase.SQUELEPORTER_INACTIVE.getDefaultInstance());
                         playerIn.getCooldownTracker().setCooldown(this, 10);

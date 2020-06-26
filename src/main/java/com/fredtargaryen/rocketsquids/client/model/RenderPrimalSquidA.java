@@ -111,7 +111,7 @@ public class RenderPrimalSquidA extends MobRenderer<PrimalSquidAEntity, PrimalSq
 //    }
 
     @Override
-    protected ResourceLocation getEntityTexture(PrimalSquidAEntity entity) {
+    public ResourceLocation getEntityTexture(PrimalSquidAEntity entity) {
         return texture;
     }
 }

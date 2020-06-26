@@ -8,6 +8,7 @@ import net.minecraft.util.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ItemTurboTube extends Item {
@@ -24,17 +25,17 @@ public class ItemTurboTube extends Item {
         if (!player.abilities.isCreativeMode) {
             stack.grow(-1);
         }
-
-        world.playSound(null, player.posX, player.posY, player.posZ,
+        Vec3d pos = player.getPositionVec();
+        world.playSound(null, pos.x, pos.y, pos.z,
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
             ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
-            tube.func_213884_b(stack);
+            tube.setItem(stack);
             tube.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
             world.addEntity(tube);
         }
 
         player.addStat(Stats.ITEM_USED.get(this));
-        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
+        return new ActionResult<>(ActionResultType.SUCCESS, stack);
     }
 }

@@ -6,6 +6,8 @@ public interface IProxy
 {
     void registerRenderers();
 
+    void registerRenderTypes();
+
     void openConchClient(byte conchStage);
 
     BipedModel getConchModel();

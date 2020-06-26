@@ -4,10 +4,9 @@ import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -15,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -24,8 +22,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +29,7 @@ public class StatueBlock extends FallingBlock {
     private static final VoxelShape TALLBOX = Block.makeCuboidShape(0.0, 0.0, 0.0, 16.0, 32.0, 16.0);
 
     public StatueBlock() {
-        super(Block.Properties.create(Material.ROCK));
+        super(Block.Properties.create(Material.ROCK).notSolid());
         this.setDefaultState(this.getStateContainer().getBaseState().with(BlockStateProperties.FACING, Direction.UP));
     }
 
@@ -101,13 +97,6 @@ public class StatueBlock extends FallingBlock {
             default:
                 break;
         }
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public BlockRenderLayer getRenderLayer()
-    {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     /**

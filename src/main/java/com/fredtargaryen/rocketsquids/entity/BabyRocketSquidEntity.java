@@ -53,7 +53,8 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
             if(!this.world.isRemote) {
                 this.remove();
                 RocketSquidEntity adult = new RocketSquidEntity(this.world);
-                adult.setLocationAndAngles(this.posX, this.posY, this.posZ, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
+                Vec3d pos = this.getPositionVec();
+                adult.setLocationAndAngles(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
                 this.world.addEntity(adult);
             }
         }
@@ -121,7 +122,8 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
                     this.moveToWherePointing();
                 }
                 if(this.newPacketRequired) {
-                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.posX, this.posY, this.posZ, 64, this.dimension)), new MessageBabyCapData(this.getUniqueID(), this.squidCap));
+                    Vec3d pos = this.getPositionVec();
+                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.dimension)), new MessageBabyCapData(this.getUniqueID(), this.squidCap));
                     this.newPacketRequired = false;
                 }
             }

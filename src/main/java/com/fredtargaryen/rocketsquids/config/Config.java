@@ -33,5 +33,5 @@ public class Config {
     public static void onLoad(final ModConfig.Loading loadEvent) {}
 
     @SubscribeEvent
-    public static void onFileChange(final ModConfig.ConfigReloading configEvent) {}
+    public static void onFileChange(final ModConfig.Reloading configEvent) {}
 }

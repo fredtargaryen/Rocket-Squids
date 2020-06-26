@@ -4,19 +4,18 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.StringTextComponent;
-import org.lwjgl.opengl.GL11;
 
 public class ConchScreen extends Screen {
     private byte conchStage;
@@ -34,9 +33,10 @@ public class ConchScreen extends Screen {
         super(new StringTextComponent(""));
         this.conchStage = conchStage;
         PlayerEntity ep = Minecraft.getInstance().player;
-        this.x = ep.posX;
-        this.y = ep.posY;
-        this.z = ep.posZ;
+        Vec3d vec = ep.getPositionVec();
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
     }
 
     /**
@@ -116,16 +116,11 @@ public class ConchScreen extends Screen {
         }
 
         private void drawNote(int x, int y, float red, float green, float blue) {
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bb = tessellator.getBuffer();
             mc.getTextureManager().bindTexture(NOTE);
+            RenderSystem.color4f(red, green, blue, 1f);
             //Draw the quaver; see gui/note.png
-            bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bb.pos(x + 36, y + 20, 0.0).tex(1.0, 1.0).color(red, green, blue, 1.0F).endVertex();
-            bb.pos(x + 36, y - 48, 0.0).tex(1.0, 0.0).color(red, green, blue, 1.0F).endVertex();
-            bb.pos(x        , y - 48, 0.0).tex(0.0, 0.0).color(red, green, blue, 1.0F).endVertex();
-            bb.pos(x        , y + 20, 0.0).tex(0.0, 1.0).color(red, green, blue, 1.0F).endVertex();
-            tessellator.draw();
+            //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
+            AbstractGui.blit(x, y - 48, 0, 0, 36, 68, 36, 68);
         }
     }
 

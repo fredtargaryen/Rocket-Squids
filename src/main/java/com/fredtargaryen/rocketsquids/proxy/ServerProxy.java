@@ -7,6 +7,9 @@ public class ServerProxy implements IProxy {
     public void registerRenderers(){}
 
     @Override
+    public void registerRenderTypes(){}
+
+    @Override
     public void openConchClient(byte conchStage){}
 
     @Override

@@ -13,6 +13,7 @@ import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.Vector3d;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
@@ -160,6 +162,8 @@ public class RocketSquidEntity extends AbstractSquidEntity {
             this.newPacketRequired = true;
         }
 
+        Vec3d pos = this.getPositionVec();
+
         if(this.world.isRemote) {
             //Client side
             //Handles tentacle angles
@@ -178,18 +182,18 @@ public class RocketSquidEntity extends AbstractSquidEntity {
             }
             if(this.squidCap.getBlasting()) {
                 if(this.inWater) {
-                    double smallerX = this.posX - 0.25;
-                    double largerX = this.posX + 0.25;
-                    double smallerZ = this.posZ - 0.25;
-                    double largerZ = this.posZ + 0.25;
-                    this.world.addParticle(ParticleTypes.BUBBLE, smallerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.world.addParticle(ParticleTypes.BUBBLE, smallerX, this.posY, largerZ, 0.0, 0.0, 0.0);
-                    this.world.addParticle(ParticleTypes.BUBBLE, largerX, this.posY, smallerZ, 0.0, 0.0, 0.0);
-                    this.world.addParticle(ParticleTypes.BUBBLE, largerX, this.posY, largerZ, 0.0, 0.0, 0.0);
+                    double smallerX = pos.x - 0.25;
+                    double largerX = pos.x + 0.25;
+                    double smallerZ = pos.z - 0.25;
+                    double largerZ = pos.z + 0.25;
+                    this.world.addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, largerZ, 0.0, 0.0, 0.0);
+                    this.world.addParticle(ParticleTypes.BUBBLE, largerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
+                    this.world.addParticle(ParticleTypes.BUBBLE, largerX, pos.y, largerZ, 0.0, 0.0, 0.0);
                 }
                 else
                 {
-                    this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+                    this.world.addParticle(ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 0.0, 0.0, 0.0);
                 }
             }
         }
@@ -203,7 +207,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 this.moveToWherePointing();
             }
             if(this.newPacketRequired) {
-                MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.posX, this.posY, this.posZ, 64, this.dimension)), new MessageAdultCapData(this.getUniqueID(), this.squidCap));
+                MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.dimension)), new MessageAdultCapData(this.getUniqueID(), this.squidCap));
                 this.newPacketRequired = false;
             }
         }
@@ -238,7 +242,8 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                     //The squeleporter is inactive so store the squid here
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.getDefaultInstance();
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
-                        player.world.playSound(null, player.posX, player.posY, player.posZ, Sounds.SQUIDTP_IN, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                        Vec3d pos = player.getPositionVec();
+                        player.world.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN, SoundCategory.PLAYERS, 1.0F, 1.0F);
                         cap.setSquid(this);
                         this.remove();
                     });
@@ -275,11 +280,12 @@ public class RocketSquidEntity extends AbstractSquidEntity {
 
     public void explode() {
         if(!this.world.isRemote) {
-            this.world.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, Explosion.Mode.DESTROY);
+            Vec3d pos = this.getPositionVec();
+            this.world.createExplosion(this, pos.x, pos.y, pos.z, 3.0F, Explosion.Mode.DESTROY);
             int noSacs = 3 + this.rand.nextInt(3);
             int noTubes = 2 + this.rand.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
-                ItemEntity entityitem = new ItemEntity(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.NITRO_SAC));
+                ItemEntity entityitem = new ItemEntity(this.world, pos.x, pos.y, pos.z, new ItemStack(RocketSquidsBase.NITRO_SAC));
                 double motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;
                 double motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
@@ -287,7 +293,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 this.world.addEntity(entityitem);
             }
             for (int x = 0; x < noTubes; ++x) {
-                ItemEntity entityitem = new ItemEntity(this.world, this.posX, this.posY, this.posZ, new ItemStack(RocketSquidsBase.TURBO_TUBE));
+                ItemEntity entityitem = new ItemEntity(this.world, pos.x, pos.y, pos.z, new ItemStack(RocketSquidsBase.TURBO_TUBE));
                 double motionX = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;
                 double motionZ = this.rand.nextDouble() * 1.5F * (this.rand.nextBoolean() ? 1 : -1);
@@ -319,7 +325,8 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     @OnlyIn(Dist.CLIENT)
     private void doFireworkParticles() {
         ParticleManager effectRenderer = Minecraft.getInstance().particles;
-        effectRenderer.addEffect(new SquidFireworkParticle.SquidStarter(this.world, this.posX, this.posY, this.posZ, effectRenderer));
+        Vec3d pos = this.getPositionVec();
+        effectRenderer.addEffect(new SquidFireworkParticle.SquidStarter(this.world, pos.x, pos.y, pos.z, effectRenderer));
     }
 
     /**
@@ -330,15 +337,17 @@ public class RocketSquidEntity extends AbstractSquidEntity {
         if(passenger == null || passenger != obstacle) {
             //Obstacle is not the rider, so apply collision
             if (!obstacle.noClip && !this.noClip) {
+                Vec3d thisPos = this.getPositionVec();
                 if(!this.world.isRemote && obstacle.getType() == RocketSquidsBase.SQUID_TYPE && this.breedCooldown == 0) {
                     this.breedCooldown = 3600;
                     BabyRocketSquidEntity baby = new BabyRocketSquidEntity(this.world);
-                    baby.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+                    baby.setLocationAndAngles(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
                     this.world.addEntity(baby);
                 }
-                double xDist = obstacle.posX - this.posX;
-                double zDist = obstacle.posZ - this.posZ;
-                double yDist = obstacle.posY - this.posY;
+                Vec3d obstaclePos = obstacle.getPositionVec();
+                double xDist = obstaclePos.x - thisPos.x;
+                double zDist = obstaclePos.z - thisPos.z;
+                double yDist = obstaclePos.y - thisPos.y;
                 double largerDist = MathHelper.absMax(xDist, MathHelper.absMax(yDist, zDist));
 
                 if (largerDist >= 0.009999999776482582D) {
@@ -381,9 +390,11 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 }
 
                 if (f > 6.0F) {
-                    double d0 = (holder.posX - this.posX) / (double) f;
-                    double d1 = (holder.posY - this.posY) / (double) f;
-                    double d2 = (holder.posZ - this.posZ) / (double) f;
+                    Vec3d thisPos = this.getPositionVec();
+                    Vec3d holderPos = holder.getPositionVec();
+                    double d0 = (holderPos.x - thisPos.x) / (double) f;
+                    double d1 = (holderPos.y - thisPos.y) / (double) f;
+                    double d2 = (holderPos.z - thisPos.z) / (double) f;
                     Vec3d motion = this.getMotion();
                     this.setMotion(motion.x + d0 * Math.abs(d0) * 0.4D,
                             motion.y + d1 * Math.abs(d1) * 0.4D,
@@ -434,10 +445,15 @@ public class RocketSquidEntity extends AbstractSquidEntity {
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
      */
     @Override
-    public void fall(float dist, float damMult) {
-        if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865) {
-            super.fall(dist, damMult);
+    public boolean onLivingFall(float distance, float damageMultiplier) {
+        if (this.isBeingRidden()) {
+            if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865) {
+                for(Entity entity : this.getPassengers()) {
+                    entity.onLivingFall(distance, damageMultiplier);
+                }
+            }
         }
+        return false;
     }
 
     /**
@@ -446,7 +462,8 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     @Override
     public void updatePassenger(Entity passenger) {
         if(this.isPassenger(passenger)) {
-            passenger.setPosition(this.posX, this.posY + 0.355, this.posZ);
+            Vec3d pos = this.getPositionVec();
+            passenger.setPosition(pos.x, pos.y + 0.355, pos.z);
         }
     }
 

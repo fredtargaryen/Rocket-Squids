@@ -127,7 +127,8 @@ public class AdultSwimAroundGoal extends Goal {
                     break;
                 case LOCATE:
                     //Find nearest statue
-                    int[] statueCoords = StatueManager.forWorld(this.squid.world).getNearestStatuePos(this.squid.posX, this.squid.posY, this.squid.posZ);
+                    Vec3d pos = this.squid.getPositionVec();
+                    int[] statueCoords = StatueManager.forWorld(this.squid.world).getNearestStatuePos(pos.x, pos.y, pos.z);
                     if(statueCoords[3] < 1) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
@@ -135,9 +136,9 @@ public class AdultSwimAroundGoal extends Goal {
                     }
                     else {
                         //TargetPoint for playing notes related to distance
-                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F, this.squid.dimension);
-                        double zDistance = statueCoords[4] - this.squid.posZ;
-                        double xDistance = statueCoords[2] - this.squid.posX;
+                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.dimension);
+                        double zDistance = statueCoords[4] - pos.z;
+                        double xDistance = statueCoords[2] - pos.x;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
                         //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
                         this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
@@ -166,7 +167,7 @@ public class AdultSwimAroundGoal extends Goal {
                             this.squid.setTargetRotPitch(Math.PI / 4.0);
                         } else {
                             //Less than 80 blocks away; blast directly towards the statue
-                            this.squid.setTargetRotPitch(Math.atan2(statueCoords[3] - this.squid.posY, Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
+                            this.squid.setTargetRotPitch(Math.atan2(statueCoords[3] - pos.y, Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
                         }
                         this.statueBlastStage = StatueBlastStage.TURN;
                     }
@@ -211,7 +212,8 @@ public class AdultSwimAroundGoal extends Goal {
 
     private void playNextNote() {
         byte note = this.squid.getTargetNote(this.noteIndex);
-        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.squid.posX, this.squid.posY, this.squid.posZ, 16.0F, this.squid.dimension)), new MessageSquidNote(note));
+        Vec3d pos = this.squid.getPositionVec();
+        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.dimension)), new MessageSquidNote(note));
         if(this.noteIndex == 2) {
             this.noteIndex = 0;
         }

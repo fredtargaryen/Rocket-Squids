@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.client.particle;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.ActiveRenderInfo;
@@ -58,9 +59,9 @@ public class SquidFireworkParticle {
         /**
          * Renders the particle
          */
-        public void renderParticle(BufferBuilder buffer, ActiveRenderInfo entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+        public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo entityIn, float partialTicks) {
             if (!this.twinkle || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.renderParticle(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
+                super.renderParticle(buffer, entityIn, partialTicks);
             }
 
         }

@@ -118,19 +118,15 @@ public class RocketSquidsBase {
 
     //Declare all Features here
     @ObjectHolder("conchgen")
-    public static ConchGen CONCH_GEN;
+    public static Feature<ConchGenConfig> CONCH_FEATURE;
     @ObjectHolder("statuegen")
-    public static StatueGen STATUE_GEN;
+    public static Feature<StatueGenConfig> STATUE_FEATURE;
 
     //Declare all ParticleTypes here
     @ObjectHolder("firework")
     public static BasicParticleType FIREWORK_TYPE;
 
-    //Declare all Placements here
-    @ObjectHolder("conchplace")
-    public static ConchPlacement CONCH_PLACE;
-    @ObjectHolder("statueplace")
-    public static StatuePlacement STATUE_PLACE;
+    public static FeatureManager FEATURE_MANAGER;
 
     /**
      * The creative tab for all items from Rocket Squids.
@@ -263,12 +259,8 @@ public class RocketSquidsBase {
 
     @SubscribeEvent
     public static void registerFeatures(RegistryEvent.Register<Feature<?>> event) {
-        event.getRegistry().registerAll(
-                new ConchGen(ConchGenConfig::factory)
-                .setRegistryName("conchgen"),
-                new StatueGen(StatueGenConfig::factory)
-                .setRegistryName("statuegen")
-        );
+        FEATURE_MANAGER = new FeatureManager();
+        FEATURE_MANAGER.registerFeatures(event);
     }
 
     @SubscribeEvent
@@ -288,6 +280,7 @@ public class RocketSquidsBase {
 
     public void clientSetup(FMLClientSetupEvent event) {
         proxy.registerRenderers();
+        proxy.registerRenderTypes();
     }
 
     /**
@@ -327,7 +320,7 @@ public class RocketSquidsBase {
         Biomes.SWAMP.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
         Biomes.FROZEN_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
 
-        new FeatureManager().registerGenerators();
+        FEATURE_MANAGER.registerGenerators();
     }
 
     /////////////////

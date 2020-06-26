@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ItemNitroInkSac extends Item {
@@ -25,8 +26,8 @@ public class ItemNitroInkSac extends Item {
         if (!player.isCreative()) {
             stack.grow(-1);
         }
-
-        world.playSound(null, player.posX, player.posY, player.posZ,
+        Vec3d pos = player.getPositionVec();
+        world.playSound(null, pos.x, pos.y, pos.z,
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
             ThrownSacEntity sac = new ThrownSacEntity(player, world);

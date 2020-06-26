@@ -6,6 +6,7 @@ import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.FMLPlayMessages;
@@ -26,13 +27,14 @@ public class ThrownTubeEntity extends ProjectileItemEntity {
     @Override
     protected void onImpact(RayTraceResult result) {
         if (!this.world.isRemote) {
-            this.world.createExplosion(this.getThrower(), this.posX, this.posY, this.posZ, 1.0F, Explosion.Mode.NONE);
+            Vec3d pos = this.getPositionVec();
+            this.world.createExplosion(this.getThrower(), pos.x, pos.y, pos.z, 1.0F, Explosion.Mode.NONE);
             this.remove();
         }
     }
 
     @Override
-    protected Item func_213885_i() {
+    protected Item getDefaultItem() {
         return RocketSquidsBase.TURBO_TUBE;
     }
 
