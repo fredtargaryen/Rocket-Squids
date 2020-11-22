@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -56,7 +56,7 @@ public class ClientProxy implements IProxy {
     @Override
     public void playNoteFromMessage(byte note) {
         PlayerEntity ep = Minecraft.getInstance().player;
-        Vec3d pos = ep.getPositionVec();
+        Vector3d pos = ep.getPositionVec();
         ep.world.playSound(pos.x, pos.y, pos.z, Sounds.CONCH_NOTES[note], SoundCategory.PLAYERS, 1.0F, 1.0F, true);
     }
 
@@ -71,7 +71,7 @@ public class ClientProxy implements IProxy {
         iter.next();
         ItemStack helmet = iter.next();
         if(helmet.getItem() == RocketSquidsBase.ITEM_CONCH) {
-            Vec3d pos = ep.getPositionVec();
+            Vector3d pos = ep.getPositionVec();
             ep.world.playSound(pos.x, pos.y, pos.z, Sounds.CONCH_NOTES[note], SoundCategory.NEUTRAL, 1.0F, 1.0F, true);
         }
     }

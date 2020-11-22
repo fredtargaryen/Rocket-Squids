@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.EnumSet;
 import java.util.Random;
@@ -39,8 +39,8 @@ public class BabySwimAroundGoal extends Goal {
     public boolean doTurn(boolean blocked) {
         if(blocked) {
             //Just point the opposite way
-            Vec3d direction = this.squid.getDirectionAsVector();
-            this.squid.pointToVector(new Vec3d(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
+            Vector3d direction = this.squid.getDirectionAsVector();
+            this.squid.pointToVector(new Vector3d(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
         }
         else {
             //Random doubles between -PI and PI, added to current rotation

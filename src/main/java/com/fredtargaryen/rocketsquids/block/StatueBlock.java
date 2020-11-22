@@ -115,7 +115,7 @@ public class StatueBlock extends FallingBlock {
      * Add a new location for where it ended up
      */
     @Override
-    public void onEndFalling(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState) {
+    public void onEndFalling(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
         if(fallingState.get(BlockStateProperties.FACING) == Direction.UP) {
             StatueManager.forWorld(worldIn).addStatue(pos);
         }

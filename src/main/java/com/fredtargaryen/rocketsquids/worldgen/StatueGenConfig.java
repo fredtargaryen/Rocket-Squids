@@ -1,16 +1,17 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
 public class StatueGenConfig implements IFeatureConfig {
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> p_214634_1_) {
-        return null;
+
+    public static final Codec<StatueGenConfig> FACTORY;
+
+    public static final StatueGenConfig CONFIG = new StatueGenConfig();
+
+    static {
+        FACTORY = Codec.unit(() -> CONFIG);
     }
 
-    public static StatueGenConfig factory(Dynamic data) {
-        return new StatueGenConfig();
-    }
+    public StatueGenConfig() {}
 }

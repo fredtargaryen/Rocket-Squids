@@ -12,7 +12,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -39,10 +39,10 @@ public class ItemSqueleporter extends Item {
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                         newSquid.forceRotPitch((playerIn.rotationPitch + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getRotationYawHead() * Math.PI / 180.0F));
-                        Vec3d playerMotion = playerIn.getMotion();
+                        Vector3d playerMotion = playerIn.getMotion();
                         newSquid.addVelocity(playerMotion.x, playerMotion.y, playerMotion.z);
                         newSquid.addForce(squidTags.getDouble("force"));
-                        Vec3d playerPos = playerIn.getPositionVec();
+                        Vector3d playerPos = playerIn.getPositionVec();
                         newSquid.setPosition(playerPos.x, playerPos.y, playerPos.z);
                         worldIn.addEntity(newSquid);
                         if (newSquid.getSaddled()) {

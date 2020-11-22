@@ -7,13 +7,19 @@ import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ILivingEntityData;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
+
+import javax.annotation.Nullable;
 
 public class BabyRocketSquidEntity extends AbstractSquidEntity {
     private IBabyCapability squidCap;
@@ -24,17 +30,23 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
     }
 
     @Override
+    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.setAttributes();
+        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    }
+
+    private void setAttributes() {
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1.0D);
+    }
+
+    @Override
     public void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new BabySwimAroundGoal(this, 0.15));
         this.goalSelector.addGoal(1, new BabyFlopAroundGoal(this));
     }
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1.0D);
-    }
+
 
     @Override
     protected boolean canBeRidden(Entity entityIn)
@@ -53,7 +65,7 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
             if(!this.world.isRemote) {
                 this.remove();
                 RocketSquidEntity adult = new RocketSquidEntity(this.world);
-                Vec3d pos = this.getPositionVec();
+                Vector3d pos = this.getPositionVec();
                 adult.setLocationAndAngles(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
                 this.world.addEntity(adult);
             }
@@ -63,12 +75,12 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
             //Fraction of distance to target rotation to rotate by each server tick
             double rotateSpeed;
             if(this.inWater) {
-                Vec3d motion = this.getMotion();
+                Vector3d motion = this.getMotion();
                 this.setMotion(motion.x * 0.9, motion.y * 0.9, motion.z * 0.9);
                 rotateSpeed = 0.06;
             }
             else {
-                Vec3d oldMotion = this.getMotion();
+                Vector3d oldMotion = this.getMotion();
                 double motionX = oldMotion.x;
                 double motionY = oldMotion.y;
                 double motionZ = oldMotion.z;
@@ -122,8 +134,8 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
                     this.moveToWherePointing();
                 }
                 if(this.newPacketRequired) {
-                    Vec3d pos = this.getPositionVec();
-                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.dimension)), new MessageBabyCapData(this.getUniqueID(), this.squidCap));
+                    Vector3d pos = this.getPositionVec();
+                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.world.getDimensionKey())), new MessageBabyCapData(this.getUniqueID(), this.squidCap));
                     this.newPacketRequired = false;
                 }
             }

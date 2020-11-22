@@ -37,7 +37,7 @@ public class SquidFireworkParticle {
         private float fadeColourBlue;
         private boolean hasFadeColour;
 
-        private Spark(World p_i50884_1_, double p_i50884_2_, double p_i50884_4_, double p_i50884_6_, double p_i50884_8_, double p_i50884_10_, double p_i50884_12_, ParticleManager p_i50884_14_, IAnimatedSprite p_i50884_15_) {
+        private Spark(ClientWorld p_i50884_1_, double p_i50884_2_, double p_i50884_4_, double p_i50884_6_, double p_i50884_8_, double p_i50884_10_, double p_i50884_12_, ParticleManager p_i50884_14_, IAnimatedSprite p_i50884_15_) {
             super(p_i50884_1_, p_i50884_2_, p_i50884_4_, p_i50884_6_, p_i50884_15_, -0.004F);
             this.motionX = p_i50884_8_;
             this.motionY = p_i50884_10_;
@@ -69,7 +69,7 @@ public class SquidFireworkParticle {
         public void tick() {
             super.tick();
             if (this.trail && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
-                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(this.world, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, this.effectRenderer, this.field_217584_C);
+                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(this.world, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, this.effectRenderer, this.spriteWithAge);
                 fireworkparticle$spark.setAlphaF(0.99F);
                 fireworkparticle$spark.setColor(this.particleRed, this.particleGreen, this.particleBlue);
                 fireworkparticle$spark.age = fireworkparticle$spark.maxAge / 2;
@@ -100,7 +100,7 @@ public class SquidFireworkParticle {
         }
 
         @Override
-        public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particles, this.spriteSet);
             fireworkparticle$spark.setSlightAlpha();
             return fireworkparticle$spark;
@@ -115,7 +115,7 @@ public class SquidFireworkParticle {
         private boolean twinkle;
         private static final double squareLength = 1.0 / 7.0;
 
-        public SquidStarter(World world, double x, double y, double z, ParticleManager manager) {
+        public SquidStarter(ClientWorld world, double x, double y, double z, ParticleManager manager) {
             super(world, x, y, z);
             this.motionX = 0.0;
             this.motionY = 0.0;

@@ -35,7 +35,7 @@ public class ThrownSacEntity extends ProjectileItemEntity {
         if (!this.world.isRemote) {
             if (result.getType() == RayTraceResult.Type.ENTITY) {
                 EntityRayTraceResult ertr = (EntityRayTraceResult) result;
-                ertr.getEntity().attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0.0F);
+                ertr.getEntity().attackEntityFrom(DamageSource.causeThrownDamage(this, this.func_234616_v_()), 0.0F);
             }
             AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(2.0D, 2.0D, 2.0D);
             List<LivingEntity> list1 = this.world.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb);

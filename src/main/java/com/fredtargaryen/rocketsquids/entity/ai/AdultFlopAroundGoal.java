@@ -21,7 +21,7 @@ public class AdultFlopAroundGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.squid.onGround) {
+        if (this.squid.isOnGround()) {
             this.squid.setTargetRotPitch(Math.PI / 2);
         } else if(Math.abs(this.squid.getMotion().y) > 0.008){
             this.squid.pointToWhereMoving();

@@ -4,6 +4,7 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
@@ -14,7 +15,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 
 public class ConchScreen extends Screen {
@@ -33,7 +34,7 @@ public class ConchScreen extends Screen {
         super(new StringTextComponent(""));
         this.conchStage = conchStage;
         PlayerEntity ep = Minecraft.getInstance().player;
-        Vec3d vec = ep.getPositionVec();
+        Vector3d vec = ep.getPositionVec();
         this.x = vec.x;
         this.y = vec.y;
         this.z = vec.z;
@@ -78,7 +79,7 @@ public class ConchScreen extends Screen {
         private Minecraft mc;
         
         public ConchButton(int buttonId, int x, int y, String buttonText) {
-            super(x, y, 20, 20, buttonText, (button) -> {});
+            super(x, y, 20, 20, new StringTextComponent(buttonText), (button) -> {});
             this.id = buttonId;
             this.mc = Minecraft.getInstance();
         }
@@ -93,13 +94,13 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(int mouseX, int mouseY, float partialTicks) {
+        public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
             FontRenderer fontrenderer = mc.fontRenderer;
             this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             float hoverColour = this.isHovered ? 0.1F : 0.0F;
             float red = 0.9F + hoverColour;
             float green = 0.9F * this.id / 36.0F;
-            this.drawNote(this.x, this.y, red, green, hoverColour);
+            this.drawNote(stack, this.x, this.y, red, green, hoverColour);
             int j = 14737632;
 
             if (packedFGColor != 0) {
@@ -112,15 +113,15 @@ public class ConchScreen extends Screen {
                 j = 16777120;
             }
 
-            this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
+            this.drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
         }
 
-        private void drawNote(int x, int y, float red, float green, float blue) {
+        private void drawNote(MatrixStack stack, int x, int y, float red, float green, float blue) {
             mc.getTextureManager().bindTexture(NOTE);
             RenderSystem.color4f(red, green, blue, 1f);
             //Draw the quaver; see gui/note.png
             //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
-            AbstractGui.blit(x, y - 48, 0, 0, 36, 68, 36, 68);
+            AbstractGui.blit(stack, x, y - 48, 0, 0, 36, 68, 36, 68);
         }
     }
 

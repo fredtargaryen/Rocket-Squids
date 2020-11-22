@@ -40,8 +40,11 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraft.world.gen.placement.NoPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -127,6 +130,8 @@ public class RocketSquidsBase {
     public static BasicParticleType FIREWORK_TYPE;
 
     public static FeatureManager FEATURE_MANAGER;
+
+    public static MobSpawnInfo.Spawners ROCKET_SQUID_SPAWN_INFO;
 
     /**
      * The creative tab for all items from Rocket Squids.
@@ -266,9 +271,9 @@ public class RocketSquidsBase {
     @SubscribeEvent
     public static void registerDecorators(RegistryEvent.Register<Placement<?>> event) {
         event.getRegistry().registerAll(
-                new ConchPlacement(ConchPlacementConfig::factory)
+                new ConchPlacement(NoPlacementConfig.CODEC)
                 .setRegistryName("conchplace"),
-                new StatuePlacement(StatuePlacementConfig::factory)
+                new StatuePlacement(NoPlacementConfig.CODEC)
                 .setRegistryName("statueplace")
         );
     }
@@ -314,13 +319,7 @@ public class RocketSquidsBase {
         //Spawn info
         //Use SquidEntity::func_223365_b if spawning anywhere is too weird
         EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.PlacementType.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
-        Biomes.DEEP_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.RIVER.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.SWAMP.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-        Biomes.FROZEN_OCEAN.getSpawns(EntityClassification.WATER_CREATURE).add(new Biome.SpawnListEntry(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get()));
-
-        FEATURE_MANAGER.registerGenerators();
+        ROCKET_SQUID_SPAWN_INFO = new MobSpawnInfo.Spawners(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
 
     /////////////////

@@ -19,7 +19,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -60,6 +60,11 @@ public class ItemConch extends ArmorItem {
         public float getToughness() {
             return 0;
         }
+
+        @Override
+        public float getKnockbackResistance() {
+            return 0;
+        }
     };
 
     public ItemConch() {
@@ -76,7 +81,7 @@ public class ItemConch extends ArmorItem {
         //FOR CONCH ARMOUR DEBUGGING
 //        System.out.println("Yaw = "+playerIn.rotationYaw);
 //        System.out.println("Head Yaw = "+playerIn.getRotationYawHead());
-//        Vec3d look = playerIn.getLookVec();
+//        Vector3d look = playerIn.getLookVec();
 //        System.out.println("Math.atan2 = "+Math.atan2(look.z, look.x));
 //        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
@@ -104,7 +109,7 @@ public class ItemConch extends ArmorItem {
                     }
                 }
             } else {
-                if (!block.getMaterial(worldIn.getBlockState(pos)).isReplaceable()) {
+                if (!iblockstate.getMaterial().isReplaceable()) {
                     pos = pos.offset(facing);
                 }
 
@@ -112,7 +117,7 @@ public class ItemConch extends ArmorItem {
 
                 BlockItemUseContext blockContext = new BlockItemUseContext(context);
                 if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && blockContext.canPlace()) {
-                    Vec3d hitVec = context.getHitVec();
+                    Vector3d hitVec = context.getHitVec();
                     float hitX = (float) hitVec.x;
                     float hitY = (float) hitVec.y;
                     float hitZ = (float) hitVec.z;

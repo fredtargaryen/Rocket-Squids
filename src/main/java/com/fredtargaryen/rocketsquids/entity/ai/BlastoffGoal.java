@@ -4,7 +4,7 @@ import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -31,7 +31,7 @@ public class BlastoffGoal extends Goal {
 
     @Override
     public void tick() {
-        Vec3d motion = this.squid.getMotion();
+        Vector3d motion = this.squid.getMotion();
         if (this.blastStarted) {
             //The squid is part of the way through a blast
             if((this.horizontal

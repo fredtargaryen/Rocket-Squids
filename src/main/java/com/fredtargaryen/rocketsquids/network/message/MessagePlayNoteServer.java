@@ -30,7 +30,7 @@ public class MessagePlayNoteServer {
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ctx.get().getSender();
-            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.dimension)), new MessagePlayNoteClient(this.note));
+            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.world.getDimensionKey())), new MessagePlayNoteClient(this.note));
             ((ServerWorld)player.world).getEntities().forEach(e ->
                     e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note)));
         });

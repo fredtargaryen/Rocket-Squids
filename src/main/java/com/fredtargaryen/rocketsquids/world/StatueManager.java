@@ -3,9 +3,8 @@ package com.fredtargaryen.rocketsquids.world;
 import com.fredtargaryen.rocketsquids.DataReference;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
 
@@ -22,7 +21,7 @@ public class StatueManager extends WorldSavedData {
     }
 
     public static StatueManager forWorld(World world) {
-        ServerWorld serverWorld = world.getServer().getWorld(DimensionType.OVERWORLD);
+        ServerWorld serverWorld = world.getServer().getWorld(world.getDimensionKey());
         DimensionSavedDataManager storage = serverWorld.getSavedData();
         return storage.getOrCreate(StatueManager::new, DataReference.MODID);
     }
