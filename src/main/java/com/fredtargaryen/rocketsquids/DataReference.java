@@ -13,7 +13,7 @@ import java.util.Random;
  * MessagePlayNoteServer: sent to server when a note is played. When received, a MessagePlayNoteClient is sent to everyone nearby
  * MessageSquidNote: sent to clients whose players are wearing conches, when a Rocket Squid is broadcasting a note
  *
- * When changing version number, change in: DataReference, build.gradle, mods.toml
+ * When changing version number, change in: build.gradle, mods.toml
  *
  * Superflat preset for squid testing:
  * minecraft:glowstone,42*minecraft:water
@@ -22,7 +22,6 @@ public class DataReference {
     //MAIN MOD DETAILS
     public static final String MODID = "rocketsquidsft";
     public static final String MODNAME = "Rocket Squids";
-    public static final String VERSION = "1.2";
 
     public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
     public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");
