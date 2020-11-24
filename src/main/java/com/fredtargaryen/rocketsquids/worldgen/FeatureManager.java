@@ -1,9 +1,6 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.GenerationStage;
@@ -15,10 +12,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
@@ -40,17 +35,15 @@ public class FeatureManager {
     @SubscribeEvent
     public static void loadBiome(BiomeLoadingEvent ble)
     {
-        Set<EntityType<?>> spawns = ble.getSpawns().getEntityTypes();
-        if(spawns.contains(EntityType.SQUID))
-        {
-            List<MobSpawnInfo.Spawners> spawners = ble.getSpawns().getSpawner(EntityClassification.WATER_CREATURE);
-            for (MobSpawnInfo.Spawners s : spawners) {
-                if(s.type == RocketSquidsBase.SQUID_TYPE) {
-                    ble.getSpawns().withSpawner(EntityClassification.WATER_CREATURE, ROCKET_SQUID_SPAWN_INFO);
-                }
+        MobSpawnInfoBuilder builder = ble.getSpawns();
+        List<MobSpawnInfo.Spawners> spawners = builder.getSpawner(EntityClassification.WATER_CREATURE);
+        boolean squidFound = false;
+        for (MobSpawnInfo.Spawners s : spawners) {
+            if(s.type.getRegistryName().toString().equals("minecraft:squid")) {
+                squidFound = true;
             }
-            spawns.add(RocketSquidsBase.SQUID_TYPE);
         }
+        if(squidFound) builder.withSpawner(EntityClassification.WATER_CREATURE, ROCKET_SQUID_SPAWN_INFO);
         BiomeGenerationSettingsBuilder bgsb = ble.getGeneration();
         bgsb.getFeatures(GenerationStage.Decoration.RAW_GENERATION).add(() -> STATUE_FEATURE.withConfiguration(new StatueGenConfig()).withPlacement(STATUE_PLACEMENT.configure(NoPlacementConfig.INSTANCE)));
         if(ble.getCategory() == Biome.Category.BEACH)

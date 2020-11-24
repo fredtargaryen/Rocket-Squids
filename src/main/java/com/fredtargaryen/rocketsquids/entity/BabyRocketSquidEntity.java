@@ -7,19 +7,15 @@ import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
-
-import javax.annotation.Nullable;
 
 public class BabyRocketSquidEntity extends AbstractSquidEntity {
     private IBabyCapability squidCap;
@@ -29,14 +25,9 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
         this.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
     }
 
-    @Override
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setAttributes();
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-    }
 
-    private void setAttributes() {
-        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1.0D);
+    public static AttributeModifierMap.MutableAttribute prepareAttributes() {
+        return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 1.0D);
     }
 
     @Override

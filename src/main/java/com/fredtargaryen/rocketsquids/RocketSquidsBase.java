@@ -26,11 +26,11 @@ import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.worldgen.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -38,12 +38,9 @@ import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.NoPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -115,8 +112,7 @@ public class RocketSquidsBase {
     public static EntityType SQUID_TYPE;
     @ObjectHolder("babyrs")
     public static EntityType BABY_SQUID_TYPE;
-    @ObjectHolder("primala")
-    public static EntityType PRIMAL_A_TYPE;
+
     private static EntityType SQUID_EARLYREG;
 
     //Declare all Features here
@@ -294,6 +290,10 @@ public class RocketSquidsBase {
      */
     public void postRegistration(FMLCommonSetupEvent event) {
         MessageHandler.init();
+
+        //Add entity attributes
+        event.enqueueWork(() -> GlobalEntityTypeAttributes.put(RocketSquidsBase.BABY_SQUID_TYPE, BabyRocketSquidEntity.prepareAttributes().create()));
+        event.enqueueWork(() -> GlobalEntityTypeAttributes.put(RocketSquidsBase.SQUID_TYPE, RocketSquidEntity.prepareAttributes().create()));
 
         //Capability
         CapabilityManager.INSTANCE.register(IBabyCapability.class, new BabyCapStorage(), new DefaultBabyImplFactory());
