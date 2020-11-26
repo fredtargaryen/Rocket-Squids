@@ -31,6 +31,7 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -38,6 +39,8 @@ import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
@@ -410,6 +413,17 @@ public class RocketSquidsBase {
                     }
             );
         }
+    }
+
+    public static Vector3f getPlayerAimVector(PlayerEntity player)
+    {
+        double rp = Math.toRadians(player.rotationPitch);
+        double ry = Math.toRadians(player.rotationYaw);
+        float y = (float) -Math.sin(rp);
+        float hori = (float) Math.cos(rp);
+        float x = (float) (hori * -Math.sin(ry));
+        float z = (float) (hori * Math.cos(ry));
+        return new Vector3f(x, y, z);
     }
 
     ////////////////////////

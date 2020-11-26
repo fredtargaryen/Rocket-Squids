@@ -1,6 +1,8 @@
 package com.fredtargaryen.rocketsquids.entity.projectile;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
@@ -21,13 +23,13 @@ import java.util.List;
 public class ThrownSacEntity extends ProjectileItemEntity {
     private static final Effect blindnessPotion = Effects.BLINDNESS;
 
-    public ThrownSacEntity(World w) { super(RocketSquidsBase.SAC_TYPE, w); }
+    public ThrownSacEntity(EntityType<? extends ThrownSacEntity> type, World w) { super(type, w); }
     public ThrownSacEntity(LivingEntity elb, World w)
     {
         super(RocketSquidsBase.SAC_TYPE, elb, w);
     }
     public ThrownSacEntity(FMLPlayMessages.SpawnEntity spawn, World world) {
-        this(world);
+        this(RocketSquidsBase.SAC_TYPE, world);
     }
 
     @Override

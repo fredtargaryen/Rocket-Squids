@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.entity.AbstractSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stats.Stats;
@@ -9,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 
 public class ItemTurboTube extends Item {
@@ -31,7 +33,8 @@ public class ItemTurboTube extends Item {
         if (!world.isRemote) {
             ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
             tube.setItem(stack);
-            tube.shoot(pos.x, pos.y, pos.z, 0.0F, 1.5F);
+            Vector3f aimPos = RocketSquidsBase.getPlayerAimVector(player);
+            tube.shoot(aimPos.getX(), aimPos.getY(), aimPos.getZ(), 1.5F, 1.0F);
             world.addEntity(tube);
         }
 

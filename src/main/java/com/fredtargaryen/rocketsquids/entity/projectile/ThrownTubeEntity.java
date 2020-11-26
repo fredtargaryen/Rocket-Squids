@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity.projectile;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public class ThrownTubeEntity extends ProjectileItemEntity {
-    public ThrownTubeEntity(World w) {
+    public ThrownTubeEntity(EntityType<? extends ThrownTubeEntity> type, World w) {
         super(RocketSquidsBase.TUBE_TYPE, w);
     }
     public ThrownTubeEntity(LivingEntity elb, World w)
@@ -21,7 +22,7 @@ public class ThrownTubeEntity extends ProjectileItemEntity {
         super(RocketSquidsBase.TUBE_TYPE, elb, w);
     }
     public ThrownTubeEntity(FMLPlayMessages.SpawnEntity spawn, World world) {
-        this(world);
+        this(RocketSquidsBase.TUBE_TYPE, world);
     }
 
     @Override

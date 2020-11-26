@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.entity.AbstractSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.*;
@@ -10,6 +11,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 
 public class ItemNitroInkSac extends Item {
@@ -31,7 +33,8 @@ public class ItemNitroInkSac extends Item {
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
             ThrownSacEntity sac = new ThrownSacEntity(player, world);
-            sac.shoot(pos.x, pos.y, pos.z, 0.0F, 1.5F);
+            Vector3f aimPos = RocketSquidsBase.getPlayerAimVector(player);
+            sac.shoot(aimPos.getX(), aimPos.getY(), aimPos.getZ(), 1.5F, 1.0F);
             world.addEntity(sac);
         }
         return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
