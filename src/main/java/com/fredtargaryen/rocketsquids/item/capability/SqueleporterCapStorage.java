@@ -14,17 +14,11 @@ import net.minecraftforge.common.capabilities.Capability;
 public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter> {
     @Override
     public INBT writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side) {
-        CompoundNBT comp = new CompoundNBT();
-        RocketSquidEntity ers = instance.getSquid();
-        if(ers != null) ers.writeAdditional(comp);
-        return comp;
+        return instance.getSquidData();
     }
 
     @Override
     public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side, INBT nbt) {
-        CompoundNBT comp = (CompoundNBT) nbt;
-        RocketSquidEntity ers = new RocketSquidEntity(null);
-        ers.readAdditional(comp);
-        instance.setSquid(ers);
+        instance.setSquidData((CompoundNBT) nbt);
     }
 }

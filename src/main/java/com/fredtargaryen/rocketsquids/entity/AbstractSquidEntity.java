@@ -20,7 +20,7 @@ public abstract class AbstractSquidEntity extends WaterMobEntity {
     public float tentacleAngle;
     public float lastTentacleAngle;
 
-    public AbstractSquidEntity(EntityType<? extends WaterMobEntity> type, World world) {
+    public AbstractSquidEntity(EntityType<? extends AbstractSquidEntity> type, World world) {
         super(type, world);
     }
 

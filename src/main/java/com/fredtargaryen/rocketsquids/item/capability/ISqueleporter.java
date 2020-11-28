@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
-import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * The capability used by all official Rocket Squids Squeleporters.
@@ -8,6 +8,6 @@ import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
  * correct operation is not guaranteed in any other context!
  */
 public interface ISqueleporter {
-    void setSquid(RocketSquidEntity ers);
-    RocketSquidEntity getSquid();
+    void setSquidData(CompoundNBT nbt);
+    CompoundNBT getSquidData();
 }

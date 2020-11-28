@@ -29,13 +29,11 @@ public class ItemSqueleporter extends Item {
         if (!worldIn.isRemote) {
             ItemStack stack = playerIn.getHeldItem(handIn);
             if(stack.getItem() == RocketSquidsBase.SQUELEPORTER_ACTIVE) {
-                //The squeleporter is active so a squid is stored.
+                //The squeleporter is active so squid data is stored.
                 stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
-                    RocketSquidEntity ers = cap.getSquid();
-                    ers.removed = false;
-                    CompoundNBT squidTags = new CompoundNBT();
-                    ers.writeUnlessRemoved(squidTags);
+                    CompoundNBT squidTags = cap.getSquidData();
                     EntityType.loadEntityUnchecked(squidTags, worldIn).ifPresent(entity -> {
+                        // Possibly need to use entity.writeUnlessRemoved(squidTags) here
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                         newSquid.forceRotPitch((playerIn.rotationPitch + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getRotationYawHead() * Math.PI / 180.0F));

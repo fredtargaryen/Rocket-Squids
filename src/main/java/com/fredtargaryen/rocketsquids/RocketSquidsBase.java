@@ -224,21 +224,21 @@ public class RocketSquidsBase {
     public static void registerEntities(RegistryEvent.Register<EntityType<?>> event) {
         event.getRegistry().registerAll(
                 SQUID_EARLYREG,
-                EntityType.Builder.create((type, world) -> new BabyRocketSquidEntity(world), EntityClassification.WATER_CREATURE)
+                EntityType.Builder.create(BabyRocketSquidEntity::new, EntityClassification.WATER_CREATURE)
                         .size(0.4F, 0.4F)
                         .setTrackingRange(64)
                         .setUpdateInterval(10)
                         .setShouldReceiveVelocityUpdates(true)
                         .build(DataReference.MODID)
                         .setRegistryName("babyrs"),
-                EntityType.Builder.create((type, world) -> new ThrownSacEntity(world), EntityClassification.MISC)
+                EntityType.Builder.<ThrownSacEntity>create(ThrownSacEntity::new, EntityClassification.MISC)
                         .setTrackingRange(64)
                         .setUpdateInterval(10)
                         .setShouldReceiveVelocityUpdates(true)
                         .setCustomClientFactory(ThrownSacEntity::new)
                         .build(DataReference.MODID)
                         .setRegistryName("nitroinksac"),
-                EntityType.Builder.create((type, world) -> new ThrownTubeEntity(world), EntityClassification.MISC)
+                EntityType.Builder.<ThrownTubeEntity>create(ThrownTubeEntity::new, EntityClassification.MISC)
                         .setTrackingRange(128)
                         .setUpdateInterval(10)
                         .setShouldReceiveVelocityUpdates(true)

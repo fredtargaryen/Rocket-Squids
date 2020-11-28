@@ -7,6 +7,7 @@ import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -20,8 +21,8 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class BabyRocketSquidEntity extends AbstractSquidEntity {
     private IBabyCapability squidCap;
 
-    public BabyRocketSquidEntity(World w) {
-        super(RocketSquidsBase.BABY_SQUID_TYPE, w);
+    public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, World w) {
+        super(type, w);
         this.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
     }
 

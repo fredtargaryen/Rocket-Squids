@@ -239,7 +239,9 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                         Vector3d pos = player.getPositionVec();
                         player.world.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                        cap.setSquid(this);
+                        CompoundNBT nbt = new CompoundNBT();
+                        this.writeAdditional(nbt);
+                        cap.setSquidData(nbt);
                         this.remove();
                     });
                     player.setHeldItem(hand, newStack);
@@ -335,7 +337,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 Vector3d thisPos = this.getPositionVec();
                 if(!this.world.isRemote && obstacle.getType() == RocketSquidsBase.SQUID_TYPE && this.breedCooldown == 0) {
                     this.breedCooldown = 3600;
-                    BabyRocketSquidEntity baby = new BabyRocketSquidEntity(this.world);
+                    Entity baby = RocketSquidsBase.BABY_SQUID_TYPE.create(this.world);
                     baby.setLocationAndAngles(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
                     this.world.addEntity(baby);
                 }
