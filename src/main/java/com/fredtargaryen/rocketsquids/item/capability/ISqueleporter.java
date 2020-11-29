@@ -9,5 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
  */
 public interface ISqueleporter {
     void setSquidData(CompoundNBT nbt);
+    void setSquidCapabilityData(CompoundNBT nbt);
     CompoundNBT getSquidData();
+    CompoundNBT getSquidCapabilityData();
 }

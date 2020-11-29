@@ -236,12 +236,18 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 if(i == RocketSquidsBase.SQUELEPORTER_INACTIVE) {
                     //The squeleporter is inactive so store the squid here
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.getDefaultInstance();
-                    newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
+                    newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
                         Vector3d pos = player.getPositionVec();
                         player.world.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                        // Set squid data
                         CompoundNBT nbt = new CompoundNBT();
                         this.writeAdditional(nbt);
-                        cap.setSquidData(nbt);
+                        squeleporterCap.setSquidData(nbt);
+                        // Set squid capability data
+                        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap ->
+                        {
+                            squeleporterCap.setSquidCapabilityData((CompoundNBT) RocketSquidsBase.ADULTCAP.writeNBT(squidCap, null));
+                        });
                         this.remove();
                     });
                     player.setHeldItem(hand, newStack);

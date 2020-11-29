@@ -17,6 +17,7 @@ public class DefaultSqueleporterImplFactory implements Callable<ISqueleporter> {
 
     private class DefaultSqueleporterImpl implements ISqueleporter {
         private CompoundNBT squidData;
+        private CompoundNBT squidCapabilityData;
 
         public DefaultSqueleporterImpl() {
 
@@ -30,6 +31,16 @@ public class DefaultSqueleporterImplFactory implements Callable<ISqueleporter> {
         @Override
         public void setSquidData(CompoundNBT nbt) {
             this.squidData = nbt;
+        }
+
+        @Override
+        public CompoundNBT getSquidCapabilityData() {
+            return this.squidCapabilityData;
+        }
+
+        @Override
+        public void setSquidCapabilityData(CompoundNBT nbt) {
+            this.squidCapabilityData = nbt;
         }
     }
 }

@@ -33,7 +33,6 @@ public class ItemSqueleporter extends Item {
                 stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                     CompoundNBT squidTags = cap.getSquidData();
                     EntityType.loadEntityUnchecked(squidTags, worldIn).ifPresent(entity -> {
-                        // Possibly need to use entity.writeUnlessRemoved(squidTags) here
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                         newSquid.forceRotPitch((playerIn.rotationPitch + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getRotationYawHead() * Math.PI / 180.0F));
@@ -42,6 +41,9 @@ public class ItemSqueleporter extends Item {
                         newSquid.addForce(squidTags.getDouble("force"));
                         Vector3d playerPos = playerIn.getPositionVec();
                         newSquid.setPosition(playerPos.x, playerPos.y, playerPos.z);
+                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> {
+                            RocketSquidsBase.ADULTCAP.readNBT(squidCap, null, cap.getSquidCapabilityData());
+                        });
                         worldIn.addEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);

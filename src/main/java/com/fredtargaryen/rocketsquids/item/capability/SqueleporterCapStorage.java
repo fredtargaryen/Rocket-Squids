@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
-import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -14,11 +13,16 @@ import net.minecraftforge.common.capabilities.Capability;
 public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter> {
     @Override
     public INBT writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side) {
-        return instance.getSquidData();
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("normal", instance.getSquidData());
+        nbt.put("capability", instance.getSquidCapabilityData());
+        return nbt;
     }
 
     @Override
     public void readNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side, INBT nbt) {
-        instance.setSquidData((CompoundNBT) nbt);
+        CompoundNBT comp = (CompoundNBT) nbt;
+        instance.setSquidData(comp.getCompound("normal"));
+        instance.setSquidCapabilityData(comp.getCompound("capability"));
     }
 }
