@@ -320,7 +320,6 @@ public class RocketSquidsBase {
         }
 
         //Spawn info
-        //Use SquidEntity::func_223365_b if spawning anywhere is too weird
         EntitySpawnPlacementRegistry.register(SQUID_TYPE, EntitySpawnPlacementRegistry.PlacementType.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnInfo.Spawners(SQUID_TYPE, GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
