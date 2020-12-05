@@ -28,19 +28,33 @@ public class StatueGen implements IWorldGenerator {
      *
      */
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+        if(RocketSquidsBase.useStatueWhitelist)
+        {
+            if(!RocketSquidsBase.statueWhitelist.contains(world.provider.getDimensionType().getName()))
+            {
+                return;
+            }
+        }
+        else
+        {
+            if(RocketSquidsBase.statueBlacklist.contains(world.provider.getDimensionType().getName()))
+            {
+                return;
+            }
+        }
         StatueManager statueManager = StatueManager.forWorld(world);
-        int chunkAreaX = chunkX / 100;
-        int chunkAreaZ = chunkZ / 100;
+        int chunkAreaX = chunkX / RocketSquidsBase.statueFrequency;
+        int chunkAreaZ = chunkZ / RocketSquidsBase.statueFrequency;
         int[] statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
         if(statueLocation == null) {
             //A statue location hasn't been decided for this chunk area. Decide one
             statueLocation = new int[] {chunkAreaX, chunkAreaZ,
                     //Random chunk in the 100x100 area
-                    (chunkAreaX * 100 + random.nextInt(100))
+                    (chunkAreaX * RocketSquidsBase.statueFrequency + random.nextInt(RocketSquidsBase.statueFrequency))
                     //Random block in the 16x16 chunk
                             * 16 + random.nextInt(16),
                     random.nextInt(80) + 1,
-                    (chunkAreaZ * 100 + random.nextInt(100)) * 16 + random.nextInt(16)};
+                    (chunkAreaZ * RocketSquidsBase.statueFrequency + random.nextInt(RocketSquidsBase.statueFrequency)) * 16 + random.nextInt(16)};
             statueManager.addStatue(new BlockPos(statueLocation[2], statueLocation[3], statueLocation[4]));
         }
         if(chunkX == statueLocation[2] / 16 && chunkZ == statueLocation[4] / 16) {

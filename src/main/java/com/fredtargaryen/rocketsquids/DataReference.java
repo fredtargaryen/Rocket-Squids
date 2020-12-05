@@ -11,7 +11,7 @@ public class DataReference
     //MAIN MOD DETAILS
     public static final String MODID = "rocketsquidsft";
     public static final String MODNAME = "Rocket Squids";
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.2";
     //PROXY PATHS
     public static final String CLIENTPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ClientProxy";
     public static final String SERVERPROXYPATH = "com.fredtargaryen.rocketsquids.proxy.ServerProxy";

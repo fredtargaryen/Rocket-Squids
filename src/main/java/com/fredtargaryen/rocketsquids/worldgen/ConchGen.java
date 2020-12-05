@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 import java.util.Random;
@@ -26,6 +27,20 @@ public class ConchGen implements IWorldGenerator {
      *
      */
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+        if(RocketSquidsBase.useConchWhitelist)
+        {
+            if(!RocketSquidsBase.conchWhitelist.contains(world.provider.getDimensionType().getName()))
+            {
+                return;
+            }
+        }
+        else
+        {
+            if(RocketSquidsBase.conchBlacklist.contains(world.provider.getDimensionType().getName()))
+            {
+                return;
+            }
+        }
         int maxConches = random.nextInt(3); //was 3
         int blockX = chunkX * 16;
         int blockZ = chunkZ * 16;

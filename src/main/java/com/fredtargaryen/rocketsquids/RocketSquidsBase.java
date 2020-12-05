@@ -53,6 +53,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
 import static net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
@@ -69,6 +71,13 @@ public class RocketSquidsBase {
     private static int spawnProb;
     private static int minGrpSize;
     private static int maxGrpSize;
+    public static boolean useConchWhitelist;
+    public static List<String> conchWhitelist;
+    public static List<String> conchBlacklist;
+    public static boolean useStatueWhitelist;
+    public static List<String> statueWhitelist;
+    public static List<String> statueBlacklist;
+    public static int statueFrequency;
 
     //Declare all blocks here
     @ObjectHolder("blockconch")
@@ -132,6 +141,13 @@ public class RocketSquidsBase {
         spawnProb = config.getInt("spawnProb", "Spawning", 4, 1, 100, "Weighted probability of a group spawning");
         minGrpSize = config.getInt("minGroupSize", "Spawning", 2, 1, 20, "Smallest possible size of a group");
         maxGrpSize = config.getInt("maxGroupSize", "Spawning", 5, 1, 40, "Largest possible size of a group");
+        useConchWhitelist = config.getBoolean("usewhitelist", "Conch Worldgen", true, "If true, uses the conch whitelist. If false, uses the blacklist.");
+        conchBlacklist = Arrays.asList(config.getStringList("blacklist", "Conch Worldgen", new String[]{}, "The list of dimensions where conches cannot appear."));
+        conchWhitelist = Arrays.asList(config.getStringList("whitelist", "Conch Worldgen", new String[] { "overworld" }, "The list of dimensions where conches can appear."));
+        useStatueWhitelist = config.getBoolean("usewhitelist", "Statue Worldgen", true, "If true, uses the statue whitelist. If false, uses the blacklist.");
+        statueBlacklist = Arrays.asList(config.getStringList("blacklist", "Statue Worldgen", new String[] { }, "The list of dimensions where statues cannot appear."));
+        statueWhitelist = Arrays.asList(config.getStringList("whitelist", "Statue Worldgen", new String[] { "overworld" }, "The list of dimensions where statues can appear."));
+        statueFrequency = config.getInt("areaSize", "Statue Worldgen", 100, 8, 2000, "One statue will appear in every nxn chunk area. Changing this in an existing world is not recommended.");
         config.save();
         if(maxGrpSize < minGrpSize)
         {
