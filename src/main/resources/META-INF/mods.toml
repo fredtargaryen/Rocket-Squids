@@ -21,7 +21,6 @@ displayName="Rocket Squids"
 authors="FredTargaryen"
 # A text field displayed in the mod UI
 credits='''Inspired by watching squids when my latency was through the roof.
-            LapisSea: help with rider rotation code
             mxnmnm: suggested worldgen spawn dimension whitelist
             And the numerous bug reporters
 '''

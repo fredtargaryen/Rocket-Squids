@@ -32,7 +32,7 @@ public class ThrownTubeEntity extends ProjectileItemEntity {
     }
 
     @Override
-    protected Item func_213885_i() {
+    protected Item getDefaultItem() {
         return RocketSquidsBase.TURBO_TUBE;
     }
 
