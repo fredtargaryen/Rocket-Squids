@@ -28,7 +28,6 @@ public class ItemTurboTube extends Item {
                 SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.NEUTRAL, 0.5F, 0.4F);
         if (!world.isRemote) {
             ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
-            //tube.func_213884_b(stack);
             tube.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
             world.addEntity(tube);
         }
