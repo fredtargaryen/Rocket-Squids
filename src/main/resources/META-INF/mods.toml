@@ -1,4 +1,4 @@
-# mods.toml file for Rocket Squids 1.14.4
+# mods.toml file for Rocket Squids
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml"
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
@@ -9,18 +9,22 @@ issueTrackerURL="https://github.com/fredtargaryen/Rocket-Squids/issues"
 displayURL="https://minecraft.curseforge.com/projects/rocket-squids"
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="banner.png"
-# A text field displayed in the mod UI
-credits="Inspired by watching squids when my latency was through the roof. Thank you to LapisSea for help with rider rotation code."
-# A text field displayed in the mod UI
-authors="FredTargaryen"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
 # The modid of the mod
 modId="rocketsquidsft"
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="1.2"
- # A display name for the mod
+# A display name for the mod
 displayName="Rocket Squids"
+# A text field displayed in the mod UI
+authors="FredTargaryen"
+# A text field displayed in the mod UI
+credits='''Inspired by watching squids when my latency was through the roof.
+            LapisSea: help with rider rotation code
+            mxnmnm: suggested worldgen spawn dimension whitelist
+            And the numerous bug reporters
+'''
 # A URL to query for updates for this mod. See the JSON update specification <here>
 # updateJSONURL="http://myurl.me/" #optional
 # The description text for the mod (multi line!) (#mandatory)
