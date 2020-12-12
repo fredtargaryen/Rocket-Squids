@@ -161,7 +161,7 @@ public class RocketSquidsBase {
 
     public RocketSquidsBase() {
         //Register the config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
 
         //Event bus
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
