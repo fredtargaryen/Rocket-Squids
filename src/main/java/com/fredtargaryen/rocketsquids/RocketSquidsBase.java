@@ -173,7 +173,7 @@ public class RocketSquidsBase {
         MinecraftForge.EVENT_BUS.register(this);
 
         //Load the config
-        Config.loadConfig(FMLPaths.CONFIGDIR.get().resolve(DataReference.MODID + ".toml"));
+        Config.loadConfig(FMLPaths.CONFIGDIR.get().resolve(DataReference.MODID + "-common.toml"));
     }
 
     @SubscribeEvent
@@ -271,7 +271,7 @@ public class RocketSquidsBase {
     }
 
     @SubscribeEvent
-    public static void registerDecorators(RegistryEvent.Register<Placement<?>> event) {
+    public static void registerPlacements(RegistryEvent.Register<Placement<?>> event) {
         event.getRegistry().registerAll(
                 new ConchPlacement(ConchPlacementConfig::factory)
                 .setRegistryName("conchplace"),
