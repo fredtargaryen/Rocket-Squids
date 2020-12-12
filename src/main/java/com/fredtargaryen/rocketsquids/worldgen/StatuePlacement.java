@@ -46,7 +46,7 @@ public class StatuePlacement extends Placement<StatuePlacementConfig> {
                     (chunkAreaX * frequency + random.nextInt(frequency))
                             //Random block in the 16x16 chunk
                             * 16 + random.nextInt(16),
-                    random.nextInt(254) + 1,
+                    random.nextInt(chunkGenerator.getMaxHeight() - 3) + 1,
                     (chunkAreaZ * frequency + random.nextInt(frequency))
                             * 16 + random.nextInt(16)};
             statueManager.addStatue(new BlockPos(statueLocation[2], statueLocation[3], statueLocation[4]));
