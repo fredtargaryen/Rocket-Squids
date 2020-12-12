@@ -24,12 +24,12 @@ public class StatuePlacement extends Placement<StatuePlacementConfig> {
         // First check the config to see if this dimension is allowed
         if(GeneralConfig.STATUE_USE_WHITELIST.get())
         {
-            List<String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
+            List<? extends String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
             if(!allowedDimensions.contains(world.getDimension().getType().getRegistryName().toString())) return Stream.empty();
         }
         else
         {
-            List<String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
+            List<? extends String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
             if(blockedDimensions.contains(world.getDimension().getType().getRegistryName().toString())) return Stream.empty();
         }
         StatueManager statueManager = StatueManager.forWorld(world.getWorld());

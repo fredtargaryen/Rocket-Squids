@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
+import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.mojang.datafixers.Dynamic;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SandBlock;
@@ -11,6 +12,7 @@ import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.placement.Placement;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -22,6 +24,17 @@ public class ConchPlacement extends Placement<ConchPlacementConfig> {
 
     @Override
     public Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, ConchPlacementConfig placementConfig, BlockPos pos) {
+        // First check the config to see if this dimension is allowed
+        if(GeneralConfig.CONCH_USE_WHITELIST.get())
+        {
+            List<? extends String> allowedDimensions = GeneralConfig.CONCH_WHITELIST.get();
+            if(!allowedDimensions.contains(world.getDimension().getType().getRegistryName().toString())) return Stream.empty();
+        }
+        else
+        {
+            List<? extends String> blockedDimensions = GeneralConfig.CONCH_BLACKLIST.get();
+            if(blockedDimensions.contains(world.getDimension().getType().getRegistryName().toString())) return Stream.empty();
+        }
         int maxConches = random.nextInt(3); //was 3
         int blockX = (pos.getX() / 16) * 16;
         int blockZ = (pos.getZ() / 16) * 16;
