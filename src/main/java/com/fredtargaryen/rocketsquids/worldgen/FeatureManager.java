@@ -3,6 +3,7 @@ package com.fredtargaryen.rocketsquids.worldgen;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Iterator;
 
@@ -12,7 +13,7 @@ public class FeatureManager {
         ConchGenConfig cgc = new ConchGenConfig();
         ConchPlacementConfig cpc = new ConchPlacementConfig();
         //Register these in all Biomes necessary
-        Iterator<Biome> i = Biome.BIOMES.iterator();
+        Iterator<Biome> i = ForgeRegistries.BIOMES.iterator();
         while(i.hasNext()) {
             Biome b = i.next();
             b.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION,
@@ -23,7 +24,7 @@ public class FeatureManager {
         StatueGenConfig sgc = new StatueGenConfig();
         StatuePlacementConfig spc = new StatuePlacementConfig();
         //Register these in all Biomes necessary
-        Iterator<Biome> i2 = Biome.BIOMES.iterator();
+        Iterator<Biome> i2 = ForgeRegistries.BIOMES.iterator();
         while(i2.hasNext()) {
             Biome b = i2.next();
             b.addFeature(GenerationStage.Decoration.UNDERGROUND_DECORATION,
