@@ -22,7 +22,7 @@ public class StatueManager extends WorldSavedData {
     }
 
     public static StatueManager forWorld(World world) {
-        ServerWorld serverWorld = world.getServer().getWorld(DimensionType.OVERWORLD);
+        ServerWorld serverWorld = world.getServer().getWorld(world.dimension.getType());
         DimensionSavedDataManager storage = serverWorld.getSavedData();
         return storage.getOrCreate(StatueManager::new, DataReference.MODID);
     }
