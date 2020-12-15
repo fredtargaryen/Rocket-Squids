@@ -10,10 +10,13 @@ import com.fredtargaryen.rocketsquids.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.Vector3d;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -549,27 +552,28 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-//        if(this.isPassenger(event.getEntityPlayer())) {
-//            double prevPitch_r = this.squidCap.getPrevRotPitch();
-//            double pitch_r = this.squidCap.getRotPitch();
-//			float partialTick = event.getPartialRenderTick();
-//            double exactPitch_r = prevPitch_r + (pitch_r - prevPitch_r) * partialTick;
-//            double exactPitch_d = exactPitch_r * 180 / Math.PI;
-//			double yaw_r = this.squidCap.getRotYaw();
-//            this.riderRotated = true;
-//            GlStateManager.pushMatrix();
-//            GlStateManager.translated(0.0, 0.08, 0.0);
-//            GlStateManager.rotated(exactPitch_d - 90.0, Math.cos(yaw_r), 0.0, Math.sin(yaw_r));
-//        }
+        if(this.isPassenger(event.getPlayer())) {
+            double prevPitch_r = this.squidCap.getPrevRotPitch();
+            double pitch_r = this.squidCap.getRotPitch();
+			float partialTick = event.getPartialRenderTick();
+            double exactPitch_r = prevPitch_r + (pitch_r - prevPitch_r) * partialTick;
+			double yaw_r = this.squidCap.getRotYaw();
+            this.riderRotated = true;
+            MatrixStack stack = event.getMatrixStack();
+            stack.push();
+            Quaternion quat = Vector3f.YP.rotation((float) -yaw_r);
+            quat.multiply(Vector3f.XP.rotation((float) (exactPitch_r - (Math.PI / 2))));
+            stack.rotate(quat);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void popRotation(RenderPlayerEvent.Post event) {
-//        if(this.riderRotated) {
-//            GlStateManager.popMatrix();
-//            this.riderRotated = false;
-//        }
+        if(this.riderRotated) {
+            event.getMatrixStack().pop();
+            this.riderRotated = false;
+        }
     }
 
     ///////
