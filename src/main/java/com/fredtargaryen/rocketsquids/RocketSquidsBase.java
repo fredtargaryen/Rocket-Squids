@@ -111,8 +111,6 @@ public class RocketSquidsBase {
     public static EntityType SQUID_TYPE;
     @ObjectHolder("babyrs")
     public static EntityType BABY_SQUID_TYPE;
-    @ObjectHolder("primala")
-    public static EntityType PRIMAL_A_TYPE;
     private static EntityType SQUID_EARLYREG;
 
     //Declare all Features here
