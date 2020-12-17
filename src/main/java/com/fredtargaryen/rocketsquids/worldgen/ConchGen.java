@@ -34,12 +34,12 @@ public class ConchGen extends Feature<ConchGenConfig> {
         // First check the config to see if this dimension is allowed
         if(GeneralConfig.CONCH_USE_WHITELIST.get())
         {
-            List<String> allowedDimensions = GeneralConfig.CONCH_WHITELIST.get();
+            List<? extends String> allowedDimensions = GeneralConfig.CONCH_WHITELIST.get();
             if(!allowedDimensions.contains(world.getWorld().getDimensionKey().getLocation().toString())) return false;
         }
         else
         {
-            List<String> blockedDimensions = GeneralConfig.CONCH_BLACKLIST.get();
+            List<? extends String> blockedDimensions = GeneralConfig.CONCH_BLACKLIST.get();
             if(blockedDimensions.contains(world.getWorld().getDimensionKey().getLocation().toString())) return false;
         }
         world.setBlockState(pos, RocketSquidsBase.BLOCK_CONCH.getDefaultState()

@@ -14,15 +14,15 @@ public class GeneralConfig {
 
     public static ForgeConfigSpec.BooleanValue CONCH_USE_WHITELIST;
 
-    public static ForgeConfigSpec.ConfigValue<List<String>> CONCH_WHITELIST;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> CONCH_WHITELIST;
 
-    public static ForgeConfigSpec.ConfigValue<List<String>> CONCH_BLACKLIST;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> CONCH_BLACKLIST;
 
     public static ForgeConfigSpec.BooleanValue STATUE_USE_WHITELIST;
 
-    public static ForgeConfigSpec.ConfigValue<List<String>> STATUE_WHITELIST;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> STATUE_WHITELIST;
 
-    public static ForgeConfigSpec.ConfigValue<List<String>> STATUE_BLACKLIST;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> STATUE_BLACKLIST;
 
     public static final List<String> DEFAULT_WHITELIST = new ArrayList<>();
 
@@ -39,14 +39,14 @@ public class GeneralConfig {
         CONCH_USE_WHITELIST = serverBuilder.comment("If true, uses the conch whitelist. If false, uses the blacklist.")
                 .define("worldgen.conch.usewhitelist", true);
         CONCH_WHITELIST = serverBuilder.comment("The list of dimensions where conches can appear.")
-                .define("worldgen.conch.whitelist", DEFAULT_WHITELIST);
+                .defineList("worldgen.conch.whitelist", DEFAULT_WHITELIST, string -> true);
         CONCH_BLACKLIST = serverBuilder.comment("The list of dimensions where conches cannot appear.")
-                .define("worldgen.conch.blacklist", DEFAULT_BLACKLIST);
+                .defineList("worldgen.conch.blacklist", DEFAULT_BLACKLIST, string -> true);
         STATUE_USE_WHITELIST = serverBuilder.comment("If true, uses the statue whitelist. If false, uses the blacklist.")
                 .define("worldgen.statue.usewhitelist", true);
         STATUE_WHITELIST = serverBuilder.comment("The list of dimensions where statues can appear.")
-                .define("worldgen.statue.whitelist", DEFAULT_WHITELIST);
+                .defineList("worldgen.statue.whitelist", DEFAULT_WHITELIST, string -> true);
         STATUE_BLACKLIST = serverBuilder.comment("The list of dimensions where statues cannot appear.")
-                .define("worldgen.statue.blacklist", DEFAULT_BLACKLIST);
+                .defineList("worldgen.statue.blacklist", DEFAULT_BLACKLIST, string -> true);
     }
 }

@@ -35,12 +35,12 @@ public class StatueGen extends Feature<StatueGenConfig> {
         // First check the config to see if this dimension is allowed
         if(GeneralConfig.STATUE_USE_WHITELIST.get())
         {
-            List<String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
+            List<? extends String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
             if(!allowedDimensions.contains(world.getWorld().getDimensionKey().getLocation().toString())) return false;
         }
         else
         {
-            List<String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
+            List<? extends String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
             if(blockedDimensions.contains(world.getWorld().getDimensionKey().getLocation().toString())) return false;
         }
         StatueManager statueManager = StatueManager.forWorld(world.getWorld());

@@ -39,7 +39,6 @@ import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.Heightmap;
@@ -162,7 +161,7 @@ public class RocketSquidsBase {
 
     public RocketSquidsBase() {
         //Register the config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
 
         //Event bus
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -173,7 +172,7 @@ public class RocketSquidsBase {
         // Register ourselves for server, registry and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
-        //Load the config
+        //Register and load the config
         Config.loadConfig(FMLPaths.CONFIGDIR.get().resolve(DataReference.MODID + ".toml"));
     }
 
