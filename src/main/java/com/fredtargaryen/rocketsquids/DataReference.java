@@ -30,11 +30,6 @@ public class DataReference {
     //////////////////////
     //Worldgen constants//
     //////////////////////
-    /**
-     * A chunk area is a square region of chunks in which one statue will generate.
-     */
-    public static final int CHUNK_AREA_SIZE = 32;
-
     public static Direction randomHorizontalFacing(Random rand) {
         switch(rand.nextInt(4)) {
             case 0:

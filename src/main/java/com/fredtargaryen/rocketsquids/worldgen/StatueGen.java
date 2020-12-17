@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
-import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.world.StatueManager;
@@ -13,7 +12,6 @@ import net.minecraft.world.gen.feature.Feature;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
 
 public class StatueGen extends Feature<StatueGenConfig> {
 
@@ -44,20 +42,21 @@ public class StatueGen extends Feature<StatueGenConfig> {
             if(blockedDimensions.contains(world.getWorld().getDimensionKey().getLocation().toString())) return false;
         }
         StatueManager statueManager = StatueManager.forWorld(world.getWorld());
+        int frequency = GeneralConfig.STATUE_FREQUENCY.get();
         int chunkX = pos.getX() / 16;
         int chunkZ = pos.getZ() / 16;
-        int chunkAreaX = chunkX / DataReference.CHUNK_AREA_SIZE;
-        int chunkAreaZ = chunkZ / DataReference.CHUNK_AREA_SIZE;
+        int chunkAreaX = chunkX / frequency;
+        int chunkAreaZ = chunkZ / frequency;
         int[] statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
         if(statueLocation == null) {
             //A statue location hasn't been decided for this chunk area. Decide one
             statueLocation = new int[] {chunkAreaX, chunkAreaZ,
                     //Random chunk in the sizexsize area
-                    (chunkAreaX * DataReference.CHUNK_AREA_SIZE + random.nextInt(DataReference.CHUNK_AREA_SIZE))
+                    (chunkAreaX * frequency + random.nextInt(frequency))
                             //Random block in the 16x16 chunk
                             * 16 + random.nextInt(16),
                     random.nextInt(254) + 1,
-                    (chunkAreaZ * DataReference.CHUNK_AREA_SIZE + random.nextInt(DataReference.CHUNK_AREA_SIZE))
+                    (chunkAreaZ * frequency + random.nextInt(frequency))
                             * 16 + random.nextInt(16)};
             statueManager.addStatue(new BlockPos(statueLocation[2], statueLocation[3], statueLocation[4]));
         }

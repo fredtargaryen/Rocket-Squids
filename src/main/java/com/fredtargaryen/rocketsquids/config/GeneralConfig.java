@@ -28,6 +28,8 @@ public class GeneralConfig {
 
     public static final List<String> DEFAULT_BLACKLIST = new ArrayList<>();
 
+    public static ForgeConfigSpec.IntValue STATUE_FREQUENCY;
+
     public static void init(ForgeConfigSpec.Builder serverBuilder) {
         DEFAULT_WHITELIST.add("minecraft:overworld");
         SPAWN_PROB = serverBuilder.comment("Weighted probability of a group of Rocket Squids spawning.")
@@ -48,5 +50,7 @@ public class GeneralConfig {
                 .defineList("worldgen.statue.whitelist", DEFAULT_WHITELIST, string -> true);
         STATUE_BLACKLIST = serverBuilder.comment("The list of dimensions where statues cannot appear.")
                 .defineList("worldgen.statue.blacklist", DEFAULT_BLACKLIST, string -> true);
+        STATUE_FREQUENCY = serverBuilder.comment("One statue will appear in every nxn chunk area. Changing this in an existing world is not recommended.")
+                .defineInRange("worldgen.statue.frequency", 32, 8, 2000);
     }
 }
