@@ -14,8 +14,10 @@ public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter
     @Override
     public INBT writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side) {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.put("normal", instance.getSquidData());
-        nbt.put("capability", instance.getSquidCapabilityData());
+        CompoundNBT normalSquidData = instance.getSquidData();
+        CompoundNBT capSquidData = instance.getSquidCapabilityData();
+        nbt.put("normal", normalSquidData == null ? new CompoundNBT() : normalSquidData);
+        nbt.put("capability", capSquidData == null ? new CompoundNBT() : instance.getSquidCapabilityData());
         return nbt;
     }
 
