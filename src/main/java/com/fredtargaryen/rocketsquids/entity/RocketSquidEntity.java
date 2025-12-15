@@ -15,7 +15,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -223,15 +222,15 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public InteractionResult mobInteract (Player player, InteractionHand hand) {
         if(!this.level.isClientSide) {
-            ItemStack stack = getItemInHand(hand);
-            if (stack == ItemStack.EMPTY) {
+            ItemStack interactStack = player.getItemInHand(hand);
+            if (interactStack == ItemStack.EMPTY) {
                 if (this.getSaddled() && !this.isVehicle()) {
                     player.startRiding(this);
                     return InteractionResult.SUCCESS;
                 }
             }
             else {
-                Item interactItem = stack.getItem();
+                Item interactItem = interactStack.getItem();
                 if (interactItem == RocketSquidsBase.SQUELEPORTER_INACTIVE.get()) {
                     //The squeleporter is inactive so store the squid here
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
@@ -257,13 +256,13 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     player.getCooldowns().addCooldown(newStack.getItem(), 10);
                 }
                 else if (interactItem == Items.FLINT_AND_STEEL) {
-                    stack.hurt(1, player.getRandom(), (ServerPlayer) player);
+                    interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
                     this.squidCap.setForcedBlast(true);
                     return InteractionResult.SUCCESS;
                 }
                 else if (interactItem == Items.SADDLE) {
                     if (!this.getSaddled()) {
-                        stack.hurt(1, player.getRandom(), (ServerPlayer) player);
+                        interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
                         this.setSaddled(true);
                     }
                     player.startRiding(this);
