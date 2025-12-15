@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "rocketsquids:nitroinksac",
+          "name": "rocketsquids:nitro_ink_sac",
           "functions": [
             {
               "function": "minecraft:set_count",
