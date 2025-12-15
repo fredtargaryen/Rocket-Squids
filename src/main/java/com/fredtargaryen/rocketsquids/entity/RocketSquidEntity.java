@@ -15,6 +15,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -50,6 +51,8 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+
+import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
 
 public class RocketSquidEntity extends AbstractSquidEntity {
     private IAdultCapability squidCap;
@@ -88,7 +91,15 @@ public class RocketSquidEntity extends AbstractSquidEntity {
         this.goalSelector.addGoal(3, new AdultFlopAroundGoal(this));
     }
 
+    @Nullable
+    public Mob getBreedOffspring(ServerLevel level, Mob mate) {
+        return BABY_SQUID_TYPE.get().create(level);
+    }
 
+    @Override
+    public boolean canBreed() {
+        return true;
+    }
 
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
@@ -349,7 +360,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
                 Vec3 thisPos = this.position();
                 if(!this.level.isClientSide && obstacle.getType() == RocketSquidsBase.SQUID_TYPE.get() && this.breedCooldown == 0) {
                     this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is changed in the config
-                    Entity baby = RocketSquidsBase.BABY_SQUID_TYPE.get().create(this.level);
+                    Entity baby = BABY_SQUID_TYPE.get().create(this.level);
                     assert baby != null; // TODO: decouple the baby spawning from the entity so that we can make only one spawn
                     baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
                     this.level.addFreshEntity(baby);

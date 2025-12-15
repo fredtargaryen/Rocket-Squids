@@ -1,6 +1,9 @@
 package com.fredtargaryen.rocketsquids.entity;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.AgableMob;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.Direction;
@@ -9,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public abstract class AbstractSquidEntity extends WaterAnimal {
@@ -40,6 +44,10 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     protected SoundEvent getDeathSound()
     {
         return null;
+    }
+
+    public boolean canBreed() {
+        return false;
     }
 
     /**
