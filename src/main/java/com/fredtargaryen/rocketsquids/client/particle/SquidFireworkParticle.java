@@ -106,7 +106,6 @@ public class SquidFireworkParticle {
         private int age;
         private final ParticleEngine manager;
         private ListTag explosions;
-        private boolean twinkle;
         private static final double squareLength = 1.0 / 7.0;
 
         public SquidStarter(ClientLevel world, double x, double y, double z, ParticleEngine manager) {
@@ -125,7 +124,7 @@ public class SquidFireworkParticle {
                 for (int i = 0; i < this.explosions.size(); ++i) {
                     CompoundTag compoundnbt = this.explosions.getCompound(i);
                     if (compoundnbt.getBoolean("Flicker")) {
-                        this.twinkle = true;
+                        boolean twinkle = true;
                         this.lifetime += 15;
                         break;
                     }

@@ -26,13 +26,13 @@ import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.worldgen.*;
 import com.fredtargaryen.rocketsquids.util.ColorHelper;
 import com.mojang.math.Vector3f;
+import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +56,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -69,11 +70,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ObjectHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import net.minecraftforge.common.ForgeSpawnEggItem;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
@@ -265,8 +264,8 @@ public class RocketSquidsBase {
         MessageHandler.init();
 
         //Add entity attributes
-        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.prepareAttributes().build()));
-        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.prepareAttributes().build()));
+        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build()));
+        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build()));
 
         //Capability
         CapabilityManager.INSTANCE.register(IBabyCapability.class, new BabyCapStorage(), new DefaultBabyImplFactory());

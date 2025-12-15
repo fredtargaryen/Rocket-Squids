@@ -51,10 +51,11 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
 
-public class RocketSquidEntity extends AbstractSquidEntity {
+public class RocketSquidEntity extends AbstractRocketSquidEntity {
     private IAdultCapability squidCap;
 
     ///////////////
@@ -73,7 +74,7 @@ public class RocketSquidEntity extends AbstractSquidEntity {
         this.riderRotated = false;
     }
 
-    public static AttributeSupplier.Builder prepareAttributes() {
+    public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 12.0D);
     }
 
@@ -89,16 +90,6 @@ public class RocketSquidEntity extends AbstractSquidEntity {
         this.goalSelector.addGoal(1, new ShakeGoal(this));
         this.goalSelector.addGoal(2, new AdultSwimAroundGoal(this));
         this.goalSelector.addGoal(3, new AdultFlopAroundGoal(this));
-    }
-
-    @Nullable
-    public Mob getBreedOffspring(ServerLevel level, Mob mate) {
-        return BABY_SQUID_TYPE.get().create(level);
-    }
-
-    @Override
-    public boolean canBreed() {
-        return true;
     }
 
     /**
@@ -230,11 +221,6 @@ public class RocketSquidEntity extends AbstractSquidEntity {
     }
 
     @Override
-    public boolean canPickUpLoot() {
-        return false;
-    }
-
-    @Override
     public InteractionResult mobInteract (Player player, InteractionHand hand) {
         if(!this.level.isClientSide) {
             ItemStack stack = getItemInHand(hand);
@@ -359,11 +345,23 @@ public class RocketSquidEntity extends AbstractSquidEntity {
             if (!obstacle.noPhysics && !this.noPhysics) {
                 Vec3 thisPos = this.position();
                 if(!this.level.isClientSide && obstacle.getType() == RocketSquidsBase.SQUID_TYPE.get() && this.breedCooldown == 0) {
-                    this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is changed in the config
-                    Entity baby = BABY_SQUID_TYPE.get().create(this.level);
-                    assert baby != null; // TODO: decouple the baby spawning from the entity so that we can make only one spawn
-                    baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
-                    this.level.addFreshEntity(baby);
+                    // get the UUID of the other rocket_squid
+                    UUID partnerUUID = obstacle.getUUID();
+                    switch (this.uuid.compareTo(partnerUUID)) {
+                        // run .compareTo on it to find which squid has the greater UUID
+                        case 1:
+                            // the one with the greater UUID makes the child
+                            this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
+                            Entity baby = BABY_SQUID_TYPE.get().create(this.level);
+                            assert baby != null;
+                            baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
+                            this.level.addFreshEntity(baby);
+                        case -1:
+                            // the one with the less doesn't
+                            this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
+                        case 0:
+                            // if they are the same we don't do anything
+                    }
                 }
                 Vec3 obstaclePos = obstacle.position();
                 double xDist = obstaclePos.x - thisPos.x;

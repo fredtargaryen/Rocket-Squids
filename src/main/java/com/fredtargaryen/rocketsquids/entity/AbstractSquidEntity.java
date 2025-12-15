@@ -6,6 +6,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
@@ -43,6 +46,16 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     }
 
     public boolean canBreed() {
+        return false;
+    }
+
+    public boolean isFood(ItemStack stack) {
+        Item stackItem = stack.getItem();
+        return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH;
+    }
+
+    @Override
+    public boolean canPickUpLoot() {
         return false;
     }
 

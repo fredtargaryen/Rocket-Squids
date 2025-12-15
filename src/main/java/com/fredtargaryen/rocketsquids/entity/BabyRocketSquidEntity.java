@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.ai.BabyFlopAroundGoal;
+import com.fredtargaryen.rocketsquids.entity.ai.BabyRSFollowParentGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Objects;
 
-public class BabyRocketSquidEntity extends AbstractSquidEntity {
+public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     private IBabyCapability squidCap;
 
     public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, Level w) {
@@ -29,7 +30,7 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
     }
 
 
-    public static AttributeSupplier.Builder prepareAttributes() {
+    public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1.0D);
     }
 
@@ -38,9 +39,8 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
         super.registerGoals();
         this.goalSelector.addGoal(0, new BabySwimAroundGoal(this, 0.15));
         this.goalSelector.addGoal(1, new BabyFlopAroundGoal(this));
+        //this.goalSelector.addGoal(2, new BabyRSFollowParentGoal(this, 1.0));
     }
-
-
 
     @Override
     protected boolean canRide(Entity entityIn)
@@ -145,15 +145,19 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
      * Entity won't drop experience orbs if this returns false
      */
     @Override
-    protected boolean shouldDropExperience() {return false;}
+    protected boolean shouldDropExperience() {
+        // since this is a baby we don't want it to drop xp
+        return false;
+    }
 
     /**
      * Entity won't drop items if this returns false
      */
     @Override
-    protected boolean shouldDropLoot() {return false;}
-
-    // since this is a baby we don't want it to drop items or xp
+    protected boolean shouldDropLoot() {
+        // since this is a baby we don't want it to drop items
+        return false;
+    }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -194,7 +198,11 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
         }
     }
 
-    public double getTargRotPitch() { return this.squidCap.getTargetRotPitch(); }
+    public double getTargRotPitch() {
+        return this.squidCap.getTargetRotPitch();
+    }
 
-    public double getTargRotYaw() { return this.squidCap.getTargetRotYaw(); }
+    public double getTargRotYaw() {
+        return this.squidCap.getTargetRotYaw();
+    }
 }
