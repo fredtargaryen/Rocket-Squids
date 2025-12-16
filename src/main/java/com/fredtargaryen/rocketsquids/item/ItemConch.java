@@ -183,7 +183,7 @@ public class ItemConch extends ArmorItem {
                 HumanoidModel armorModel;
                 if (type == EquipmentSlot.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
-                    armorModel.head.visible = defaultModel.head.visible; //Head, I hope // I think that it's Head -Pickle
+                    armorModel.head.visible = defaultModel.head.visible; //Head, I hope // Probably the Head -pickle
                     armorModel.hat.visible = armorSlot == EquipmentSlot.HEAD;
 
                     armorModel.crouching = defaultModel.crouching;

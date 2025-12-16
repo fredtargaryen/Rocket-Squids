@@ -50,7 +50,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public HumanoidModel getConchModel() {
-        return new ConchModel(1f);
+        return new ConchModel(1.0f);
     }
 
     @Override
