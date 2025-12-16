@@ -2,11 +2,12 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.entity.ai.BabyFlopAroundGoal;
-import com.fredtargaryen.rocketsquids.entity.ai.BabyRSFollowParentGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -17,6 +18,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Objects;
@@ -28,7 +31,6 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
         super(type, w);
         this.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
     }
-
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1.0D);
@@ -139,6 +141,11 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public boolean isBaby() {
         return true;
+    }
+
+    public void spawnHearts(ServerLevel level) {
+        Vec3 thisPos = this.position();
+        level.sendParticles(ParticleTypes.HEART.getType(), thisPos.x, thisPos.y + 1.5D, thisPos.z, 3, 0.25D, 0.0D, 0.25D, 1.5D);
     }
 
     /**

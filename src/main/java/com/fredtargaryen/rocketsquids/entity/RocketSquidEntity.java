@@ -12,33 +12,40 @@ import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import com.mojang.math.Quaternion;
-import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -57,12 +64,13 @@ import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
 public class RocketSquidEntity extends AbstractRocketSquidEntity {
     private IAdultCapability squidCap;
 
+    protected int breedCooldown;
+    protected boolean breedable;
+
     ///////////////
     //Client only//
     ///////////////
     public boolean riderRotated;
-
-    protected int breedCooldown;
 
     //May have to remove and use capability instead
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
@@ -70,6 +78,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     public RocketSquidEntity(Level par1World) {
         super(RocketSquidsBase.SQUID_TYPE.get(), par1World);
         this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> RocketSquidEntity.this.squidCap = cap);
+        this.breedable = true;
         this.riderRotated = false;
     }
 
@@ -254,25 +263,21 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     }
                     player.setItemSlot(handEquip, newStack);
                     player.getCooldowns().addCooldown(newStack.getItem(), 10);
-                }
-                else if (interactItem == Items.FLINT_AND_STEEL) {
+                } else if (interactItem == Items.FLINT_AND_STEEL) {
                     interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
                     this.squidCap.setForcedBlast(true);
                     return InteractionResult.SUCCESS;
-                }
-                else if (interactItem == Items.SADDLE) {
+                } else if (interactItem == Items.SADDLE) {
                     if (!this.getSaddled()) {
                         interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
                         this.setSaddled(true);
                     }
                     player.startRiding(this);
                     return InteractionResult.SUCCESS;
-                }
-                else if (interactItem == Items.FEATHER) {
+                } else if (interactItem == Items.FEATHER) {
                     this.setShaking(true);
                     return InteractionResult.SUCCESS;
-                }
-                else {
+                } else {
                     if (this.getSaddled() && !this.isVehicle()) {
                         player.startRiding(this);
                         return InteractionResult.SUCCESS;
@@ -283,6 +288,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         return InteractionResult.FAIL;
     }
 
+    /**
+     * Called when the squid explodes to create particle effects, items and to remove the entity.
+     */
     public void explode() {
         if(!this.level.isClientSide) {
             Vec3 pos = this.position();
@@ -327,6 +335,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         super.remove();
     }
 
+    /**
+     * Spawns the squid firework particles for when they explode.
+     */
     @OnlyIn(Dist.CLIENT)
     private void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
@@ -335,31 +346,31 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     /**
+     * Spawns tells the client to spawn heart particles above the head of the rocket squids, used for when they "breed".
+     * @param level The level the rocket squid is in as represented on the server.
+     */
+    public void spawnHearts(ServerLevel level) {
+        if (!this.level.isClientSide) {
+            Vec3 thisPos = this.position();
+            level.sendParticles(ParticleTypes.HEART.getType(), thisPos.x, thisPos.y + 1.5D, thisPos.z, 3, 0.25D, 0.0D, 0.25D, 1.0D);
+        }
+    }
+
+    /**
      * Applies a velocity to the entities (unless they're riding), to push them away from each other.
+     * @param obstacle The Entity that is colliding with the rocket squid.
      */
     public void push(Entity obstacle) {
         Entity passenger = this.getControllingPassenger();
         if(passenger == null || passenger != obstacle) {
-            //Obstacle is not the rider, so apply collision
+            // Obstacle is not the rider, so apply collision
             if (!obstacle.noPhysics && !this.noPhysics) {
                 Vec3 thisPos = this.position();
-                if(!this.level.isClientSide && obstacle.getType() == RocketSquidsBase.SQUID_TYPE.get() && this.breedCooldown == 0) {
-                    // get the UUID of the other rocket_squid
-                    UUID partnerUUID = obstacle.getUUID();
-                    switch (this.uuid.compareTo(partnerUUID)) {
-                        // run .compareTo on it to find which squid has the greater UUID
-                        case 1:
-                            // the one with the greater UUID makes the child
-                            this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
-                            Entity baby = BABY_SQUID_TYPE.get().create(this.level);
-                            assert baby != null;
-                            baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
-                            this.level.addFreshEntity(baby);
-                        case -1:
-                            // the one with the less doesn't
-                            this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
-                        case 0:
-                            // if they are the same we don't do anything
+                if (!this.level.isClientSide && obstacle.getType() == RocketSquidsBase.SQUID_TYPE.get()) {
+                    RocketSquidEntity partner = (RocketSquidEntity) obstacle;
+                    if (this.canBreed() && partner.canBreed()) {
+                        // if it is another rocket squid that can breed we run the breed method
+                        this.breed(partner);
                     }
                 }
                 Vec3 obstaclePos = obstacle.position();
@@ -390,6 +401,52 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     this.push(-xDist * 0.02, -yDist * 0.02, -zDist * 0.02);
                     obstacle.push(xDist * 0.98, yDist * 0.98, zDist * 0.98);
                 }
+            }
+        }
+    }
+
+    /**
+     * Performs various checks to see of the rocket squids are eligable to "breed".
+     * @return true or false if they can breed
+     */
+    public boolean canBreed() {
+        boolean canBreed = false;
+        if (this.breedable) {
+            if (this.breedCooldown == 0 || this.breedCooldown <= 0) {
+                if (!this.isLeashed()) {
+                    if (!this.hasPassengers()) {
+                        canBreed = true;
+                    }
+                }
+            }
+        }
+        return canBreed;
+    }
+
+    /**
+     * Run when adult rocket squids try to "breed".
+     * @param partner The potential partner to "breed" with.
+     */
+    private void breed(RocketSquidEntity partner) {
+        if (!this.level.isClientSide) {
+            Vec3 thisPos = this.position();
+            // get the UUID of the "partner" rocket squid
+            UUID partnerUUID = partner.getUUID();
+            switch (this.uuid.compareTo(partnerUUID)) {
+                // run .compareTo() on it to find which squid has the greater UUID
+                case 1:
+                    // the one with the greater UUID creates the child
+                    this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
+                    BabyRocketSquidEntity baby = BABY_SQUID_TYPE.get().create(this.level);
+                    assert baby != null;
+                    baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
+                    this.level.addFreshEntity(baby);
+                    this.spawnHearts((ServerLevel) this.level);
+                    break;
+                case -1:
+                    // the one with the lesser UUID doesn't
+                    this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
+                    this.spawnHearts((ServerLevel) this.level);
             }
         }
     }
@@ -446,6 +503,10 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         else {
             return this.getPassengers().get(0);
         }
+    }
+
+    public boolean hasPassengers() {
+        return !this.getPassengers().isEmpty();
     }
 
     public boolean hasVIPRider() {
