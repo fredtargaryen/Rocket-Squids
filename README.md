@@ -1,5 +1,5 @@
 # Rocket Squids Relight
-An updated port of [Rocket Squids](https://github.com/fredtargaryen/Rocket-Squids) made by barnabeepickle.
+An updated port of [Rocket Squids](https://github.com/fredtargaryen/Rocket-Squids) created by barnabeepickle.
 
 A Minecraft mod all about fire-breathing super squids!
 
@@ -32,4 +32,4 @@ There are no plans for designing any APIs or other compatibility features but co
 
 ### Pull Requests
 With all Open Source projects Pull Requests are very much welcome
-and if I'm not able to accept them you could just fork the mod yourself.
+and if I'm not able to accept them you could just fork the mod yourself, though I will try to tend to them.
