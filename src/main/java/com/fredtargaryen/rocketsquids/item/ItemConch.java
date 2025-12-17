@@ -7,6 +7,7 @@ import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
@@ -172,6 +173,11 @@ public class ItemConch extends ArmorItem {
         }
 
         return true;
+    }
+
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+        return DataReference.MODID + ":textures/models/armor/conch_layer_1.png";
     }
 
     @Override
