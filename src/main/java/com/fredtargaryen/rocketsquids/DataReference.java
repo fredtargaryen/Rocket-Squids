@@ -12,9 +12,9 @@ import java.util.Random;
  * MessagePlayNoteClient: When received on the client, the note is played
  * MessagePlayNoteServer: sent to server when a note is played. When received, a MessagePlayNoteClient is sent to everyone nearby
  * MessageSquidNote: sent to clients whose players are wearing conches, when a Rocket Squid is broadcasting a note
- *
+ * <p>
  * When changing version number, change in: build.gradle, mods.toml
- *
+ * <p>
  * Superflat preset for squid testing:
  * minecraft:glowstone,42*minecraft:water
  */
@@ -31,16 +31,12 @@ public class DataReference {
     //Worldgen constants//
     //////////////////////
     public static Direction randomHorizontalFacing(Random rand) {
-        switch(rand.nextInt(4)) {
-            case 0:
-                return Direction.NORTH;
-            case 1:
-                return Direction.EAST;
-            case 2:
-                return Direction.SOUTH;
-            case 3:
-                return Direction.WEST;
-        }
-        return Direction.NORTH;
+        return switch (rand.nextInt(4)) {
+            case 0 -> Direction.NORTH;
+            case 1 -> Direction.EAST;
+            case 2 -> Direction.SOUTH;
+            case 3 -> Direction.WEST;
+            default -> Direction.NORTH;
+        };
     }
 }

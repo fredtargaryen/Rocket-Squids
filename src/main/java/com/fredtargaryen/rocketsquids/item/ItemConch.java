@@ -26,24 +26,24 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class ItemConch extends ArmorItem {
     public static final ArmorMaterial MATERIAL_CONCH = new ArmorMaterial() {
         @Override
-        public int getDurabilityForSlot(EquipmentSlot slotIn) {
+        public int getDurabilityForSlot(@NotNull EquipmentSlot slotIn) {
             return 2;
         }
 
         @Override
-        public int getDefenseForSlot(EquipmentSlot slotIn) {
+        public int getDefenseForSlot(@NotNull EquipmentSlot slotIn) {
             return 0;
         }
 
@@ -53,7 +53,7 @@ public class ItemConch extends ArmorItem {
         }
 
         @Override
-        public SoundEvent getEquipSound() {
+        public @NotNull SoundEvent getEquipSound() {
             return SoundEvents.ARMOR_EQUIP_GENERIC;
         }
 
@@ -63,7 +63,7 @@ public class ItemConch extends ArmorItem {
         }
 
         @Override
-        public String getName() {
+        public @NotNull String getName() {
             return DataReference.MODID + ":conch_item_1";
         }
 
@@ -86,7 +86,11 @@ public class ItemConch extends ArmorItem {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level worldIn,
+            @NotNull Player playerIn,
+            @NotNull InteractionHand handIn
+    ) {
         if (worldIn.isClientSide && !playerIn.isCrouching()) RocketSquidsBase.proxy.openConchClient((byte) 1);
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
         //FOR CONCH ARMOUR DEBUGGING
@@ -101,7 +105,7 @@ public class ItemConch extends ArmorItem {
      * Called when a Block is right-clicked with this Item
      */
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NotNull InteractionResult useOn(UseOnContext context) {
         Level worldIn = context.getLevel();
         Player player = context.getPlayer();
         BlockPos pos = context.getClickedPos();
@@ -148,6 +152,7 @@ public class ItemConch extends ArmorItem {
             }
         }
         else {
+            assert context.getPlayer() != null;
             this.use(context.getLevel(), context.getPlayer(), InteractionHand.MAIN_HAND);
         }
         return InteractionResult.FAIL;

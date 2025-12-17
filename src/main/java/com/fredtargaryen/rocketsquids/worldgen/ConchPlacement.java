@@ -8,6 +8,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.DecorationContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneDecoratorConfiguration;
 import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -18,7 +19,12 @@ public class ConchPlacement extends FeatureDecorator<NoneDecoratorConfiguration>
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecorationContext helper, Random random, NoneDecoratorConfiguration config, BlockPos pos) {
+    public @NotNull Stream<BlockPos> getPositions(
+            @NotNull DecorationContext helper,
+            Random random,
+            @NotNull NoneDecoratorConfiguration config,
+            BlockPos pos
+    ) {
         int maxConches = random.nextInt(3); //was 3
         int blockX = (pos.getX() / 16) * 16;
         int blockZ = (pos.getZ() / 16) * 16;

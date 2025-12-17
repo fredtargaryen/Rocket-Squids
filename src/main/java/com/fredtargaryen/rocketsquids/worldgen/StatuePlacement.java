@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.placement.DecorationContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneDecoratorConfiguration;
 import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -15,7 +16,12 @@ public class StatuePlacement extends FeatureDecorator<NoneDecoratorConfiguration
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecorationContext helper, Random random, NoneDecoratorConfiguration config, BlockPos pos) {
+    public @NotNull Stream<BlockPos> getPositions(
+            @NotNull DecorationContext helper,
+            @NotNull Random random,
+            @NotNull NoneDecoratorConfiguration config,
+            @NotNull BlockPos pos
+    ) {
         return Stream.of(pos);
     }
 }

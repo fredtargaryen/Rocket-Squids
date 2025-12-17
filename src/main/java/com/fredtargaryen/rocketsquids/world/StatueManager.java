@@ -10,18 +10,20 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class StatueManager extends SavedData {
     //5 integers; 2 integers for index of 100x100 chunk area; 3 integers for exact coords
     private ArrayList<int[]> statues;
 
     public StatueManager() {
-        super(DataReference.MODID);
+        super();
         this.statues = new ArrayList<>();
     }
 
     public static StatueManager forWorld(Level world) {
-        ServerLevel serverWorld = world.getServer().getLevel(world.dimension());
+        ServerLevel serverWorld = Objects.requireNonNull(world.getServer()).getLevel(world.dimension());
+        assert serverWorld != null;
         DimensionDataStorage storage = serverWorld.getDataStorage();
         return storage.computeIfAbsent(StatueManager::new, DataReference.MODID);
     }
@@ -50,11 +52,10 @@ public class StatueManager extends SavedData {
         int targetY = pos.getY();
         int targetZ = pos.getZ();
         boolean found = false;
-        Iterator<int[]> iter = this.statues.iterator();
-        while(iter.hasNext()) {
-            int[] next = iter.next();
-            if(next[2] == targetX && next[3] == targetY && next[4] == targetZ) {
+        for (int[] next : this.statues) {
+            if (next[2] == targetX && next[3] == targetY && next[4] == targetZ) {
                 found = true;
+                break;
             }
         }
         if(!found) {
@@ -80,14 +81,12 @@ public class StatueManager extends SavedData {
     public int[] getNearestStatuePos(double x, double y, double z) {
         int[] minloc = new int[] {-1, -1, -1, -1, -1};
         double minDistance = Double.POSITIVE_INFINITY;
-        Iterator<int[]> iter = this.statues.iterator();
-        while(iter.hasNext()) {
-            int[] nextLoc = iter.next();
+        for (int[] nextLoc : this.statues) {
             double nextXDist = nextLoc[2] - x;
             double nextYDist = nextLoc[3] - y;
             double nextZDist = nextLoc[4] - z;
             double nextDist = Math.sqrt(nextXDist * nextXDist + nextYDist * nextYDist + nextZDist * nextZDist);
-            if(nextDist < minDistance) {
+            if (nextDist < minDistance) {
                 minDistance = nextDist;
                 minloc = nextLoc;
             }

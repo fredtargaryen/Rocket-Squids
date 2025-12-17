@@ -18,9 +18,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -45,7 +44,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    protected boolean canRide(Entity entityIn)
+    protected boolean canRide(@NotNull Entity entityIn)
     {
         return false;
     }
@@ -59,7 +58,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
         super.aiStep();
         if(this.tickCount > 72000) {
             if(!this.level.isClientSide) {
-                this.remove();
+                this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level);
                 Vec3 pos = this.position();
                 adult.moveTo(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
@@ -167,7 +166,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("id", RocketSquidsBase.BABY_SQUID_TYPE.toString());
     }

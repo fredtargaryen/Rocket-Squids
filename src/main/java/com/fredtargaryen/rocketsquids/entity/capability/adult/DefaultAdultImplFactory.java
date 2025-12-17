@@ -16,13 +16,13 @@ public class DefaultAdultImplFactory implements Callable<IAdultCapability> {
         return new DefaultAdultImpl();
     }
 
-    private class DefaultAdultImpl implements IAdultCapability {
+    private static class DefaultAdultImpl implements IAdultCapability {
         private boolean shaking;
         private int shakeTicks;
         private boolean blasting;
         private boolean blastToStatue;
         private boolean forcedBlast;
-        private byte[] latestNotes;
+        private final byte[] latestNotes;
         private byte[] targetNotes;
 
         //ALL RADIANS

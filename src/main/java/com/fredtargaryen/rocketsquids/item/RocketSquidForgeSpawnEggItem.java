@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeSpawnEggItem;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -18,14 +19,25 @@ import java.util.function.Supplier;
 public class RocketSquidForgeSpawnEggItem extends ForgeSpawnEggItem {
     private final Supplier<? extends EntityType<?>> babyTypeSupplier;
 
-    public RocketSquidForgeSpawnEggItem(Supplier<? extends EntityType<?>> adultType, Supplier<? extends EntityType<?>> babyType, int backgroundColor, int highlightColor, Properties props) {
+    public RocketSquidForgeSpawnEggItem(
+            Supplier<? extends EntityType<? extends Mob>> adultType,
+            Supplier<? extends EntityType<? extends Mob>> babyType,
+            int backgroundColor,
+            int highlightColor,
+            Properties props
+    ) {
         super(adultType, backgroundColor, highlightColor, props);
         this.babyTypeSupplier = babyType;
     }
 
     @Override
-    public Optional<Mob> spawnOffspringFromSpawnEgg(
-            Player player, Mob mob, EntityType<? extends Mob> entityType, ServerLevel level, Vec3 pos, ItemStack stack
+    public @NotNull Optional<Mob> spawnOffspringFromSpawnEgg(
+            @NotNull Player player,
+            @NotNull Mob mob,
+            @NotNull EntityType<? extends Mob> entityType,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 pos,
+            ItemStack stack
     ) {
         if (!this.spawnsEntity(stack.getTag(), entityType)) {
             return Optional.empty();
@@ -45,7 +57,7 @@ public class RocketSquidForgeSpawnEggItem extends ForgeSpawnEggItem {
                     }
 
                     // check if the player is in creative essentially
-                    if (!player.abilities.instabuild) {
+                    if (!player.getAbilities().instabuild) {
                         stack.shrink(1);
                     }
 

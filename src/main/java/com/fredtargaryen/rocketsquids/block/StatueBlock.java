@@ -27,8 +27,10 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock {
     private static final VoxelShape TALLBOX = Block.box(0.0, 0.0, 0.0, 16.0, 32.0, 16.0);
@@ -45,11 +47,17 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
      * Get the Item that this Block should drop when harvested.
      */
     @Override
-    public Item asItem() { return RocketSquidsBase.ITEM_STATUE.get(); }
+    public @NotNull Item asItem() { return RocketSquidsBase.ITEM_STATUE.get(); }
 
     @Override
     @Deprecated
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    @SuppressWarnings("deprecation")
+    public @NotNull VoxelShape getShape(
+            @NotNull BlockState state,
+            @NotNull BlockGetter worldIn,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context
+    ) {
         return TALLBOX;
     }
 
@@ -67,12 +75,20 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
 
     @Override
     @Deprecated
-    public FluidState getFluidState(BlockState state) {
+    @SuppressWarnings("deprecation")
+    public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(
+            BlockState state,
+            @NotNull Direction direction,
+            @NotNull BlockState neighborState,
+            @NotNull LevelAccessor world,
+            @NotNull BlockPos pos,
+            @NotNull BlockPos neighborPos
+    ) {
         if (state.getValue(WATERLOGGED)) {
             world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -82,14 +98,25 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
 
     @Override
     @Deprecated
-    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
+    @SuppressWarnings("deprecation")
+    public boolean canSurvive(
+            @NotNull BlockState state,
+            LevelReader worldIn,
+            BlockPos pos
+    ) {
         return worldIn.getBlockState(pos.below()).getMaterial().isSolid() && !worldIn.getBlockState(pos.above()).getMaterial().isSolid();
     }
 
     /**
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
-    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(
+            @NotNull Level worldIn,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @Nullable LivingEntity placer,
+            @NotNull ItemStack stack
+    ) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
         if(!worldIn.isClientSide) {
             StatueManager.forWorld(worldIn).addStatue(pos);
@@ -98,7 +125,13 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
 
     @Override
     @Deprecated
-    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onPlace(
+            @NotNull BlockState state,
+            @NotNull Level worldIn,
+            @NotNull BlockPos pos,
+            @NotNull BlockState newState,
+            boolean isMoving
+    ) {
         super.onPlace(state, worldIn, pos, newState, isMoving);
         StatueManager.forWorld(worldIn).removeStatue(pos);
     }
@@ -112,20 +145,14 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
         world.playSound(null, pos, Sounds.CONCH_NOTES[23],SoundSource.BLOCKS, 1.0F, 1.0F);
         world.playSound(null, pos, Sounds.CONCH_NOTES[26],SoundSource.BLOCKS, 1.0F, 1.0F);
         world.playSound(null, pos, Sounds.CONCH_NOTES[30],SoundSource.BLOCKS, 1.0F, 1.0F);
-        switch(facing) {
-            case NORTH:
-                ItemEntity squav = new ItemEntity(world,x + 0.5D, y + 0.5D, z - 0.5D);
-                squav.setItem(RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
-                //North is negative Z I think
-                squav.setDeltaMovement(0.0, 0.05, -0.1);
-                world.addFreshEntity(squav);
-                ItemEntity squel = new ItemEntity(world,x + 0.5D, y + 0.5D, z - 0.5D);
-                squel.setItem(RocketSquidsBase.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
-                squel.setDeltaMovement(0.0, 0.05, -0.1);
-                world.addFreshEntity(squel);
-                break;
-            default:
-                break;
+        if (Objects.requireNonNull(facing) == Direction.NORTH) {
+            ItemEntity squav = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
+            // North is negative Z I think
+            squav.setDeltaMovement(0.0, 0.05, -0.1);
+            world.addFreshEntity(squav);
+            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
+            squel.setDeltaMovement(0.0, 0.05, -0.1);
+            world.addFreshEntity(squel);
         }
     }
 
@@ -145,7 +172,13 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
      * Add a new location for where it ended up
      */
     @Override
-    public void onLand(Level worldIn, BlockPos pos, BlockState fallingState, BlockState hitState, FallingBlockEntity fallingBlock) {
+    public void onLand(
+            @NotNull Level worldIn,
+            @NotNull BlockPos pos,
+            BlockState fallingState,
+            @NotNull BlockState hitState,
+            @NotNull FallingBlockEntity fallingBlock
+    ) {
         if(fallingState.getValue(BlockStateProperties.FACING) == Direction.UP) {
             StatueManager.forWorld(worldIn).addStatue(pos);
         }

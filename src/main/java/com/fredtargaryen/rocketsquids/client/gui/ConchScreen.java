@@ -18,15 +18,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConchScreen extends Screen {
-    private byte conchStage;
-    private double x;
-    private double y;
-    private double z;
+    private final byte conchStage;
+    private final double x;
+    private final double y;
+    private final double z;
 
     private int changingNumberNote;
 
@@ -50,15 +51,16 @@ public class ConchScreen extends Screen {
 
     private static final Component questionMark = new TextComponent("?");
 
-    private int[] notes = new int[10];
-    private List<ConchNumberButton> conchNumberButtons;
+    private final int[] notes = new int[10];
+    private final List<ConchNumberButton> conchNumberButtons;
 
-    private float[] playingNotes = new float[36];
+    private final float[] playingNotes = new float[36];
 
     public ConchScreen(byte conchStage) {
         super(TextComponent.EMPTY);
         this.conchStage = conchStage;
         Player ep = Minecraft.getInstance().player;
+        assert ep != null;
         Vec3 vec = ep.position();
         this.x = vec.x;
         this.y = vec.y;
@@ -87,7 +89,7 @@ public class ConchScreen extends Screen {
                 for (int i = 12; i < 24; ++i) {
                     if (i != 13 && i != 15 && i != 18 && i != 20 && i != 22) {
                         column = i % 12;
-                        this.addButton(new ConchButton(i,
+                        this.addRenderableWidget(new ConchButton(i,
                                 minx + 27 * column,
                                 bottomNoteY - 4 * i,
                                 buttonNames[column].getString(),
@@ -103,14 +105,14 @@ public class ConchScreen extends Screen {
                             bottomNumberY,
                             "-",
                             this);
-                    this.addButton(cnb);
+                    this.addRenderableWidget(cnb);
                     this.conchNumberButtons.add(cnb);
                 }
             case 2:
                 //All notes of the middle 3 octaves
                 for (int i = 0; i < 36; ++i) {
                     column = i % 12;
-                    this.addButton(new ConchButton(i,
+                    this.addRenderableWidget(new ConchButton(i,
                             minx + 27 * column,
                             bottomNoteY - 4 * i,
                             buttonNames[column].getString(),
@@ -123,7 +125,7 @@ public class ConchScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         for(int i = 0; i < this.playingNotes.length; i++)
         {
@@ -145,8 +147,8 @@ public class ConchScreen extends Screen {
     }
 
     private class ConchButton extends Button {
-        private int id;
-        private Minecraft mc;
+        private final int id;
+        private final Minecraft mc;
         
         public ConchButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
             super(x, y, 20, 20, new TextComponent(buttonText), (button) -> {
@@ -164,7 +166,7 @@ public class ConchScreen extends Screen {
         }
 
         @Override
-        public void playDownSound(SoundManager soundHandlerIn) {
+        public void playDownSound(@NotNull SoundManager soundHandlerIn) {
             if(ConchScreen.this.playingNotes[this.id] <= 0f) {
                 soundHandlerIn.play(SimpleSoundInstance.forUI(Sounds.CONCH_NOTES[this.id], 1.0F));
                 MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
@@ -176,7 +178,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             float red, green, blue;
@@ -207,8 +209,8 @@ public class ConchScreen extends Screen {
         }
 
         private void drawNote(PoseStack stack, int x, int y, float red, float green, float blue) {
-            mc.getTextureManager().bind(NOTE);
-            RenderSystem.color4f(red, green, blue, 1f);
+            mc.getTextureManager().bindForSetup(NOTE);
+            RenderSystem.setShaderColor(red, green, blue, 1f);
             //Draw the quaver; see gui/note.png
             //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
             GuiComponent.blit(stack, x + 2, y - 37, 0, 0, 27, 54, 27, 54);
@@ -216,8 +218,8 @@ public class ConchScreen extends Screen {
     }
 
     private class ConchNumberButton extends Button {
-        private int id;
-        private Minecraft mc;
+        private final int id;
+        private final Minecraft mc;
 
         public ConchNumberButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
             super(x, y, 32, 32, new TextComponent(buttonText), (button) -> {
@@ -231,7 +233,7 @@ public class ConchScreen extends Screen {
         }
 
         @Override
-        public void playDownSound(SoundManager soundHandlerIn) {
+        public void playDownSound(@NotNull SoundManager soundHandlerIn) {
             int noteId = ConchScreen.this.notes[this.id];
             if(noteId > -1 && ConchScreen.this.playingNotes[noteId] <= 0f) {
                 soundHandlerIn.play(SimpleSoundInstance.forUI(Sounds.CONCH_NOTES[noteId], 1.0F));
@@ -244,7 +246,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             float red, green, blue;
@@ -288,8 +290,8 @@ public class ConchScreen extends Screen {
         }
 
         private void drawButton(PoseStack stack, int x, int y, float red, float green, float blue) {
-            mc.getTextureManager().bind(NUMBER);
-            RenderSystem.color4f(red, green, blue, 1f);
+            mc.getTextureManager().bindForSetup(NUMBER);
+            RenderSystem.setShaderColor(red, green, blue, 1f);
             //Draw the button; see gui/numbernote.png
             //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
             GuiComponent.blit(stack, x, y, 0, 0, 32, 32, 32, 32);

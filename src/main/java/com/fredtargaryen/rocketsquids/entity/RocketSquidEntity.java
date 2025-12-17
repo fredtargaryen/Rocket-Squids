@@ -12,16 +12,11 @@ import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,6 +28,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -44,7 +40,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -52,7 +47,8 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -224,12 +220,12 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Moves the entity based on strafe, forward (?) and something else
      */
     @Override
-    public void travel(Vec3 motion) {
+    public void travel(@NotNull Vec3 motion) {
         this.move(MoverType.SELF, this.getDeltaMovement());
     }
 
     @Override
-    public InteractionResult mobInteract (Player player, InteractionHand hand) {
+    public @NotNull InteractionResult mobInteract (@NotNull Player player, @NotNull InteractionHand hand) {
         if(!this.level.isClientSide) {
             ItemStack interactStack = player.getItemInHand(hand);
             if (interactStack == ItemStack.EMPTY) {
@@ -255,7 +251,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                         {
                             squeleporterCap.setSquidCapabilityData((CompoundTag) RocketSquidsBase.ADULTCAP.writeNBT(squidCap, null));
                         });
-                        this.remove();
+                        this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     });
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
                     if (hand == InteractionHand.OFF_HAND) {
@@ -314,11 +310,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 this.level.addFreshEntity(entityitem);
             }
         }
-        this.remove();
+        this.remove(RemovalReason.KILLED);
     }
 
     @Override
-    public void remove() {
+    public void remove(@NotNull RemovalReason reason) {
         if(this.level.isClientSide && this.squidCap.getForcedBlast()) {
             this.doFireworkParticles();
         }
@@ -332,7 +328,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         if(this.level.isClientSide) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
-        super.remove();
+        super.remove(reason);
     }
 
     /**
@@ -360,9 +356,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Applies a velocity to the entities (unless they're riding), to push them away from each other.
      * @param obstacle The Entity that is colliding with the rocket squid.
      */
-    public void push(Entity obstacle) {
+    public void push(@NotNull Entity obstacle) {
         Entity passenger = this.getControllingPassenger();
-        if(passenger == null || passenger != obstacle) {
+        if(passenger != obstacle) {
             // Obstacle is not the rider, so apply collision
             if (!obstacle.noPhysics && !this.noPhysics) {
                 Vec3 thisPos = this.position();
@@ -380,7 +376,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 double largerDist = Mth.absMax(xDist, Mth.absMax(xDist, zDist));
 
                 if (largerDist >= 0.009999999776482582D) {
-                    largerDist = Mth.sqrt(largerDist);
+                    largerDist = Math.sqrt(largerDist);
                     xDist /= largerDist;
                     yDist /= largerDist;
                     zDist /= largerDist;
@@ -485,7 +481,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     //////////////////
 
     @Override
-    protected void addPassenger(Entity p) {
+    protected void addPassenger(@NotNull Entity p) {
         if(this.getPassengers().isEmpty()) {
             super.addPassenger(p);
             if(this.level.isClientSide) {
@@ -525,11 +521,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
      */
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier) {
+    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
             if(Math.sin(this.squidCap.getRotPitch()) < -0.7071067811865) {
                 for(Entity entity : this.getPassengers()) {
-                    entity.causeFallDamage(distance, damageMultiplier);
+                    entity.causeFallDamage(distance, damageMultiplier, damageSource);
                 }
             }
         }
@@ -540,7 +536,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Should keep the passenger on, or at least around, the squid's back.
      */
     @Override
-    public void positionRider(Entity passenger) {
+    public void positionRider(@NotNull Entity passenger) {
         if(this.hasPassenger(passenger)) {
             Vec3 pos = this.position();
             passenger.setPos(pos.x, pos.y + 0.355, pos.z);
@@ -548,7 +544,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    protected void removePassenger(Entity passenger) {
+    protected void removePassenger(@NotNull Entity passenger) {
         super.removePassenger(passenger);
         if (this.getBlasting()) {
             Vec3 passengerMotion = passenger.getDeltaMovement();
@@ -562,12 +558,12 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    public boolean startRiding(Entity entityIn, boolean force) {
+    public boolean startRiding(@NotNull Entity entityIn, boolean force) {
         return false;
     }
 
     @Override
-    protected boolean canRide(Entity entityIn) {
+    protected boolean canRide(@NotNull Entity entityIn) {
         return this.isVehicle();
     }
 
@@ -657,7 +653,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     //NBT//
     ///////
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("id", EntityType.getKey(RocketSquidsBase.SQUID_TYPE.get()).toString());
         Vec3 motion = this.getDeltaMovement();
@@ -667,7 +663,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         //Force comes from reading motion tags
         this.setSaddled(compound.getBoolean("Saddle"));

@@ -6,6 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractRocketSquidEntity extends AbstractSquidEntity{
     public AbstractRocketSquidEntity(EntityType<? extends AbstractSquidEntity> type, Level world) {
@@ -19,7 +20,7 @@ public abstract class AbstractRocketSquidEntity extends AbstractSquidEntity{
     }
 
     @Override
-    protected boolean canRide(Entity entityIn)
+    protected boolean canRide(@NotNull Entity entityIn)
     {
         return true;
     }

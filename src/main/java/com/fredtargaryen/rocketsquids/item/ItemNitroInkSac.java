@@ -1,11 +1,9 @@
 package com.fredtargaryen.rocketsquids.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.AbstractSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.util.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
@@ -15,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemNitroInkSac extends Item {
     public ItemNitroInkSac(Item.Properties properties) {
@@ -25,7 +24,11 @@ public class ItemNitroInkSac extends Item {
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            @NotNull Level world,
+            Player player,
+            @NotNull InteractionHand hand
+    ) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.isCreative()) {
             stack.grow(-1);
@@ -39,6 +42,6 @@ public class ItemNitroInkSac extends Item {
             sac.shoot(aimPos.x(), aimPos.y(), aimPos.z(), 1.5F, 1.0F);
             world.addFreshEntity(sac);
         }
-        return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
 	}
 }

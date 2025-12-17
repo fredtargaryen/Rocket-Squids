@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemConch2 extends Item {
     public ItemConch2(Item.Properties properties) {
@@ -18,7 +19,11 @@ public class ItemConch2 extends Item {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level worldIn,
+            @NotNull Player playerIn,
+            @NotNull InteractionHand handIn
+    ) {
         if(worldIn.isClientSide) RocketSquidsBase.proxy.openConchClient((byte) 2);
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
     }

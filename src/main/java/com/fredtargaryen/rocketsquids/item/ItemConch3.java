@@ -13,6 +13,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,14 +27,23 @@ public class ItemConch3 extends Item {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level worldIn,
+            @NotNull Player playerIn,
+            @NotNull InteractionHand handIn
+    ) {
         if(worldIn.isClientSide) RocketSquidsBase.proxy.openConchClient((byte) 3);
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(
+            @NotNull ItemStack stack,
+            @Nullable Level level,
+            @NotNull List<Component> tooltipComponents,
+            @NotNull TooltipFlag isAdvanced
+    ) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
         tooltipComponents.add(new TranslatableComponent("item.rocketsquids.conch_item_3.lore"));
     }
@@ -42,12 +52,12 @@ public class ItemConch3 extends Item {
      * Returns true if this item has an enchantment glint. By default, this returns
      * <code>stack.isItemEnchanted()</code>, but other items can override it (for instance, written books always return
      * true).
-     *
+     * <p>
      * Note that if you override this method, you generally want to also call the super version (on {@link Item}) to get
      * the glint for enchanted items. Of course, that is unnecessary if the overwritten version always returns true.
      */
     @OnlyIn(Dist.CLIENT)
-    public boolean isFoil(ItemStack stack)
+    public boolean isFoil(@NotNull ItemStack stack)
     {
         return true;
     }

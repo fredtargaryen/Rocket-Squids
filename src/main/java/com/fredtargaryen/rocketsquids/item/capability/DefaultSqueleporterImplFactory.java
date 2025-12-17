@@ -15,7 +15,7 @@ public class DefaultSqueleporterImplFactory implements Callable<ISqueleporter> {
         return new DefaultSqueleporterImpl();
     }
 
-    private class DefaultSqueleporterImpl implements ISqueleporter {
+    private static class DefaultSqueleporterImpl implements ISqueleporter {
         private CompoundTag squidData;
         private CompoundTag squidCapabilityData;
 

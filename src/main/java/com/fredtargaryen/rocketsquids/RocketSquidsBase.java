@@ -49,10 +49,7 @@ import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -61,7 +58,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -259,7 +256,6 @@ public class RocketSquidsBase {
      * Called after all registry events. Runs in parallel with other SetupEvent handlers.
      * @param event FMLCommonSetupEvent
      */
-    @SuppressWarnings("deprecation")
     public void postRegistration(FMLCommonSetupEvent event) {
         MessageHandler.init();
 
@@ -296,16 +292,16 @@ public class RocketSquidsBase {
     /////////////////
     //CAPABILIITIES//
     /////////////////
-    @CapabilityInject(IBabyCapability.class)
-    public static final Capability<IBabyCapability> BABYCAP = null;
-    @CapabilityInject(IAdultCapability.class)
-    public static final Capability<IAdultCapability> ADULTCAP = null;
+    @SubscribeEvent
+    public void registerCaps(RegisterCapabilitiesEvent event) {
+        event.register(IBabyCapability.class);
+        event.register(IAdultCapability.class);
+        event.register(ISqueleporter.class);
+    }
 
-    /**
-     * Code for the Squeleporter capability
-     */
-    @CapabilityInject(ISqueleporter.class)
-    public static final Capability<ISqueleporter> SQUELEPORTER_CAP = null;
+    public static final Capability<IBabyCapability> BABYCAP = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<IAdultCapability> ADULTCAP = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<ISqueleporter> SQUELEPORTER_CAP = CapabilityManager.get(new CapabilityToken<>(){});
 
     @SubscribeEvent
     public void onItemStackConstruct(AttachCapabilitiesEvent<ItemStack> evt) {
@@ -385,8 +381,8 @@ public class RocketSquidsBase {
 
     public static Vector3f getPlayerAimVector(Player player)
     {
-        double rp = Math.toRadians(player.xRot);
-        double ry = Math.toRadians(player.yRot);
+        double rp = Math.toRadians(player.getXRot());
+        double ry = Math.toRadians(player.getYRot());
         float y = (float) -Math.sin(rp);
         float hori = (float) Math.cos(rp);
         float x = (float) (hori * -Math.sin(ry));

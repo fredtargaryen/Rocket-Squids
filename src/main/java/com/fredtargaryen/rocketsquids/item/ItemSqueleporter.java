@@ -3,7 +3,6 @@ package com.fredtargaryen.rocketsquids.item;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemSqueleporter extends Item {
     public ItemSqueleporter(Item.Properties properties) {
@@ -26,7 +25,11 @@ public class ItemSqueleporter extends Item {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level worldIn,
+            @NotNull Player playerIn,
+            @NotNull InteractionHand handIn
+    ) {
         if (!worldIn.isClientSide) {
             ItemStack stack = playerIn.getItemInHand(handIn);
             if(stack.getItem() == RocketSquidsBase.SQUELEPORTER_ACTIVE.get()) {
@@ -35,7 +38,7 @@ public class ItemSqueleporter extends Item {
                     CompoundTag squidTags = cap.getSquidData();
                     EntityType.create(squidTags, worldIn).ifPresent(entity -> {
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
-                        newSquid.forceRotPitch((playerIn.xRot + 90.0F) * Math.PI / 180.0F);
+                        newSquid.forceRotPitch((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
                         Vec3 playerMotion = playerIn.getDeltaMovement();
                         newSquid.push(playerMotion.x, playerMotion.y, playerMotion.z);

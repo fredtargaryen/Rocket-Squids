@@ -2,7 +2,6 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import com.mojang.math.Vector3d;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
@@ -35,9 +34,8 @@ public class BabySwimAroundGoal extends Goal {
 
     /**
      * Do a turn.
-     * @return whether a turn will be executed (always true).
      */
-    public boolean doTurn(boolean blocked) {
+    public void doTurn(boolean blocked) {
         if(blocked) {
             //Just point the opposite way
             Vec3 direction = this.squid.getDirectionAsVec3();
@@ -48,7 +46,6 @@ public class BabySwimAroundGoal extends Goal {
             this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
             this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
         }
-        return true;
     }
 
     /**

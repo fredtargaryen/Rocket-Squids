@@ -14,6 +14,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemTurboTube extends Item {
     public ItemTurboTube(Item.Properties properties) {
@@ -24,9 +25,13 @@ public class ItemTurboTube extends Item {
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            @NotNull Level world,
+            Player player,
+            @NotNull InteractionHand hand
+    ) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!player.abilities.instabuild) {
+        if (!player.getAbilities().instabuild) {
             stack.grow(-1);
         }
         Vec3 pos = player.position();

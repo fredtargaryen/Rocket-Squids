@@ -20,6 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.jetbrains.annotations.NotNull;
 
 
 public class ConchBlock extends Block {
@@ -52,14 +53,21 @@ public class ConchBlock extends Block {
     @SuppressWarnings("deprecation")
     @Override
     @Deprecated
-    public FluidState getFluidState(BlockState state) {
+    public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     @Deprecated
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(
+            BlockState state,
+            @NotNull Direction direction,
+            @NotNull BlockState neighborState,
+            @NotNull LevelAccessor world,
+            @NotNull BlockPos pos,
+            @NotNull BlockPos neighborPos
+    ) {
         if (state.getValue(WATERLOGGED)) {
             world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -71,36 +79,51 @@ public class ConchBlock extends Block {
      * Get the Item that this Block should drop when harvested.
      */
     @Override
-    public Item asItem() { return RocketSquidsBase.ITEM_CONCH.get(); }
+    public @NotNull Item asItem() {
+        return RocketSquidsBase.ITEM_CONCH.get();
+    }
 
     @SuppressWarnings("deprecation")
     @Override
     @Deprecated
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+    public @NotNull VoxelShape getCollisionShape(
+            @NotNull BlockState state,
+            @NotNull BlockGetter reader,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context
+    ) {
         return this.getShape(state, reader, pos, context);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     @Deprecated
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-        switch(state.getValue(FACING)) {
-            case NORTH:
-                return CONCH_NORTH;
-            case SOUTH:
-                return CONCH_SOUTH;
-            case WEST:
-                return CONCH_WEST;
-            default:
-                return CONCH_EAST;
-        }
+    public @NotNull VoxelShape getShape(
+            BlockState state,
+            @NotNull BlockGetter reader,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context
+    ) {
+        return switch (state.getValue(FACING)) {
+            case NORTH -> CONCH_NORTH;
+            case SOUTH -> CONCH_SOUTH;
+            case EAST -> CONCH_EAST;
+            case WEST -> CONCH_WEST;
+            default -> CONCH_EAST;
+        };
     }
 
     /**
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
     @Override
-    public void setPlacedBy(Level worldLevel, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(
+            @NotNull Level worldLevel,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            LivingEntity placer,
+            @NotNull ItemStack stack
+    ) {
         assert placer != null;
         Direction facing = placer.getDirection();
         switch(facing) {
