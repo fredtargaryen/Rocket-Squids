@@ -102,14 +102,14 @@ public class RocketSquidsBase {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Register all items here
     public static final RegistryObject<Item> ITEM_CONCH = ITEMS.register("conch_item_1", () -> new ItemConch(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4)));
-    public static final RegistryObject<Item> ITEM_CONCH2 = ITEMS.register("conch_item_2", () -> new ItemConch2(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1)));
-    public static final RegistryObject<Item> ITEM_CONCH3 = ITEMS.register("conch_item_3", () -> new ItemConch3(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1)));
+    public static final RegistryObject<Item> ITEM_CONCH2 = ITEMS.register("conch_item_2", () -> new ItemConch2(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ITEM_CONCH3 = ITEMS.register("conch_item_3", () -> new ItemConch3(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> NITRO_SAC = ITEMS.register("nitro_ink_sac", () -> new ItemNitroInkSac(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(16)));
-    public static final RegistryObject<Item> TURBO_TUBE = ITEMS.register("turbo_tube", () -> new ItemTurboTube(new Item.Properties().tab(SQUIDS_TAB).stacksTo(16)));
-    public static final RegistryObject<Item> ITEM_STATUE = ITEMS.register("statue", () -> new BlockItem(BLOCK_STATUE.get(), new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4)));
-    public static final RegistryObject<Item> SQUAVIGATOR = ITEMS.register("squavigator", () -> new Item(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1)));
-    public static final RegistryObject<Item> SQUELEPORTER_ACTIVE = ITEMS.register("squeleporter_active", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1)));
-    public static final RegistryObject<Item> SQUELEPORTER_INACTIVE = ITEMS.register("squeleporter_inactive", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1)));
+    public static final RegistryObject<Item> TURBO_TUBE = ITEMS.register("turbo_tube", () -> new ItemTurboTube(new Item.Properties().tab(SQUIDS_TAB).stacksTo(16).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ITEM_STATUE = ITEMS.register("statue", () -> new BlockItem(BLOCK_STATUE.get(), new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> SQUAVIGATOR = ITEMS.register("squavigator", () -> new Item(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SQUELEPORTER_ACTIVE = ITEMS.register("squeleporter_active", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SQUELEPORTER_INACTIVE = ITEMS.register("squeleporter_inactive", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
 
     // Entities
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
