@@ -273,9 +273,9 @@ public class RocketSquidsBase {
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
 
-    /////////////////
-    //CAPABILIITIES//
-    /////////////////
+    ///////////////////
+    ///CAPABILIITIES///
+    ///////////////////
     @SubscribeEvent
     public void registerCaps(RegisterCapabilitiesEvent event) {
         event.register(IBabyCapability.class);
@@ -296,7 +296,7 @@ public class RocketSquidsBase {
 
 
                         @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
+                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
                             return capability == SQUELEPORTER_CAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
                         }
 
@@ -323,7 +323,7 @@ public class RocketSquidsBase {
                         final IBabyCapability inst = BABYCAP.getDefaultInstance();
 
                         @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
+                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
                             return capability == BABYCAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
                         }
 
@@ -345,7 +345,7 @@ public class RocketSquidsBase {
                         final IAdultCapability inst = ADULTCAP.getDefaultInstance();
 
                         @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
+                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
                             return capability == ADULTCAP ? LazyOptional.of(() -> (T)inst) : LazyOptional.empty();
                         }
 
@@ -374,9 +374,11 @@ public class RocketSquidsBase {
         return new Vector3f(x, y, z);
     }
 
-    //////////////////
-    //LOGGER METHODS//
-    //////////////////
+    ////////////////////
+    ///LOGGER METHODS///
+    ////////////////////
+    @SuppressWarnings("unused")
     public static void info(String message) { LOGGER.info(message); }
+    @SuppressWarnings("unused")
     public static void warn(String message) { LOGGER.warn(message); }
 }
