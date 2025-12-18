@@ -10,8 +10,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.FMLPlayMessages;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 public class ThrownTubeEntity extends ThrowableItemProjectile {
     public ThrownTubeEntity(EntityType<? extends ThrownTubeEntity> type, Level world) {
@@ -26,16 +27,16 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected void onHit(HitResult result) {
+    protected void onHit(@NotNull HitResult result) {
         if (!this.level.isClientSide) {
             Vec3 pos = this.position();
             this.level.explode(this.getOwner(), pos.x, pos.y, pos.z, 1.0F, Explosion.BlockInteraction.NONE);
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
         }
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return RocketSquidsBase.TURBO_TUBE.get();
     }
 
@@ -44,7 +45,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
      * Without this, they will not spawn on the client.
      */
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public @NotNull Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

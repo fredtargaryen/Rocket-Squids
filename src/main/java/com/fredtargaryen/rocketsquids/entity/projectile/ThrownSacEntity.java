@@ -1,7 +1,6 @@
 package com.fredtargaryen.rocketsquids.entity.projectile;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
@@ -15,8 +14,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.FMLPlayMessages;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
     private static final MobEffect blindnessPotion = MobEffects.BLINDNESS;
 
     @Override
-    protected void onHit(HitResult result) {
+    protected void onHit(@NotNull HitResult result) {
         if (!this.level.isClientSide) {
             if (result.getType() == HitResult.Type.ENTITY) {
                 EntityHitResult ertr = (EntityHitResult) result;
@@ -51,12 +51,12 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
                     }
                 }
             }
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
         }
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return RocketSquidsBase.NITRO_SAC.get();
     }
 
@@ -65,7 +65,7 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
      * Without this, they will not spawn on the client.
      */
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public @NotNull Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }
