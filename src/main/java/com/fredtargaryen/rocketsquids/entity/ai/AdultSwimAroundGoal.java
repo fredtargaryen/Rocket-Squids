@@ -7,7 +7,6 @@ import com.fredtargaryen.rocketsquids.world.StatueManager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3d;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import java.util.EnumSet;
@@ -52,27 +51,28 @@ public class AdultSwimAroundGoal extends Goal {
 
     /**
      * Do a turn.
+     *
      * @param hasVIPRider whether there is a rider who is a VIP
-     * @param blocked in the directions the squid is mainly pointing in, whether there are blocks in the way
-     * @return whether a turn will be executed. It won't if the squid is pointing roughly where the rider is facing.
+     * @param blocked     in the directions the squid is mainly pointing in, whether there are blocks in the way
      */
-    public boolean doTurn(boolean hasVIPRider, boolean blocked) {
+    public void doTurn(boolean hasVIPRider, boolean blocked) {
         if(hasVIPRider) {
             //Rider rotations are clamped to [-PI, PI]; squid rotations are not.
             //Therefore need to work in terms of this range, or risk squids spinning ridiculous amounts if they have
             //turned around many times before being ridden.
             Entity pass = this.squid.getControllingPassenger();
-            float pp = (float) ((pass.xRot + 90.0F) * Math.PI / 180.0F);
+            assert pass != null;
+            float pp = (float) ((pass.getXRot() + 90.0F) * Math.PI / 180.0F);
             float py = (float) (pass.getYHeadRot() * Math.PI / 180.0F);
             float unclamped_sp = (float) this.squid.getRotPitch();
             float unclamped_sy = (float) this.squid.getRotYaw();
             //Clamp them to [-2PI, 2PI]
             float clamped_sp = unclamped_sp;
-            while(clamped_sp > Math.PI * 2) clamped_sp -= Math.PI * 2;
-            while(clamped_sp < -Math.PI * 2) clamped_sp += Math.PI * 2;
+            while(clamped_sp > Math.PI * 2) clamped_sp -= (float) (Math.PI * 2);
+            while(clamped_sp < -Math.PI * 2) clamped_sp += (float) (Math.PI * 2);
             float clamped_sy = unclamped_sy;
-            while(clamped_sy > Math.PI * 2) clamped_sy -= Math.PI * 2;
-            while(clamped_sy < -Math.PI * 2) clamped_sy += Math.PI * 2;
+            while(clamped_sy > Math.PI * 2) clamped_sy -= (float) (Math.PI * 2);
+            while(clamped_sy < -Math.PI * 2) clamped_sy += (float) (Math.PI * 2);
             float pitchDiff = pp - clamped_sp;
             float yawDiff = py - clamped_sy;
             if(Math.abs(pitchDiff) >= 0.005 || Math.abs(yawDiff) >= 0.005) {
@@ -80,9 +80,7 @@ public class AdultSwimAroundGoal extends Goal {
                 //Turn by the difference in rotations, to avoid having to spin into the [-PI, PI] range
                 this.squid.setTargetRotPitch(unclamped_sp + pitchDiff);
                 this.squid.setTargetRotYaw(unclamped_sy + yawDiff);
-                return true;
             }
-            return false;
         }
         else {
             if(blocked) {
@@ -95,7 +93,6 @@ public class AdultSwimAroundGoal extends Goal {
                 this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
                 this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
             }
-            return true;
         }
     }
 
