@@ -7,18 +7,12 @@ import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
-import com.fredtargaryen.rocketsquids.entity.capability.adult.AdultCapStorage;
-import com.fredtargaryen.rocketsquids.entity.capability.adult.DefaultAdultImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
-import com.fredtargaryen.rocketsquids.entity.capability.baby.BabyCapStorage;
-import com.fredtargaryen.rocketsquids.entity.capability.baby.DefaultBabyImplFactory;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.item.*;
-import com.fredtargaryen.rocketsquids.item.capability.DefaultSqueleporterImplFactory;
 import com.fredtargaryen.rocketsquids.item.capability.ISqueleporter;
-import com.fredtargaryen.rocketsquids.item.capability.SqueleporterCapStorage;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
 import com.fredtargaryen.rocketsquids.proxy.IProxy;
@@ -53,7 +47,6 @@ import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -61,7 +54,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -84,7 +76,7 @@ public class RocketSquidsBase {
      */
     public static CreativeModeTab SQUIDS_TAB = new CreativeModeTab(MODID) {
         @Override
-        public ItemStack makeIcon() {
+        public @NotNull ItemStack makeIcon() {
             return ITEM_CONCH.get().getDefaultInstance();
         }
     };
@@ -99,7 +91,9 @@ public class RocketSquidsBase {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Register all items here
     public static final RegistryObject<Item> ITEM_CONCH = ITEMS.register("conch_item_1", () -> new ItemConch(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4)));
+    @SuppressWarnings("unused")
     public static final RegistryObject<Item> ITEM_CONCH2 = ITEMS.register("conch_item_2", () -> new ItemConch2(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    @SuppressWarnings("unused")
     public static final RegistryObject<Item> ITEM_CONCH3 = ITEMS.register("conch_item_3", () -> new ItemConch3(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> NITRO_SAC = ITEMS.register("nitro_ink_sac", () -> new ItemNitroInkSac(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(16)));
     public static final RegistryObject<Item> TURBO_TUBE = ITEMS.register("turbo_tube", () -> new ItemTurboTube(new Item.Properties().tab(SQUIDS_TAB).stacksTo(16).rarity(Rarity.UNCOMMON)));
@@ -148,6 +142,7 @@ public class RocketSquidsBase {
     // Spawn Egg Items
     private static final DeferredRegister<Item> SPAWNEGGITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Register Spawn Egg Items here
+    @SuppressWarnings("unused")
     public static final RegistryObject<RocketSquidForgeSpawnEggItem> SQUID_SPAWN_EGG = SPAWNEGGITEMS.register("rockets_squid_spawn_egg",
             () -> new RocketSquidForgeSpawnEggItem(SQUID_TYPE, BABY_SQUID_TYPE, ColorHelper.getColor(150, 30, 30), ColorHelper.getColor(255, 127, 0), new Item.Properties().tab(SQUIDS_TAB))
     ); // Hey if you wanted to know do not use SpawnEggItem use ForgeSpawnEggItem
@@ -223,7 +218,7 @@ public class RocketSquidsBase {
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the setup method for modloading
         loadingBus.addListener(this::postRegistration);
-        loadingBus.addListener(this::clientSetup);
+        //loadingBus.addListener(this::clientSetup);
 
         // Register ourselves for server, registry and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -247,11 +242,6 @@ public class RocketSquidsBase {
         Sounds.constructAndRegisterSoundEvents(event);
     }
 
-    public void clientSetup(FMLClientSetupEvent event) {
-        proxy.registerRenderers();
-        proxy.registerRenderTypes();
-    }
-
     /**
      * Called after all registry events. Runs in parallel with other SetupEvent handlers.
      * @param event FMLCommonSetupEvent
@@ -262,12 +252,6 @@ public class RocketSquidsBase {
         //Add entity attributes
         event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build()));
         event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build()));
-
-        //Capability
-        CapabilityManager.INSTANCE.register(IBabyCapability.class, new BabyCapStorage(), new DefaultBabyImplFactory());
-        CapabilityManager.INSTANCE.register(IAdultCapability.class, new AdultCapStorage(), new DefaultAdultImplFactory());
-        CapabilityManager.INSTANCE.register(ISqueleporter.class, new SqueleporterCapStorage(), new DefaultSqueleporterImplFactory());
-        MinecraftForge.EVENT_BUS.register(this);
 
         //Make the firework
         ListTag list = new ListTag();
