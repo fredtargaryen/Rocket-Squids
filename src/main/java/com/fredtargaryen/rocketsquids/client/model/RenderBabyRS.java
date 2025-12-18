@@ -3,17 +3,22 @@ package com.fredtargaryen.rocketsquids.client.model;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import com.mojang.math.Vector3f;
+import org.jetbrains.annotations.NotNull;
+
+import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.BABY_SQUID_BODY_LAYER;
 
 public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel<BabyRocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/baby_rocket_squid.png");
-    public RenderBabyRS(EntityRenderDispatcher rm, BabyRocketSquidModel model)
-    {
-        super(rm, model, 0.4F);
+
+    public RenderBabyRS(
+            EntityRendererProvider.Context context
+    ) {
+        super(context, new BabyRocketSquidModel<>(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
     }
 
     /**
@@ -21,12 +26,21 @@ public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, BabyRocketS
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float getBob(BabyRocketSquidEntity squid, float partialTicks) {
+    protected float getBob(
+            BabyRocketSquidEntity squid,
+            float partialTicks
+    ) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void setupRotations(BabyRocketSquidEntity ers, PoseStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
+    protected void setupRotations(
+            BabyRocketSquidEntity ers,
+            PoseStack matrixStack,
+            float ageInTicks,
+            float rotationYaw,
+            float partialTicks
+    ) {
         float exactPitch = (float) (Mth.lerp(partialTicks, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
         float exactYaw = (float) (Mth.lerp(partialTicks, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
         //0.5F for adults
@@ -38,7 +52,7 @@ public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, BabyRocketS
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BabyRocketSquidEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull BabyRocketSquidEntity entity) {
         return normal;
     }
 }

@@ -7,7 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -17,16 +17,20 @@ import net.minecraft.util.Mth;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
+
+import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.SQUID_BODY_LAYER;
 
 public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid_b.png");
 
-    public RenderRS(EntityRenderDispatcher rm, RocketSquidModel model)
-    {
-        super(rm, model, 0.9F);
+    public RenderRS(
+            EntityRendererProvider.Context context
+    ) {
+        super(context, new RocketSquidModel<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
     }
 
     /**
@@ -34,12 +38,21 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<Ro
      * par2 = time elapsed since last render call
      */
     @Override
-    protected float getBob(RocketSquidEntity squid, float partialTicks) {
+    protected float getBob(
+            RocketSquidEntity squid,
+            float partialTicks
+    ) {
         return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
     }
 
     @Override
-    protected void setupRotations(RocketSquidEntity ers, PoseStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
+    protected void setupRotations(
+            RocketSquidEntity ers,
+            PoseStack matrixStack,
+            float ageInTicks,
+            float rotationYaw,
+            float partialTicks
+    ) {
         float exactPitch = (float) (Mth.lerp(partialTicks, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
         float exactYaw = (float) (Mth.lerp(partialTicks, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
         matrixStack.translate(0, 0.5, 0);
@@ -48,8 +61,14 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<Ro
         matrixStack.translate(0f, -1.2f, 0f);
     }
 
-    @SuppressWarnings("deprecation")
-    public void render(RocketSquidEntity par1EntitySquid, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(
+            RocketSquidEntity par1EntitySquid,
+            float entityYaw,
+            float partialTicks,
+            @NotNull PoseStack matrixStackIn,
+            @NotNull MultiBufferSource bufferIn,
+            int packedLightIn
+    ) {
         if (par1EntitySquid.getShaking()) {
             Random r = par1EntitySquid.getRandom();
             matrixStackIn.translate(r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d);
@@ -69,9 +88,9 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<Ro
             matrixStackIn.mulPose(new Vector3f((float) Math.cos(yaw_r), 0f, (float) Math.sin(yaw_r)).rotation((float) pitch_r));
 
             //Prepare to draw
-            RenderSystem.disableLighting();
+            //RenderSystem.disableLighting();
             //GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240f, 240f);
-            RenderSystem.color4f(1f, 1f,1f ,1f);
+            RenderSystem.setShaderColor(1f, 1f,1f ,1f);
             //this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
             //Draw the faces. Advised not to touch any of this; creates a pretty cross of fire which is adjusted to be
@@ -103,14 +122,14 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<Ro
             this.doAVertex(ivb, pos, norm, -0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
 
             //Clear up
-            RenderSystem.enableLighting();
+            //RenderSystem.enableLighting();
             matrixStackIn.popPose();
         }
         super.render(par1EntitySquid, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(RocketSquidEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(RocketSquidEntity entity) {
         return entity.getBlasting() || entity.getShaking() ? blasting : normal;
     }
 
