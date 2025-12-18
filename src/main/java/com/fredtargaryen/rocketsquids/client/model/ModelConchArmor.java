@@ -1,7 +1,5 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,14 +8,14 @@ import net.minecraft.world.entity.LivingEntity;
  * Conch - FredTargaryen
  * Created using Tabula 7.0.0
  */
-public class ConchModel extends HumanoidModel<LivingEntity> {
+public class ModelConchArmor extends HumanoidModel<LivingEntity> {
 
     public ModelPart shape2;
     public ModelPart shape6;
     public ModelPart shape3;
     public ModelPart shape1;
 
-    public ConchModel(float modelSize) {
+    public ModelConchArmor(float modelSize) {
         super(modelSize);
         this.texWidth = 16;
         this.texHeight = 16;

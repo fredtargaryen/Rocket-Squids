@@ -20,14 +20,14 @@ import java.util.Arrays;
  * Further manually edited by barnabeepickle on 12-4-2025,
  * and nearly completely re-worked for 1.17.1 on 12-17-2025
  */
-public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalModel<T> {
+public class ModelRocketSquid<T extends RocketSquidEntity> extends HierarchicalModel<T> {
     private static final int tenticles = 8;
     public final ModelPart[] tent = new ModelPart[tenticles];
     public final ModelPart saddle;
     public final ModelPart straps;
     public final ModelPart head;
 
-    public RocketSquidModel(ModelPart root) {
+    public ModelRocketSquid(ModelPart root) {
         this.head = root;
         this.saddle = this.head.getChild("saddle");
         this.straps = this.head.getChild("straps");

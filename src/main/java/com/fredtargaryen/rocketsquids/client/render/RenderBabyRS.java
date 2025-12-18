@@ -1,6 +1,7 @@
-package com.fredtargaryen.rocketsquids.client.model;
+package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquidBaby;
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -12,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.BABY_SQUID_BODY_LAYER;
 
-public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel<BabyRocketSquidEntity>> {
+public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, ModelRocketSquidBaby<BabyRocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/baby_rocket_squid.png");
 
     public RenderBabyRS(
             EntityRendererProvider.Context context
     ) {
-        super(context, new BabyRocketSquidModel<>(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
+        super(context, new ModelRocketSquidBaby<>(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
     }
 
     /**

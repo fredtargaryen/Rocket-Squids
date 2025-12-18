@@ -1,6 +1,7 @@
-package com.fredtargaryen.rocketsquids.client.model;
+package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -23,14 +24,14 @@ import java.util.Random;
 
 import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.SQUID_BODY_LAYER;
 
-public class RenderRS extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
+public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<RocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid_b.png");
 
     public RenderRS(
             EntityRendererProvider.Context context
     ) {
-        super(context, new RocketSquidModel<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
+        super(context, new ModelRocketSquid<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
     }
 
     /**

@@ -20,12 +20,12 @@ import java.util.Arrays;
  * Further manually edited by barnabeepickle on 12-4-2025,
  * and nearly completely re-worked for 1.17.1 on 12-18-2025
  */
-public class BabyRocketSquidModel<T extends BabyRocketSquidEntity> extends HierarchicalModel<T> {
+public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends HierarchicalModel<T> {
     private static final int tenticles = 8;
     public final ModelPart[] tent = new ModelPart[tenticles];
     public final ModelPart head;
 
-    public BabyRocketSquidModel(ModelPart root) {
+    public ModelRocketSquidBaby(ModelPart root) {
         this.head = root;
         Arrays.setAll(this.tent, index -> head.getChild(createTentacleName(index)));
     }

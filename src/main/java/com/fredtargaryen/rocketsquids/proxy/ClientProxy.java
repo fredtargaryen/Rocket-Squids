@@ -4,6 +4,8 @@ import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.*;
+import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
+import com.fredtargaryen.rocketsquids.client.render.RenderRS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.RenderType;
@@ -45,8 +47,8 @@ public class ClientProxy implements IProxy {
     @SubscribeEvent
     public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
     {
-        event.registerLayerDefinition(SQUID_BODY_LAYER, RocketSquidModel::createBodyLayer);
-        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, BabyRocketSquidModel::createBodyLayer);
+        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
+        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public HumanoidModel<?> getConchModel() {
-        return new ConchModel(1.0f);
+        return new ModelConchArmor(1.0f);
     }
 
     @Override
