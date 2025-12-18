@@ -185,13 +185,12 @@ public class ItemConch extends ArmorItem {
         return DataReference.MODID + ":textures/models/armor/conch_layer_1.png";
     }
 
-    @Override
     @OnlyIn(Dist.CLIENT)
-    public HumanoidModel getArmorModel(LivingEntity entityLiving, ItemStack stack, EquipmentSlot armorSlot, HumanoidModel defaultModel) {
+    public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack stack, EquipmentSlot armorSlot, HumanoidModel<?> defaultModel) {
         if(stack != null) {
             if (stack.getItem() == this) {
                 EquipmentSlot type = ((ArmorItem) stack.getItem()).getSlot();
-                HumanoidModel armorModel;
+                HumanoidModel<?> armorModel;
                 if (type == EquipmentSlot.HEAD) {
                     armorModel = RocketSquidsBase.proxy.getConchModel();
                     armorModel.head.visible = defaultModel.head.visible; //Head, I hope // Probably the Head -pickle

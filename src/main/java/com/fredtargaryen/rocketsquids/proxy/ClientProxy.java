@@ -25,8 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Iterator;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
-import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
-import static com.fredtargaryen.rocketsquids.RocketSquidsBase.SQUID_TYPE;
+import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
@@ -64,7 +63,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public HumanoidModel<?> getConchModel() {
-        return new ModelConchArmor(1.0f);
+        return new ModelConchArmor();
     }
 
     @Override
