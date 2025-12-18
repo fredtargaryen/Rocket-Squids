@@ -3,16 +3,9 @@ package com.fredtargaryen.rocketsquids.proxy;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
-import com.fredtargaryen.rocketsquids.client.model.ConchModel;
-import com.fredtargaryen.rocketsquids.client.model.RenderBabyRSFactory;
-import com.fredtargaryen.rocketsquids.client.model.RenderRSFactory;
-import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
-import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
-import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
-import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
-import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.fredtargaryen.rocketsquids.client.model.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -23,18 +16,37 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.Iterator;
 
+import static com.fredtargaryen.rocketsquids.DataReference.MODID;
+import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
+import static com.fredtargaryen.rocketsquids.RocketSquidsBase.SQUID_TYPE;
+
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientProxy implements IProxy {
+    public static final ModelLayerLocation SQUID_BODY_LAYER = new ModelLayerLocation(SQUID_TYPE.getId(), "body");
+    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
+
     @Override
-    public void registerRenderers() {
-        RenderingRegistry.registerEntityRenderingHandler(RocketSquidsBase.SQUID_TYPE.get(), new RenderRSFactory());
-        RenderingRegistry.registerEntityRenderingHandler(RocketSquidsBase.SAC_TYPE.get(), manager -> new ThrownItemRenderer<ThrownSacEntity>(manager, Minecraft.getInstance().getItemRenderer()));
-        RenderingRegistry.registerEntityRenderingHandler(RocketSquidsBase.TUBE_TYPE.get(), manager -> new ThrownItemRenderer<ThrownTubeEntity>(manager, Minecraft.getInstance().getItemRenderer()));
-        RenderingRegistry.registerEntityRenderingHandler(RocketSquidsBase.BABY_SQUID_TYPE.get(), new RenderBabyRSFactory());
+    @SubscribeEvent
+    public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(SQUID_TYPE.get(), RenderRS::new);
+        event.registerEntityRenderer(BABY_SQUID_TYPE.get(), RenderBabyRS::new);
+        event.registerEntityRenderer(RocketSquidsBase.SAC_TYPE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
+    }
+
+    @Override
+    @SubscribeEvent
+    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
+    {
+        event.registerLayerDefinition(SQUID_BODY_LAYER, RocketSquidModel::createBodyLayer);
+        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, BabyRocketSquidModel::createBodyLayer);
     }
 
     @Override
@@ -49,7 +61,7 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public HumanoidModel getConchModel() {
+    public HumanoidModel<?> getConchModel() {
         return new ConchModel(1.0f);
     }
 
