@@ -21,8 +21,8 @@ import java.util.Arrays;
  * and nearly completely re-worked for 1.17.1 on 12-18-2025
  */
 public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends HierarchicalModel<T> {
-    private static final int tenticles = 8;
-    public final ModelPart[] tent = new ModelPart[tenticles];
+    private static final int tentacles = 8;
+    public final ModelPart[] tent = new ModelPart[tentacles];
     public final ModelPart head;
 
     public ModelRocketSquidBaby(ModelPart root) {
@@ -51,7 +51,7 @@ public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends Hiera
         CubeListBuilder tentCubeList = CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F);
 
-        for (int i = 0; i < tenticles; i++) {
+        for (int i = 0; i < tentacles; i++) {
             double doublethink = i * Math.PI * 2.0 / 8.0;
             float floatx = (float)Math.cos(doublethink) * 1.5F;
             float floaty = 4.0F;
