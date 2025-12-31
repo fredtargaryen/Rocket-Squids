@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Almost all code here was copied from FireworkParticle as I couldn't extend
@@ -53,7 +54,7 @@ public class SquidFireworkParticle {
         /**
          * Renders the particle
          */
-        public void render(VertexConsumer buffer, Camera entityIn, float partialTicks) {
+        public void render(@NotNull VertexConsumer buffer, @NotNull Camera entityIn, float partialTicks) {
             if (!this.twinkle || this.age < this.lifetime / 3 || (this.age + this.lifetime) / 3 % 2 == 0) {
                 super.render(buffer, entityIn, partialTicks);
             }
@@ -94,7 +95,16 @@ public class SquidFireworkParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(
+                @NotNull SimpleParticleType typeIn,
+                @NotNull ClientLevel worldIn,
+                double x,
+                double y,
+                double z,
+                double xSpeed,
+                double ySpeed,
+                double zSpeed
+        ) {
             SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particleEngine, this.spriteSet);
             fireworkparticle$spark.setSlightAlpha();
             return fireworkparticle$spark;
@@ -185,7 +195,7 @@ public class SquidFireworkParticle {
                                 {2.5 * squareLength, -1.0D}, {3.5 * squareLength, -1.0D}, {3.5 * squareLength, 1.0},
                                 //Top of head
                                 {0.0, 7 * squareLength}},
-                        aint, aint1, flag4, flag2, true);
+                        aint, aint1, flag4, flag2);
 
                 int j = aint[0];
             }
@@ -205,12 +215,12 @@ public class SquidFireworkParticle {
             return minecraft.gameRenderer.getMainCamera().getPosition().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
         }
 
-        private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
+        private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn) {
             double d0 = shape[0][0];
             double d1 = shape[0][1];
             this.createParticle(this.x, this.y, this.z, d0 * speed, d1 * speed, 0.0D, colours, fadeColours, trail, twinkleIn);
             float f = this.random.nextFloat() * (float) Math.PI;
-            double d2 = p_92038_8_ ? 0.034D : 0.34D;
+            double d2 = 0.034D;
 
             for (int i = 0; i < 3; ++i) {
                 double d3 = (double) f + (double) ((float) i * (float) Math.PI) * d2;
