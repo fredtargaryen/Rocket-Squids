@@ -5,8 +5,7 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.IConfigEvent;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.nio.file.Path;
 
@@ -31,12 +30,12 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onLoad(IConfigEvent.loading loadEvent) {
+    public static void onLoad(ModConfigEvent.Loading loadEvent) {
 
     }
 
     @SubscribeEvent
-    public static void onFileChange(IConfigEvent.reloading configEvent) {
+    public static void onFileChange(ModConfigEvent.Reloading configEvent) {
 
     }
 }
