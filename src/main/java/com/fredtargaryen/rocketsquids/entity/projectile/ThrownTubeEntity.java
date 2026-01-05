@@ -10,8 +10,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrownTubeEntity extends ThrowableItemProjectile {
@@ -22,7 +22,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
     {
         super(RocketSquidsBase.TUBE_TYPE.get(), elb, world);
     }
-    public ThrownTubeEntity(FMLPlayMessages.SpawnEntity spawn, Level world) {
+    public ThrownTubeEntity(PlayMessages.SpawnEntity spawn, Level world) {
         this(RocketSquidsBase.TUBE_TYPE.get(), world);
     }
 
