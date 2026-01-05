@@ -1,7 +1,7 @@
 // Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 // This code was taken and adapted from https://github.com/Beethoven92/BetterEndForge
 // and remains under the MIT license, all credit goes to them
-package com.fredtargaryen.rocketsquids.util;
+package com.fredtargaryen.rocketsquids.util.color;
 
 import 	net.minecraft.util.Mth;
 
