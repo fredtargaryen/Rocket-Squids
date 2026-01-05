@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.worldgen;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
-import com.fredtargaryen.rocketsquids.world.StatueManager;
+import com.fredtargaryen.rocketsquids.world.StatueData;
 import com.mojang.serialization.Codec;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
@@ -44,7 +44,7 @@ public class StatueGen extends Feature<StatueGenConfig> {
             List<? extends String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
             if(blockedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
         }
-        StatueManager statueManager = StatueManager.forWorld(world.getLevel());
+        StatueData statueManager = StatueData.forWorld(world.getLevel());
         int frequency = GeneralConfig.STATUE_FREQUENCY.get();
         int chunkX = pos.getX() / 16;
         int chunkZ = pos.getZ() / 16;
