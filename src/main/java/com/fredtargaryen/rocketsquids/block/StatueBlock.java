@@ -2,7 +2,7 @@ package com.fredtargaryen.rocketsquids.block;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
-import com.fredtargaryen.rocketsquids.world.StatueManager;
+import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
@@ -90,7 +90,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
             @NotNull BlockPos neighborPos
     ) {
         if (state.getValue(WATERLOGGED)) {
-            world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
         return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
@@ -119,7 +119,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
     ) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
         if(!worldIn.isClientSide) {
-            StatueManager.forWorld(worldIn).addStatue(pos);
+            StatueData.forWorld(worldIn).addStatue(pos);
         }
     }
 
@@ -133,7 +133,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
             boolean isMoving
     ) {
         super.onPlace(state, worldIn, pos, newState, isMoving);
-        StatueManager.forWorld(worldIn).removeStatue(pos);
+        StatueData.forWorld(worldIn).removeStatue(pos);
     }
 
     public void dispenseGift(Level world, BlockPos pos, Direction facing) {
@@ -164,7 +164,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
         BlockPos startPos = fallingEntity.blockPosition();
         BlockState startState = fallingEntity.level.getBlockState(startPos);
         if(startState.getValue(BlockStateProperties.FACING) == Direction.UP) {
-            StatueManager.forWorld(fallingEntity.level).removeStatue(startPos);
+            StatueData.forWorld(fallingEntity.level).removeStatue(startPos);
         }
     }
 
@@ -180,7 +180,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
             @NotNull FallingBlockEntity fallingBlock
     ) {
         if(fallingState.getValue(BlockStateProperties.FACING) == Direction.UP) {
-            StatueManager.forWorld(worldIn).addStatue(pos);
+            StatueData.forWorld(worldIn).addStatue(pos);
         }
     }
 }
