@@ -1,7 +1,9 @@
 package com.fredtargaryen.rocketsquids.item.capability;
 
+import com.fredtargaryen.rocketsquids.util.capability.IStorage;
+
 import net.minecraft.nbt.CompoundTag;
-import 	net.minecraft.nbt.Tag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -10,7 +12,7 @@ import net.minecraftforge.common.capabilities.Capability;
  * This storage class was designed for exclusive use with this item; correct
  * operation is not guaranteed in any other context!
  */
-public class SqueleporterCapStorage implements Capability.IStorage<ISqueleporter> {
+public class SqueleporterCapStorage implements IStorage<ISqueleporter> {
     @Override
     public Tag writeNBT(Capability<ISqueleporter> capability, ISqueleporter instance, Direction side) {
         CompoundTag nbt = new CompoundTag();
