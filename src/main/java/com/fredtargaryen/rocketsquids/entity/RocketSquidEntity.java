@@ -47,7 +47,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -628,11 +628,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         if(event.getPlayer().isPassenger()) {
             double prevPitch_r = this.squidCap.getPrevRotPitch();
             double pitch_r = this.squidCap.getRotPitch();
-			float partialTick = event.getPartialRenderTick();
+			float partialTick = event.getPartialTick();
             double exactPitch_r = prevPitch_r + (pitch_r - prevPitch_r) * partialTick;
 			double yaw_r = this.squidCap.getRotYaw();
             this.riderRotated = true;
-            PoseStack stack = event.getMatrixStack();
+            PoseStack stack = event.getPoseStack();
             stack.pushPose();
             Quaternion quat = Vector3f.YP.rotation((float) -yaw_r);
             quat.mul(Vector3f.XP.rotation((float) (exactPitch_r - (Math.PI / 2))));
@@ -644,7 +644,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void popRotation(RenderPlayerEvent.Post event) {
         if(this.riderRotated) {
-            event.getMatrixStack().popPose();
+            event.getPoseStack().popPose();
             this.riderRotated = false;
         }
     }

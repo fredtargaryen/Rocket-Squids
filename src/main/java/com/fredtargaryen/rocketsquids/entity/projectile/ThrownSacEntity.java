@@ -14,8 +14,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -28,7 +28,8 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
     {
         super(RocketSquidsBase.SAC_TYPE.get(), elb, w);
     }
-    public ThrownSacEntity(FMLPlayMessages.SpawnEntity spawn, Level world) {
+    @SuppressWarnings("unused")
+    public ThrownSacEntity(PlayMessages.SpawnEntity spawn, Level world) {
         this(RocketSquidsBase.SAC_TYPE.get(), world);
     }
 
