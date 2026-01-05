@@ -20,6 +20,7 @@ import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.worldgen.*;
 import com.fredtargaryen.rocketsquids.util.ColorHelper;
 import com.mojang.math.Vector3f;
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -37,9 +38,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneDecoratorConfiguration;
-import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -51,7 +54,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -154,23 +157,23 @@ public class RocketSquidsBase {
             () -> new SimpleParticleType(false));
 
     // WorldGen Features
-    private static final DeferredRegister<Feature<?>> WORLDGEN_FEATURES = DeferredRegister.create(ForgeRegistries.FEATURES, MODID);
+    private static final DeferredRegister<ConfiguredFeature<?,?>> CONFIGURED_FEATURES = DeferredRegister.create(Registry.CONFIGURED_FEATURE_REGISTRY, MODID);
     // Register all Features here
-    public static final RegistryObject<Feature<ConchGenConfig>> CONCH_FEATURE = WORLDGEN_FEATURES.register("conchgen",
+    public static final RegistryObject<ConfiguredFeature<ConchGenConfig, ConchGen>> CONCH_FEATURE = CONFIGURED_FEATURES.register("conchgen",
             () -> new ConchGen(ConchGenConfig.FACTORY)
     );
-    public static final RegistryObject<Feature<StatueGenConfig>> STATUE_FEATURE = WORLDGEN_FEATURES.register("statuegen",
+    public static final RegistryObject<ConfiguredFeature<StatueGenConfig, StatueGen>> STATUE_FEATURE = CONFIGURED_FEATURES.register("statuegen",
             () -> new StatueGen(StatueGenConfig.FACTORY)
     );
 
     // WorldGen Decorators
-    private static final DeferredRegister<FeatureDecorator<?>> WORLDGEN_DECORATORS = DeferredRegister.create(ForgeRegistries.DECORATORS, MODID);
+    private static final DeferredRegister<PlacedFeature> PLACED_FEATURES = DeferredRegister.create(Registry.PLACED_FEATURE_REGISTRY, MODID);
     // Register all Decorators here
-    public static final RegistryObject<ConchPlacement> CONCH_PLACEMENT = WORLDGEN_DECORATORS.register("conchplace",
-            () -> new ConchPlacement(NoneDecoratorConfiguration.CODEC)
+    public static final RegistryObject<ConchPlacement> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
+            () -> new ConchPlacement(NoneFeatureConfiguration.CODEC)
     );
-    public static final RegistryObject<StatuePlacement> STATUE_PLACEMENT = WORLDGEN_DECORATORS.register("statueplace",
-            () -> new StatuePlacement(NoneDecoratorConfiguration.CODEC)
+    public static final RegistryObject<StatuePlacement> STATUE_PLACEMENT = PLACED_FEATURES.register("statueplace",
+            () -> new StatuePlacement(NoneFeatureConfiguration.CODEC)
     );
 
     public static FeatureManager FEATURE_MANAGER;
@@ -211,8 +214,8 @@ public class RocketSquidsBase {
 
         PARTICLE_TYPES.register(modEventBus);
 
-        WORLDGEN_FEATURES.register(modEventBus);
-        WORLDGEN_DECORATORS.register(modEventBus);
+        CONFIGURED_FEATURES.register(modEventBus);
+        PLACED_FEATURES.register(modEventBus);
 
         // Event bus
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
