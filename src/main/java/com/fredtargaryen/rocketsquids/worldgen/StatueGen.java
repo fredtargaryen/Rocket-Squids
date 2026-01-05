@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -21,16 +23,17 @@ public class StatueGen extends Feature<StatueGenConfig> {
 
     /**
      * Generate the feature at the given BlockPos (which was validated by an IPatchPlacement instance).
-     * @param world
-     * @param chunkGen
-     * @param random
-     * @param pos
-     * @param config
-     * @return
+     * @param context context
+     * @return return
      */
     @Override
-    public boolean place(WorldGenLevel world, ChunkGenerator chunkGen, Random random, BlockPos pos, StatueGenConfig config) {
-        // First check the config to see if this dimension is allowed
+    public boolean place(@NotNull FeaturePlaceContext<StatueGenConfig> context) {
+        // First we create a few variables out of the context in order to adapt from the old way place was written
+        WorldGenLevel world = context.level();
+        ChunkGenerator chunkGen = context.chunkGenerator();
+        Random random = context.random();
+        BlockPos pos = context.origin();
+        // Then we check the config to see if this dimension is allowed
         if(GeneralConfig.STATUE_USE_WHITELIST.get())
         {
             List<? extends String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();

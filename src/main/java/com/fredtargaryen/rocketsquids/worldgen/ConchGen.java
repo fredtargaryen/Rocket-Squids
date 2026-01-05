@@ -10,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -22,16 +24,16 @@ public class ConchGen extends Feature<ConchGenConfig> {
 
     /**
      * Generate the feature at the given BlockPos (which was validated by an IPatchPlacement instance).
-     * @param world
-     * @param chunkGen
-     * @param random
-     * @param pos
-     * @param config
-     * @return always returns true
+     * @param context context
+     * @return return
      */
     @Override
-    public boolean place(WorldGenLevel world, ChunkGenerator chunkGen, Random random, BlockPos pos, ConchGenConfig config) {
-        // First check the config to see if this dimension is allowed
+    public boolean place(@NotNull FeaturePlaceContext<ConchGenConfig> context) {
+        // First we create a few variables out of the context in order to adapt from the old way place was written
+        WorldGenLevel world = context.level();
+        Random random = context.random();
+        BlockPos pos = context.origin();
+        // Then we check the config to see if this dimension is allowed
         if(GeneralConfig.CONCH_USE_WHITELIST.get())
         {
             List<? extends String> allowedDimensions = GeneralConfig.CONCH_WHITELIST.get();

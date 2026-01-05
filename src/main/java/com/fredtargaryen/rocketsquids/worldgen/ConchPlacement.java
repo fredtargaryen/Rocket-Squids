@@ -2,27 +2,27 @@ package com.fredtargaryen.rocketsquids.worldgen;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.placement.DecorationContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneDecoratorConfiguration;
-import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
+import net.minecraft.world.level.levelgen.placement.PlacementContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.stream.Stream;
 
-public class ConchPlacement extends FeatureDecorator<NoneDecoratorConfiguration> {
-    public ConchPlacement(Codec<NoneDecoratorConfiguration> codec) {
-        super(codec);
+public class ConchPlacement extends PlacementModifier {
+    public ConchPlacement(Codec<NoneFeatureConfiguration> codec) {
+        super();
     }
 
     @Override
     public @NotNull Stream<BlockPos> getPositions(
-            @NotNull DecorationContext helper,
+            @NotNull PlacementContext helper,
             Random random,
-            @NotNull NoneDecoratorConfiguration config,
             BlockPos pos
     ) {
         int maxConches = random.nextInt(3); //was 3
@@ -38,5 +38,10 @@ public class ConchPlacement extends FeatureDecorator<NoneDecoratorConfiguration>
             }
         }
         return Stream.empty();
+    }
+
+    @Override
+    public @NotNull PlacementModifierType<?> type() {
+        return PlacementModifierType.HEIGHTMAP;
     }
 }
