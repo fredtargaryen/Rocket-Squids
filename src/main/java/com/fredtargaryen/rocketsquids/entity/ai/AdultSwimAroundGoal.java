@@ -3,11 +3,11 @@ package com.fredtargaryen.rocketsquids.entity.ai;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
-import com.fredtargaryen.rocketsquids.world.StatueManager;
+import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.EnumSet;
 import java.util.Random;
@@ -126,7 +126,7 @@ public class AdultSwimAroundGoal extends Goal {
                 case LOCATE:
                     //Find nearest statue
                     Vec3 pos = this.squid.position();
-                    int[] statueCoords = StatueManager.forWorld(this.squid.level).getNearestStatuePos(pos.x, pos.y, pos.z);
+                    int[] statueCoords = StatueData.forWorld(this.squid.level).getNearestStatuePos(pos.x, pos.y, pos.z);
                     if(statueCoords[3] < 1) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
