@@ -1,50 +1,61 @@
 package com.fredtargaryen.rocketsquids.world;
 
-import com.fredtargaryen.rocketsquids.DataReference;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class StatueManager extends SavedData {
+import static com.fredtargaryen.rocketsquids.DataReference.*;
+
+public class StatueData extends SavedData {
     //5 integers; 2 integers for index of 100x100 chunk area; 3 integers for exact coords
     private ArrayList<int[]> statues;
 
-    public StatueManager() {
+    public StatueData() {
         super();
         this.statues = new ArrayList<>();
     }
 
-    public static StatueManager forWorld(Level world) {
+    public StatueData create() {
+        return new StatueData();
+    }
+
+    public StatueData load(CompoundTag tag) {
+        this.statues = new ArrayList<>();
+        int amount = tag.getInt("amount");
+        for(int i = 0; i < amount; ++i) {
+            this.statues.add(tag.getIntArray(String.valueOf(i)));
+        }
+        return new StatueData();
+    }
+
+    public static StatueData forWorld(Level world) {
+        StatueData data = new StatueData();
+        return data.forLevel(world);
+    }
+
+    public StatueData forLevel(Level world) {
         ServerLevel serverWorld = Objects.requireNonNull(world.getServer()).getLevel(world.dimension());
         assert serverWorld != null;
         DimensionDataStorage storage = serverWorld.getDataStorage();
-        return storage.computeIfAbsent(StatueManager::new, DataReference.MODID);
+        return storage.computeIfAbsent(this::load, this::create, MODID);
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        this.statues = new ArrayList<>();
-        int amount = nbt.getInt("amount");
-        for(int i = 0; i < amount; ++i) {
-            this.statues.add(nbt.getIntArray(String.valueOf(i)));
-        }
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compound) {
+    public @NotNull CompoundTag save(CompoundTag tag) {
         int amount = this.statues.size();
-        compound.putInt("amount", this.statues.size());
+        tag.putInt("amount", this.statues.size());
         for(int i = 0; i < amount; ++i) {
-            compound.putIntArray(String.valueOf(i), this.statues.get(i));
+            tag.putIntArray(String.valueOf(i), this.statues.get(i));
         }
-        return compound;
+        return tag;
     }
 
     public void addStatue(BlockPos pos) {
