@@ -29,7 +29,7 @@ repositories {
     }
     maven {
         name = 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
 }
 
@@ -39,7 +39,9 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_mappings_version}@zip")
     }
-    forge "net.minecraftforge:forge:$project.forge_version"
+    forge "net.minecraftforge:forge:${project.forge_version}"
+
+    implementation "software.bernie.geckolib:geckolib-${geckolib_version}"
 }
 
 tasks.named('processResources', ProcessResources).configure {
