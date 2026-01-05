@@ -1,5 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity.capability.baby;
 
+import com.fredtargaryen.rocketsquids.util.capability.IStorage;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.core.Direction;
@@ -10,7 +12,7 @@ import net.minecraftforge.common.capabilities.Capability;
  * This storage class was designed for exclusive use with this mod;
  * correct operation is not guaranteed in any other context!
  */
-public class BabyCapStorage implements Capability.IStorage<IBabyCapability> {
+public class BabyCapStorage implements IStorage<IBabyCapability> {
     @Override
     public Tag writeNBT(Capability<IBabyCapability> capability, IBabyCapability instance, Direction side) {
         CompoundTag comp = new CompoundTag();
