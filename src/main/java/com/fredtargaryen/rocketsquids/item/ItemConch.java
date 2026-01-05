@@ -3,7 +3,7 @@ package com.fredtargaryen.rocketsquids.item;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
-import com.fredtargaryen.rocketsquids.world.StatueManager;
+import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
@@ -32,6 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -58,7 +59,7 @@ public class ItemConch extends ArmorItem {
         }
 
         @Override
-        public Ingredient getRepairIngredient() {
+        public @Nullable Ingredient getRepairIngredient() {
             return null;
         }
 
@@ -115,7 +116,7 @@ public class ItemConch extends ArmorItem {
             Block block = iblockstate.getBlock();
             if (block == RocketSquidsBase.BLOCK_STATUE.get()) {
                 if (iblockstate.getValue(BlockStateProperties.FACING) == Direction.UP) {
-                    StatueManager.forWorld(worldIn).removeStatue(pos);
+                    StatueData.forWorld(worldIn).removeStatue(pos);
                     if (facing == Direction.NORTH) {
                         worldIn.setBlockAndUpdate(pos, iblockstate.setValue(BlockStateProperties.FACING, Direction.NORTH));
                         context.getItemInHand().grow(-1);
