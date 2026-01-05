@@ -30,8 +30,19 @@ import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientProxy implements IProxy {
-    public static final ModelLayerLocation SQUID_BODY_LAYER = new ModelLayerLocation(SQUID_TYPE.getId(), "body");
-    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
+    public static final ModelLayerLocation SQUID_BODY_LAYER;
+
+    static {
+        assert SQUID_TYPE.getId() != null;
+        SQUID_BODY_LAYER = new ModelLayerLocation(SQUID_TYPE.getId(), "body");
+    }
+
+    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
+
+    static {
+        assert BABY_SQUID_TYPE.getId() != null;
+        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
+    }
 
     @Override
     @SubscribeEvent
