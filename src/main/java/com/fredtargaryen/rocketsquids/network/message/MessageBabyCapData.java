@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.cap.entity.baby.BabyCap;
 import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -17,15 +18,19 @@ public class MessageBabyCapData {
     private UUID squidToUpdate;
     private CompoundTag capData;
 
-    public MessageBabyCapData() {}
+    @SuppressWarnings("unused")
+    public MessageBabyCapData() {
 
-    public MessageBabyCapData(UUID id, IBabyCapability cap) {
+    }
+
+    public MessageBabyCapData(UUID id, BabyCap cap) {
         this.squidToUpdate = id;
-        this.capData = (CompoundTag) RocketSquidsBase.BABYCAP.writeNBT(cap, null);
+        this.capData = cap.loadNBT(new CompoundTag());
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
+            assert Minecraft.getInstance().level != null;
             Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
             Iterator<Entity> squidFinder = l.iterator();
             Entity e;
@@ -33,8 +38,9 @@ public class MessageBabyCapData {
                 e = squidFinder.next();
                 if(e.getUUID().equals(this.squidToUpdate)) {
                     e.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap ->
-                            //Can assume e is a baby rocket squid
-                            RocketSquidsBase.BABYCAP.readNBT(cap, null, this.capData));
+                            // We can assume e is a baby rocket squid
+                            cap.loadNBT(this.capData)
+                    );
                 }
             }
         });

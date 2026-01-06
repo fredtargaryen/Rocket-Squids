@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 public class MessageSquidNote {
     private byte note;
 
-    public MessageSquidNote() {}
+    @SuppressWarnings("unused")
+    public MessageSquidNote() {
+
+    }
 
     public MessageSquidNote(byte note) {
         this.note = note;

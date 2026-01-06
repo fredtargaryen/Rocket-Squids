@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 public class MessagePlayNoteClient {
     private byte note;
 
-    public MessagePlayNoteClient() {}
+    @SuppressWarnings("unused")
+    public MessagePlayNoteClient() {
+
+    }
 
     public MessagePlayNoteClient(byte note) {
         this.note = note;
