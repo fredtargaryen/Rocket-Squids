@@ -2,6 +2,12 @@ package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.block.ConchBlock;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
+import com.fredtargaryen.rocketsquids.cap.entity.adult.AdultCap;
+import com.fredtargaryen.rocketsquids.cap.entity.adult.AdultCapProvider;
+import com.fredtargaryen.rocketsquids.cap.entity.baby.BabyCap;
+import com.fredtargaryen.rocketsquids.cap.entity.baby.BabyCapProvider;
+import com.fredtargaryen.rocketsquids.cap.item.squeleporter.SqueleporterCap;
+import com.fredtargaryen.rocketsquids.cap.item.squeleporter.SqueleporterCapProvider;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
@@ -279,89 +285,31 @@ public class RocketSquidsBase {
     ///CAPABILIITIES///
     ///////////////////
     @SubscribeEvent
-    public void registerCaps(RegisterCapabilitiesEvent event) {
-        event.register(IBabyCapability.class);
-        event.register(IAdultCapability.class);
-        event.register(ISqueleporter.class);
+    public void onRegisterCapabilitiesEvent(RegisterCapabilitiesEvent event) {
+        event.register(AdultCap.class);
+        event.register(BabyCap.class);
+        event.register(SqueleporterCap.class);
     }
 
-    public static final Capability<IBabyCapability> BABYCAP = CapabilityManager.get(new CapabilityToken<>(){});
-    public static final Capability<IAdultCapability> ADULTCAP = CapabilityManager.get(new CapabilityToken<>(){});
-    public static final Capability<ISqueleporter> SQUELEPORTER_CAP = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<AdultCap> ADULTCAP = AdultCapProvider.ADULTCAP;
+    public static final Capability<BabyCap> BABYCAP = BabyCapProvider.BABYCAP;
+    public static final Capability<SqueleporterCap> SQUELEPORTER_CAP = SqueleporterCapProvider.SQUELEPORTER_CAP;
 
     @SubscribeEvent
-    public void onItemStackConstruct(AttachCapabilitiesEvent<ItemStack> evt) {
-        if(evt.getObject().getItem() == SQUELEPORTER_ACTIVE.get()) {
-            evt.addCapability(DataReference.SQUELEPORTER_LOCATION,
-                    new ICapabilitySerializable<CompoundTag>() {
-                        final ISqueleporter inst = SQUELEPORTER_CAP.getDefaultInstance();
-
-
-                        @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
-                            return capability == SQUELEPORTER_CAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
-                        }
-
-                        @Override
-                        public CompoundTag serializeNBT() {
-                            return (CompoundTag) SQUELEPORTER_CAP.getStorage().writeNBT(SQUELEPORTER_CAP, inst, null);
-                        }
-
-                        @Override
-                        public void deserializeNBT(CompoundTag nbt) {
-                            SQUELEPORTER_CAP.getStorage().readNBT(SQUELEPORTER_CAP, inst, null, nbt);
-                        }
-                    });
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityConstruct(AttachCapabilitiesEvent<Entity> evt) {
+    public void onEntityAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> evt) {
         Entity e = evt.getObject();
-        if(e instanceof BabyRocketSquidEntity) {
-            evt.addCapability(DataReference.BABY_CAP_LOCATION,
-                    //Full name ICapabilitySerializableProvider
-                    new ICapabilitySerializable<CompoundTag>() {
-                        final IBabyCapability inst = BABYCAP.getDefaultInstance();
-
-                        @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
-                            return capability == BABYCAP ? LazyOptional.of(() -> (T) inst) : LazyOptional.empty();
-                        }
-
-                        @Override
-                        public CompoundTag serializeNBT() {
-                            return (CompoundTag) BABYCAP.getStorage().writeNBT(BABYCAP, inst, null);
-                        }
-
-                        @Override
-                        public void deserializeNBT(CompoundTag nbt) {
-                            BABYCAP.getStorage().readNBT(BABYCAP, inst, null, nbt);
-                        }
-                    });
+        if (e instanceof RocketSquidEntity) {
+            evt.addCapability(DataReference.ADULT_CAP_LOCATION, new AdultCapProvider());
         }
-        else if(e instanceof RocketSquidEntity) {
-            evt.addCapability(DataReference.ADULT_CAP_LOCATION,
-                    //Full name ICapabilitySerializableProvider
-                    new ICapabilitySerializable<CompoundTag>() {
-                        final IAdultCapability inst = ADULTCAP.getDefaultInstance();
+        else if (e instanceof BabyRocketSquidEntity) {
+            evt.addCapability(DataReference.BABY_CAP_LOCATION, new BabyCapProvider());
+        }
+    }
 
-                        @Override
-                        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
-                            return capability == ADULTCAP ? LazyOptional.of(() -> (T)inst) : LazyOptional.empty();
-                        }
-
-                        @Override
-                        public CompoundTag serializeNBT() {
-                            return (CompoundTag) ADULTCAP.getStorage().writeNBT(ADULTCAP, inst, null);
-                        }
-
-                        @Override
-                        public void deserializeNBT(CompoundTag nbt) {
-                            ADULTCAP.getStorage().readNBT(ADULTCAP, inst, null, nbt);
-                        }
-                    }
-            );
+    @SubscribeEvent
+    public void onItemAttachCapabilitiesEvent(AttachCapabilitiesEvent<ItemStack> evt) {
+        if(evt.getObject().getItem() == SQUELEPORTER_ACTIVE.get()) {
+            evt.addCapability(DataReference.SQUELEPORTER_LOCATION, new SqueleporterCapProvider());
         }
     }
 

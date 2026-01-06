@@ -2,13 +2,13 @@ package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.cap.entity.adult.AdultCap;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.entity.ai.AdultFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.AdultSwimAroundGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.BlastoffGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.ShakeGoal;
-import com.fredtargaryen.rocketsquids.entity.capability.adult.IAdultCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -58,7 +58,7 @@ import java.util.UUID;
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.BABY_SQUID_TYPE;
 
 public class RocketSquidEntity extends AbstractRocketSquidEntity {
-    private IAdultCapability squidCap;
+    private AdultCap squidCap;
 
     protected int breedCooldown;
     protected boolean breedable;
@@ -249,7 +249,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                         // Set squid capability data
                         this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap ->
                         {
-                            squeleporterCap.setSquidCapabilityData((CompoundTag) RocketSquidsBase.ADULTCAP.writeNBT(squidCap, null));
+                            squeleporterCap.setSquidCapabilityData(squidCap.loadNBT(new CompoundTag()));
                         });
                         this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     });
