@@ -1,9 +1,9 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.cap.entity.baby.BabyCap;
 import com.fredtargaryen.rocketsquids.entity.ai.BabyFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.BabySwimAroundGoal;
-import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
 import net.minecraft.core.particles.ParticleTypes;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
-    private IBabyCapability squidCap;
+    private BabyCap squidCap;
 
     public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, Level w) {
         super(type, w);
