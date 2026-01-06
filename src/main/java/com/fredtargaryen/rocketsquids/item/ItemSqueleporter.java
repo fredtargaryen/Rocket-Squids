@@ -45,9 +45,7 @@ public class ItemSqueleporter extends Item {
                         newSquid.addForce(squidTags.getDouble("force"));
                         Vec3 playerPos = playerIn.position();
                         newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
-                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> {
-                            RocketSquidsBase.ADULTCAP.readNBT(squidCap, null, cap.getSquidCapabilityData());
-                        });
+                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> squidCap.loadNBT(cap.getSquidCapabilityData()));
                         worldIn.addFreshEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
