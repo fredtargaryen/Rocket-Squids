@@ -7,12 +7,9 @@ import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -29,14 +26,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class ItemConch extends ArmorItem {
+public class ItemConch extends GeoModArmorItem {
     public static final ArmorMaterial MATERIAL_CONCH = new ArmorMaterial() {
         @Override
         public int getDurabilityForSlot(@NotNull EquipmentSlot slotIn) {
@@ -179,32 +174,5 @@ public class ItemConch extends ArmorItem {
         }
 
         return true;
-    }
-
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return DataReference.MODID + ":textures/models/armor/conch_layer_1.png";
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack stack, EquipmentSlot armorSlot, HumanoidModel<?> defaultModel) {
-        if(stack != null) {
-            if (stack.getItem() == this) {
-                EquipmentSlot type = ((ArmorItem) stack.getItem()).getSlot();
-                HumanoidModel<?> armorModel;
-                if (type == EquipmentSlot.HEAD) {
-                    armorModel = RocketSquidsBase.proxy.getConchModel();
-                    armorModel.head.visible = defaultModel.head.visible; //Head, I hope // Probably the Head -pickle
-                    armorModel.hat.visible = armorSlot == EquipmentSlot.HEAD;
-
-                    armorModel.crouching = defaultModel.crouching;
-                    armorModel.rightArmPose = defaultModel.rightArmPose;
-                    armorModel.leftArmPose = defaultModel.leftArmPose;
-
-                    return armorModel;
-                }
-            }
-        }
-        return null;
     }
 }

@@ -6,12 +6,13 @@ import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.*;
 import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.client.render.RenderRS;
+import com.fredtargaryen.rocketsquids.client.render.armor.ConchWearableRenderer;
+import com.fredtargaryen.rocketsquids.item.ItemConch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundSource;
@@ -21,6 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Iterator;
 
@@ -42,6 +44,12 @@ public class ClientProxy implements IProxy {
     static {
         assert BABY_SQUID_TYPE.getId() != null;
         BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
+    }
+
+    @Override
+    @SubscribeEvent
+    public void clientSetup(FMLClientSetupEvent event) {
+        ConchWearableRenderer.registerArmorRenderer(ItemConch.class, ConchWearableRenderer::new);
     }
 
     @Override
@@ -70,11 +78,6 @@ public class ClientProxy implements IProxy {
     @Override
     public void openConchClient(byte conchStage) {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
-    }
-
-    @Override
-    public HumanoidModel<?> getConchModel() {
-        return new ModelConchArmor();
     }
 
     @Override
