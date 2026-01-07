@@ -41,7 +41,7 @@ dependencies {
     }
     forge "net.minecraftforge:forge:${project.forge_version}"
 
-    implementation "software.bernie.geckolib:geckolib-${geckolib_version}"
+    implementation "software.bernie.geckolib:geckolib-${geckolib_subrepo}:${geckolib_version}"
 }
 
 tasks.named('processResources', ProcessResources).configure {
