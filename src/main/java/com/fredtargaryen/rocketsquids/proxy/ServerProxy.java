@@ -1,27 +1,41 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ServerProxy implements IProxy {
     @Override
-    public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {}
+    public void clientSetup(FMLClientSetupEvent event) {
+
+    }
 
     @Override
-    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {}
+    public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+
+    }
 
     @Override
-    public void registerRenderTypes() {}
+    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+
+    }
 
     @Override
-    public void openConchClient(byte conchStage) {}
+    public void registerRenderTypes() {
+
+    }
 
     @Override
-    public HumanoidModel<?> getConchModel() { return null; }
+    public void openConchClient(byte conchStage) {
+
+    }
 
     @Override
-    public void playNoteFromMessage(byte note) {}
+    public void playNoteFromMessage(byte note) {
+
+    }
 
     @Override
-    public void playNoteFromMessageConchNeeded(byte note) {}
+    public void playNoteFromMessageConchNeeded(byte note) {
+
+    }
 }
