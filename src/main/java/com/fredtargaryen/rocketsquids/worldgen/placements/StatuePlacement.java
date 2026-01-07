@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.worldgen;
+package com.fredtargaryen.rocketsquids.worldgen.placements;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
