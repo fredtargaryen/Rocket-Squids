@@ -163,8 +163,6 @@ public class RocketSquidsBase {
             () -> new SimpleParticleType(false));
 
 
-    public static FeatureManager FEATURE_MANAGER;
-
     public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
 
 
@@ -220,11 +218,6 @@ public class RocketSquidsBase {
     @SubscribeEvent
     public static void registerFactories(ParticleFactoryRegisterEvent event) {
         Minecraft.getInstance().particleEngine.register(FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
-    }
-
-    @SubscribeEvent
-    public static void registerFeatures(RegistryEvent.Register<Feature<?>> event) {
-        FEATURE_MANAGER = new FeatureManager();
     }
 
     @SubscribeEvent
