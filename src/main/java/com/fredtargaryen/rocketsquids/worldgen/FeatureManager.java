@@ -1,10 +1,10 @@
 package com.fredtargaryen.rocketsquids.worldgen;
 
+import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
 import net.minecraftforge.common.world.MobSpawnSettingsBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -19,22 +19,46 @@ import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 @Mod.EventBusSubscriber
 public class FeatureManager {
     @SubscribeEvent
-    public static void loadBiome(BiomeLoadingEvent ble)
+    public static void loadBiome(BiomeLoadingEvent event)
     {
-        MobSpawnSettingsBuilder builder = ble.getSpawns();
+        // this code is for handling the spawning of rocket squid entities
+        MobSpawnSettingsBuilder builder = event.getSpawns();
         List<MobSpawnSettings.SpawnerData> spawners = builder.getSpawner(MobCategory.WATER_CREATURE);
         boolean squidFound = false;
         for (MobSpawnSettings.SpawnerData s : spawners) {
+            // this code checks if squids have spawned, if they have we set squidFound to true
             if(Objects.requireNonNull(s.type.getRegistryName()).toString().equals("minecraft:squid")) {
                 squidFound = true;
             }
         }
-        if(squidFound) builder.addSpawn(MobCategory.WATER_CREATURE, ROCKET_SQUID_SPAWN_INFO);
-        BiomeGenerationSettingsBuilder bgsb = ble.getGeneration();
-        bgsb.getFeatures(GenerationStep.Decoration.RAW_GENERATION).add(() -> STATUE_FEATURE.get().configured(new StatueGenConfig()).decorated(STATUE_PLACEMENT.get().configured(NoneFeatureConfiguration.INSTANCE)));
-        if(ble.getCategory() == Biome.BiomeCategory.BEACH)
+        // then if we found squids then it means we have a valid spawn for rocket squids
+        if(squidFound) {
+            // so it spawns them
+            builder.addSpawn(MobCategory.WATER_CREATURE, ROCKET_SQUID_SPAWN_INFO);
+        }
+
+        // this code is for handling the generation of Conch blocks and Statues
+        BiomeGenerationSettingsBuilder bgsb = event.getGeneration();
+        // using RAW_GENERATION as our decorator we add the placement through .getHolder.get()
+        if (ModPlacedFeatures.STATUE_PLACEMENT.getHolder().isPresent()) {
+            bgsb.addFeature(
+                    GenerationStep.Decoration.RAW_GENERATION,
+                    ModPlacedFeatures.STATUE_PLACEMENT.getHolder().get()
+            );
+        } else {
+            rocketSquidLogger.error("Failed to find STATUE_PLACEMENT holder");
+        }
+        if(event.getCategory() == Biome.BiomeCategory.BEACH) // filters non-beach biomes out
         {
-            bgsb.getFeatures(GenerationStep.Decoration.TOP_LAYER_MODIFICATION).add(() -> CONCH_FEATURE.get().configured(new ConchGenConfig()).decorated(CONCH_PLACEMENT.get().configured(NoneFeatureConfiguration.INSTANCE)));
+            // using TOP_LAYER_MODIFICATION as our decorator we add the placement through .getHolder.get()
+            if (ModPlacedFeatures.CONCH_PLACEMENT.getHolder().isPresent()) {
+                bgsb.addFeature(
+                        GenerationStep.Decoration.TOP_LAYER_MODIFICATION,
+                        ModPlacedFeatures.CONCH_PLACEMENT.getHolder().get()
+                );
+            } else {
+                rocketSquidLogger.error("Failed to find CONCH_PLACEMENT holder");
+            }
         }
     }
 }

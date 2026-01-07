@@ -20,8 +20,14 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
 import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
+import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
+import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.worldgen.*;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
+import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
+import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
+import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;
+import com.fredtargaryen.rocketsquids.worldgen.features.StatueGenConfig;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
@@ -156,25 +162,6 @@ public class RocketSquidsBase {
     public static final RegistryObject<ParticleType<SimpleParticleType>> FIREWORK_TYPE = PARTICLE_TYPES.register("firework",
             () -> new SimpleParticleType(false));
 
-    // WorldGen Features
-    private static final DeferredRegister<ConfiguredFeature<?,?>> CONFIGURED_FEATURES = DeferredRegister.create(Registry.CONFIGURED_FEATURE_REGISTRY, MODID);
-    // Register all Features here
-    public static final RegistryObject<ConfiguredFeature<ConchGenConfig, ConchGen>> CONCH_FEATURE = CONFIGURED_FEATURES.register("conchgen",
-            () -> new ConchGen(ConchGenConfig.FACTORY)
-    );
-    public static final RegistryObject<ConfiguredFeature<StatueGenConfig, StatueGen>> STATUE_FEATURE = CONFIGURED_FEATURES.register("statuegen",
-            () -> new StatueGen(StatueGenConfig.FACTORY)
-    );
-
-    // WorldGen Decorators
-    private static final DeferredRegister<PlacedFeature> PLACED_FEATURES = DeferredRegister.create(Registry.PLACED_FEATURE_REGISTRY, MODID);
-    // Register all Decorators here
-    public static final RegistryObject<ConchPlacement> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
-            () -> new ConchPlacement(NoneFeatureConfiguration.CODEC)
-    );
-    public static final RegistryObject<StatuePlacement> STATUE_PLACEMENT = PLACED_FEATURES.register("statueplace",
-            () -> new StatuePlacement(NoneFeatureConfiguration.CODEC)
-    );
 
     public static FeatureManager FEATURE_MANAGER;
 
@@ -214,8 +201,8 @@ public class RocketSquidsBase {
 
         PARTICLE_TYPES.register(modEventBus);
 
-        CONFIGURED_FEATURES.register(modEventBus);
-        PLACED_FEATURES.register(modEventBus);
+        ModConfiguredFeatures.register(modEventBus);
+        ModPlacedFeatures.register(modEventBus);
 
         // Event bus
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -322,8 +309,20 @@ public class RocketSquidsBase {
     ////////////////////
     ///LOGGER METHODS///
     ////////////////////
+
     @SuppressWarnings("unused")
-    public static void info(String message) { LOGGER.info(message); }
-    @SuppressWarnings("unused")
-    public static void warn(String message) { LOGGER.warn(message); }
+    public static class rocketSquidLogger {
+        @SuppressWarnings("unused")
+        public static void info(String message) {
+            LOGGER.info(message);
+        }
+        @SuppressWarnings("unused")
+        public static void warn(String message) {
+            LOGGER.warn(message);
+        }
+        @SuppressWarnings("unused")
+        public static void error(String message) {
+            LOGGER.error(message);
+        }
+    }
 }
