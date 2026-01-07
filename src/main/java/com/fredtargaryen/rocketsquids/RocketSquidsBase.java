@@ -22,14 +22,8 @@ import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
-import com.fredtargaryen.rocketsquids.worldgen.*;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
-import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
-import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
-import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;
-import com.fredtargaryen.rocketsquids.worldgen.features.StatueGenConfig;
 import com.mojang.math.Vector3f;
-import net.minecraft.core.Registry;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
@@ -46,16 +40,13 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -216,7 +207,7 @@ public class RocketSquidsBase {
     }
 
     @SubscribeEvent
-    public static void registerFactories(ParticleFactoryRegisterEvent event) {
+    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
         Minecraft.getInstance().particleEngine.register(FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
     }
 
@@ -225,16 +216,19 @@ public class RocketSquidsBase {
         Sounds.constructAndRegisterSoundEvents(event);
     }
 
+    @SubscribeEvent
+    public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        // Entity attributes are stored in there class under the createAttributes() method not in the registry code
+        event.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build());
+        event.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build());
+    }
+
     /**
      * Called after all registry events. Runs in parallel with other SetupEvent handlers.
      * @param event FMLCommonSetupEvent
      */
     public void postRegistration(FMLCommonSetupEvent event) {
         MessageHandler.init();
-
-        //Add entity attributes
-        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build()));
-        event.enqueueWork(() -> DefaultAttributes.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build()));
 
         //Make the firework
         ListTag list = new ListTag();
