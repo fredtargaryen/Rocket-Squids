@@ -1,10 +1,6 @@
 package com.fredtargaryen.rocketsquids.cap.entity.baby;
 
-import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.capabilities.Capability;
 
 public class BabyCap {
     private static final double doublePi = Math.PI * 2;
