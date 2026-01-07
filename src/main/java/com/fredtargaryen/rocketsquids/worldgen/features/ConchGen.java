@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.worldgen;
+package com.fredtargaryen.rocketsquids.worldgen.features;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Random;
 
 public class ConchGen extends Feature<ConchGenConfig> {
-
     public ConchGen(Codec<ConchGenConfig> codec) {
         super(codec);
     }

@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.worldgen;
+package com.fredtargaryen.rocketsquids.worldgen.features;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
