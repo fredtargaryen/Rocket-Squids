@@ -2,7 +2,6 @@ package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.cap.entity.baby.BabyCap;
-import com.fredtargaryen.rocketsquids.entity.capability.baby.IBabyCapability;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
