@@ -89,12 +89,6 @@ public class ItemConch extends GeoModArmorItem {
     ) {
         if (worldIn.isClientSide && !playerIn.isCrouching()) RocketSquidsBase.proxy.openConchClient((byte) 1);
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
-        //FOR CONCH ARMOUR DEBUGGING
-//        System.out.println("Yaw = "+playerIn.rotationYaw);
-//        System.out.println("Head Yaw = "+playerIn.getRotationYawHead());
-//        Vec3 look = playerIn.getLookVec();
-//        System.out.println("Math.atan2 = "+Math.atan2(look.z, look.x));
-//        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
     /**
@@ -162,6 +156,7 @@ public class ItemConch extends GeoModArmorItem {
      * @param player The player who is placing the block. Can be null if the block is not being placed by a player.
      * @param side The side the player (or machine) right-clicked on.
      */
+    @SuppressWarnings("unused")
     public boolean placeBlockAt(ItemStack stack, Player player, Level world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, BlockState newState) {
         if (!world.setBlock(pos, newState, 11)) return false;
 
