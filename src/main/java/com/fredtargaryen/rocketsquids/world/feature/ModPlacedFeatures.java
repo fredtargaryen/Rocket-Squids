@@ -1,10 +1,9 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
-import com.fredtargaryen.rocketsquids.worldgen.placements.ConchPlacement;
-import com.fredtargaryen.rocketsquids.worldgen.placements.StatuePlacement;
 import net.minecraft.core.Registry;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -18,10 +17,10 @@ public class ModPlacedFeatures {
             DeferredRegister.create(Registry.PLACED_FEATURE_REGISTRY, MODID);
 
     public static final RegistryObject<PlacedFeature> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
-            () -> new PlacedFeature(ModConfiguredFeatures.CONCH_FEATURE.getHolder().get(), List.of(new ConchPlacement(NoneFeatureConfiguration.CODEC)))
+            () -> new PlacedFeature(ModConfiguredFeatures.CONCH_FEATURE.getHolder().get(), List.of(BiomeFilter.biome(), CountPlacement.of(3), HeightmapPlacement.onHeightmap(Heightmap.Types.WORLD_SURFACE)))
     );
     public static final RegistryObject<PlacedFeature> STATUE_PLACEMENT = PLACED_FEATURES.register("statueplace",
-            () -> new PlacedFeature(ModConfiguredFeatures.STATUE_FEATURE.getHolder().get(), List.of(new StatuePlacement(NoneFeatureConfiguration.CODEC)))
+            () -> new PlacedFeature(ModConfiguredFeatures.STATUE_FEATURE.getHolder().get(), List.of(BlockPredicateFilter.forPredicate(BlockPredicate.alwaysTrue())))
     );
 
     public static void register(IEventBus eventBus) {
