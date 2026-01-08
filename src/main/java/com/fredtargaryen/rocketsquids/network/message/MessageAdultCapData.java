@@ -23,7 +23,7 @@ public class MessageAdultCapData {
 
     public MessageAdultCapData(UUID id, AdultCap cap) {
         this.squidToUpdate = id;
-        this.capData = cap.loadNBT(new CompoundTag());
+        this.capData = cap.saveNBT(new CompoundTag());
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {

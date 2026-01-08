@@ -1,11 +1,13 @@
 package com.fredtargaryen.rocketsquids.cap.entity.adult;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Random;
 
 public class AdultCap {
     private static final byte[] note_ids = {12, 14, 16, 17, 19, 21, 23};
+    private int brokenNotes;
 
     private boolean shaking;
     private int shakeTicks;
@@ -24,6 +26,8 @@ public class AdultCap {
     private double targRotYaw;
 
     public AdultCap() {
+        this.brokenNotes = 0;
+
         this.shaking = false;
         this.shakeTicks = -1;
         this.blasting = false;
@@ -164,9 +168,16 @@ public class AdultCap {
 
 
     public void setLatestNotes(byte[] notes) {
-        this.latestNotes[0] = notes[0];
-        this.latestNotes[1] = notes[1];
-        this.latestNotes[2] = notes[2];
+        try {
+            this.latestNotes[0] = notes[0];
+            this.latestNotes[1] = notes[1];
+            this.latestNotes[2] = notes[2];
+        } catch (IndexOutOfBoundsException e) {
+            this.brokenNotes++;
+            if (!(this.brokenNotes > 3)) {
+                RocketSquidsBase.rocketSquidLogger.error("Encountered IndexOutOfBoundsException skipping");
+            }
+        }
     }
 
 
