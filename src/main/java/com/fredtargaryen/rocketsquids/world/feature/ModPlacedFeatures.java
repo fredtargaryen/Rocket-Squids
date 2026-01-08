@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
@@ -25,5 +26,6 @@ public class ModPlacedFeatures {
 
     public static void register(IEventBus eventBus) {
         PLACED_FEATURES.register(eventBus);
+        RocketSquidsBase.rocketSquidLogger.info("Registered Placed Features");
     }
 }

@@ -1,5 +1,6 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
 import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;
@@ -25,5 +26,6 @@ public class ModConfiguredFeatures {
 
     public static void register(IEventBus eventBus) {
         CONFIGURED_FEATURES.register(eventBus);
+        RocketSquidsBase.rocketSquidLogger.info("Registered Configured Features");
     }
 }
