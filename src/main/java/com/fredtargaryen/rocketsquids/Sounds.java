@@ -6,9 +6,9 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Sounds {
-    //////////////////
-    //Declare sounds//
-    //////////////////
+    ////////////////////
+    ///Declare sounds///
+    ////////////////////
     public static SoundEvent BLASTOFF;
     public static SoundEvent SQUIDTP_IN;
     public static SoundEvent SQUIDTP_OUT;

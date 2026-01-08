@@ -24,7 +24,6 @@ import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.math.Vector3f;
-import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;

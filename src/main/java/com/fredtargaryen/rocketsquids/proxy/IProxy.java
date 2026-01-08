@@ -1,7 +1,5 @@
 package com.fredtargaryen.rocketsquids.proxy;
 
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
