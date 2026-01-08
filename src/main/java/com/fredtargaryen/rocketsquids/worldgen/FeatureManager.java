@@ -14,9 +14,10 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.List;
 import java.util.Objects;
 
+import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = MODID)
 public class FeatureManager {
     @SubscribeEvent
     public static void loadBiome(BiomeLoadingEvent event)
