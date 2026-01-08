@@ -21,6 +21,7 @@ import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
 import com.fredtargaryen.rocketsquids.proxy.IProxy;
 import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
 import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
+import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.math.Vector3f;
@@ -209,6 +210,7 @@ public class RocketSquidsBase {
         PARTICLE_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerParticleFactories);
 
+        ModFeatures.register(modEventBus);
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
 

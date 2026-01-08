@@ -1,9 +1,7 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
-import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;
 import com.fredtargaryen.rocketsquids.worldgen.features.StatueGenConfig;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -17,11 +15,11 @@ public class ModConfiguredFeatures {
     public static final DeferredRegister<ConfiguredFeature<?, ?>> CONFIGURED_FEATURES =
             DeferredRegister.create(Registry.CONFIGURED_FEATURE_REGISTRY, MODID);
 
-    public static final RegistryObject<ConfiguredFeature<?, ?>> CONCH_FEATURE = CONFIGURED_FEATURES.register("conchgen",
-            () -> new ConfiguredFeature<>(new ConchGen(ConchGenConfig.FACTORY), new ConchGenConfig())
+    public static final RegistryObject<ConfiguredFeature<?, ?>> CONCH_CONFIG_FEATURE = CONFIGURED_FEATURES.register("conchgen",
+            () -> new ConfiguredFeature<>(ModFeatures.CONCH_FEATURE.get(), new ConchGenConfig())
     );
-    public static final RegistryObject<ConfiguredFeature<?, ?>> STATUE_FEATURE = CONFIGURED_FEATURES.register("statuegen",
-            () -> new ConfiguredFeature<>(new StatueGen(StatueGenConfig.FACTORY), new StatueGenConfig())
+    public static final RegistryObject<ConfiguredFeature<?, ?>> STATUE_CONFIG_FEATURE = CONFIGURED_FEATURES.register("statuegen",
+            () -> new ConfiguredFeature<>(ModFeatures.STATUE_FEATURE.get(), new StatueGenConfig())
     );
 
     public static void register(IEventBus eventBus) {
