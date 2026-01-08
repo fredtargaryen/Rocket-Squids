@@ -65,7 +65,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @Mod(value = MODID)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RocketSquidsBase {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
@@ -80,11 +80,13 @@ public class RocketSquidsBase {
         }
     };
 
+
     // Blocks
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Register all blocks here
     public static final RegistryObject<ConchBlock> BLOCK_CONCH = BLOCKS.register("conch", () -> new ConchBlock(Block.Properties.of(Material.SAND).noCollission()));
     public static final RegistryObject<StatueBlock> BLOCK_STATUE = BLOCKS.register("statue", () -> new StatueBlock(Block.Properties.of(Material.STONE).noOcclusion()));
+
 
     // Items
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -100,6 +102,7 @@ public class RocketSquidsBase {
     public static final RegistryObject<Item> SQUAVIGATOR = ITEMS.register("squavigator", () -> new Item(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> SQUELEPORTER_ACTIVE = ITEMS.register("squeleporter_active", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> SQUELEPORTER_INACTIVE = ITEMS.register("squeleporter_inactive", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+
 
     // Entities
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
@@ -138,6 +141,15 @@ public class RocketSquidsBase {
                     .build(MODID)
     );
 
+    public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
+
+    public void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        // Entity attributes are stored in there class under the createAttributes() method not in the registry code
+        event.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build());
+        event.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build());
+    }
+
+
     // Spawn Egg Items
     private static final DeferredRegister<Item> SPAWNEGGITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Register Spawn Egg Items here
@@ -152,9 +164,9 @@ public class RocketSquidsBase {
     public static final RegistryObject<ParticleType<SimpleParticleType>> FIREWORK_TYPE = PARTICLE_TYPES.register("firework",
             () -> new SimpleParticleType(false));
 
-
-    public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
-
+    public void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particleEngine.register(FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
+    }
 
     /**
      * A custom firework that looks like a Rocket Squid.
@@ -169,6 +181,11 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
+    @SubscribeEvent
+    public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
+        Sounds.constructAndRegisterSoundEvents(event);
+    }
+
     /**
      * Says where the client and server 'proxy' code is loaded.
      */
@@ -181,13 +198,16 @@ public class RocketSquidsBase {
         // Register the config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
 
-        // Register DeferredRegister stuff
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
+
         ENTITIES.register(modEventBus);
+        modEventBus.addListener(this::registerEntityAttributes);
+
         SPAWNEGGITEMS.register(modEventBus);
 
         PARTICLE_TYPES.register(modEventBus);
+        modEventBus.addListener(this::registerParticleFactories);
 
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
@@ -203,23 +223,6 @@ public class RocketSquidsBase {
 
         // Register and load the config
         Config.loadConfig(FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml"));
-    }
-
-    @SubscribeEvent
-    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particleEngine.register(FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
-    }
-
-    @SubscribeEvent
-    public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
-        Sounds.constructAndRegisterSoundEvents(event);
-    }
-
-    @SubscribeEvent
-    public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        // Entity attributes are stored in there class under the createAttributes() method not in the registry code
-        event.put(RocketSquidsBase.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build());
-        event.put(RocketSquidsBase.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build());
     }
 
     /**
