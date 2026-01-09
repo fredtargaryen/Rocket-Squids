@@ -30,7 +30,7 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientProxy implements IProxy {
     public static final ModelLayerLocation SQUID_BODY_LAYER;
 
