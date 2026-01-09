@@ -48,6 +48,13 @@ public class ModEventClient {
     }
 
     @SubscribeEvent
+    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
+    {
+        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
+        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
+    }
+
+    @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         // register block renderers
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_CONCH.get(), RenderType.cutoutMipped());
@@ -64,14 +71,6 @@ public class ModEventClient {
         EntityRenderers.register(SQUID_TYPE.get(), RenderRS::new);
         EntityRenderers.register(BABY_SQUID_TYPE.get(), RenderBabyRS::new);
     }
-
-    @SubscribeEvent
-    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
-    {
-        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
-        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
-    }
-
 
     public static void openConchClient(byte conchStage) {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
