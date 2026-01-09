@@ -11,7 +11,7 @@ import net.minecraft.util.Mth;
 import com.mojang.math.Vector3f;
 import org.jetbrains.annotations.NotNull;
 
-import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.BABY_SQUID_BODY_LAYER;
+import static com.fredtargaryen.rocketsquids.client.event.ModEventClient.BABY_SQUID_BODY_LAYER;
 
 public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, ModelRocketSquidBaby<BabyRocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/baby_rocket_squid.png");

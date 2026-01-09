@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -19,7 +19,7 @@ public class MessagePlayNoteClient {
     }
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> RocketSquidsBase.proxy.playNoteFromMessage(this.note));
+        ctx.get().enqueueWork(() -> ModEventClient.playNoteFromMessage(this.note));
         ctx.get().setPacketHandled(true);
     }
 

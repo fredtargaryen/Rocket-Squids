@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-import static com.fredtargaryen.rocketsquids.proxy.ClientProxy.SQUID_BODY_LAYER;
+import static com.fredtargaryen.rocketsquids.client.event.ModEventClient.SQUID_BODY_LAYER;
 
 public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<RocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");

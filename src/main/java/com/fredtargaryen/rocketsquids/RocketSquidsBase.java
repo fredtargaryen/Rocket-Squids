@@ -17,9 +17,7 @@ import com.fredtargaryen.rocketsquids.entity.projectile.ThrownSacEntity;
 import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.proxy.ClientProxy;
-import com.fredtargaryen.rocketsquids.proxy.IProxy;
-import com.fredtargaryen.rocketsquids.proxy.ServerProxy;
+import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
@@ -186,11 +184,6 @@ public class RocketSquidsBase {
     public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
         Sounds.constructAndRegisterSoundEvents(event);
     }
-
-    /**
-     * Says where the client and server 'proxy' code is loaded.
-     */
-    public static IProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public RocketSquidsBase() {
 

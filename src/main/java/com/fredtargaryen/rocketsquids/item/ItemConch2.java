@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.item;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +24,7 @@ public class ItemConch2 extends Item {
             @NotNull Player playerIn,
             @NotNull InteractionHand handIn
     ) {
-        if(worldIn.isClientSide) RocketSquidsBase.proxy.openConchClient((byte) 2);
+        if(worldIn.isClientSide) ModEventClient.openConchClient((byte) 2);
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
     }
 }

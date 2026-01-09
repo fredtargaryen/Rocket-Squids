@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.proxy;
+package com.fredtargaryen.rocketsquids.client.event;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.Sounds;
@@ -31,7 +31,7 @@ import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class ClientProxy implements IProxy {
+public class ModEventClient {
     public static final ModelLayerLocation SQUID_BODY_LAYER;
 
     static {
@@ -46,13 +46,11 @@ public class ClientProxy implements IProxy {
         BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
     }
 
-    @Override
     @SubscribeEvent
-    public void clientSetup(FMLClientSetupEvent event) {
+    public void onClientSetup(FMLClientSetupEvent event) {
         ConchWearableRenderer.registerArmorRenderer(ItemConch.class, ConchWearableRenderer::new);
     }
 
-    @Override
     @SubscribeEvent
     public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(SQUID_TYPE.get(), RenderRS::new);
@@ -61,7 +59,6 @@ public class ClientProxy implements IProxy {
         event.registerEntityRenderer(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
     }
 
-    @Override
     @SubscribeEvent
     public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
     {
@@ -69,27 +66,24 @@ public class ClientProxy implements IProxy {
         event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public void registerRenderTypes() {
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_CONCH.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_STATUE.get(), RenderType.cutoutMipped());
     }
 
-    @Override
-    public void openConchClient(byte conchStage) {
+    public static void openConchClient(byte conchStage) {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
     }
 
-    @Override
-    public void playNoteFromMessage(byte note) {
+    public static void playNoteFromMessage(byte note) {
         Player ep = Minecraft.getInstance().player;
         assert ep != null;
         Vec3 pos = ep.position();
         ep.level.playLocalSound(pos.x, pos.y, pos.z, Sounds.CONCH_NOTES[note], SoundSource.PLAYERS, 1.0F, 1.0F, true);
     }
 
-    @Override
-    public void playNoteFromMessageConchNeeded(byte note) {
+    public static void playNoteFromMessageConchNeeded(byte note) {
         Player ep = Minecraft.getInstance().player;
         //Check player is wearing the conch
         assert ep != null;
