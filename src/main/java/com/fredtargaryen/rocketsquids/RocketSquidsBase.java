@@ -207,6 +207,9 @@ public class RocketSquidsBase {
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
 
+        // init ModEventClient
+        ModEventClient.init();
+
         // Event bus
         IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the setup method for modloading

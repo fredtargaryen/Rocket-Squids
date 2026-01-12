@@ -23,6 +23,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Iterator;
 
@@ -32,6 +33,12 @@ import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEventClient {
+    public static void init() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::onClientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::registerRenderers);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::registerLayerDefinitions);
+    }
+
     public static final ModelLayerLocation SQUID_BODY_LAYER;
 
     static {
@@ -47,14 +54,14 @@ public class ModEventClient {
     }
 
     @SubscribeEvent
-    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
     {
         event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
         event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
     }
 
     @SubscribeEvent
-    public void onClientSetup(FMLClientSetupEvent event) {
+    public static void onClientSetup(FMLClientSetupEvent event) {
         // register block renderers
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_CONCH.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_STATUE.get(), RenderType.cutoutMipped());
@@ -64,7 +71,7 @@ public class ModEventClient {
     }
 
     @SubscribeEvent
-    public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // register normal entity renderers
         event.registerEntityRenderer(RocketSquidsBase.SAC_TYPE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
