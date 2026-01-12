@@ -206,7 +206,6 @@ public class AdultCap {
         return comp;
     }
 
-
     public CompoundTag loadNBT(CompoundTag comp) {
         this.setRotPitch(comp.getDouble("pitch"));
         this.setRotYaw(comp.getDouble("yaw"));

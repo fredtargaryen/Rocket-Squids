@@ -249,7 +249,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                         // Set squid capability data
                         this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap ->
                         {
-                            squeleporterCap.setSquidCapabilityData(squidCap.loadNBT(new CompoundTag()));
+                            squeleporterCap.setSquidCapabilityData(squidCap.saveNBT(new CompoundTag()));
                         });
                         this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     });
