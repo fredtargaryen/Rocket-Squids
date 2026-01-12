@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -62,14 +61,17 @@ public class ModEventClient {
 
         // register armor renderers
         ConchWearableRenderer.registerArmorRenderer(ItemConch.class, ConchWearableRenderer::new);
+    }
 
+    @SubscribeEvent
+    public void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // register normal entity renderers
-        EntityRenderers.register(RocketSquidsBase.SAC_TYPE.get(), ThrownItemRenderer::new);
-        EntityRenderers.register(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(RocketSquidsBase.SAC_TYPE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
 
         // register custom entity renderers
-        EntityRenderers.register(SQUID_TYPE.get(), RenderRS::new);
-        EntityRenderers.register(BABY_SQUID_TYPE.get(), RenderBabyRS::new);
+        event.registerEntityRenderer(SQUID_TYPE.get(), RenderRS::new);
+        event.registerEntityRenderer(BABY_SQUID_TYPE.get(), RenderBabyRS::new);
     }
 
     public static void openConchClient(byte conchStage) {
