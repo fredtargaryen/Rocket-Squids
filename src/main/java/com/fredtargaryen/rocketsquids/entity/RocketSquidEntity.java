@@ -260,7 +260,10 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     player.setItemSlot(handEquip, newStack);
                     player.getCooldowns().addCooldown(newStack.getItem(), 10);
                 } else if (interactItem == Items.FLINT_AND_STEEL) {
-                    interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
+                    // if the player isn't in creative we damage the flint and steel
+                    if (!player.isCreative()) {
+                        interactStack.hurt(1, player.getRandom(), (ServerPlayer) player);
+                    }
                     this.squidCap.setForcedBlast(true);
                     return InteractionResult.SUCCESS;
                 } else if (interactItem == Items.SADDLE) {
