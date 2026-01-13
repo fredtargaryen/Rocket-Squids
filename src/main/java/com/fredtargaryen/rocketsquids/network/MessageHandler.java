@@ -19,5 +19,6 @@ public class MessageHandler {
         INSTANCE.registerMessage(2, MessagePlayNoteServer.class, MessagePlayNoteServer::toBytes, MessagePlayNoteServer::new, MessagePlayNoteServer::onMessage);
         INSTANCE.registerMessage(3, MessagePlayNoteClient.class, MessagePlayNoteClient::toBytes, MessagePlayNoteClient::new, MessagePlayNoteClient::onMessage);
         INSTANCE.registerMessage(4, MessageSquidNote.class, MessageSquidNote::toBytes, MessageSquidNote::new, MessageSquidNote::onMessage);
+        INSTANCE.registerMessage(5, MessageSquidFirework.class, MessageSquidFirework::toBytes, MessageSquidFirework::new, MessageSquidFirework::onMessage);
     }
 }

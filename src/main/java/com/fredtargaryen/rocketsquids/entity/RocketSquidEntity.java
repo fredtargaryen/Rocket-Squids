@@ -11,6 +11,8 @@ import com.fredtargaryen.rocketsquids.entity.ai.BlastoffGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
+import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
+import com.fredtargaryen.rocketsquids.network.message.MessageSquidFirework;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
@@ -294,8 +296,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         if(!this.level.isClientSide) {
             Vec3 pos = this.position();
             this.level.explode(this, pos.x, pos.y, pos.z, 2.5F, Explosion.BlockInteraction.BREAK);
+
             int noSacs = 3 + this.random.nextInt(3);
-            int noTubes = 2 + this.random.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
                 ItemEntity entityitem = new ItemEntity(this.level, pos.x, pos.y, pos.z, new ItemStack(RocketSquidsBase.NITRO_SAC.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
@@ -304,6 +306,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 entityitem.setDeltaMovement(motionX, motionY, motionZ);
                 this.level.addFreshEntity(entityitem);
             }
+
+            int noTubes = 2 + this.random.nextInt(3);
             for (int x = 0; x < noTubes; ++x) {
                 ItemEntity entityitem = new ItemEntity(this.level, pos.x, pos.y, pos.z, new ItemStack(RocketSquidsBase.TURBO_TUBE.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
@@ -312,15 +316,15 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 entityitem.setDeltaMovement(motionX, motionY, motionZ);
                 this.level.addFreshEntity(entityitem);
             }
+
+            // tell the client to create particles
+            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level.dimension())), new MessageSquidFirework(this.getUUID()));
         }
         this.remove(RemovalReason.KILLED);
     }
 
     @Override
     public void remove(@NotNull RemovalReason reason) {
-        if(this.level.isClientSide && this.squidCap.getForcedBlast()) {
-            this.doFireworkParticles();
-        }
         if(this.getBlasting()) {
             Entity passenger = this.getControllingPassenger();
             if(passenger != null) {
@@ -338,7 +342,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Spawns the squid firework particles for when they explode.
      */
     @OnlyIn(Dist.CLIENT)
-    private void doFireworkParticles() {
+    public void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
         Vec3 pos = this.position();
         effectRenderer.add(new SquidFireworkParticle.SquidStarter((ClientLevel) this.level, pos.x, pos.y, pos.z, effectRenderer));
