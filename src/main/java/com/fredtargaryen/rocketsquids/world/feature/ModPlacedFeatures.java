@@ -18,10 +18,17 @@ public class ModPlacedFeatures {
             DeferredRegister.create(Registry.PLACED_FEATURE_REGISTRY, MODID);
 
     public static final RegistryObject<PlacedFeature> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
-            () -> new PlacedFeature(ModConfiguredFeatures.CONCH_CONFIG_FEATURE.getHolder().get(), List.of(BiomeFilter.biome(), CountPlacement.of(3), HeightmapPlacement.onHeightmap(Heightmap.Types.WORLD_SURFACE)))
+            () -> new PlacedFeature(ModConfiguredFeatures.CONCH_CONFIG_FEATURE.getHolder().get(), List.of(
+                    BiomeFilter.biome(),
+                    InSquarePlacement.spread(),
+                    HeightmapPlacement.onHeightmap(Heightmap.Types.WORLD_SURFACE),
+                    HeightmapPlacement.onHeightmap(Heightmap.Types.OCEAN_FLOOR)
+            ))
     );
     public static final RegistryObject<PlacedFeature> STATUE_PLACEMENT = PLACED_FEATURES.register("statueplace",
-            () -> new PlacedFeature(ModConfiguredFeatures.STATUE_CONFIG_FEATURE.getHolder().get(), List.of(BlockPredicateFilter.forPredicate(BlockPredicate.alwaysTrue())))
+            () -> new PlacedFeature(ModConfiguredFeatures.STATUE_CONFIG_FEATURE.getHolder().get(), List.of(
+                    BlockPredicateFilter.forPredicate(BlockPredicate.alwaysTrue())
+            ))
     );
 
     public static void register(IEventBus eventBus) {

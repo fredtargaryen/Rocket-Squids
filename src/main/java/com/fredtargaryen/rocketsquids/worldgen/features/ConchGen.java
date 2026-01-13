@@ -4,6 +4,7 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.mojang.serialization.Codec;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,7 @@ public class ConchGen extends Feature<ConchGenConfig> {
      */
     @Override
     public boolean place(@NotNull FeaturePlaceContext<ConchGenConfig> context) {
-        // First we create a few variables out of the context in order to adapt from the old way place was written
+        // First we create a few variables out of the context in order to adapt from the older way place() was written
         WorldGenLevel world = context.level();
         Random random = context.random();
         BlockPos pos = context.origin();
@@ -42,6 +43,13 @@ public class ConchGen extends Feature<ConchGenConfig> {
             List<? extends String> blockedDimensions = GeneralConfig.CONCH_BLACKLIST.get();
             if(blockedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
         }
+
+        // Check if the block below the conch has the ICE BlockTag and if it does then we don't place one there
+        if (world.getBlockState(pos.below()).is(BlockTags.ICE)) {
+            return false;
+        }
+
+        // Setting values
         world.setBlock(pos, RocketSquidsBase.BLOCK_CONCH.get().defaultBlockState()
                 .setValue(BlockStateProperties.FACING, DataReference.randomHorizontalFacing(random))
                 .setValue(BlockStateProperties.WATERLOGGED, world.getBlockState(pos).getBlock() == Blocks.WATER), 3);
