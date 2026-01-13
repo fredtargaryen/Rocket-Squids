@@ -36,8 +36,7 @@ public class BabyCapProvider implements ICapabilityProvider, INBTSerializable<Co
 
     @Override
     public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        createBabyCap().saveNBT(nbt);
+        CompoundTag nbt = createBabyCap().saveNBT(new CompoundTag());;
         return nbt;
     }
 
