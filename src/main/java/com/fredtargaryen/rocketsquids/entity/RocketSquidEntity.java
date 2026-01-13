@@ -293,7 +293,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     public void explode() {
         if(!this.level.isClientSide) {
             Vec3 pos = this.position();
-            this.level.explode(this, pos.x, pos.y, pos.z, 3.0F, Explosion.BlockInteraction.DESTROY);
+            this.level.explode(this, pos.x, pos.y, pos.z, 2.5F, Explosion.BlockInteraction.BREAK);
             int noSacs = 3 + this.random.nextInt(3);
             int noTubes = 2 + this.random.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
