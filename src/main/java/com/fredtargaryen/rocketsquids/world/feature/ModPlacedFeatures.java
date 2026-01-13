@@ -20,6 +20,7 @@ public class ModPlacedFeatures {
     public static final RegistryObject<PlacedFeature> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
             () -> new PlacedFeature(ModConfiguredFeatures.CONCH_CONFIG_FEATURE.getHolder().get(), List.of(
                     BiomeFilter.biome(),
+                    CountPlacement.of(3),
                     InSquarePlacement.spread(),
                     HeightmapPlacement.onHeightmap(Heightmap.Types.WORLD_SURFACE),
                     HeightmapPlacement.onHeightmap(Heightmap.Types.OCEAN_FLOOR)
