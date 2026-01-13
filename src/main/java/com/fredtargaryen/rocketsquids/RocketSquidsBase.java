@@ -22,7 +22,9 @@ import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -43,11 +45,11 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
@@ -59,7 +61,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
@@ -68,16 +69,6 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 public class RocketSquidsBase {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
-
-    /**
-     * The creative tab for all items from Rocket Squids.
-     */
-    public static CreativeModeTab SQUIDS_TAB = new CreativeModeTab(MODID) {
-        @Override
-        public @NotNull ItemStack makeIcon() {
-            return ITEM_CONCH.get().getDefaultInstance();
-        }
-    };
 
 
     // Blocks
@@ -90,17 +81,17 @@ public class RocketSquidsBase {
     // Items
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Register all items here
-    public static final RegistryObject<Item> ITEM_CONCH = ITEMS.register("conch_item_1", () -> new ItemConch(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4)));
+    public static final RegistryObject<Item> ITEM_CONCH = ITEMS.register("conch_item_1", () -> new ItemConch(new Item.Properties().stacksTo(4)));
     @SuppressWarnings("unused")
-    public static final RegistryObject<Item> ITEM_CONCH2 = ITEMS.register("conch_item_2", () -> new ItemConch2(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ITEM_CONCH2 = ITEMS.register("conch_item_2", () -> new ItemConch2(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     @SuppressWarnings("unused")
-    public static final RegistryObject<Item> ITEM_CONCH3 = ITEMS.register("conch_item_3", () -> new ItemConch3(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(1).rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> NITRO_SAC = ITEMS.register("nitro_ink_sac", () -> new ItemNitroInkSac(new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(16)));
-    public static final RegistryObject<Item> TURBO_TUBE = ITEMS.register("turbo_tube", () -> new ItemTurboTube(new Item.Properties().tab(SQUIDS_TAB).stacksTo(16).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> ITEM_STATUE = ITEMS.register("statue", () -> new BlockItem(BLOCK_STATUE.get(), new Item.Properties().tab(RocketSquidsBase.SQUIDS_TAB).stacksTo(4).rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> SQUAVIGATOR = ITEMS.register("squavigator", () -> new Item(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> SQUELEPORTER_ACTIVE = ITEMS.register("squeleporter_active", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> SQUELEPORTER_INACTIVE = ITEMS.register("squeleporter_inactive", () -> new ItemSqueleporter(new Item.Properties().tab(SQUIDS_TAB).stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ITEM_CONCH3 = ITEMS.register("conch_item_3", () -> new ItemConch3(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> NITRO_SAC = ITEMS.register("nitro_ink_sac", () -> new ItemNitroInkSac(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> TURBO_TUBE = ITEMS.register("turbo_tube", () -> new ItemTurboTube(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ITEM_STATUE = ITEMS.register("statue", () -> new BlockItem(BLOCK_STATUE.get(), new Item.Properties().stacksTo(4).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> SQUAVIGATOR = ITEMS.register("squavigator", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SQUELEPORTER_ACTIVE = ITEMS.register("squeleporter_active", () -> new ItemSqueleporter(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SQUELEPORTER_INACTIVE = ITEMS.register("squeleporter_inactive", () -> new ItemSqueleporter(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
 
     // Entities
@@ -154,8 +145,34 @@ public class RocketSquidsBase {
     // Register Spawn Egg Items here
     @SuppressWarnings("unused")
     public static final RegistryObject<RocketSquidForgeSpawnEggItem> SQUID_SPAWN_EGG = SPAWNEGGITEMS.register("rockets_squid_spawn_egg",
-            () -> new RocketSquidForgeSpawnEggItem(SQUID_TYPE, BABY_SQUID_TYPE, ColorHelper.getColor(150, 30, 30), ColorHelper.getColor(255, 127, 0), new Item.Properties().tab(SQUIDS_TAB))
+            () -> new RocketSquidForgeSpawnEggItem(SQUID_TYPE, BABY_SQUID_TYPE, ColorHelper.getColor(150, 30, 30), ColorHelper.getColor(255, 127, 0), new Item.Properties())
     ); // Hey if you wanted to know do not use SpawnEggItem use ForgeSpawnEggItem
+
+
+    /**
+     * The creative tab for all items from Rocket Squids.
+     */
+    @SubscribeEvent
+    public void buildContents(CreativeModeTabEvent.Register event) {
+        event.registerCreativeModeTab(new ResourceLocation(MODID, "rocket_squid_tab"), builder ->
+                // Set name of tab to display
+                builder.title(Component.translatable("item_group." + MODID + ".rocket_squid_tab"))
+                        // Set icon of creative tab
+                        .icon(() -> new ItemStack(ITEM_CONCH.get()))
+                        // Add default items to tab
+                        .displayItems((params, output) -> {
+                            output.accept(ITEM_CONCH.get());
+                            output.accept(ITEM_CONCH2.get());
+                            output.accept(ITEM_CONCH3.get());
+                            output.accept(NITRO_SAC.get());
+                            output.accept(TURBO_TUBE.get());
+                            output.accept(ITEM_STATUE.get());
+                            output.accept(SQUAVIGATOR.get());
+                            output.accept(SQUELEPORTER_INACTIVE.get());
+                        })
+        );
+    }
+
 
     // Particles
     private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, MODID);
