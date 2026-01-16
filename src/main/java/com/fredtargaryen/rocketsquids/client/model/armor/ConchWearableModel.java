@@ -19,6 +19,6 @@ public class ConchWearableModel extends AnimatedGeoModel<ItemConch> {
 
     @Override
     public ResourceLocation getAnimationFileLocation(ItemConch animatable) {
-        return new ResourceLocation(MODID, "animations/armor/armor.animation.json");
+        return new ResourceLocation(MODID, "animations/armor/conch_armor.animation.json");
     }
 }
