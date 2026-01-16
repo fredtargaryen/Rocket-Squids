@@ -4,6 +4,7 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
+import com.fredtargaryen.rocketsquids.item.custom.GeoModArmorItem;
 import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Direction;

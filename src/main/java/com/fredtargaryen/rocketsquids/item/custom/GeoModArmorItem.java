@@ -1,4 +1,4 @@
-package com.fredtargaryen.rocketsquids.item;
+package com.fredtargaryen.rocketsquids.item.custom;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
@@ -14,27 +14,25 @@ import software.bernie.geckolib3.item.GeoArmorItem;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
 public class GeoModArmorItem extends GeoArmorItem implements IAnimatable {
-    protected static final AnimationBuilder IDLE_ANIM = new AnimationBuilder().addAnimation("misc.idle", ILoopType.EDefaultLoopTypes.LOOP);
-
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public GeoModArmorItem(ArmorMaterial armorMaterial, EquipmentSlot slot, Properties properties) {
         super(armorMaterial, slot, properties);
     }
 
-    private <T extends GeoModArmorItem> PlayState idleAnimController(final AnimationEvent<T> event) {
-        event.getController().setAnimation(IDLE_ANIM);
-
-        return PlayState.CONTINUE;
-    }
-
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "Idle Controller", 0, this::idleAnimController));
+        data.addAnimationController(new AnimationController(this, "controller",
+                20, this::predicate));
     }
 
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    private <P extends IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
     }
 }
