@@ -11,7 +11,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 

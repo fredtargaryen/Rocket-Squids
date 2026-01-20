@@ -1,15 +1,13 @@
 package com.fredtargaryen.rocketsquids.item;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -46,7 +44,7 @@ public class ItemConch3 extends Item {
             @NotNull TooltipFlag isAdvanced
     ) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        tooltipComponents.add(new TranslatableComponent("item.rocketsquids.conch_item_3.lore"));
+        tooltipComponents.add(Component.translatable("item.rocketsquids.conch_item_3.lore"));
     }
 
     /**
