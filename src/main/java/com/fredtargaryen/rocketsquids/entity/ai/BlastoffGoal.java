@@ -55,7 +55,7 @@ public class BlastoffGoal extends Goal {
         else {
             //Blast has not started yet
             this.squid.setShaking(false);
-            this.squid.playSound(ModSounds.BLASTOFF, 1.0F, 1.0F);
+            this.squid.playSound(ModSounds.BLASTOFF.get(), 1.0F, 1.0F);
             this.squid.addForce(2.952);
             ArrayList<Direction> directionsPointing = this.squid.getDirectionsPointing();
             this.horizontal = !directionsPointing.contains(Direction.UP) && !directionsPointing.contains(Direction.DOWN);

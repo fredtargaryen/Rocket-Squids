@@ -4,13 +4,13 @@ import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
 import com.fredtargaryen.rocketsquids.world.StatueData;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.EnumSet;
-import java.util.Random;
 
 public class AdultSwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
@@ -25,7 +25,7 @@ public class AdultSwimAroundGoal extends Goal {
         TURN
     }
 
-    private final Random r;
+    private final RandomSource r;
 	private final double swimForce;
 	private StatueBlastStage statueBlastStage;
 

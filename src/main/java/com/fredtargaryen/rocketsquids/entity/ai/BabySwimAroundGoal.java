@@ -1,16 +1,16 @@
 package com.fredtargaryen.rocketsquids.entity.ai;
 
 import com.fredtargaryen.rocketsquids.entity.BabyRocketSquidEntity;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
-import java.util.Random;
 
 public class BabySwimAroundGoal extends Goal {
     private final BabyRocketSquidEntity squid;
 
-    private final Random r;
+    private final RandomSource r;
     private final double swimForce;
     private int tickCounter;
     private int nextScheduledMove;
