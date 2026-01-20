@@ -13,7 +13,7 @@ public class BoundingBox {
      * @param radiusSize double for the radius or size of the bounding box
      * @return returns an AABB bounding box
      */
-    public AABB cubeFromPosition(BlockPos center, double radiusSize) {
+    public AABB cubeFromPosition(BlockPos center, int radiusSize) {
         radiusSize = Math.abs(radiusSize);
         BlockPos start = center.offset(radiusSize, radiusSize, radiusSize);
         BlockPos end = center.offset(-radiusSize, -radiusSize, -radiusSize);
@@ -27,7 +27,7 @@ public class BoundingBox {
      * @param minHeight minimum Y level to clamp to
      * @return returns an AABB bounding box
      */
-    public AABB cubeFromPositionClamped(BlockPos center, double radiusSize, int maxHeight, int minHeight) {
+    public AABB cubeFromPositionClamped(BlockPos center, int radiusSize, int maxHeight, int minHeight) {
         radiusSize = Math.abs(radiusSize);
         BlockPos start = center.offset(radiusSize, Math.max(radiusSize, maxHeight), radiusSize);
         BlockPos end = center.offset(-radiusSize, -Math.min(radiusSize, minHeight), -radiusSize);
@@ -40,7 +40,7 @@ public class BoundingBox {
      * @param level Level to get the min & max build heights from
      * @return returns an AABB bounding box
      */
-    public AABB cubeFromPositionClamped(BlockPos center, double radiusSize, Level level) {
+    public AABB cubeFromPositionClamped(BlockPos center, int radiusSize, Level level) {
         return cubeFromPositionClamped(center, radiusSize, level.getMaxBuildHeight(), level.getMinBuildHeight());
     }
 
@@ -50,7 +50,7 @@ public class BoundingBox {
      * @param level ServerLevel to get the min & max build heights from
      * @return returns an AABB bounding box
      */
-    public AABB cubeFromPositionClamped(BlockPos center, double radiusSize, ServerLevel level) {
+    public AABB cubeFromPositionClamped(BlockPos center, int radiusSize, ServerLevel level) {
         return cubeFromPositionClamped(center, radiusSize, level.getMaxBuildHeight(), level.getMinBuildHeight());
     }
 }
