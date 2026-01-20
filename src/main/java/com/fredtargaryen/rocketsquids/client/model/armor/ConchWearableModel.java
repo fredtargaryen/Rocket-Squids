@@ -6,6 +6,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
+@SuppressWarnings("removal")
 public class ConchWearableModel extends AnimatedGeoModel<ItemConch> {
     @Override
     public ResourceLocation getModelLocation(ItemConch object) {

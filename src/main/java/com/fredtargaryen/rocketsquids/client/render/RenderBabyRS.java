@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.client.event.ModEventClient.BABY_SQUID_BODY_LAYER;
 
+@SuppressWarnings("removal")
 public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, ModelRocketSquidBaby<BabyRocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/baby_rocket_squid.png");
 

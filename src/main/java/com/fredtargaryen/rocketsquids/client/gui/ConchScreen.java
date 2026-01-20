@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("removal")
 public class ConchScreen extends Screen {
     private final byte conchStage;
     private final double x;

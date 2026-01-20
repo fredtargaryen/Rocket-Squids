@@ -18,6 +18,7 @@ import java.util.Random;
  * Superflat preset for squid testing:
  * minecraft:glowstone,42*minecraft:water
  */
+@SuppressWarnings("removal")
 public class DataReference {
     //MAIN MOD DETAILS
     public static final String MODID = "rocketsquids";

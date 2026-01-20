@@ -30,6 +30,7 @@ import java.util.Iterator;
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
+@SuppressWarnings("removal")
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEventClient {
