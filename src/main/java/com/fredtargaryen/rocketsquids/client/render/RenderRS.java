@@ -3,24 +3,24 @@ package com.fredtargaryen.rocketsquids.client.render;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
 import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.Sheets;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Random;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static com.fredtargaryen.rocketsquids.client.event.ModEventClient.SQUID_BODY_LAYER;
 
@@ -58,8 +58,8 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<Ro
         float exactPitch = (float) (Mth.lerp(partialTicks, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
         float exactYaw = (float) (Mth.lerp(partialTicks, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
         matrixStack.translate(0, 0.5, 0);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180f - exactYaw));
-        matrixStack.mulPose(Vector3f.XN.rotationDegrees(exactPitch));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
+        matrixStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
         matrixStack.translate(0f, -1.2f, 0f);
     }
 
@@ -72,7 +72,7 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<Ro
             int packedLightIn
     ) {
         if (par1EntitySquid.getShaking()) {
-            Random r = par1EntitySquid.getRandom();
+            RandomSource r = par1EntitySquid.getRandom();
             matrixStackIn.translate(r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d);
         }
         else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
@@ -87,7 +87,7 @@ public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<Ro
             matrixStackIn.translate(adjusted_h_flame_offset * Math.sin(yaw_r),
                     0.5 - (0.3 * Math.cos(pitch_r)),
                     -adjusted_h_flame_offset * Math.cos(yaw_r));
-            matrixStackIn.mulPose(new Vector3f((float) Math.cos(yaw_r), 0f, (float) Math.sin(yaw_r)).rotation((float) pitch_r));
+            matrixStackIn.mulPose(Axis.of(new Vector3f((float) Math.cos(yaw_r), 0f, (float) Math.sin(yaw_r))).rotation((float) pitch_r));
 
             //Prepare to draw
             //RenderSystem.disableLighting();
