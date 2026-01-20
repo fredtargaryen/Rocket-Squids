@@ -22,6 +22,7 @@ import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import org.joml.Vector3f;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -40,12 +41,10 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -94,7 +93,7 @@ public class RocketSquidsBase {
 
 
     // Entities
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
     // Register all EntityTypes here
     public static final RegistryObject<EntityType<ThrownSacEntity>> SAC_TYPE = ENTITIES.register("thrown_nitro_ink_sac",
             () -> EntityType.Builder.<ThrownSacEntity>of(ThrownSacEntity::new, MobCategory.MISC)
@@ -121,6 +120,7 @@ public class RocketSquidsBase {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(MODID)
     );
+    @SuppressWarnings("RedundantTypeArguments")
     public static final RegistryObject<EntityType<BabyRocketSquidEntity>> BABY_SQUID_TYPE = ENTITIES.register("baby_rocket_squid",
             () -> EntityType.Builder.<BabyRocketSquidEntity>of(BabyRocketSquidEntity::new, MobCategory.WATER_CREATURE)
                     .sized(0.4F, 0.4F)
@@ -151,6 +151,7 @@ public class RocketSquidsBase {
     /**
      * The creative tab for all items from Rocket Squids.
      */
+    @SuppressWarnings("removal")
     @SubscribeEvent
     public void buildContents(CreativeModeTabEvent.Register event) {
         event.registerCreativeModeTab(new ResourceLocation(MODID, "rocket_squid_tab"), builder ->
@@ -179,7 +180,7 @@ public class RocketSquidsBase {
     public static final RegistryObject<ParticleType<SimpleParticleType>> FIREWORK_TYPE = PARTICLE_TYPES.register("firework",
             () -> new SimpleParticleType(false));
 
-    public void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+    public void registerParticleFactories(RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
     }
 
@@ -196,6 +197,7 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
+    @SuppressWarnings("removal")
     public RocketSquidsBase() {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
