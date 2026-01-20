@@ -36,8 +36,7 @@ public class SqueleporterCapProvider implements ICapabilityProvider, INBTSeriali
 
     @Override
     public CompoundTag serializeNBT() {
-        CompoundTag nbt = createSqueleporterCap().saveNBT(new CompoundTag());;
-        return nbt;
+        return createSqueleporterCap().saveNBT(new CompoundTag());
     }
 
     @Override
