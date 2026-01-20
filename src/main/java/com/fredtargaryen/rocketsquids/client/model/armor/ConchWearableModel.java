@@ -2,24 +2,24 @@ package com.fredtargaryen.rocketsquids.client.model.armor;
 
 import com.fredtargaryen.rocketsquids.item.ItemConch;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @SuppressWarnings("removal")
-public class ConchWearableModel extends AnimatedGeoModel<ItemConch> {
+public class ConchWearableModel extends GeoModel<ItemConch> {
     @Override
-    public ResourceLocation getModelLocation(ItemConch object) {
+    public ResourceLocation getModelResource(ItemConch object) {
         return new ResourceLocation(MODID, "geo/armor/conch_armor_model.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureLocation(ItemConch object) {
+    public ResourceLocation getTextureResource(ItemConch object) {
         return new ResourceLocation(MODID, "textures/models/armor/conch_armor_model.png");
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(ItemConch animatable) {
+    public ResourceLocation getAnimationResource(ItemConch animatable) {
         return new ResourceLocation(MODID, "animations/armor/conch_armor.animation.json");
     }
 }

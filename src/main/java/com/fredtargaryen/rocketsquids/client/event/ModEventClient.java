@@ -66,9 +66,6 @@ public class ModEventClient {
         // register block renderers
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_CONCH.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_STATUE.get(), RenderType.cutoutMipped());
-
-        // register armor renderers
-        ConchWearableRenderer.registerArmorRenderer(ItemConch.class, ConchWearableRenderer::new);
     }
 
     @SubscribeEvent

@@ -4,44 +4,53 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
+import com.fredtargaryen.rocketsquids.client.render.armor.ConchWearableRenderer;
 import com.fredtargaryen.rocketsquids.item.custom.GeoModArmorItem;
 import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ItemConch extends GeoModArmorItem {
     public static final ArmorMaterial MATERIAL_CONCH = new ArmorMaterial() {
+
         @Override
-        public int getDurabilityForSlot(@NotNull EquipmentSlot slotIn) {
-            return 2;
+        public int getDurabilityForType(@NotNull Type type) {
+            return 0;
         }
 
         @Override
-        public int getDefenseForSlot(@NotNull EquipmentSlot slotIn) {
+        public int getDefenseForType(@NotNull Type type) {
             return 0;
         }
 
@@ -77,7 +86,7 @@ public class ItemConch extends GeoModArmorItem {
     };
 
     public ItemConch(Item.Properties properties) {
-        super(MATERIAL_CONCH, EquipmentSlot.HEAD, properties);
+        super(MATERIAL_CONCH, Type.HELMET, properties);
     }
 
     /**
@@ -171,5 +180,25 @@ public class ItemConch extends GeoModArmorItem {
         }
 
         return true;
+    }
+
+    // Create our armor model/renderer for forge and return it
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            private GeoArmorRenderer<?> renderer;
+
+            @Override
+            public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                if (this.renderer == null)
+                    this.renderer = new ConchWearableRenderer();
+
+                // This prepares our GeoArmorRenderer for the current render frame.
+                // These parameters may be null however, so we don't do anything further with them
+                this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original);
+
+                return this.renderer;
+            }
+        });
     }
 }
