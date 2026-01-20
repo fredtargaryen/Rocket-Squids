@@ -4,17 +4,17 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Random;
 
 public class ConchGen extends Feature<ConchGenConfig> {
     public ConchGen(Codec<ConchGenConfig> codec) {
@@ -30,7 +30,7 @@ public class ConchGen extends Feature<ConchGenConfig> {
     public boolean place(@NotNull FeaturePlaceContext<ConchGenConfig> context) {
         // First we create a few variables out of the context in order to adapt from the older way place() was written
         WorldGenLevel world = context.level();
-        Random random = context.random();
+        RandomSource random = context.random();
         BlockPos pos = context.origin();
         // Then we check the config to see if this dimension is allowed
         if(GeneralConfig.CONCH_USE_WHITELIST.get())

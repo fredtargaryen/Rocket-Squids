@@ -4,16 +4,16 @@ import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.world.StatueData;
 import com.mojang.serialization.Codec;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Random;
 
 public class StatueGen extends Feature<StatueGenConfig> {
 
@@ -31,7 +31,7 @@ public class StatueGen extends Feature<StatueGenConfig> {
         // First we create a few variables out of the context in order to adapt from the old way place was written
         WorldGenLevel world = context.level();
         ChunkGenerator chunkGen = context.chunkGenerator();
-        Random random = context.random();
+        RandomSource random = context.random();
         BlockPos pos = context.origin();
         // Then we check the config to see if this dimension is allowed
         if(GeneralConfig.STATUE_USE_WHITELIST.get())

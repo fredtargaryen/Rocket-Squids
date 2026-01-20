@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.placement.*;
@@ -15,7 +15,7 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 public class ModPlacedFeatures {
     private static final DeferredRegister<PlacedFeature> PLACED_FEATURES =
-            DeferredRegister.create(Registry.PLACED_FEATURE_REGISTRY, MODID);
+            DeferredRegister.create(Registries.PLACED_FEATURE, MODID);
 
     public static final RegistryObject<PlacedFeature> CONCH_PLACEMENT = PLACED_FEATURES.register("conchplace",
             () -> new PlacedFeature(ModConfiguredFeatures.CONCH_CONFIG_FEATURE.getHolder().get(), List.of(

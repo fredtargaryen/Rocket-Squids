@@ -3,7 +3,7 @@ package com.fredtargaryen.rocketsquids.world.feature;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
 import com.fredtargaryen.rocketsquids.worldgen.features.StatueGenConfig;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -13,7 +13,7 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 public class ModConfiguredFeatures {
     public static final DeferredRegister<ConfiguredFeature<?, ?>> CONFIGURED_FEATURES =
-            DeferredRegister.create(Registry.CONFIGURED_FEATURE_REGISTRY, MODID);
+            DeferredRegister.create(Registries.CONFIGURED_FEATURE, MODID);
 
     public static final RegistryObject<ConfiguredFeature<?, ?>> CONCH_CONFIG_FEATURE = CONFIGURED_FEATURES.register("conchgen",
             () -> new ConfiguredFeature<>(ModFeatures.CONCH_FEATURE.get(), new ConchGenConfig())

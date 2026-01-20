@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids;
 
 import net.minecraft.core.Direction;
 import 	net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 
 import java.util.Random;
 
@@ -31,7 +32,7 @@ public class DataReference {
     //////////////////////
     //Worldgen constants//
     //////////////////////
-    public static Direction randomHorizontalFacing(Random rand) {
+    public static Direction randomHorizontalFacing(RandomSource rand) {
         return switch (rand.nextInt(4)) {
             case 0 -> Direction.NORTH;
             case 1 -> Direction.EAST;
