@@ -243,7 +243,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
                         Vec3 pos = player.position();
-                        player.level.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        player.level.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         // Set squid data
                         CompoundTag nbt = new CompoundTag();
                         this.addAdditionalSaveData(nbt);

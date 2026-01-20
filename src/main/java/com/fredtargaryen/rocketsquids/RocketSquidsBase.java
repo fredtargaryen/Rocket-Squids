@@ -197,17 +197,14 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
-    @SubscribeEvent
-    public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
-        Sounds.constructAndRegisterSoundEvents(event);
-    }
-
     public RocketSquidsBase() {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
+
+        Sounds.register(modEventBus);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);

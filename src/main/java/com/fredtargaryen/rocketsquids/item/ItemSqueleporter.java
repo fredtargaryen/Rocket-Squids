@@ -50,7 +50,7 @@ public class ItemSqueleporter extends Item {
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
                         }
-                        worldIn.playSound(null, playerPos.x, playerPos.y, playerPos.z, Sounds.SQUIDTP_OUT, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        worldIn.playSound(null, playerPos.x, playerPos.y, playerPos.z, Sounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         //Set the squeleporter to inactive
                         playerIn.setItemInHand(handIn, RocketSquidsBase.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
                         playerIn.getCooldowns().addCooldown(this, 10);
