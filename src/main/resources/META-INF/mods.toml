@@ -70,9 +70,9 @@ Rocket Squids brings blundering, balletic megamolluscs for your entertainment.
     ordering="NONE"
     side="BOTH"
 [[dependencies.${mod_id}]]
-    modId="geckolib3"
+    modId="geckolib"
     mandatory=true
-    versionRange="[3.0.0,)"
+    versionRange="[4.2,)"
     ordering="NONE"
     side="CLIENT"
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
