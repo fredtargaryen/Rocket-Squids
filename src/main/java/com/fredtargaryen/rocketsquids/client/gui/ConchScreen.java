@@ -4,20 +4,19 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -36,21 +35,21 @@ public class ConchScreen extends Screen {
     private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID+":textures/gui/numbernote.png");
 
     private static final Component[] buttonNames = {
-            new TextComponent("C"),
-            new TextComponent("C#"),
-            new TextComponent("D"),
-            new TextComponent("D#"),
-            new TextComponent("E"),
-            new TextComponent("F"),
-            new TextComponent("F#"),
-            new TextComponent("G"),
-            new TextComponent("G#"),
-            new TextComponent("A"),
-            new TextComponent("A#"),
-            new TextComponent("B")
+            Component.literal("C"),
+            Component.literal("C#"),
+            Component.literal("D"),
+            Component.literal("D#"),
+            Component.literal("E"),
+            Component.literal("F"),
+            Component.literal("F#"),
+            Component.literal("G"),
+            Component.literal("G#"),
+            Component.literal("A"),
+            Component.literal("A#"),
+            Component.literal("B")
     };
 
-    private static final Component questionMark = new TextComponent("?");
+    private static final Component questionMark = Component.literal("?");
 
     private final int[] notes = new int[10];
     private final List<ConchNumberButton> conchNumberButtons;
@@ -58,7 +57,7 @@ public class ConchScreen extends Screen {
     private final float[] playingNotes = new float[36];
 
     public ConchScreen(byte conchStage) {
-        super(TextComponent.EMPTY);
+        super(Component.empty());
         this.conchStage = conchStage;
         Player ep = Minecraft.getInstance().player;
         assert ep != null;
@@ -147,12 +146,12 @@ public class ConchScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private class ConchButton extends Button {
+    private class ConchButton extends ExtendedButton {
         private final int id;
         private final Minecraft mc;
-        
+
         public ConchButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
-            super(x, y, 20, 20, new TextComponent(buttonText), (button) -> {
+            super(x, y, 20, 20, Component.literal(buttonText), (button) -> {
                 if(screen.changingNumberNote > -1)
                 {
                     screen.notes[screen.changingNumberNote] = buttonId;
@@ -181,7 +180,7 @@ public class ConchScreen extends Screen {
         @Override
         public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
-            this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
             if(ConchScreen.this.playingNotes[this.id] > 0f)
             {
@@ -193,7 +192,7 @@ public class ConchScreen extends Screen {
                 red = 0.9F + blue;
                 green = 0.9F * this.id / 36.0F + blue;
             }
-            this.drawNote(stack, this.x, this.y, red, green, blue);
+            this.drawNote(stack, this.getX(), this.getY(), red, green, blue);
             int j = 14737632;
 
             if (packedFGColor != 0) {
@@ -206,7 +205,7 @@ public class ConchScreen extends Screen {
                 j = 16777120;
             }
 
-            drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
+            drawCenteredString(stack, fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
         }
 
         private void drawNote(PoseStack stack, int x, int y, float red, float green, float blue) {
@@ -218,12 +217,12 @@ public class ConchScreen extends Screen {
         }
     }
 
-    private class ConchNumberButton extends Button {
+    private class ConchNumberButton extends ExtendedButton {
         private final int id;
         private final Minecraft mc;
 
         public ConchNumberButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
-            super(x, y, 32, 32, new TextComponent(buttonText), (button) -> {
+            super(x, y, 32, 32, Component.literal(buttonText), (button) -> {
                 if(screen.changingNumberNote == -1) {
                     screen.changingNumberNote = buttonId;
                     button.setMessage(questionMark);
@@ -249,7 +248,7 @@ public class ConchScreen extends Screen {
         @Override
         public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
-            this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
             int noteId = ConchScreen.this.notes[this.id];
             if(noteId == -1) {
@@ -271,7 +270,7 @@ public class ConchScreen extends Screen {
                 }
             }
 
-            this.drawButton(stack, this.x, this.y, red, green, blue);
+            this.drawButton(stack, this.getX(), this.getY(), red, green, blue);
             int j = 14737632;
 
             if (packedFGColor != 0) {
@@ -284,10 +283,10 @@ public class ConchScreen extends Screen {
                 j = 16777120;
             }
 
-            drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
+            drawCenteredString(stack, fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
             drawCenteredString(stack, fontrenderer,
-                    new TextComponent("" + (this.id == 9 ? 0: this.id + 1)),
-                    this.x + this.width / 2, this.y + 34, j);
+                    Component.literal("" + (this.id == 9 ? 0: this.id + 1)),
+                    this.getX() + this.width / 2, this.getY() + 34, j);
         }
 
         private void drawButton(PoseStack stack, int x, int y, float red, float green, float blue) {
