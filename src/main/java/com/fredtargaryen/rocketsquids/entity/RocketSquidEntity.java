@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.ModSounds;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.cap.entity.adult.AdultCap;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
@@ -13,8 +13,7 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidFirework;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -39,7 +38,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -50,6 +48,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -142,7 +141,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             this.newPacketRequired = true;
         }
         if(onFire || this.squidCap.getForcedBlast()) {
-            this.playSound(ModSounds.BLASTOFF, 0.5F, 1.0F);
+            this.playSound(ModSounds.BLASTOFF.get(), 0.5F, 1.0F);
             this.squidCap.setBlasting(true);
         }
 
@@ -249,9 +248,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                         squeleporterCap.setSquidData(nbt);
                         // Set squid capability data
                         this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap ->
-                        {
-                            squeleporterCap.setSquidCapabilityData(squidCap.saveNBT(new CompoundTag()));
-                        });
+                                squeleporterCap.setSquidCapabilityData(squidCap.saveNBT(new CompoundTag())));
                         this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     });
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
@@ -294,7 +291,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     public void explode() {
         if(!this.level.isClientSide) {
             Vec3 pos = this.position();
-            this.level.explode(this, pos.x, pos.y, pos.z, 2.5F, Explosion.BlockInteraction.BREAK);
+            this.level.explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.BLOCK);
 
             int noSacs = 3 + this.random.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
@@ -497,13 +494,13 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Nullable
-    public Entity getControllingPassenger() {
+    public LivingEntity getControllingPassenger() {
         List<Entity> passengers = this.getPassengers();
         if(passengers.isEmpty()) {
             return null;
         }
         else {
-            return this.getPassengers().get(0);
+            return this.getPassengers().get(0).getControllingPassenger();
         }
     }
 
@@ -618,7 +615,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * @return if the entity should be dismounted when under water
      */
     @Override
-    public boolean canBeRiddenInWater(Entity rider) {
+    public boolean canBeRiddenUnderFluidType(Entity rider) {
         return true;
     }
 
@@ -631,7 +628,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-        if(event.getPlayer().isPassenger()) {
+        if(event.getEntity().isPassenger()) {
             double prevPitch_r = this.squidCap.getPrevRotPitch();
             double pitch_r = this.squidCap.getRotPitch();
 			float partialTick = event.getPartialTick();
@@ -640,8 +637,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             this.riderRotated = true;
             PoseStack stack = event.getPoseStack();
             stack.pushPose();
-            Quaternion quat = Vector3f.YP.rotation((float) -yaw_r);
-            quat.mul(Vector3f.XP.rotation((float) (exactPitch_r - (Math.PI / 2))));
+            Quaternionf quat = Axis.YP.rotation((float) -yaw_r);
+            quat.mul(Axis.XP.rotation((float) (exactPitch_r - (Math.PI / 2))));
             stack.mulPose(quat);
         }
     }

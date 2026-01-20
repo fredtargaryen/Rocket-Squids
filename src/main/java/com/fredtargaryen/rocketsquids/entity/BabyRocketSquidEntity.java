@@ -49,6 +49,11 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
         return false;
     }
 
+    @Override
+    public boolean canBeRiddenUnderFluidType(Entity rider) {
+        return false;
+    }
+
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
@@ -142,6 +147,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public void spawnHearts(ServerLevel level) {
         Vec3 thisPos = this.position();
         level.sendParticles(ParticleTypes.HEART.getType(), thisPos.x, thisPos.y + 1.5D, thisPos.z, 3, 0.25D, 0.0D, 0.25D, 1.5D);
@@ -151,7 +157,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
      * Entity won't drop experience orbs if this returns false
      */
     @Override
-    protected boolean shouldDropExperience() {
+    public boolean shouldDropExperience() {
         // since this is a baby we don't want it to drop xp
         return false;
     }
