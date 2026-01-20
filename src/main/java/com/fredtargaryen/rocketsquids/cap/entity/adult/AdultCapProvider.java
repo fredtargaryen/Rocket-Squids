@@ -36,8 +36,7 @@ public class AdultCapProvider implements ICapabilityProvider, INBTSerializable<C
 
     @Override
     public CompoundTag serializeNBT() {
-        CompoundTag nbt = createAdultCap().saveNBT(new CompoundTag());;
-        return nbt;
+        return createAdultCap().saveNBT(new CompoundTag());
     }
 
     @Override
