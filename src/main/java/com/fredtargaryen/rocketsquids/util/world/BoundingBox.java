@@ -5,8 +5,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-import java.awt.*;
-
 public class BoundingBox {
     /** Creates an AABB boundbox of the spesified radius
      * @param center BlockPos for the center of the bounding box
