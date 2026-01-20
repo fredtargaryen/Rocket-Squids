@@ -1,0 +1,5 @@
+{
+  "type": "rocketsquids:block_detail",
+  "biomes": "#forge:is_beach",
+  "feature": "rocketsquids:conchplace"
+}

@@ -22,6 +22,7 @@ import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
+import com.fredtargaryen.rocketsquids.worldgen.ModBiomeModifiers;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import org.joml.Vector3f;
 import net.minecraft.network.chat.Component;
@@ -218,6 +219,7 @@ public class RocketSquidsBase {
         PARTICLE_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerParticleFactories);
 
+        ModBiomeModifiers.register(modEventBus);
         ModFeatures.register(modEventBus);
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);

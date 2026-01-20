@@ -1,0 +1,10 @@
+{
+  "type": "rocketsquids:entities",
+  "biomes": ["#minecraft:is_overworld", "#forge:is_plains"],
+  "entity": {
+    "type": "rocketsquids:rocket_squid",
+    "weight": 70,
+    "minCount": 1,
+    "maxCount": 4
+  }
+}

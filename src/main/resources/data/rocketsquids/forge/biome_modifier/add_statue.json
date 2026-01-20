@@ -1,0 +1,5 @@
+{
+  "type": "rocketsquids:block_detail",
+  "biomes": "#minecraft:is_overworld",
+  "feature": "rocketsquids:statueplace"
+}
