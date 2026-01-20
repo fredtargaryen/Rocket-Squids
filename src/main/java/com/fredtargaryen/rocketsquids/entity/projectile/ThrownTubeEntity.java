@@ -1,17 +1,17 @@
 package com.fredtargaryen.rocketsquids.entity.projectile;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrownTubeEntity extends ThrowableItemProjectile {
@@ -30,7 +30,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
     protected void onHit(@NotNull HitResult result) {
         if (!this.level.isClientSide) {
             Vec3 pos = this.position();
-            this.level.explode(this.getOwner(), pos.x, pos.y, pos.z, 1.0F, Explosion.BlockInteraction.NONE);
+            this.level.explode(this.getOwner(), pos.x, pos.y, pos.z, 1.0F, Level.ExplosionInteraction.NONE);
             this.remove(RemovalReason.DISCARDED);
         }
     }
@@ -45,7 +45,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
      * Without this, they will not spawn on the client.
      */
     @Override
-    public @NotNull Packet<?> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }
