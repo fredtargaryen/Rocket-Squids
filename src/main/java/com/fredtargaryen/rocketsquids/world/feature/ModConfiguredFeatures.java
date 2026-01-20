@@ -24,6 +24,5 @@ public class ModConfiguredFeatures {
 
     public static void register(IEventBus eventBus) {
         CONFIGURED_FEATURES.register(eventBus);
-        RocketSquidsBase.rocketSquidLogger.info("Registered Configured Features");
     }
 }

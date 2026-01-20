@@ -34,6 +34,5 @@ public class ModPlacedFeatures {
 
     public static void register(IEventBus eventBus) {
         PLACED_FEATURES.register(eventBus);
-        RocketSquidsBase.rocketSquidLogger.info("Registered Placed Features");
     }
 }
