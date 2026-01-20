@@ -10,7 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @SuppressWarnings("removal")
-public class Sounds {
+public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
 

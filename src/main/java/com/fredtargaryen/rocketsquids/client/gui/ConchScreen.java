@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.client.gui;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -169,7 +169,7 @@ public class ConchScreen extends Screen {
         @Override
         public void playDownSound(@NotNull SoundManager soundHandlerIn) {
             if(ConchScreen.this.playingNotes[this.id] <= 0f) {
-                soundHandlerIn.play(SimpleSoundInstance.forUI(Sounds.CONCH_NOTES[this.id], 1.0F));
+                soundHandlerIn.play(SimpleSoundInstance.forUI(ModSounds.CONCH_NOTES[this.id], 1.0F));
                 MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
                 ConchScreen.this.playingNotes[this.id] = 10f;
             }
@@ -237,7 +237,7 @@ public class ConchScreen extends Screen {
         public void playDownSound(@NotNull SoundManager soundHandlerIn) {
             int noteId = ConchScreen.this.notes[this.id];
             if(noteId > -1 && ConchScreen.this.playingNotes[noteId] <= 0f) {
-                soundHandlerIn.play(SimpleSoundInstance.forUI(Sounds.CONCH_NOTES[noteId], 1.0F));
+                soundHandlerIn.play(SimpleSoundInstance.forUI(ModSounds.CONCH_NOTES[noteId], 1.0F));
                 MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) noteId, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
                 ConchScreen.this.playingNotes[noteId] = 10f;
             }

@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.client.event;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.*;
 import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
@@ -90,7 +90,7 @@ public class ModEventClient {
         Player ep = Minecraft.getInstance().player;
         assert ep != null;
         Vec3 pos = ep.position();
-        ep.level.playLocalSound(pos.x, pos.y, pos.z, Sounds.CONCH_NOTES[note], SoundSource.PLAYERS, 1.0F, 1.0F, true);
+        ep.level.playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.PLAYERS, 1.0F, 1.0F, true);
     }
 
     public static void playNoteFromMessageConchNeeded(byte note) {
@@ -105,7 +105,7 @@ public class ModEventClient {
         ItemStack helmet = iter.next();
         if(helmet.getItem() == RocketSquidsBase.ITEM_CONCH.get()) {
             Vec3 pos = ep.position();
-            ep.level.playLocalSound(pos.x, pos.y, pos.z, Sounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
+            ep.level.playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }
     }
 }

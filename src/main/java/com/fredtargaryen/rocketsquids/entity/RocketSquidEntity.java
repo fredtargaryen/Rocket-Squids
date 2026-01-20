@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.cap.entity.adult.AdultCap;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
@@ -11,7 +11,6 @@ import com.fredtargaryen.rocketsquids.entity.ai.BlastoffGoal;
 import com.fredtargaryen.rocketsquids.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageAdultCapData;
-import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidFirework;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
@@ -143,7 +142,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             this.newPacketRequired = true;
         }
         if(onFire || this.squidCap.getForcedBlast()) {
-            this.playSound(Sounds.BLASTOFF, 0.5F, 1.0F);
+            this.playSound(ModSounds.BLASTOFF, 0.5F, 1.0F);
             this.squidCap.setBlasting(true);
         }
 
@@ -243,7 +242,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     ItemStack newStack = RocketSquidsBase.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
                         Vec3 pos = player.position();
-                        player.level.playSound(null, pos.x, pos.y, pos.z, Sounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        player.level.playSound(null, pos.x, pos.y, pos.z, ModSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         // Set squid data
                         CompoundTag nbt = new CompoundTag();
                         this.addAdditionalSaveData(nbt);

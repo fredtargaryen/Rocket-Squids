@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.block;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.Sounds;
+import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -142,9 +142,9 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
         int z = pos.getZ();
         //Play some kind of wonderful "you found treasure" chord
         //Going with B4, D5 and F#5 (the minor chord makes it foreboding)
-        world.playSound(null, pos, Sounds.CONCH_NOTES[23],SoundSource.BLOCKS, 1.0F, 1.0F);
-        world.playSound(null, pos, Sounds.CONCH_NOTES[26],SoundSource.BLOCKS, 1.0F, 1.0F);
-        world.playSound(null, pos, Sounds.CONCH_NOTES[30],SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, ModSounds.CONCH_NOTES[23],SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, ModSounds.CONCH_NOTES[26],SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, ModSounds.CONCH_NOTES[30],SoundSource.BLOCKS, 1.0F, 1.0F);
         if (Objects.requireNonNull(facing) == Direction.NORTH) {
             ItemEntity squav = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
             // North is negative Z I think
