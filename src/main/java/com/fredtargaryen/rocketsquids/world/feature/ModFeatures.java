@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
 import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;

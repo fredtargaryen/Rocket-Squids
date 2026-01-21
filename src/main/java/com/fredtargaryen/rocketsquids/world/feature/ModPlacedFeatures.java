@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
