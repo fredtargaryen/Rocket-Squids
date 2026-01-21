@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
+def generatedResources = file("src/generated")
+
 group = project.maven_group
 version = project.mod_version
 
@@ -10,10 +12,24 @@ base {
     archivesName = project.archives_name
 }
 
+sourceSets {
+    main {
+        resources.srcDir generatedResources
+    }
+}
+
 loom {
     silentMojangMappingsLicense()
 
     forge {
+    }
+
+    runs {
+        data {
+            data()
+            programArgs "--all", "--mod", "rocketsquids"
+            programArgs "--output", generatedResources.absolutePath
+        }
     }
 }
 
