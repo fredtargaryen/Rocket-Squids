@@ -1,5 +1,6 @@
 {
-  "type": "rocketsquids:block_detail",
+  "type": "forge:add_features",
   "biomes": "#minecraft:is_overworld",
-  "feature": "rocketsquids:statueplace"
+  "features": "rocketsquids:statueplace",
+  "step": "raw_generation"
 }
