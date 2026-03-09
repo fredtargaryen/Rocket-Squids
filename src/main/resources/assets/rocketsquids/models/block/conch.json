@@ -1,10 +1,9 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench by barnabeepickle",
-	"parent": "builtin/generated",
 	"textures": {
-		"2": "rocketsquids:block/conch",
-		"particle": "rocketsquids:block/conch"
+		"2": "rocketsquids:blocks/conch",
+		"particle": "rocketsquids:blocks/conch"
 	},
 	"elements": [
 		{
@@ -90,65 +89,6 @@
 				"up": {"uv": [2, 10, 3, 12], "texture": "#2"},
 				"down": {"uv": [2, 13, 3, 15], "texture": "#2"}
 			}
-		},
-		{
-			"name": "East",
-			"from": [6, 0, 3.5],
-			"to": [11, 3, 11.5],
-			"color": 1,
-			"faces": {
-				"north": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"east": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"south": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"west": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"up": {"uv": [0, 0, 5, 8], "texture": "#missing"},
-				"down": {"uv": [0, 0, 5, 8], "texture": "#missing"}
-			}
-		},
-		{
-			"name": "North",
-			"from": [3.5, 0, 5],
-			"to": [11.5, 3, 10],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 16]},
-			"color": 1,
-			"faces": {
-				"north": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"east": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"south": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"west": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"up": {"uv": [0, 0, 5, 8], "rotation": 270, "texture": "#missing"},
-				"down": {"uv": [0, 0, 5, 8], "rotation": 90, "texture": "#missing"}
-			}
-		},
-		{
-			"name": "West",
-			"from": [5, 0, 4.5],
-			"to": [10, 3, 12.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [16, 0, 16]},
-			"color": 1,
-			"faces": {
-				"north": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"east": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"south": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"west": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"up": {"uv": [0, 0, 5, 8], "rotation": 180, "texture": "#missing"},
-				"down": {"uv": [0, 0, 5, 8], "rotation": 180, "texture": "#missing"}
-			}
-		},
-		{
-			"name": "South",
-			"from": [4.5, 0, 6],
-			"to": [12.5, 3, 11],
-			"rotation": {"angle": 0, "axis": "y", "origin": [16, 0, 0]},
-			"color": 1,
-			"faces": {
-				"north": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"east": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"south": {"uv": [0, 0, 8, 3], "texture": "#missing"},
-				"west": {"uv": [0, 0, 5, 3], "texture": "#missing"},
-				"up": {"uv": [0, 0, 5, 8], "rotation": 90, "texture": "#missing"},
-				"down": {"uv": [0, 0, 5, 8], "rotation": 270, "texture": "#missing"}
-			}
 		}
 	],
 	"display": {
@@ -209,12 +149,6 @@
 					"children": [4, 5]
 				}
 			]
-		},
-		{
-			"name": "VoxelShapes",
-			"origin": [6, 0, 3],
-			"color": 0,
-			"children": [6, 7, 8, 9]
 		}
 	]
 }
