@@ -2,8 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench by barnabeepickle",
 	"textures": {
-		"2": "rocketsquids:blocks/conch",
-		"particle": "rocketsquids:blocks/conch"
+		"2": "rocketsquids:block/conch",
+		"particle": "rocketsquids:block/conch"
 	},
 	"elements": [
 		{
