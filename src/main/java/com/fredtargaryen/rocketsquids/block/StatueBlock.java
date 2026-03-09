@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.block;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.ModSounds;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.world.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +39,12 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public StatueBlock(Block.Properties properties) {
-        super(properties);
+        super(properties.lightLevel(state -> {
+            if (state.getValue(FACING) == Direction.NORTH) {
+                return 2;
+            }
+            return 0;
+        }));
         registerDefaultState(getStateDefinition().any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(WATERLOGGED, false)
