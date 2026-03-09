@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "rocketsquids:items/conch_item_2"
+    "layer0": "rocketsquids:item/conch_item_2"
   }
 }

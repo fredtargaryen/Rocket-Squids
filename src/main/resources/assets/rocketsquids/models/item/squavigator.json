@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "rocketsquids:items/squavigator"
+    "layer0": "rocketsquids:item/squavigator"
   }
 }
