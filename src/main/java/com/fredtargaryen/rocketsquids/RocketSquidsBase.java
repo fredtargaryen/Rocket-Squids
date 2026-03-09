@@ -150,7 +150,6 @@ public class RocketSquidsBase {
      * The creative tab for all items from Rocket Squids.
      */
     @SuppressWarnings("removal")
-    @SubscribeEvent
     public void buildContents(CreativeModeTabEvent.Register event) {
         event.registerCreativeModeTab(new ResourceLocation(MODID, "rocket_squid_tab"), builder ->
                 // Set name of tab to display
@@ -212,6 +211,8 @@ public class RocketSquidsBase {
         modEventBus.addListener(this::registerEntityAttributes);
 
         SPAWNEGGITEMS.register(modEventBus);
+
+        modEventBus.addListener(this::buildContents);
 
         PARTICLE_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerParticleFactories);
