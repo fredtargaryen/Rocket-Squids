@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -33,13 +34,14 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock {
+    private static final DirectionProperty FACING = BlockStateProperties.FACING;
     private static final VoxelShape TALLBOX = Block.box(0.0, 0.0, 0.0, 16.0, 32.0, 16.0);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public StatueBlock(Block.Properties properties) {
         super(properties);
         registerDefaultState(getStateDefinition().any()
-                .setValue(BlockStateProperties.FACING, Direction.UP)
+                .setValue(BlockStateProperties.FACING, Direction.NORTH)
                 .setValue(WATERLOGGED, false));
     }
 
@@ -111,15 +113,30 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
     public void setPlacedBy(
-            @NotNull Level worldIn,
+            @NotNull Level level,
             @NotNull BlockPos pos,
             @NotNull BlockState state,
             @Nullable LivingEntity placer,
             @NotNull ItemStack stack
     ) {
-        super.setPlacedBy(worldIn, pos, state, placer, stack);
-        if(!worldIn.isClientSide) {
-            StatueData.forWorld(worldIn).addStatue(pos);
+        assert placer != null;
+        Direction facing = placer.getDirection();
+        switch(facing) {
+            case NORTH:
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.NORTH));
+                break;
+            case SOUTH:
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.SOUTH));
+                break;
+            case WEST:
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.WEST));
+                break;
+            default:
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.EAST));
+                break;
+        }
+        if(!level.isClientSide) {
+            StatueData.forWorld(level).addStatue(pos);
         }
     }
 
