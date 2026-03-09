@@ -3,7 +3,7 @@
   {
     "facing=up": { "model": "rocketsquids:block/statue" },
     "facing=down": { "model": "rocketsquids:block/statue" },
-    "facing=north": { "model": "rocketsquids:block/statue_north" },
+    "facing=north": { "model": "rocketsquids:block/statue", "y": 180 },
     "facing=south": { "model": "rocketsquids:block/statue" },
     "facing=east": { "model": "rocketsquids:block/statue" },
     "facing=west": { "model": "rocketsquids:block/statue" }
