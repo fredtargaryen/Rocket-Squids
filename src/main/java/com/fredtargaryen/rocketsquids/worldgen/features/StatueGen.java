@@ -11,14 +11,15 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class StatueGen extends Feature<StatueGenConfig> {
+public class StatueGen extends Feature<NoneFeatureConfiguration> {
 
-    public StatueGen(Codec<StatueGenConfig> codec) {
-        super(codec);
+    public StatueGen() {
+        super(NoneFeatureConfiguration.CODEC);
     }
 
     /**
@@ -27,7 +28,7 @@ public class StatueGen extends Feature<StatueGenConfig> {
      * @return return
      */
     @Override
-    public boolean place(@NotNull FeaturePlaceContext<StatueGenConfig> context) {
+    public boolean place(@NotNull FeaturePlaceContext<NoneFeatureConfiguration> context) {
         // First we create a few variables out of the context in order to adapt from the old way place was written
         WorldGenLevel world = context.level();
         ChunkGenerator chunkGen = context.chunkGenerator();

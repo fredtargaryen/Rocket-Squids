@@ -1,9 +1,7 @@
 package com.fredtargaryen.rocketsquids.world.feature;
 
 import com.fredtargaryen.rocketsquids.worldgen.features.ConchGen;
-import com.fredtargaryen.rocketsquids.worldgen.features.ConchGenConfig;
 import com.fredtargaryen.rocketsquids.worldgen.features.StatueGen;
-import com.fredtargaryen.rocketsquids.worldgen.features.StatueGenConfig;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -17,10 +15,10 @@ public class ModFeatures {
             DeferredRegister.create(ForgeRegistries.FEATURES, MODID);
 
     public static final RegistryObject<ConchGen> CONCH_FEATURE = FEATURES.register("conchgen",
-            () -> new ConchGen(ConchGenConfig.FACTORY)
+            ConchGen::new
     );
     public static final RegistryObject<StatueGen> STATUE_FEATURE = FEATURES.register("statuegen",
-            () -> new StatueGen(StatueGenConfig.FACTORY)
+            StatueGen::new
     );
 
     public static void register(IEventBus eventBus) {

@@ -18,9 +18,7 @@ import com.fredtargaryen.rocketsquids.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.item.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
-import com.fredtargaryen.rocketsquids.world.feature.ModConfiguredFeatures;
 import com.fredtargaryen.rocketsquids.world.feature.ModFeatures;
-import com.fredtargaryen.rocketsquids.world.feature.ModPlacedFeatures;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import org.joml.Vector3f;
@@ -219,8 +217,6 @@ public class RocketSquidsBase {
         modEventBus.addListener(this::registerParticleFactories);
 
         ModFeatures.register(modEventBus);
-        ModConfiguredFeatures.register(modEventBus);
-        ModPlacedFeatures.register(modEventBus);
 
         // init ModEventClient
         ModEventClient.init();

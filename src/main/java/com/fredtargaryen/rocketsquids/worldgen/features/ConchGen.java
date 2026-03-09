@@ -12,13 +12,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ConchGen extends Feature<ConchGenConfig> {
-    public ConchGen(Codec<ConchGenConfig> codec) {
-        super(codec);
+public class ConchGen extends Feature<NoneFeatureConfiguration> {
+    public ConchGen() {
+        super(NoneFeatureConfiguration.CODEC);
     }
 
     /**
@@ -27,7 +28,7 @@ public class ConchGen extends Feature<ConchGenConfig> {
      * @return return
      */
     @Override
-    public boolean place(@NotNull FeaturePlaceContext<ConchGenConfig> context) {
+    public boolean place(@NotNull FeaturePlaceContext<NoneFeatureConfiguration> context) {
         // First we create a few variables out of the context in order to adapt from the older way place() was written
         WorldGenLevel world = context.level();
         RandomSource random = context.random();

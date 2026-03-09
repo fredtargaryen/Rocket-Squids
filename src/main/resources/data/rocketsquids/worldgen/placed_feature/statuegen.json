@@ -1,0 +1,11 @@
+{
+  "feature": "rocketsquids:statuegen",
+  "placement": [
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:true"
+      }
+    }
+  ]
+}
