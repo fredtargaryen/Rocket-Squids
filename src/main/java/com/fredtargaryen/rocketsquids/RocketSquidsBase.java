@@ -166,6 +166,7 @@ public class RocketSquidsBase {
                             output.accept(ITEM_STATUE.get());
                             output.accept(SQUAVIGATOR.get());
                             output.accept(SQUELEPORTER_INACTIVE.get());
+                            output.accept(SQUID_SPAWN_EGG.get());
                         })
         );
     }
