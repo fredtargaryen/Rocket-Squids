@@ -63,9 +63,13 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 @Mod(value = MODID)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RocketSquidsBase {
-    // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    // Get our logger
+    public static final Logger LOGGER = LogManager.getLogger();
 
+    private static RocketSquidsBase INSTANCE;
+    public static RocketSquidsBase getInstance() {
+        return INSTANCE;
+    }
 
     // Blocks
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
@@ -197,6 +201,7 @@ public class RocketSquidsBase {
 
     @SuppressWarnings("removal")
     public RocketSquidsBase() {
+        INSTANCE = this;
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -304,25 +309,5 @@ public class RocketSquidsBase {
         float x = (float) (hori * -Math.sin(ry));
         float z = (float) (hori * Math.cos(ry));
         return new Vector3f(x, y, z);
-    }
-
-    ////////////////////
-    ///LOGGER METHODS///
-    ////////////////////
-
-    @SuppressWarnings("unused")
-    public static class rocketSquidLogger {
-        @SuppressWarnings("unused")
-        public static void info(String message) {
-            LOGGER.info(message);
-        }
-        @SuppressWarnings("unused")
-        public static void warn(String message) {
-            LOGGER.warn(message);
-        }
-        @SuppressWarnings("unused")
-        public static void error(String message) {
-            LOGGER.error(message);
-        }
     }
 }

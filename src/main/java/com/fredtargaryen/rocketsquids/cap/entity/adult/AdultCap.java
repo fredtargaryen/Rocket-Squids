@@ -175,7 +175,7 @@ public class AdultCap {
         } catch (IndexOutOfBoundsException e) {
             this.brokenNotes++;
             if (!(this.brokenNotes > 3)) {
-                RocketSquidsBase.rocketSquidLogger.error("Encountered IndexOutOfBoundsException skipping");
+                RocketSquidsBase.LOGGER.error("Encountered IndexOutOfBoundsException skipping");
             }
         }
     }
