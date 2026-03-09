@@ -1,6 +1,6 @@
 {
 	"format_version": "1.9.0",
-	"credit": "Made with Blockbench",
+	"credit": "Statue - FredTargaryen, created using Tabula 7.0.0, rebuilt by barnabeepickle with Blockbench",
 	"textures": {
 		"1": "rocketsquids:block/statue",
 		"particle": "rocketsquids:block/statue"
