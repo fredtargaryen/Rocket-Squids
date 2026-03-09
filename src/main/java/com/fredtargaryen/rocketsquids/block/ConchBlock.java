@@ -34,7 +34,7 @@ public class ConchBlock extends Block {
     public ConchBlock(Block.Properties properties) {
         super(properties);
         registerDefaultState(getStateDefinition().any()
-                .setValue(FACING, Direction.UP)
+                .setValue(FACING, Direction.NORTH)
                 .setValue(WATERLOGGED, false));
     }
 
@@ -107,7 +107,6 @@ public class ConchBlock extends Block {
         return switch (state.getValue(FACING)) {
             case NORTH -> CONCH_NORTH;
             case SOUTH -> CONCH_SOUTH;
-            case EAST -> CONCH_EAST;
             case WEST -> CONCH_WEST;
             default -> CONCH_EAST;
         };
@@ -118,7 +117,7 @@ public class ConchBlock extends Block {
      */
     @Override
     public void setPlacedBy(
-            @NotNull Level worldLevel,
+            @NotNull Level level,
             @NotNull BlockPos pos,
             @NotNull BlockState state,
             LivingEntity placer,
@@ -128,16 +127,16 @@ public class ConchBlock extends Block {
         Direction facing = placer.getDirection();
         switch(facing) {
             case NORTH:
-                worldLevel.setBlockAndUpdate(pos, state.setValue(FACING, Direction.NORTH));
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.NORTH));
                 break;
             case SOUTH:
-                worldLevel.setBlockAndUpdate(pos, state.setValue(FACING, Direction.SOUTH));
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.SOUTH));
                 break;
             case WEST:
-                worldLevel.setBlockAndUpdate(pos, state.setValue(FACING, Direction.WEST));
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.WEST));
                 break;
             default:
-                worldLevel.setBlockAndUpdate(pos, state.setValue(FACING, Direction.EAST));
+                level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.EAST));
                 break;
         }
     }
