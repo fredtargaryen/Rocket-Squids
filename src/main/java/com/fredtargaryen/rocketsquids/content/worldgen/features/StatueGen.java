@@ -68,8 +68,8 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
             statueManager.removeStatue(placePos);
             BlockPos pos2;
             for (pos2 = placePos; !world.getBlockState(pos2.below()).isSolid(); pos2 = pos2.below()) {
-                world.setBlock(pos2.above(), Blocks.AIR.defaultBlockState(), 3);
-                world.setBlock(pos2, ModBlocks.BLOCK_STATUE.get().defaultBlockState(), 3);
+                world.setBlock(pos2.above(), Blocks.AIR.defaultBlockState(), 2);
+                world.setBlock(pos2, ModBlocks.BLOCK_STATUE.get().defaultBlockState(), 2);
                 statueManager.addStatue(pos2);
             }
             return true;

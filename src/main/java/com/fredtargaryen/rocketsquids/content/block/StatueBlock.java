@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.block;
 
 import com.fredtargaryen.rocketsquids.ModSounds;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.worldgen.StatueData;
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -181,8 +183,12 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
     protected void falling(FallingBlockEntity fallingEntity) {
         BlockPos startPos = fallingEntity.blockPosition();
         BlockState startState = fallingEntity.level().getBlockState(startPos);
-        if(startState.getValue(BlockStateProperties.FACING) == Direction.UP) {
-            StatueData.forWorld(fallingEntity.level()).removeStatue(startPos);
+        if (startState.getBlock() != Blocks.AIR) {
+            if (startState.getValue(BlockStateProperties.FACING) == Direction.UP) {
+                StatueData.forWorld(fallingEntity.level()).removeStatue(startPos);
+            }
+        } else {
+            RocketSquidsBase.LOGGER.error("StatueBlock attempted to get the properties of an air block but was stopped.");
         }
     }
 
