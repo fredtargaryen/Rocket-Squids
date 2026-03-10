@@ -23,7 +23,7 @@ public class BabyRSFollowParentGoal extends Goal {
         if (!this.baby.isBaby()) {
             return false;
         } else {
-            List<RocketSquidEntity> list = this.baby.level.getEntitiesOfClass(RocketSquidEntity.class, this.baby.getBoundingBox().inflate(8.0, 4.0, 8.0));
+            List<RocketSquidEntity> list = this.baby.level().getEntitiesOfClass(RocketSquidEntity.class, this.baby.getBoundingBox().inflate(8.0, 4.0, 8.0));
             Entity rocketSquid = null;
             double d = Double.MAX_VALUE;
 

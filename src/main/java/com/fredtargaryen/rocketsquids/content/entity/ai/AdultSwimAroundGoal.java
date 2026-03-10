@@ -126,7 +126,7 @@ public class AdultSwimAroundGoal extends Goal {
                 case LOCATE:
                     //Find nearest statue
                     Vec3 pos = this.squid.position();
-                    int[] statueCoords = StatueData.forWorld(this.squid.level).getNearestStatuePos(pos.x, pos.y, pos.z);
+                    int[] statueCoords = StatueData.forWorld(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
                     if(statueCoords[3] < 1) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
@@ -134,7 +134,7 @@ public class AdultSwimAroundGoal extends Goal {
                     }
                     else {
                         //TargetPoint for playing notes related to distance
-                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.level.dimension());
+                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.level().dimension());
                         double zDistance = statueCoords[4] - pos.z;
                         double xDistance = statueCoords[2] - pos.x;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
@@ -211,7 +211,7 @@ public class AdultSwimAroundGoal extends Goal {
     private void playNextNote() {
         byte note = this.squid.getTargetNote(this.noteIndex);
         Vec3 pos = this.squid.position();
-        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.level.dimension())), new MessageSquidNote(note));
+        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 16.0F, this.squid.level().dimension())), new MessageSquidNote(note));
         if(this.noteIndex == 2) {
             this.noteIndex = 0;
         }

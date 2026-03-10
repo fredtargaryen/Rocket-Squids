@@ -21,7 +21,7 @@ public class BabyFlopAroundGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.squid.isOnGround()) {
+        if (this.squid.onGround()) {
             this.squid.setTargetRotPitch(Math.PI / 2);
         } else if(Math.abs(this.squid.getDeltaMovement().y) > 0.008){
             this.squid.pointToWhereMoving();
