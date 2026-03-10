@@ -4,12 +4,10 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
-import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -17,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.ScreenUtils;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,13 +131,13 @@ public class ConchScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
         for(int i = 0; i < this.playingNotes.length; i++)
         {
             this.playingNotes[i] -= partialTicks;
         }
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -187,7 +184,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
@@ -201,7 +198,7 @@ public class ConchScreen extends Screen {
                 red = 0.9F + blue;
                 green = 0.9F * this.id / 36.0F + blue;
             }
-            this.drawNote(stack, this.getX(), this.getY(), red, green, blue);
+            this.drawNote(guiGraphics, this.getX(), this.getY(), red, green, blue);
             int j = 14737632;
 
             if (packedFGColor != 0) {
@@ -214,12 +211,12 @@ public class ConchScreen extends Screen {
                 j = 16777120;
             }
 
-            drawCenteredString(stack, fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
+            guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
         }
 
-        private void drawNote(PoseStack stack, int x, int y, float red, float green, float blue) {
+        private void drawNote(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
             RenderSystem.setShaderColor(red, green, blue, 1f);
-            this.renderTexture(stack, NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
+            this.renderTexture(guiGraphics, NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
         }
     }
 

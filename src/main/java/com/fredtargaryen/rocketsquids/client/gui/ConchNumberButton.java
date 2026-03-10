@@ -6,9 +6,9 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -53,7 +53,7 @@ public class ConchNumberButton extends ExtendedButton {
      * Draws this button to the screen.
      */
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Font fontrenderer = mc.font;
         this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
         float red, green, blue;
@@ -74,7 +74,7 @@ public class ConchNumberButton extends ExtendedButton {
             }
         }
 
-        this.drawButton(stack, this.getX(), this.getY(), red, green, blue);
+        this.drawButton(guiGraphics, this.getX(), this.getY(), red, green, blue);
         int j = ColorHelper.getColor(224, 224, 224);
 
         if (packedFGColor != 0) {
@@ -85,14 +85,14 @@ public class ConchNumberButton extends ExtendedButton {
             j = ColorHelper.getColor(255, 255, 160);
         }
 
-        drawCenteredString(stack, fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
-        drawCenteredString(stack, fontrenderer,
+        guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
+        guiGraphics.drawCenteredString(fontrenderer,
                 Component.literal("" + (this.id == 9 ? 0: this.id + 1)),
                 this.getX() + this.width / 2, this.getY() + 34, j);
     }
 
-    private void drawButton(PoseStack stack, int x, int y, float red, float green, float blue) {
+    private void drawButton(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
         RenderSystem.setShaderColor(red, green, blue, 1f);
-        this.renderTexture(stack, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
+        this.renderTexture(guiGraphics, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
     }
 }
