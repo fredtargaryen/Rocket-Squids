@@ -4,10 +4,7 @@ import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
-import com.fredtargaryen.rocketsquids.content.ModBlocks;
-import com.fredtargaryen.rocketsquids.content.ModEntities;
-import com.fredtargaryen.rocketsquids.content.ModFeatures;
-import com.fredtargaryen.rocketsquids.content.ModItems;
+import com.fredtargaryen.rocketsquids.content.*;
 import com.fredtargaryen.rocketsquids.content.cap.entity.adult.AdultCap;
 import com.fredtargaryen.rocketsquids.content.cap.entity.adult.AdultCapProvider;
 import com.fredtargaryen.rocketsquids.content.cap.entity.baby.BabyCap;
@@ -22,8 +19,6 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +30,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -65,33 +59,6 @@ public class RocketSquidsBase {
     }
 
     public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
-
-
-
-    /**
-     * The creative tab for Rocket Squids
-     */
-    @SuppressWarnings("removal")
-    public void buildContents(CreativeModeTabEvent.Register event) {
-        event.registerCreativeModeTab(new ResourceLocation(MODID, "rocket_squid_tab"), builder ->
-                // Set name of tab to display
-                builder.title(Component.translatable("item_group." + MODID + ".rocket_squid_tab"))
-                        // Set icon of creative tab
-                        .icon(() -> new ItemStack(ModItems.ITEM_CONCH.get()))
-                        // Add default items to tab
-                        .displayItems((params, output) -> {
-                            output.accept(ModItems.ITEM_CONCH.get());
-                            output.accept(ModItems.ITEM_CONCH2.get());
-                            output.accept(ModItems.ITEM_CONCH3.get());
-                            output.accept(ModItems.NITRO_SAC.get());
-                            output.accept(ModItems.TURBO_TUBE.get());
-                            output.accept(ModItems.ITEM_STATUE.get());
-                            output.accept(ModItems.SQUAVIGATOR.get());
-                            output.accept(ModItems.SQUELEPORTER_INACTIVE.get());
-                            output.accept(ModEntities.SQUID_SPAWN_EGG.get());
-                        })
-        );
-    }
 
     // Particles
     private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, MODID);
@@ -132,7 +99,7 @@ public class RocketSquidsBase {
 
         ModEntities.register(modEventBus);
 
-        modEventBus.addListener(this::buildContents);
+        ModCreativeTabs.register(modEventBus);
 
         PARTICLE_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerParticleFactories);
