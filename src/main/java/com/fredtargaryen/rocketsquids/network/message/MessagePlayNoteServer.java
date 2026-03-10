@@ -36,11 +36,11 @@ public class MessagePlayNoteServer {
             if(note > -1 && note < 36) {
                 MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> {
                     assert player != null;
-                    return new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.level.dimension());
+                    return new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.level().dimension());
                 }), new MessagePlayNoteClient(this.note));
                 assert player != null;
                 // get the Level, cast to ServerLevel, get all of the entities in the level
-                Iterable<Entity> entityIterable = ((ServerLevel) player.level).getEntities().getAll();
+                Iterable<Entity> entityIterable = ((ServerLevel) player.level()).getEntities().getAll();
                 // for each entity in the level we check if its a rocket squid, then make sure its with in 100 blocks
                 for (Entity e : entityIterable) {
                     if (e instanceof RocketSquidEntity) {
