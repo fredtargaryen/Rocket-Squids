@@ -61,7 +61,7 @@ dependencies {
     }
     forge "net.minecraftforge:forge:${project.forge_version}"
 
-    modImplementation "software.bernie.geckolib:geckolib-${geckolib_subrepo}:${geckolib_version}"
+    modImplementation "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
     implementation "com.eliotlash.mclib:mclib:20"
 }
 
