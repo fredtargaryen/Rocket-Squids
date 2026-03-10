@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.gui.ScreenUtils;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,8 +32,8 @@ public class ConchScreen extends Screen {
 
     private int changingNumberNote;
 
-    private static final ResourceLocation NOTE = new ResourceLocation(DataReference.MODID+":textures/gui/note.png");
-    private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID+":textures/gui/numbernote.png");
+    private static final ResourceLocation NOTE = new ResourceLocation(DataReference.MODID, "textures/gui/note.png");
+    private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID, "textures/gui/numbernote.png");
 
     private static final Component[] buttonNames = {
             Component.literal("C"),
@@ -290,11 +291,8 @@ public class ConchScreen extends Screen {
         }
 
         private void drawButton(PoseStack stack, int x, int y, float red, float green, float blue) {
-            mc.getTextureManager().bindForSetup(NUMBER);
             RenderSystem.setShaderColor(red, green, blue, 1f);
-            //Draw the button; see gui/numbernote.png
-            //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
-            GuiComponent.blit(stack, x, y, 0, 0, 32, 32, 32, 32);
+            ScreenUtils.blitWithBorder(stack, NUMBER, x, y, 0, 0, 32, 32, 32, 32, 1, 10);
         }
     }
 
