@@ -1,22 +1,26 @@
 package com.fredtargaryen.rocketsquids.content.entity;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
 public abstract class AbstractSquidEntity extends WaterAnimal {
     protected boolean newPacketRequired;
+
+    public boolean randomSpawnView = true;
 
     ///////////////
     //CLIENT ONLY//
@@ -26,6 +30,9 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
 
     public AbstractSquidEntity(EntityType<? extends AbstractSquidEntity> type, Level world) {
         super(type, world);
+        if (this.randomSpawnView) {
+            this.getLookControl().setLookAt(new Vec3(new Vector3f(Mth.nextFloat(world.getRandom(), 0.0F, 100.0F))));
+        }
     }
 
     /**
