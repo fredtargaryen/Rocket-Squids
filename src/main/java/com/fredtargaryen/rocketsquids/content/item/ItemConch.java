@@ -125,7 +125,7 @@ public class ItemConch extends GeoModArmorItem {
                     }
                 }
             } else {
-                if (!iblockstate.getMaterial().isReplaceable()) {
+                if (!iblockstate.canBeReplaced()) {
                     pos = pos.relative(facing);
                 }
 
