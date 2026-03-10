@@ -107,7 +107,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
             LevelReader worldIn,
             BlockPos pos
     ) {
-        return worldIn.getBlockState(pos.below()).getMaterial().isSolid() && !worldIn.getBlockState(pos.above()).getMaterial().isSolid();
+        return worldIn.getBlockState(pos.below()).isSolid() && !worldIn.getBlockState(pos.above()).isSolid();
     }
 
     /**
@@ -180,9 +180,9 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
     @Override
     protected void falling(FallingBlockEntity fallingEntity) {
         BlockPos startPos = fallingEntity.blockPosition();
-        BlockState startState = fallingEntity.level.getBlockState(startPos);
+        BlockState startState = fallingEntity.level().getBlockState(startPos);
         if(startState.getValue(BlockStateProperties.FACING) == Direction.UP) {
-            StatueData.forWorld(fallingEntity.level).removeStatue(startPos);
+            StatueData.forWorld(fallingEntity.level()).removeStatue(startPos);
         }
     }
 
