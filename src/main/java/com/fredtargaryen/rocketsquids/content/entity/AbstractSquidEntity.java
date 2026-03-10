@@ -50,6 +50,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
         return false;
     }
 
+    @SuppressWarnings("unused")
     public boolean isFood(ItemStack stack) {
         Item stackItem = stack.getItem();
         return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH;
@@ -64,10 +65,11 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
      * A squid will be pointing 1-3 directions at a time.
      * @return Whether a solid block is in the way in all directions pointed, so the squid can't move much
      */
+    @SuppressWarnings("deprecation")
     public boolean areBlocksInWay() {
         BlockPos squidPos = this.blockPosition();
         for(Direction dir : this.getDirectionsPointing()) {
-            if(!this.level.getBlockState(squidPos.relative(dir)).getMaterial().isSolid()) {
+            if(!this.level().getBlockState(squidPos.relative(dir)).isSolid()) {
                 return false;
             }
         }
@@ -113,14 +115,14 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     }
 
     public void addForce(double force) {
-        if(!this.level.isClientSide) {
+        if(!this.level().isClientSide()) {
             Vec3 motion = this.getDeltaMovement();
             Vec3 direction = this.getDirectionAsVec3();
             this.setDeltaMovement(
                     motion.x + direction.x * force,
                     motion.y + direction.y * force,
                     motion.z + direction.z * force);
-            this.onGround = false;
+            this.setOnGround(false);
         }
     }
 
@@ -135,7 +137,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
                 direction.x * force,
                 direction.y * force,
                 direction.z * force);
-        this.onGround = false;
+        this.setOnGround(false);
     }
 
     /**

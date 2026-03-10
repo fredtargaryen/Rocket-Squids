@@ -63,12 +63,12 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     public void aiStep() {
         super.aiStep();
         if(this.tickCount > 72000) {
-            if(!this.level.isClientSide) {
+            if(!this.level().isClientSide()) {
                 this.remove(RemovalReason.DISCARDED);
-                RocketSquidEntity adult = new RocketSquidEntity(this.level);
+                RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
                 adult.moveTo(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
-                this.level.addFreshEntity(adult);
+                this.level().addFreshEntity(adult);
             }
         }
         else {
@@ -122,7 +122,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 this.newPacketRequired = true;
             }
 
-            if(this.level.isClientSide) {
+            if(this.level().isClientSide()) {
                 //Client side
                 //Handles tentacle angles
                 this.lastTentacleAngle = this.tentacleAngle;
@@ -136,7 +136,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 }
                 if(this.newPacketRequired) {
                     Vec3 pos = this.position();
-                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level.dimension())), new MessageBabyCapData(this.getUUID(), this.squidCap));
+                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level().dimension())), new MessageBabyCapData(this.getUUID(), this.squidCap));
                     this.newPacketRequired = false;
                 }
             }

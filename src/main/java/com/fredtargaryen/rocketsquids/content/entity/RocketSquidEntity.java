@@ -2,11 +2,11 @@ package com.fredtargaryen.rocketsquids.content.entity;
 
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
+import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.content.ModEntities;
 import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.cap.entity.adult.AdultCap;
-import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
-import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.content.entity.ai.AdultFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.content.entity.ai.AdultSwimAroundGoal;
 import com.fredtargaryen.rocketsquids.content.entity.ai.BlastoffGoal;
@@ -167,7 +167,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
         Vec3 pos = this.position();
 
-        if(this.level.isClientSide) {
+        if(this.level().isClientSide()) {
             //Client side
             //Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
@@ -189,14 +189,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     double largerX = pos.x + 0.25;
                     double smallerZ = pos.z - 0.25;
                     double largerZ = pos.z + 0.25;
-                    this.level.addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
-                    this.level.addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, largerZ, 0.0, 0.0, 0.0);
-                    this.level.addParticle(ParticleTypes.BUBBLE, largerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
-                    this.level.addParticle(ParticleTypes.BUBBLE, largerX, pos.y, largerZ, 0.0, 0.0, 0.0);
+                    this.level().addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
+                    this.level().addParticle(ParticleTypes.BUBBLE, smallerX, pos.y, largerZ, 0.0, 0.0, 0.0);
+                    this.level().addParticle(ParticleTypes.BUBBLE, largerX, pos.y, smallerZ, 0.0, 0.0, 0.0);
+                    this.level().addParticle(ParticleTypes.BUBBLE, largerX, pos.y, largerZ, 0.0, 0.0, 0.0);
                 }
                 else
                 {
-                    this.level.addParticle(ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 0.0, 0.0, 0.0);
+                    this.level().addParticle(ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 0.0, 0.0, 0.0);
                 }
             }
         }
@@ -210,7 +210,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 this.moveToWherePointing();
             }
             if(this.newPacketRequired) {
-                MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level.dimension())), new MessageAdultCapData(this.getUUID(), this.squidCap));
+                MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level().dimension())), new MessageAdultCapData(this.getUUID(), this.squidCap));
                 this.newPacketRequired = false;
             }
         }
@@ -226,7 +226,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     @Override
     public @NotNull InteractionResult mobInteract (@NotNull Player player, @NotNull InteractionHand hand) {
-        if(!this.level.isClientSide) {
+        if(!this.level().isClientSide()) {
             ItemStack interactStack = player.getItemInHand(hand);
             if (interactStack == ItemStack.EMPTY) {
                 if (this.getSaddled() && !this.isVehicle()) {
@@ -241,7 +241,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     ItemStack newStack = ModItems.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
                     newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
                         Vec3 pos = player.position();
-                        player.level.playSound(null, pos.x, pos.y, pos.z, ModSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        player.level().playSound(null, pos.x, pos.y, pos.z, ModSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         // Set squid data
                         CompoundTag nbt = new CompoundTag();
                         this.addAdditionalSaveData(nbt);
@@ -289,32 +289,32 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Called when the squid explodes to create particle effects, items and to remove the entity.
      */
     public void explode() {
-        if(!this.level.isClientSide) {
+        if(!this.level().isClientSide()) {
             Vec3 pos = this.position();
-            this.level.explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.BLOCK);
+            this.level().explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.BLOCK);
 
             int noSacs = 3 + this.random.nextInt(3);
             for (int x = 0; x < noSacs; ++x) {
-                ItemEntity entityitem = new ItemEntity(this.level, pos.x, pos.y, pos.z, new ItemStack(ModItems.NITRO_SAC.get()));
+                ItemEntity entityitem = new ItemEntity(this.level(), pos.x, pos.y, pos.z, new ItemStack(ModItems.NITRO_SAC.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;
                 double motionZ = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 entityitem.setDeltaMovement(motionX, motionY, motionZ);
-                this.level.addFreshEntity(entityitem);
+                this.level().addFreshEntity(entityitem);
             }
 
             int noTubes = 2 + this.random.nextInt(3);
             for (int x = 0; x < noTubes; ++x) {
-                ItemEntity entityitem = new ItemEntity(this.level, pos.x, pos.y, pos.z, new ItemStack(ModItems.TURBO_TUBE.get()));
+                ItemEntity entityitem = new ItemEntity(this.level(), pos.x, pos.y, pos.z, new ItemStack(ModItems.TURBO_TUBE.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;
                 double motionZ = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 entityitem.setDeltaMovement(motionX, motionY, motionZ);
-                this.level.addFreshEntity(entityitem);
+                this.level().addFreshEntity(entityitem);
             }
 
             // tell the client to create particles
-            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level.dimension())), new MessageSquidFirework(this.getUUID()));
+            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level().dimension())), new MessageSquidFirework(this.getUUID()));
         }
         this.remove(RemovalReason.KILLED);
     }
@@ -328,7 +328,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 passenger.setDeltaMovement(motion.x * 2.5, motion.y * 2.5, motion.z * 2.5);
             }
         }
-        if(this.level.isClientSide) {
+        if(this.level().isClientSide()) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
         super.remove(reason);
@@ -341,7 +341,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     public void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
         Vec3 pos = this.position();
-        effectRenderer.add(new SquidFireworkParticle.SquidStarter((ClientLevel) this.level, pos.x, pos.y, pos.z, effectRenderer));
+        effectRenderer.add(new SquidFireworkParticle.SquidStarter((ClientLevel) this.level(), pos.x, pos.y, pos.z, effectRenderer));
     }
 
     /**
@@ -349,7 +349,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * @param level The level the rocket squid is in as represented on the server.
      */
     public void spawnHearts(ServerLevel level) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide()) {
             Vec3 thisPos = this.position();
             level.sendParticles(ParticleTypes.HEART.getType(), thisPos.x, thisPos.y + 1.5D, thisPos.z, 3, 0.25D, 0.0D, 0.25D, 1.0D);
         }
@@ -365,7 +365,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             // Obstacle is not the rider, so apply collision
             if (!obstacle.noPhysics && !this.noPhysics) {
                 Vec3 thisPos = this.position();
-                if (!this.level.isClientSide && obstacle.getType() == ModEntities.SQUID_TYPE.get()) {
+                if (!this.level().isClientSide() && obstacle.getType() == ModEntities.SQUID_TYPE.get()) {
                     RocketSquidEntity partner = (RocketSquidEntity) obstacle;
                     if (this.canBreed() && partner.canBreed()) {
                         // if it is another rocket squid that can breed we run the breed method
@@ -427,7 +427,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * @param partner The potential partner to "breed" with.
      */
     private void breed(RocketSquidEntity partner) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide()) {
             Vec3 thisPos = this.position();
             // get the UUID of the "partner" rocket squid
             UUID partnerUUID = partner.getUUID();
@@ -436,16 +436,16 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 case 1:
                     // the one with the greater UUID creates the child
                     this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
-                    BabyRocketSquidEntity baby = ModEntities.BABY_SQUID_TYPE.get().create(this.level);
+                    BabyRocketSquidEntity baby = ModEntities.BABY_SQUID_TYPE.get().create(this.level());
                     assert baby != null;
                     baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
-                    this.level.addFreshEntity(baby);
-                    this.spawnHearts((ServerLevel) this.level);
+                    this.level().addFreshEntity(baby);
+                    this.spawnHearts((ServerLevel) this.level());
                     break;
                 case -1:
                     // the one with the lesser UUID doesn't
                     this.breedCooldown = GeneralConfig.BREED_COOLDOWN.get(); // the breed cooldown is set in the config file
-                    this.spawnHearts((ServerLevel) this.level);
+                    this.spawnHearts((ServerLevel) this.level());
             }
         }
     }
@@ -457,7 +457,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         super.tickLeash();
         if(this.isLeashed()) {
             Entity holder = this.getLeashHolder();
-            if (holder != null && holder.level == this.level) {
+            if (holder != null && holder.level() == this.level()) {
                 float f = this.distanceTo(holder);
 
                 if (f > 8.0F) {
@@ -487,7 +487,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     protected void addPassenger(@NotNull Entity p) {
         if(this.getPassengers().isEmpty()) {
             super.addPassenger(p);
-            if(this.level.isClientSide) {
+            if(this.level().isClientSide()) {
                 MinecraftForge.EVENT_BUS.register(this);
             }
         }
@@ -537,13 +537,12 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     /**
      * Should keep the passenger on, or at least around, the squid's back.
+     * The offset is applied in {@link Entity#positionRider},
+     * prior to {@code 1.20.1} we overrided that method instead of this one.
      */
     @Override
-    public void positionRider(@NotNull Entity passenger) {
-        if(this.hasPassenger(passenger)) {
-            Vec3 pos = this.position();
-            passenger.setPos(pos.x, pos.y + 0.355, pos.z);
-        }
+    public double getPassengersRidingOffset() {
+        return 0.355;
     }
 
     @Override
@@ -555,7 +554,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     passengerMotion.y * 2.5,
                     passengerMotion.z * 2.5);
         }
-        if(this.level.isClientSide) {
+        if(this.level().isClientSide()) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
     }

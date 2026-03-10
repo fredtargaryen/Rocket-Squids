@@ -37,9 +37,9 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
 
     @Override
     protected void onHit(@NotNull HitResult result) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide()) {
             AABB aabb = this.getBoundingBox().expandTowards(2.0D, 2.0D, 2.0D);
-            List<LivingEntity> list1 = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+            List<LivingEntity> list1 = this.level().getEntitiesOfClass(LivingEntity.class, aabb);
 
             if (!list1.isEmpty()) {
                 for (LivingEntity entitylivingbase : list1) {

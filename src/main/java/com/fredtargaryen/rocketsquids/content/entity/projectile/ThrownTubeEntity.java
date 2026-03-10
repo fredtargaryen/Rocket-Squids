@@ -29,9 +29,9 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
 
     @Override
     protected void onHit(@NotNull HitResult result) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide()) {
             Vec3 pos = this.position();
-            this.level.explode(this.getOwner(), pos.x, pos.y, pos.z, 1.0F, Level.ExplosionInteraction.NONE);
+            this.level().explode(this.getOwner(), pos.x, pos.y, pos.z, 1.0F, Level.ExplosionInteraction.NONE);
             this.remove(RemovalReason.DISCARDED);
         }
     }
