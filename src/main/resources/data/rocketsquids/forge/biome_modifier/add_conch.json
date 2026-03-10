@@ -1,6 +1,6 @@
 {
   "type": "forge:add_features",
-  "biomes": "#forge:is_beach",
+  "biomes": "#minecraft:is_beach",
   "features": "rocketsquids:conchgen",
   "step": "top_layer_modification"
 }
