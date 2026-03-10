@@ -26,6 +26,7 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
      * @param context context
      * @return return
      */
+    @SuppressWarnings("deprecation")
     @Override
     public boolean place(@NotNull FeaturePlaceContext<NoneFeatureConfiguration> context) {
         // First we create a few variables out of the context in order to adapt from the old way place was written
@@ -34,13 +35,10 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
         RandomSource random = context.random();
         BlockPos pos = context.origin();
         // Then we check the config to see if this dimension is allowed
-        if(GeneralConfig.STATUE_USE_WHITELIST.get())
-        {
+        if(GeneralConfig.STATUE_USE_WHITELIST.get()) {
             List<? extends String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
             if(!allowedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
-        }
-        else
-        {
+        } else {
             List<? extends String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
             if(blockedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
         }
@@ -51,7 +49,7 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
         int chunkAreaX = chunkX / frequency;
         int chunkAreaZ = chunkZ / frequency;
         int[] statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
-        if(statueLocation == null) {
+        if (statueLocation == null) {
             //A statue location hasn't been decided for this chunk area. Decide one
             statueLocation = new int[] {chunkAreaX, chunkAreaZ,
                     //Random chunk in the sizexsize area
@@ -69,10 +67,11 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
             //Simulate the block falling down onto a solid block
             statueManager.removeStatue(placePos);
             BlockPos pos2;
-            for(pos2 = placePos; !world.getBlockState(pos2.below()).getMaterial().isSolid(); pos2 = pos2.below());
-            world.setBlock(pos2.above(), Blocks.AIR.defaultBlockState(), 3);
-            world.setBlock(pos2, ModBlocks.BLOCK_STATUE.get().defaultBlockState(), 3);
-            statueManager.addStatue(pos2);
+            for (pos2 = placePos; !world.getBlockState(pos2.below()).isSolid(); pos2 = pos2.below()) {
+                world.setBlock(pos2.above(), Blocks.AIR.defaultBlockState(), 3);
+                world.setBlock(pos2, ModBlocks.BLOCK_STATUE.get().defaultBlockState(), 3);
+                statueManager.addStatue(pos2);
+            }
             return true;
         }
         return false;
