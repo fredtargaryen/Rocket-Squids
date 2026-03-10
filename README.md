@@ -37,13 +37,15 @@ Please report any issues you encounter on the [Issues tab]([https://github.com/f
 
 ### Compatibility with your mod
 
-For your mod to work with Rocket Squids, add it as a dependency following the instructions [here](https://github.com/MinecraftForge/ForgeGradle/wiki/Dependencies). 
+To use Rocket Squids Relight as a dependency it is recommended to add it through [Curse Maven](https://cursemaven.com/) or [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven)
 
-If you want the dependency to be optional, you can check if Floocraft was loaded with `Loader.isModLoaded("rocketsquids")`.
+> If no mod pages are avalilable or you want to use the bleading edge git build you should be able to clone and add the whole repo as a dependency in your IDE.
 
-There are no plans for designing any APIs or other compatibility features but compatibility bugs or requests are welcome.
+If you want the dependency to be optional or just want to know more about dependencies read up on how your tool chain does it, for ForgeGradle these links should help [Forge Docs](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/#dependency-configurations), [Forge Community Wiki](https://forge.gemwire.uk/wiki/Dependencies) or [ForgeGradle Docs](https://docs.minecraftforge.net/en/fg-6.x/dependencies/).
 
-> If you want to submit pull requests for APIs they will be accepted.
+There are no plans for designing any APIs or other compatibility features at the moment but compatibility bugs reports or pull requests are welcome.
+
+> If you want to submit pull requests for APIs they will be gladly accepted due to the current lack of an API.
 
 ### Pull Requests
 
