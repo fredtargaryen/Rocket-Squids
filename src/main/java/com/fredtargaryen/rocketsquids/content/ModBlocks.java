@@ -3,7 +3,7 @@ package com.fredtargaryen.rocketsquids.content;
 import com.fredtargaryen.rocketsquids.content.block.ConchBlock;
 import com.fredtargaryen.rocketsquids.content.block.StatueBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -16,10 +16,10 @@ public class ModBlocks {
 
     // Register all blocks here
     public static final RegistryObject<ConchBlock> BLOCK_CONCH = BLOCKS.register("conch",
-            () -> new ConchBlock(Block.Properties.of(Material.SAND).noCollission())
+            () -> new ConchBlock(Block.Properties.of().mapColor(MapColor.SAND).noCollission())
     );
     public static final RegistryObject<StatueBlock> BLOCK_STATUE = BLOCKS.register("statue",
-            () -> new StatueBlock(Block.Properties.of(Material.STONE).noOcclusion())
+            () -> new StatueBlock(Block.Properties.of().mapColor(MapColor.STONE).noOcclusion())
     );
 
     public static void register(IEventBus eventBus) {
