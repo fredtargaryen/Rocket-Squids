@@ -20,7 +20,7 @@ public class ConchNumberButton extends ExtendedButton {
     private final int id;
     private final Minecraft mc;
 
-    private ConchScreen screen;
+    private final ConchScreen screen;
 
     private static final Component questionMark = Component.literal("?");
 
