@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.client.render.armor;
 
 import com.fredtargaryen.rocketsquids.client.model.armor.ConchWearableModel;
-import com.fredtargaryen.rocketsquids.item.ItemConch;
+import com.fredtargaryen.rocketsquids.content.item.ItemConch;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 

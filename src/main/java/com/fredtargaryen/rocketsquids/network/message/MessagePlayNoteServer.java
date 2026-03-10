@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.world.entity.Entity;

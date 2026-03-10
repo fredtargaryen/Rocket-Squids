@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;

@@ -6,8 +6,6 @@ import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.*;
 import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.client.render.RenderRS;
-import com.fredtargaryen.rocketsquids.client.render.armor.ConchWearableRenderer;
-import com.fredtargaryen.rocketsquids.item.ItemConch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.RenderType;

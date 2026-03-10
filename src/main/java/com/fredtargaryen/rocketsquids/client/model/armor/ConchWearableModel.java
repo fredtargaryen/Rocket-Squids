@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.client.model.armor;
 
-import com.fredtargaryen.rocketsquids.item.ItemConch;
+import com.fredtargaryen.rocketsquids.content.item.ItemConch;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
