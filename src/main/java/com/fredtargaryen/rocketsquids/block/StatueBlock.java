@@ -39,12 +39,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public StatueBlock(Block.Properties properties) {
-        super(properties.lightLevel(state -> {
-            if (state.getValue(FACING) == Direction.NORTH) {
-                return 2;
-            }
-            return 0;
-        }));
+        super(properties);
         registerDefaultState(getStateDefinition().any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(WATERLOGGED, false)
