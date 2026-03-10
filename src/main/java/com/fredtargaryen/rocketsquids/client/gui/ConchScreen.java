@@ -4,6 +4,7 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -247,22 +248,19 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTick) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
             int noteId = ConchScreen.this.notes[this.id];
-            if(noteId == -1) {
+            if (noteId == -1) {
                 //No note assigned to this button. Make it sort of grey
                 red = green = blue = 0.6f + (this.isHovered ? 0.1f : 0f);
-            }
-            else {
-                if(ConchScreen.this.playingNotes[noteId] > 0f)
-                {
+            } else {
+                if (ConchScreen.this.playingNotes[noteId] > 0f) {
                     //This note is on a "cooldown"; make it dark gray to symbolise that
                     red = green = blue = 0.1f;
-                }
-                else {
+                } else {
                     //Make the button a colour equal to that of the selected note.
                     //Add 0.1 to each component of the colour, to increase the brightness slightly, if hovered over.
                     blue = this.isHovered ? 0.1f : 0f;
@@ -272,16 +270,14 @@ public class ConchScreen extends Screen {
             }
 
             this.drawButton(stack, this.getX(), this.getY(), red, green, blue);
-            int j = 14737632;
+            int j = ColorHelper.getColor(224, 224, 224);
 
             if (packedFGColor != 0) {
                 j = packedFGColor;
-            }
-            else if (!this.active) {
-                j = 10526880;
-            }
-            else if (this.isHovered) {
-                j = 16777120;
+            } else if (!this.active) {
+                j = ColorHelper.getColor(160, 160, 160);
+            } else if (this.isHovered) {
+                j = ColorHelper.getColor(255, 255, 160);
             }
 
             drawCenteredString(stack, fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
@@ -292,10 +288,12 @@ public class ConchScreen extends Screen {
 
         private void drawButton(PoseStack stack, int x, int y, float red, float green, float blue) {
             RenderSystem.setShaderColor(red, green, blue, 1f);
-            ScreenUtils.blitWithBorder(stack, NUMBER, x, y, 0, 0, 32, 32, 32, 32, 1, 10);
+            this.renderTexture(stack, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
         }
     }
 
     @Override
-    public boolean isPauseScreen() { return false; }
+    public boolean isPauseScreen() {
+        return false;
+    }
 }
