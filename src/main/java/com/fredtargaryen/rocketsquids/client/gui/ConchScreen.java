@@ -218,11 +218,8 @@ public class ConchScreen extends Screen {
         }
 
         private void drawNote(PoseStack stack, int x, int y, float red, float green, float blue) {
-            mc.getTextureManager().bindForSetup(NOTE);
             RenderSystem.setShaderColor(red, green, blue, 1f);
-            //Draw the quaver; see gui/note.png
-            //Parameters are: top-left x; top-left y; top-left u, top-left v, width, height, texture width, texture height (will repeat if texture dimensions are smaller than region dimensions)
-            GuiComponent.blit(stack, x + 2, y - 37, 0, 0, 27, 54, 27, 54);
+            this.renderTexture(stack, NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
         }
     }
 
