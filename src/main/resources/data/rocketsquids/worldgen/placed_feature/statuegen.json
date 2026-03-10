@@ -4,7 +4,8 @@
     {
       "type": "minecraft:block_predicate_filter",
       "predicate": {
-        "type": "minecraft:true"
+        "type": "minecraft:inside_world_bounds",
+        "offset": [0, 1, 0]
       }
     }
   ]
