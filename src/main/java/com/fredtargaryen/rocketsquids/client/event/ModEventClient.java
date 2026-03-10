@@ -1,19 +1,22 @@
 package com.fredtargaryen.rocketsquids.client.event;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
-import com.fredtargaryen.rocketsquids.client.model.*;
+import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
+import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquidBaby;
 import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.client.render.RenderRS;
+import com.fredtargaryen.rocketsquids.content.ModBlocks;
+import com.fredtargaryen.rocketsquids.content.ModEntities;
+import com.fredtargaryen.rocketsquids.content.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,7 +29,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import java.util.Iterator;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
-import static com.fredtargaryen.rocketsquids.RocketSquidsBase.*;
 
 @SuppressWarnings("removal")
 @OnlyIn(Dist.CLIENT)
@@ -41,15 +43,15 @@ public class ModEventClient {
     public static final ModelLayerLocation SQUID_BODY_LAYER;
 
     static {
-        assert SQUID_TYPE.getId() != null;
-        SQUID_BODY_LAYER = new ModelLayerLocation(SQUID_TYPE.getId(), "body");
+        assert ModEntities.SQUID_TYPE.getId() != null;
+        SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.SQUID_TYPE.getId(), "body");
     }
 
     public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
 
     static {
-        assert BABY_SQUID_TYPE.getId() != null;
-        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(BABY_SQUID_TYPE.getId(), "body");
+        assert ModEntities.BABY_SQUID_TYPE.getId() != null;
+        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.BABY_SQUID_TYPE.getId(), "body");
     }
 
     @SubscribeEvent
@@ -62,19 +64,19 @@ public class ModEventClient {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         // register block renderers
-        ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_CONCH.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(RocketSquidsBase.BLOCK_STATUE.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.BLOCK_CONCH.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(ModBlocks.BLOCK_STATUE.get(), RenderType.cutoutMipped());
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // register normal entity renderers
-        event.registerEntityRenderer(RocketSquidsBase.SAC_TYPE.get(), ThrownItemRenderer::new);
-        event.registerEntityRenderer(RocketSquidsBase.TUBE_TYPE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntities.SAC_TYPE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntities.TUBE_TYPE.get(), ThrownItemRenderer::new);
 
         // register custom entity renderers
-        event.registerEntityRenderer(SQUID_TYPE.get(), RenderRS::new);
-        event.registerEntityRenderer(BABY_SQUID_TYPE.get(), RenderBabyRS::new);
+        event.registerEntityRenderer(ModEntities.SQUID_TYPE.get(), RenderRS::new);
+        event.registerEntityRenderer(ModEntities.BABY_SQUID_TYPE.get(), RenderBabyRS::new);
     }
 
     public static void openConchClient(byte conchStage) {
@@ -98,7 +100,7 @@ public class ModEventClient {
         iter.next();
         iter.next();
         ItemStack helmet = iter.next();
-        if(helmet.getItem() == RocketSquidsBase.ITEM_CONCH.get()) {
+        if(helmet.getItem() == ModItems.ITEM_CONCH.get()) {
             Vec3 pos = ep.position();
             ep.level.playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }

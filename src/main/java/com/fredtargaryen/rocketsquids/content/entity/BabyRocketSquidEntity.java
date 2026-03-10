@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.entity;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.content.ModEntities;
 import com.fredtargaryen.rocketsquids.content.cap.entity.baby.BabyCap;
 import com.fredtargaryen.rocketsquids.content.entity.ai.BabyFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.content.entity.ai.BabySwimAroundGoal;
@@ -174,7 +175,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("id", RocketSquidsBase.BABY_SQUID_TYPE.toString());
+        compound.putString("id", ModEntities.BABY_SQUID_TYPE.toString());
     }
 
     //////////////////////

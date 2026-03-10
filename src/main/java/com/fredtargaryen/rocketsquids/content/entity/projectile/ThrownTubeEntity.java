@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.entity.projectile;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.content.ModEntities;
+import com.fredtargaryen.rocketsquids.content.ModItems;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
@@ -20,10 +21,10 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
     }
     public ThrownTubeEntity(LivingEntity elb, Level world)
     {
-        super(RocketSquidsBase.TUBE_TYPE.get(), elb, world);
+        super(ModEntities.TUBE_TYPE.get(), elb, world);
     }
     public ThrownTubeEntity(PlayMessages.SpawnEntity spawn, Level world) {
-        this(RocketSquidsBase.TUBE_TYPE.get(), world);
+        this(ModEntities.TUBE_TYPE.get(), world);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return RocketSquidsBase.TURBO_TUBE.get();
+        return ModItems.TURBO_TUBE.get();
     }
 
     /**

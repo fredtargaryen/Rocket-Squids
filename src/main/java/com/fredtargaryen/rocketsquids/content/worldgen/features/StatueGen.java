@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.worldgen.features;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
+import com.fredtargaryen.rocketsquids.content.ModBlocks;
 import com.fredtargaryen.rocketsquids.content.worldgen.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -71,7 +71,7 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
             BlockPos pos2;
             for(pos2 = placePos; !world.getBlockState(pos2.below()).getMaterial().isSolid(); pos2 = pos2.below());
             world.setBlock(pos2.above(), Blocks.AIR.defaultBlockState(), 3);
-            world.setBlock(pos2, RocketSquidsBase.BLOCK_STATUE.get().defaultBlockState(), 3);
+            world.setBlock(pos2, ModBlocks.BLOCK_STATUE.get().defaultBlockState(), 3);
             statueManager.addStatue(pos2);
             return true;
         }

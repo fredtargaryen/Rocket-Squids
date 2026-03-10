@@ -2,6 +2,7 @@ package com.fredtargaryen.rocketsquids.content.item;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.ModSounds;
+import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
@@ -32,7 +33,7 @@ public class ItemSqueleporter extends Item {
     ) {
         if (!worldIn.isClientSide) {
             ItemStack stack = playerIn.getItemInHand(handIn);
-            if(stack.getItem() == RocketSquidsBase.SQUELEPORTER_ACTIVE.get()) {
+            if(stack.getItem() == ModItems.SQUELEPORTER_ACTIVE.get()) {
                 //The squeleporter is active so squid data is stored.
                 stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
                     CompoundTag squidTags = cap.getSquidData();
@@ -52,7 +53,7 @@ public class ItemSqueleporter extends Item {
                         }
                         worldIn.playSound(null, playerPos.x, playerPos.y, playerPos.z, ModSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         //Set the squeleporter to inactive
-                        playerIn.setItemInHand(handIn, RocketSquidsBase.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
+                        playerIn.setItemInHand(handIn, ModItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
                         playerIn.getCooldowns().addCooldown(this, 10);
                     });
                 });

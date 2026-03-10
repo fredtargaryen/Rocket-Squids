@@ -1,6 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.entity.projectile;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.content.ModEntities;
+import com.fredtargaryen.rocketsquids.content.ModItems;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.effect.MobEffect;
@@ -25,11 +26,11 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
     }
     public ThrownSacEntity(LivingEntity elb, Level w)
     {
-        super(RocketSquidsBase.SAC_TYPE.get(), elb, w);
+        super(ModEntities.SAC_TYPE.get(), elb, w);
     }
     @SuppressWarnings("unused")
     public ThrownSacEntity(PlayMessages.SpawnEntity spawn, Level world) {
-        this(RocketSquidsBase.SAC_TYPE.get(), world);
+        this(ModEntities.SAC_TYPE.get(), world);
     }
 
     private static final MobEffect blindnessPotion = MobEffects.BLINDNESS;
@@ -53,7 +54,7 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return RocketSquidsBase.NITRO_SAC.get();
+        return ModItems.NITRO_SAC.get();
     }
 
     /**

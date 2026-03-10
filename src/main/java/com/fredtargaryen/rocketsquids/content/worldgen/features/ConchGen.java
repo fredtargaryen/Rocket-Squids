@@ -1,9 +1,8 @@
 package com.fredtargaryen.rocketsquids.content.worldgen.features;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
-import com.mojang.serialization.Codec;
+import com.fredtargaryen.rocketsquids.content.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -51,7 +50,7 @@ public class ConchGen extends Feature<NoneFeatureConfiguration> {
         }
 
         // Setting values
-        world.setBlock(pos, RocketSquidsBase.BLOCK_CONCH.get().defaultBlockState()
+        world.setBlock(pos, ModBlocks.BLOCK_CONCH.get().defaultBlockState()
                 .setValue(BlockStateProperties.FACING, DataReference.randomHorizontalFacing(random))
                 .setValue(BlockStateProperties.WATERLOGGED, world.getBlockState(pos).getBlock() == Blocks.WATER), 3);
         return true;

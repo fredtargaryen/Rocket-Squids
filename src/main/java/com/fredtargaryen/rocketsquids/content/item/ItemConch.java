@@ -1,10 +1,10 @@
 package com.fredtargaryen.rocketsquids.content.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.content.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import com.fredtargaryen.rocketsquids.client.render.armor.ConchWearableRenderer;
+import com.fredtargaryen.rocketsquids.content.ModBlocks;
+import com.fredtargaryen.rocketsquids.content.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.content.item.custom.GeoModArmorItem;
 import com.fredtargaryen.rocketsquids.content.worldgen.StatueData;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -114,7 +114,7 @@ public class ItemConch extends GeoModArmorItem {
         if(!worldIn.isClientSide && Objects.requireNonNull(player).isCrouching()) {
             BlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
-            if (block == RocketSquidsBase.BLOCK_STATUE.get()) {
+            if (block == ModBlocks.BLOCK_STATUE.get()) {
                 if (iblockstate.getValue(BlockStateProperties.FACING) == Direction.UP) {
                     StatueData.forWorld(worldIn).removeStatue(pos);
                     if (facing == Direction.NORTH) {
@@ -137,7 +137,7 @@ public class ItemConch extends GeoModArmorItem {
                     float hitX = (float) hitVec.x;
                     float hitY = (float) hitVec.y;
                     float hitZ = (float) hitVec.z;
-                    BlockState conchstate = RocketSquidsBase.BLOCK_CONCH.get().getStateForPlacement(blockContext);
+                    BlockState conchstate = ModBlocks.BLOCK_CONCH.get().getStateForPlacement(blockContext);
 
                     if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, conchstate)) {
                         BlockState iblockstate1 = worldIn.getBlockState(pos);
@@ -172,8 +172,8 @@ public class ItemConch extends GeoModArmorItem {
         if (!world.setBlock(pos, newState, 11)) return false;
 
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() == RocketSquidsBase.BLOCK_CONCH.get()) {
-            RocketSquidsBase.BLOCK_CONCH.get().setPlacedBy(world, pos, state, player, stack);
+        if (state.getBlock() == ModBlocks.BLOCK_CONCH.get()) {
+            ModBlocks.BLOCK_CONCH.get().setPlacedBy(world, pos, state, player, stack);
 
             if (player instanceof ServerPlayer)
                 CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, pos, stack);
