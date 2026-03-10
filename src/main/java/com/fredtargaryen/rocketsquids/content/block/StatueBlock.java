@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.block;
 
 import com.fredtargaryen.rocketsquids.ModSounds;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.worldgen.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,7 +50,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
      * Get the Item that this Block should drop when harvested.
      */
     @Override
-    public @NotNull Item asItem() { return RocketSquidsBase.ITEM_STATUE.get(); }
+    public @NotNull Item asItem() { return ModItems.ITEM_STATUE.get(); }
 
     @Override
     @Deprecated
@@ -164,11 +164,11 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
         world.playSound(null, pos, ModSounds.CONCH_NOTES[26],SoundSource.BLOCKS, 1.0F, 1.0F);
         world.playSound(null, pos, ModSounds.CONCH_NOTES[30],SoundSource.BLOCKS, 1.0F, 1.0F);
         if (Objects.requireNonNull(facing) == Direction.NORTH) {
-            ItemEntity squav = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
+            ItemEntity squav = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUAVIGATOR.get().getDefaultInstance());
             // North is negative Z I think
             squav.setDeltaMovement(0.0, 0.05, -0.1);
             world.addFreshEntity(squav);
-            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, RocketSquidsBase.SQUAVIGATOR.get().getDefaultInstance());
+            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUAVIGATOR.get().getDefaultInstance());
             squel.setDeltaMovement(0.0, 0.05, -0.1);
             world.addFreshEntity(squel);
         }
