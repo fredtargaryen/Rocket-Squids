@@ -87,7 +87,7 @@ public class ModEventClient {
         Player ep = Minecraft.getInstance().player;
         assert ep != null;
         Vec3 pos = ep.position();
-        ep.level.playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.PLAYERS, 1.0F, 1.0F, true);
+        ep.level().playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.PLAYERS, 1.0F, 1.0F, true);
     }
 
     public static void playNoteFromMessageConchNeeded(byte note) {
@@ -102,7 +102,7 @@ public class ModEventClient {
         ItemStack helmet = iter.next();
         if(helmet.getItem() == ModItems.ITEM_CONCH.get()) {
             Vec3 pos = ep.position();
-            ep.level.playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
+            ep.level().playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }
     }
 }
