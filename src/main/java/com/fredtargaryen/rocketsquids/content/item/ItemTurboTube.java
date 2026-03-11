@@ -40,7 +40,7 @@ public class ItemTurboTube extends Item {
         if (!world.isClientSide) {
             ThrownTubeEntity tube = new ThrownTubeEntity(player, world);
             tube.setItem(stack);
-            Vector3f aimPos = RocketSquidsBase.getPlayerAimVector(player);
+            Vector3f aimPos = player.getLookAngle().toVector3f();
             tube.shoot(aimPos.x(), aimPos.y(), aimPos.z(), 1.5F, 1.0F);
             world.addFreshEntity(tube);
         }

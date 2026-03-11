@@ -38,7 +38,7 @@ public class ItemNitroInkSac extends Item {
                 SoundEvents.ARROW_SHOOT, SoundSource.NEUTRAL, 0.5F, 0.4F);
         if (!world.isClientSide) {
             ThrownSacEntity sac = new ThrownSacEntity(player, world);
-            Vector3f aimPos = RocketSquidsBase.getPlayerAimVector(player);
+            Vector3f aimPos = player.getLookAngle().toVector3f();
             sac.shoot(aimPos.x(), aimPos.y(), aimPos.z(), 1.5F, 1.0F);
             world.addFreshEntity(sac);
         }

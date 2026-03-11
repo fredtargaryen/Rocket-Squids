@@ -83,6 +83,18 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
+    public static void setupFirework() {
+        ListTag list = new ListTag();
+        CompoundTag f1 = new CompoundTag();
+        f1.putBoolean("Flicker", false);
+        f1.putBoolean("Trail", false);
+        f1.putIntArray("Colors", new int[]{15435844});
+        f1.putIntArray("FadeColors", new int[]{6719955});
+        list.add(f1);
+
+        firework.put("Explosions", list);
+    }
+
 
     public RocketSquidsBase(FMLJavaModLoadingContext context) {
         INSTANCE = this;
@@ -133,24 +145,18 @@ public class RocketSquidsBase {
      * @param event FMLCommonSetupEvent
      */
     public void postRegistration(FMLCommonSetupEvent event) {
+        // initlize our custom packets
         MessageHandler.init();
 
-        // Make the firework
-        ListTag list = new ListTag();
-        CompoundTag f1 = new CompoundTag();
-            f1.putBoolean("Flicker", false);
-            f1.putBoolean("Trail", false);
-            f1.putIntArray("Colors", new int[]{15435844});
-            f1.putIntArray("FadeColors", new int[]{6719955});
-        list.add(f1);
-        firework.put("Explosions", list);
+        // Run the firework setup function
+        setupFirework();
 
         // Validate the config
         if(GeneralConfig.MAX_GROUP_SIZE.get() < GeneralConfig.MIN_GROUP_SIZE.get()) {
             GeneralConfig.MAX_GROUP_SIZE = GeneralConfig.MIN_GROUP_SIZE;
         }
 
-        // Spawn info
+        // Spawn info (might be redundent due to biomemodifiers)
         SpawnPlacements.register(ModEntities.SQUID_TYPE.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(ModEntities.SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
@@ -185,15 +191,5 @@ public class RocketSquidsBase {
         if(evt.getObject().getItem() == ModItems.SQUELEPORTER_ACTIVE.get()) {
             evt.addCapability(DataReference.SQUELEPORTER_LOCATION, new SqueleporterCapProvider());
         }
-    }
-
-    public static Vector3f getPlayerAimVector(Player player) {
-        double rp = Math.toRadians(player.getXRot());
-        double ry = Math.toRadians(player.getYRot());
-        float y = (float) -Math.sin(rp);
-        float hori = (float) Math.cos(rp);
-        float x = (float) (hori * -Math.sin(ry));
-        float z = (float) (hori * Math.cos(ry));
-        return new Vector3f(x, y, z);
     }
 }
