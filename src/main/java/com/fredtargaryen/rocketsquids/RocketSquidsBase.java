@@ -83,14 +83,14 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
-    @SuppressWarnings("removal")
-    public RocketSquidsBase() {
+
+    public RocketSquidsBase(FMLJavaModLoadingContext context) {
         INSTANCE = this;
 
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = context.getModEventBus();
 
         // Register the config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
 
         ModSounds.register(modEventBus);
 
@@ -110,7 +110,7 @@ public class RocketSquidsBase {
         ModEventClient.init();
 
         // Event bus
-        IEventBus loadingBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus loadingBus = context.getModEventBus();
         // Register the setup method for modloading
         loadingBus.addListener(this::postRegistration);
         //loadingBus.addListener(this::clientSetup);
