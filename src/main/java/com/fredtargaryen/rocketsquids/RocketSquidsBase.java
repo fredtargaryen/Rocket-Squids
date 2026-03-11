@@ -125,7 +125,7 @@ public class RocketSquidsBase {
         // Register our world gen features
         ModFeatures.register(modEventBus);
 
-        // initilize our client side only stuff
+        // Initilize our client side only stuff
         ModEventClient.init();
 
         // Register and load the mod config
@@ -157,6 +157,7 @@ public class RocketSquidsBase {
         }
 
         // Spawn info (might be redundent due to biomemodifiers)
+        // noinspection deprecation
         SpawnPlacements.register(ModEntities.SQUID_TYPE.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(ModEntities.SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
