@@ -288,7 +288,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * Called when the squid explodes to create particle effects, items and to remove the entity.
      */
     public void explode() {
-        if(!this.level().isClientSide()) {
+        if (!this.level().isClientSide()) {
             Vec3 pos = this.position();
             this.level().explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.BLOCK);
 
@@ -320,14 +320,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     @Override
     public void remove(@NotNull RemovalReason reason) {
-        if(this.getBlasting()) {
+        if (this.getBlasting()) {
             Entity passenger = this.getControllingPassenger();
-            if(passenger != null) {
+            if (passenger != null) {
                 Vec3 motion = passenger.getDeltaMovement();
                 passenger.setDeltaMovement(motion.x * 2.5, motion.y * 2.5, motion.z * 2.5);
             }
         }
-        if(this.level().isClientSide()) {
+        if (this.level().isClientSide()) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
         super.remove(reason);
