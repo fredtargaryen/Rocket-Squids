@@ -40,27 +40,6 @@ public class ModEventClient {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::registerLayerDefinitions);
     }
 
-    public static final ModelLayerLocation SQUID_BODY_LAYER;
-
-    static {
-        assert ModEntities.SQUID_TYPE.getId() != null;
-        SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.SQUID_TYPE.getId(), "body");
-    }
-
-    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
-
-    static {
-        assert ModEntities.BABY_SQUID_TYPE.getId() != null;
-        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.BABY_SQUID_TYPE.getId(), "body");
-    }
-
-    @SubscribeEvent
-    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
-    {
-        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
-        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
-    }
-
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         // register block renderers
@@ -79,6 +58,26 @@ public class ModEventClient {
         event.registerEntityRenderer(ModEntities.BABY_SQUID_TYPE.get(), RenderBabyRS::new);
     }
 
+    public static final ModelLayerLocation SQUID_BODY_LAYER;
+
+    static {
+        assert ModEntities.SQUID_TYPE.getId() != null;
+        SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.SQUID_TYPE.getId(), "body");
+    }
+
+    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
+
+    static {
+        assert ModEntities.BABY_SQUID_TYPE.getId() != null;
+        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(ModEntities.BABY_SQUID_TYPE.getId(), "body");
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
+        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
+    }
+
     public static void openConchClient(byte conchStage) {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
     }
@@ -91,18 +90,18 @@ public class ModEventClient {
     }
 
     public static void playNoteFromMessageConchNeeded(byte note) {
-        Player ep = Minecraft.getInstance().player;
-        //Check player is wearing the conch
-        assert ep != null;
-        Iterable<ItemStack> armour = ep.getArmorSlots();
+        Player player = Minecraft.getInstance().player;
+        // Check if the player is wearing the conch
+        assert player != null;
+        Iterable<ItemStack> armour = player.getArmorSlots();
         Iterator<ItemStack> iter = armour.iterator();
         iter.next();
         iter.next();
         iter.next();
         ItemStack helmet = iter.next();
-        if(helmet.getItem() == ModItems.ITEM_CONCH.get()) {
-            Vec3 pos = ep.position();
-            ep.level().playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
+        if (helmet.getItem() == ModItems.ITEM_CONCH.get()) {
+            Vec3 pos = player.position();
+            player.level().playLocalSound(pos.x, pos.y, pos.z, ModSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }
     }
 }
