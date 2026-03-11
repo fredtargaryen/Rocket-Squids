@@ -225,7 +225,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    public @NotNull InteractionResult mobInteract (@NotNull Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
         if(!this.level().isClientSide()) {
             ItemStack interactStack = player.getItemInHand(hand);
             if (interactStack == ItemStack.EMPTY) {
@@ -233,8 +233,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     player.startRiding(this);
                     return InteractionResult.SUCCESS;
                 }
-            }
-            else {
+            } else {
                 Item interactItem = interactStack.getItem();
                 if (interactItem == ModItems.SQUELEPORTER_INACTIVE.get()) {
                     //The squeleporter is inactive so store the squid here
