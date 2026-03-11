@@ -63,9 +63,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     protected int breedCooldown;
     protected boolean breedable;
 
-    ///////////////
-    //Client only//
-    ///////////////
+    /////////////////
+    ///Client only///
+    /////////////////
     public boolean riderRotated;
 
     //May have to remove and use capability instead
