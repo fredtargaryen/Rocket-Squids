@@ -4,6 +4,7 @@ import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
 import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquidBaby;
+import com.fredtargaryen.rocketsquids.client.model.SquavigatorBakedModelWrapper;
 import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
 import com.fredtargaryen.rocketsquids.client.render.RenderRS;
 import com.fredtargaryen.rocketsquids.content.ModBlocks;
@@ -14,6 +15,8 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.resources.model.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -42,11 +45,39 @@ public class ModClientHandler {
         modEventBus.addListener(ModClientHandler::onClientSetup);
         modEventBus.addListener(ModClientHandler::registerRenderers);
         modEventBus.addListener(ModClientHandler::registerLayerDefinitions);
+        modEventBus.addListener(ModClientHandler::registerAdditionalBakedModels);
+        modEventBus.addListener(ModClientHandler::onModelBake);
     }
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
 
+    }
+
+    public static ResourceLocation SQUAVIGATOR_IN_HAND;
+
+    static {
+        assert ModItems.SQUAVIGATOR.getId() != null;
+        //noinspection removal
+        SQUAVIGATOR_IN_HAND = new ResourceLocation(MODID, ModItems.SQUAVIGATOR.getId().getPath() + "_in_hand");
+    }
+
+
+    @SubscribeEvent // on the mod event bus only on the physical client
+    public static void registerAdditionalBakedModels(ModelEvent.RegisterAdditional event) {
+        assert ModItems.SQUAVIGATOR.getId() != null;
+        event.register(SQUAVIGATOR_IN_HAND);
+    }
+
+    @SubscribeEvent
+    public static void onModelBake(ModelEvent.ModifyBakingResult event) {
+        assert ModItems.SQUAVIGATOR.getId() != null;
+        event.getModels().computeIfPresent(
+                // The model resource location of the model to modify.
+                new ModelResourceLocation(MODID, ModItems.SQUAVIGATOR.getId().getPath(), "inventory"),
+                // A BiFunction with the location and the original models as parameters, returning the new model.
+                (location, model) -> new SquavigatorBakedModelWrapper(model)
+        );
     }
 
     @SuppressWarnings("removal")
