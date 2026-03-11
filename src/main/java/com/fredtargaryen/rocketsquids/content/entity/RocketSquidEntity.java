@@ -290,10 +290,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     public void explode() {
         if (!this.level().isClientSide()) {
             Vec3 pos = this.position();
-            this.level().explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.BLOCK);
+            if (GeneralConfig.ROCKET_SQUID_EXPLOSIONS_DESTROY.get()) {
+                this.level().explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.TNT);
+            } else {
+                this.level().explode(this, pos.x, pos.y, pos.z, 2.5F, Level.ExplosionInteraction.MOB);
+            }
 
             int noSacs = 3 + this.random.nextInt(3);
-            for (int x = 0; x < noSacs; ++x) {
+            for (int x = 0; x < noSacs; x++) {
                 ItemEntity entityitem = new ItemEntity(this.level(), pos.x, pos.y, pos.z, new ItemStack(ModItems.NITRO_SAC.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;
@@ -303,7 +307,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             }
 
             int noTubes = 2 + this.random.nextInt(3);
-            for (int x = 0; x < noTubes; ++x) {
+            for (int x = 0; x < noTubes; x++) {
                 ItemEntity entityitem = new ItemEntity(this.level(), pos.x, pos.y, pos.z, new ItemStack(ModItems.TURBO_TUBE.get()));
                 double motionX = this.random.nextDouble() * 1.5F * (this.random.nextBoolean() ? 1 : -1);
                 double motionY = -0.2;

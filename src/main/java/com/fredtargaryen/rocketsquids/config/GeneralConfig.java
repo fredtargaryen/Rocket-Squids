@@ -32,6 +32,8 @@ public class GeneralConfig {
 
     public static ForgeConfigSpec.IntValue BREED_COOLDOWN;
 
+    public static ForgeConfigSpec.BooleanValue ROCKET_SQUID_EXPLOSIONS_DESTROY;
+
     public static void init(ForgeConfigSpec.Builder serverBuilder) {
         DEFAULT_WHITELIST.add("minecraft:overworld");
         SPAWN_PROB = serverBuilder.comment("Weighted probability of a group of Rocket Squids spawning.")
@@ -56,5 +58,7 @@ public class GeneralConfig {
                 .defineInRange("worldgen.statue.frequency", 32, 8, 2000);
         BREED_COOLDOWN = serverBuilder.comment("How much time in ticks do Rocket Squids have to wait before being able to bread again.")
                 .defineInRange("entity.breeding.cooldown", 3600, 20, 72000);
+        ROCKET_SQUID_EXPLOSIONS_DESTROY = serverBuilder.comment("If Rocket Squids that the player ignites should destroy blocks when they explode")
+                .define("entity.explsion.destructive", true);
     }
 }
