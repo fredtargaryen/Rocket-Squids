@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.client.particle;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
@@ -125,7 +125,7 @@ public class SquidFireworkParticle {
             this.zd = 0.0;
             this.manager = manager;
             this.lifetime = 8;
-            this.explosions = RocketSquidsBase.firework.getList("Explosions", 10);
+            this.explosions = ModRocketSquids.firework.getList("Explosions", 10);
             if (this.explosions.isEmpty()) {
                 this.explosions = null;
             } else {
@@ -252,7 +252,7 @@ public class SquidFireworkParticle {
          * Creates a single particle.
          */
         private void createParticle(double x, double y, double z, double xMotion, double yMotion, double zMotion, int[] colorSpark, int[] colorSparkFade, boolean trail, boolean twinkle) {
-            SquidFireworkParticle.Spark fireworkparticle$spark = (SquidFireworkParticle.Spark) this.manager.createParticle((ParticleOptions) RocketSquidsBase.FIREWORK_TYPE.get(), x, y, z, xMotion, yMotion, zMotion);
+            SquidFireworkParticle.Spark fireworkparticle$spark = (SquidFireworkParticle.Spark) this.manager.createParticle((ParticleOptions) ModRocketSquids.FIREWORK_TYPE.get(), x, y, z, xMotion, yMotion, zMotion);
             assert fireworkparticle$spark != null;
             fireworkparticle$spark.setTrail(trail);
             fireworkparticle$spark.setTwinkle(twinkle);

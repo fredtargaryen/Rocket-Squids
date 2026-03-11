@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.content.item;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.fredtargaryen.rocketsquids.ModSounds;
 import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
@@ -35,7 +35,7 @@ public class ItemSqueleporter extends Item {
             ItemStack stack = playerIn.getItemInHand(handIn);
             if(stack.getItem() == ModItems.SQUELEPORTER_ACTIVE.get()) {
                 //The squeleporter is active so squid data is stored.
-                stack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(cap -> {
+                stack.getCapability(ModRocketSquids.SQUELEPORTER_CAP).ifPresent(cap -> {
                     CompoundTag squidTags = cap.getSquidData();
                     EntityType.create(squidTags, worldIn).ifPresent(entity -> {
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
@@ -46,7 +46,7 @@ public class ItemSqueleporter extends Item {
                         newSquid.addForce(squidTags.getDouble("force"));
                         Vec3 playerPos = playerIn.position();
                         newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
-                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> squidCap.loadNBT(cap.getSquidCapabilityData()));
+                        newSquid.getCapability(ModRocketSquids.ADULTCAP).ifPresent(squidCap -> squidCap.loadNBT(cap.getSquidCapabilityData()));
                         worldIn.addFreshEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);

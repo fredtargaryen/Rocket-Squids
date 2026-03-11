@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.network.NetworkEvent;

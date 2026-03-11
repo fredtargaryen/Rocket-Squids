@@ -21,7 +21,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -32,7 +31,6 @@ import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -43,18 +41,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Vector3f;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @Mod(value = MODID)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RocketSquidsBase {
+public class ModRocketSquids {
     // Get our logger
     public static final Logger LOGGER = LogManager.getLogger();
 
-    private static RocketSquidsBase INSTANCE;
-    public static RocketSquidsBase getInstance() {
+    private static ModRocketSquids INSTANCE;
+    public static ModRocketSquids getInstance() {
         return INSTANCE;
     }
 
@@ -72,7 +69,7 @@ public class RocketSquidsBase {
 
     /**
      * A custom firework that looks kinda like a Rocket Squid,
-     * setup is done in {@link RocketSquidsBase#setupFirework()}
+     * setup is done in {@link ModRocketSquids#setupFirework()}
      * Firework structure:
      * TagCompound          (firework)
      * |_TagList            (list, "Explosions")
@@ -85,8 +82,8 @@ public class RocketSquidsBase {
     public static final CompoundTag firework = new CompoundTag();
 
     /**
-     * Method resposible for setying up the rocket squid {@link RocketSquidsBase#firework},
-     * called from {@link RocketSquidsBase#postRegistration(FMLCommonSetupEvent) postRegistration()}.
+     * Method resposible for setying up the rocket squid {@link ModRocketSquids#firework},
+     * called from {@link ModRocketSquids#postRegistration(FMLCommonSetupEvent) postRegistration()}.
      */
     public static void setupFirework() {
         ListTag list = new ListTag();
@@ -101,9 +98,9 @@ public class RocketSquidsBase {
     }
 
     /**
-     * The constructor for {@link RocketSquidsBase}
+     * The constructor for {@link ModRocketSquids}
      */
-    public RocketSquidsBase(FMLJavaModLoadingContext context) {
+    public ModRocketSquids(FMLJavaModLoadingContext context) {
         INSTANCE = this;
 
         // Mod Event Bus

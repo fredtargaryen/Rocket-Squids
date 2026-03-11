@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.block;
 
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.fredtargaryen.rocketsquids.ModSounds;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.content.ModItems;
 import com.fredtargaryen.rocketsquids.content.worldgen.StatueData;
 import net.minecraft.core.BlockPos;
@@ -188,7 +188,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
                 StatueData.forWorld(fallingEntity.level()).removeStatue(startPos);
             }
         } else {
-            RocketSquidsBase.LOGGER.error("StatueBlock attempted to get the properties of an air block but was stopped.");
+            ModRocketSquids.LOGGER.error("StatueBlock attempted to get the properties of an air block but was stopped.");
         }
     }
 

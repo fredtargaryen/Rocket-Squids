@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.content.entity;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.fredtargaryen.rocketsquids.content.ModEntities;
 import com.fredtargaryen.rocketsquids.content.cap.entity.baby.BabyCap;
 import com.fredtargaryen.rocketsquids.content.entity.ai.BabyFlopAroundGoal;
@@ -29,7 +29,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
 
     public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, Level w) {
         super(type, w);
-        this.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
+        this.getCapability(ModRocketSquids.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
     }
 
     public static AttributeSupplier.Builder createAttributes() {

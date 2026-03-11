@@ -1,7 +1,7 @@
 package com.fredtargaryen.rocketsquids.content.entity;
 
 import com.fredtargaryen.rocketsquids.ModSounds;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.content.ModEntities;
@@ -73,7 +73,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     public RocketSquidEntity(Level par1World) {
         super(ModEntities.SQUID_TYPE.get(), par1World);
-        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> RocketSquidEntity.this.squidCap = cap);
+        this.getCapability(ModRocketSquids.ADULTCAP).ifPresent(cap -> RocketSquidEntity.this.squidCap = cap);
         this.breedable = true;
         this.riderRotated = false;
     }
@@ -239,7 +239,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 if (interactItem == ModItems.SQUELEPORTER_INACTIVE.get()) {
                     //The squeleporter is inactive so store the squid here
                     ItemStack newStack = ModItems.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
-                    newStack.getCapability(RocketSquidsBase.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
+                    newStack.getCapability(ModRocketSquids.SQUELEPORTER_CAP).ifPresent(squeleporterCap -> {
                         Vec3 pos = player.position();
                         player.level().playSound(null, pos.x, pos.y, pos.z, ModSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                         // Set squid data
@@ -247,7 +247,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                         this.addAdditionalSaveData(nbt);
                         squeleporterCap.setSquidData(nbt);
                         // Set squid capability data
-                        this.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap ->
+                        this.getCapability(ModRocketSquids.ADULTCAP).ifPresent(squidCap ->
                                 squeleporterCap.setSquidCapabilityData(squidCap.saveNBT(new CompoundTag())));
                         this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     });

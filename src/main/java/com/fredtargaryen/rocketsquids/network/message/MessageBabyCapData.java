@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import com.fredtargaryen.rocketsquids.content.cap.entity.baby.BabyCap;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -35,7 +35,7 @@ public class MessageBabyCapData {
             while(squidFinder.hasNext()) {
                 e = squidFinder.next();
                 if(e.getUUID().equals(this.squidToUpdate)) {
-                    e.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap ->
+                    e.getCapability(ModRocketSquids.BABYCAP).ifPresent(cap ->
                             // We can assume e is a baby rocket squid
                             cap.loadNBT(this.capData)
                     );

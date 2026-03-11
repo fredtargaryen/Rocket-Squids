@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids.content.cap.entity.adult;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.ModRocketSquids;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Random;
@@ -175,7 +175,7 @@ public class AdultCap {
         } catch (IndexOutOfBoundsException e) {
             this.brokenNotes++;
             if (!(this.brokenNotes > 3)) {
-                RocketSquidsBase.LOGGER.error("Encountered IndexOutOfBoundsException skipping");
+                ModRocketSquids.LOGGER.error("Encountered IndexOutOfBoundsException skipping");
             }
         }
     }

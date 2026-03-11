@@ -1,6 +1,5 @@
 package com.fredtargaryen.rocketsquids.content.item;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.content.entity.projectile.ThrownTubeEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
