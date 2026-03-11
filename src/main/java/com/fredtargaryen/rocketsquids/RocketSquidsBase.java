@@ -87,39 +87,45 @@ public class RocketSquidsBase {
     public RocketSquidsBase(FMLJavaModLoadingContext context) {
         INSTANCE = this;
 
+        // Mod Event Bus
         final IEventBus modEventBus = context.getModEventBus();
 
-        // Register the config
-        context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
+        // Register ourselves on the event bus for various stuff
+        MinecraftForge.EVENT_BUS.register(this);
 
+        // Register our sounds
         ModSounds.register(modEventBus);
 
+        // Register blocks and items
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
 
+        // Register entities + a spawn egg
         ModEntities.register(modEventBus);
 
+        // Register our creative tab and put items in it
         ModCreativeTabs.register(modEventBus);
 
+        // Register our particle along with it's factory
         PARTICLE_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerParticleFactories);
 
+        // Register our world gen features
         ModFeatures.register(modEventBus);
 
-        // init ModEventClient
+        // initilize our client side only stuff
         ModEventClient.init();
 
-        // Event bus
-        IEventBus loadingBus = context.getModEventBus();
-        // Register the setup method for modloading
-        loadingBus.addListener(this::postRegistration);
-        //loadingBus.addListener(this::clientSetup);
-
-        // Register ourselves for server, registry and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-
-        // Register and load the config
+        // Register and load the mod config
+        context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);
         Config.loadConfig(FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml"));
+
+
+        // Loading/Setup Event bus
+        IEventBus loadingBus = context.getModEventBus();
+
+        // Register our setup handler
+        loadingBus.addListener(this::postRegistration);
     }
 
     /**
@@ -129,7 +135,7 @@ public class RocketSquidsBase {
     public void postRegistration(FMLCommonSetupEvent event) {
         MessageHandler.init();
 
-        //Make the firework
+        // Make the firework
         ListTag list = new ListTag();
         CompoundTag f1 = new CompoundTag();
             f1.putBoolean("Flicker", false);
@@ -139,12 +145,12 @@ public class RocketSquidsBase {
         list.add(f1);
         firework.put("Explosions", list);
 
-        //Validate the config
+        // Validate the config
         if(GeneralConfig.MAX_GROUP_SIZE.get() < GeneralConfig.MIN_GROUP_SIZE.get()) {
             GeneralConfig.MAX_GROUP_SIZE = GeneralConfig.MIN_GROUP_SIZE;
         }
 
-        //Spawn info
+        // Spawn info
         SpawnPlacements.register(ModEntities.SQUID_TYPE.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(ModEntities.SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
