@@ -71,7 +71,8 @@ public class RocketSquidsBase {
     }
 
     /**
-     * A custom firework that looks like a Rocket Squid.
+     * A custom firework that looks kinda like a Rocket Squid,
+     * setup is done in {@link RocketSquidsBase#setupFirework()}
      * Firework structure:
      * TagCompound          (firework)
      * |_TagList            (list, "Explosions")
@@ -83,6 +84,10 @@ public class RocketSquidsBase {
      */
     public static final CompoundTag firework = new CompoundTag();
 
+    /**
+     * Method resposible for setying up the rocket squid {@link RocketSquidsBase#firework},
+     * called from {@link RocketSquidsBase#postRegistration(FMLCommonSetupEvent) postRegistration()}.
+     */
     public static void setupFirework() {
         ListTag list = new ListTag();
         CompoundTag f1 = new CompoundTag();
@@ -95,7 +100,9 @@ public class RocketSquidsBase {
         firework.put("Explosions", list);
     }
 
-
+    /**
+     * The constructor for {@link RocketSquidsBase}
+     */
     public RocketSquidsBase(FMLJavaModLoadingContext context) {
         INSTANCE = this;
 
