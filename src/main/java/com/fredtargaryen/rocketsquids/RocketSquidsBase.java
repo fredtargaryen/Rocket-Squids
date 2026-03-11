@@ -164,6 +164,11 @@ public class RocketSquidsBase {
     ///////////////////
     ///CAPABILIITIES///
     ///////////////////
+    public static final Capability<AdultCap> ADULTCAP = AdultCapProvider.ADULTCAP;
+    public static final Capability<BabyCap> BABYCAP = BabyCapProvider.BABYCAP;
+
+    public static final Capability<SqueleporterCap> SQUELEPORTER_CAP = SqueleporterCapProvider.SQUELEPORTER_CAP;
+
     @SubscribeEvent
     public void onRegisterCapabilitiesEvent(RegisterCapabilitiesEvent event) {
         event.register(AdultCap.class);
@@ -171,17 +176,12 @@ public class RocketSquidsBase {
         event.register(SqueleporterCap.class);
     }
 
-    public static final Capability<AdultCap> ADULTCAP = AdultCapProvider.ADULTCAP;
-    public static final Capability<BabyCap> BABYCAP = BabyCapProvider.BABYCAP;
-    public static final Capability<SqueleporterCap> SQUELEPORTER_CAP = SqueleporterCapProvider.SQUELEPORTER_CAP;
-
     @SubscribeEvent
     public void onEntityAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> evt) {
         Entity e = evt.getObject();
         if (e instanceof RocketSquidEntity) {
             evt.addCapability(DataReference.ADULT_CAP_LOCATION, new AdultCapProvider());
-        }
-        else if (e instanceof BabyRocketSquidEntity) {
+        } else if (e instanceof BabyRocketSquidEntity) {
             evt.addCapability(DataReference.BABY_CAP_LOCATION, new BabyCapProvider());
         }
     }
