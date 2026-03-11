@@ -24,10 +24,12 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
     public ThrownSacEntity(final EntityType<? extends ThrownSacEntity> type, final Level world) {
         super(type, world);
     }
+
     public ThrownSacEntity(LivingEntity elb, Level w)
     {
         super(ModEntities.SAC_TYPE.get(), elb, w);
     }
+
     @SuppressWarnings("unused")
     public ThrownSacEntity(PlayMessages.SpawnEntity spawn, Level world) {
         this(ModEntities.SAC_TYPE.get(), world);

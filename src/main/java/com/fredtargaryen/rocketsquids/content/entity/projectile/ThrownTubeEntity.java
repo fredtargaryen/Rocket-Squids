@@ -19,10 +19,12 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
     public ThrownTubeEntity(EntityType<? extends ThrownTubeEntity> type, Level world) {
         super(type, world);
     }
+
     public ThrownTubeEntity(LivingEntity elb, Level world)
     {
         super(ModEntities.TUBE_TYPE.get(), elb, world);
     }
+
     public ThrownTubeEntity(PlayMessages.SpawnEntity spawn, Level world) {
         this(ModEntities.TUBE_TYPE.get(), world);
     }
