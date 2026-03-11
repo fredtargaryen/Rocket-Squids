@@ -130,7 +130,7 @@ public class ModRocketSquids {
         ModFeatures.register(modEventBus);
 
         // Initilize our client handler (its basicly an entry point)
-        ModClientHandler.init();
+        ModClientHandler.init(context);
 
         // Register and load the mod config
         context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);

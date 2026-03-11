@@ -21,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -30,16 +31,19 @@ import java.util.Iterator;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
-@SuppressWarnings("removal")
+
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientHandler {
-    public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::onClientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::registerRenderers);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::registerLayerDefinitions);
+    public static void init(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
+
+        modEventBus.addListener(ModClientHandler::onClientSetup);
+        modEventBus.addListener(ModClientHandler::registerRenderers);
+        modEventBus.addListener(ModClientHandler::registerLayerDefinitions);
     }
 
+    @SuppressWarnings("removal")
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         // register block renderers
