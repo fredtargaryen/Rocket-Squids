@@ -21,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,16 +44,18 @@ public class ModClientHandler {
         modEventBus.addListener(ModClientHandler::registerLayerDefinitions);
     }
 
-    @SuppressWarnings("removal")
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
+
+    }
+
+    @SuppressWarnings("removal")
+    @SubscribeEvent
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // register block renderers
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.BLOCK_CONCH.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(ModBlocks.BLOCK_STATUE.get(), RenderType.cutoutMipped());
-    }
 
-    @SubscribeEvent
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // register normal entity renderers
         event.registerEntityRenderer(ModEntities.SAC_TYPE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.TUBE_TYPE.get(), ThrownItemRenderer::new);
