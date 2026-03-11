@@ -104,8 +104,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 	public void aiStep() {
         super.aiStep();
 
-        //Do on client and server
-        //Fraction of distance to target rotation to rotate by each server tick
+        // This is ran on both the Client and the Server
+        // Fraction of distance to target rotation to rotate by each server tick
         double rotateSpeed;
         if(this.isInWater()) {
             Vec3 motion = this.getDeltaMovement();
