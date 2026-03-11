@@ -1,6 +1,6 @@
 package com.fredtargaryen.rocketsquids;
 
-import com.fredtargaryen.rocketsquids.client.event.ModEventClient;
+import com.fredtargaryen.rocketsquids.client.event.ModClientHandler;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
@@ -129,8 +129,8 @@ public class ModRocketSquids {
         // Register our world gen features
         ModFeatures.register(modEventBus);
 
-        // Initilize our client side only stuff
-        ModEventClient.init();
+        // Initilize our client handler (its basicly an entry point)
+        ModClientHandler.init();
 
         // Register and load the mod config
         context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG_SPEC);

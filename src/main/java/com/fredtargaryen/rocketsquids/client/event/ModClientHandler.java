@@ -33,11 +33,11 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 @SuppressWarnings("removal")
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class ModEventClient {
+public class ModClientHandler {
     public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::onClientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::registerRenderers);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModEventClient::registerLayerDefinitions);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::onClientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::registerRenderers);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModClientHandler::registerLayerDefinitions);
     }
 
     @SubscribeEvent

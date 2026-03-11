@@ -22,7 +22,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static com.fredtargaryen.rocketsquids.client.event.ModEventClient.SQUID_BODY_LAYER;
+import static com.fredtargaryen.rocketsquids.client.event.ModClientHandler.SQUID_BODY_LAYER;
 
 @SuppressWarnings("removal")
 public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<RocketSquidEntity>> {
