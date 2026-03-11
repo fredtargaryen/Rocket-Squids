@@ -1,6 +1,47 @@
 {
-    "parent": "item/generated",
+	"format_version": "1.9.0",
+	"credit": "Created by barnabeepickle reposed with Blockbench",
+	"parent": "item/generated",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 3, 1],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 3, 1],
+			"scale": [0.55, 0.55, 0.55]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 90, 15],
+			"translation": [1.13, 3.2, 1.5],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -90, -15],
+			"translation": [1.13, 3.2, 1.5],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"ground": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [0, -180, 0]
+		},
+		"head": {
+			"translation": [0, 13, 7]
+		},
+		"on_shelf": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 0, -1.5],
+			"scale": [1.5, 1.5, 1.5]
+		}
+	},
     "textures": {
-        "layer0": "rocketsquids:item/nitro_ink_sac"
+        "layer0": "item/ink_sac",
+        "layer1": "rocketsquids:item/nitro_ink_sac_overlay"
     }
 }
