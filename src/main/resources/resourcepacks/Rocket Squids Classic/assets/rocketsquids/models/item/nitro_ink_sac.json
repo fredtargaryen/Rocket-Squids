@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "rocketsquidsft:items/nitroinksac"
+        "layer0": "rocketsquids:items/nitroinksac"
     }
 }
