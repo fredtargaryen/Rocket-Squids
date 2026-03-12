@@ -12,6 +12,12 @@
     },
     "facing=west": {
       "model": "rocketsquids:block/conch", "y": 180
+    },
+    "facing=up": {
+      "model": "rocketsquids:block/conch"
+    },
+    "facing=down": {
+      "model": "rocketsquids:block/conch"
     }
   }
 }
