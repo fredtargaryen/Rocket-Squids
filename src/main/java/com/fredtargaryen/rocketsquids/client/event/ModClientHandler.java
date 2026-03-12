@@ -62,19 +62,13 @@ public class ModClientHandler {
 
     }
 
-    public static ResourceLocation SQUAVIGATOR_IN_HAND;
 
-    static {
-        assert ModItems.SQUAVIGATOR.getId() != null;
-        //noinspection removal
-        SQUAVIGATOR_IN_HAND = new ResourceLocation(MODID, ModItems.SQUAVIGATOR.getId().getPath() + "_in_hand");
-    }
-
-
+    @SuppressWarnings("removal")
     @SubscribeEvent // on the mod event bus only on the physical client
     public static void registerAdditionalBakedModels(ModelEvent.RegisterAdditional event) {
         assert ModItems.SQUAVIGATOR.getId() != null;
-        event.register(SQUAVIGATOR_IN_HAND);
+        ResourceLocation squavigator_in_hand = new ResourceLocation(MODID,  "item/" + ModItems.SQUAVIGATOR.getId().getPath() + "_in_hand");
+        event.register(squavigator_in_hand);
     }
 
     @SubscribeEvent
