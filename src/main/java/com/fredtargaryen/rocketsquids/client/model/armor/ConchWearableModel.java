@@ -15,7 +15,7 @@ public class ConchWearableModel extends GeoModel<ItemConch> {
 
     @Override
     public ResourceLocation getTextureResource(ItemConch object) {
-        return new ResourceLocation(MODID, "textures/models/armor/conch_armor_model.png");
+        return new ResourceLocation(MODID, "textures/models/armor/conch_item_1_layer_1.png");
     }
 
     @Override
