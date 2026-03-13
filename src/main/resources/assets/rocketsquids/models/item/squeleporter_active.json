@@ -1,15 +1,15 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench by barnabeepickle",
-	"parent": "item/generated",
 	"textures": {
 		"0": "rocketsquids:item/squeleporter/outer_ring",
 		"1": "rocketsquids:item/squeleporter/active/cube",
 		"2": "rocketsquids:item/squeleporter/active/cube_outer",
-		"particle": "rocketsquids:item/squeleporter/outer_ring"
+		"particle": "rocketsquids:item/squeleporter/active/cube"
 	},
 	"elements": [
 		{
+			"name": "cube",
 			"from": [6, 0, 6],
 			"to": [10, 4, 10],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2.125, 8]},
