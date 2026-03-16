@@ -17,9 +17,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.FolderRepositorySource;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +31,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import java.nio.file.Path;
 import java.util.Iterator;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
@@ -46,9 +42,7 @@ public class ModClientHandler {
     public static void init(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
-        // This adds a new place for Minecraft to look for resourcepacks allowing us to add built-in resourcepacks
-        Path resourcePackPath = context.getContainer().getModInfo().getOwningFile().getFile().getFilePath().resolve("resourcepacks");
-        Minecraft.getInstance().getResourcePackRepository().addPackFinder(new FolderRepositorySource(resourcePackPath, PackType.CLIENT_RESOURCES, PackSource.BUILT_IN));
+
 
         modEventBus.addListener(ModClientHandler::onClientSetup);
         modEventBus.addListener(ModClientHandler::registerRenderers);
