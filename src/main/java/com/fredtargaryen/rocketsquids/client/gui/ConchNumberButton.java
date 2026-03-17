@@ -16,6 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class ConchNumberButton extends ExtendedButton {
     private final int id;
     private final Minecraft mc;
@@ -75,20 +77,12 @@ public class ConchNumberButton extends ExtendedButton {
         }
 
         this.drawButton(guiGraphics, this.getX(), this.getY(), red, green, blue);
-        int j = ColorHelper.getColor(224, 224, 224);
 
-        if (packedFGColor != 0) {
-            j = packedFGColor;
-        } else if (!this.active) {
-            j = ColorHelper.getColor(160, 160, 160);
-        } else if (this.isHovered) {
-            j = ColorHelper.getColor(255, 255, 160);
-        }
-
-        guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
         guiGraphics.drawCenteredString(fontrenderer,
                 Component.literal("" + (this.id == 9 ? 0: this.id + 1)),
-                this.getX() + this.width / 2, this.getY() + 34, j);
+                this.getX() + this.width / 2, this.getY() + 34, ColorHelper.getColor(255, 255, 255));
     }
 
     private void drawButton(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
