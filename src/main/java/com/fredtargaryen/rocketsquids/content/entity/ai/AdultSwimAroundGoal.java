@@ -61,7 +61,7 @@ public class AdultSwimAroundGoal extends Goal {
             //Rider rotations are clamped to [-PI, PI]; squid rotations are not.
             //Therefore need to work in terms of this range, or risk squids spinning ridiculous amounts if they have
             //turned around many times before being ridden.
-            Entity pass = this.squid.getControllingPassenger();
+            Entity pass = this.squid.getFirstPassenger();
             assert pass != null;
             float pp = (float) ((pass.getXRot() + 90.0F) * Math.PI / 180.0F);
             float py = (float) (pass.getYHeadRot() * Math.PI / 180.0F);
@@ -203,7 +203,7 @@ public class AdultSwimAroundGoal extends Goal {
                 if (randomInt == 0) {
                     if(!this.squid.areBlocksInWay()) this.squid.setShaking(true);
                 } else {
-                    this.doTurn(this.squid.getControllingPassenger() instanceof Player, this.squid.areBlocksInWay());
+                    this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
                 }
             }
         }

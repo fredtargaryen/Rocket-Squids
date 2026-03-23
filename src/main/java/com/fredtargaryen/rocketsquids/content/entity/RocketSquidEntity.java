@@ -325,7 +325,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public void remove(@NotNull RemovalReason reason) {
         if (this.getBlasting()) {
-            Entity passenger = this.getControllingPassenger();
+            Entity passenger = this.getFirstPassenger();
             if (passenger != null) {
                 Vec3 motion = passenger.getDeltaMovement();
                 passenger.setDeltaMovement(motion.x * 2.5, motion.y * 2.5, motion.z * 2.5);
@@ -363,7 +363,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      * @param obstacle The Entity that is colliding with the rocket squid.
      */
     public void push(@NotNull Entity obstacle) {
-        Entity passenger = this.getControllingPassenger();
+        Entity passenger = this.getFirstPassenger();
         if(passenger != obstacle) {
             // Obstacle is not the rider, so apply collision
             if (!obstacle.noPhysics && !this.noPhysics) {
@@ -496,13 +496,12 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         }
     }
 
+    /**
+     * Keep this null because Rocket Squids are not "controlled" by the usual means
+     */
     @Nullable
     public LivingEntity getControllingPassenger() {
-        List<Entity> passengers = this.getPassengers();
-        if (passengers.isEmpty()) return null;
-        Entity firstPassenger = passengers.get(0);
-        if (!(firstPassenger instanceof LivingEntity)) return null;
-        return (LivingEntity) firstPassenger;
+        return null;
     }
 
     public boolean hasPassengers() {
