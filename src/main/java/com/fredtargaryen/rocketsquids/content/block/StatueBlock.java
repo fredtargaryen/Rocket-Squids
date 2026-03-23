@@ -170,7 +170,7 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
             // North is negative Z I think
             squav.setDeltaMovement(0.0, 0.05, -0.1);
             world.addFreshEntity(squav);
-            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUAVIGATOR.get().getDefaultInstance());
+            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
             squel.setDeltaMovement(0.0, 0.05, -0.1);
             world.addFreshEntity(squel);
         }
