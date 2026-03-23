@@ -499,27 +499,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Nullable
     public LivingEntity getControllingPassenger() {
         List<Entity> passengers = this.getPassengers();
-        if(passengers.isEmpty()) {
-            return null;
-        }
-        else {
-            return this.getPassengers().get(0).getControllingPassenger();
-        }
+        if (passengers.isEmpty()) return null;
+        Entity firstPassenger = passengers.get(0);
+        if (!(firstPassenger instanceof LivingEntity)) return null;
+        return (LivingEntity) firstPassenger;
     }
 
     public boolean hasPassengers() {
         return !this.getPassengers().isEmpty();
-    }
-
-    public boolean hasVIPRider() {
-        Entity passenger = this.getControllingPassenger();
-        if (passenger instanceof Player) {
-            return ((Player) passenger).getMainHandItem()
-                        .getItem() == ModItems.SQUAVIGATOR.get()
-                    || ((Player) passenger)
-                        .getOffhandItem().getItem() == ModItems.SQUAVIGATOR.get();
-        }
-        return false;
     }
 
     /**

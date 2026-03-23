@@ -26,7 +26,6 @@ public class ModCreativeTabs {
                 output.accept(ModItems.NITRO_SAC.get());
                 output.accept(ModItems.TURBO_TUBE.get());
                 output.accept(ModItems.ITEM_STATUE.get());
-                output.accept(ModItems.SQUAVIGATOR.get());
                 output.accept(ModItems.SQUELEPORTER_INACTIVE.get());
                 output.accept(ModEntities.SQUID_SPAWN_EGG.get());
             })
