@@ -50,3 +50,13 @@ There are no plans for designing any APIs or other compatibility features at the
 ### Pull Requests
 
 As with most Open Source Projects and Software Pull Requests are welcome and if a maintainer is unable to accept them you can just fork the mod yourself, though the dev(s) will try to tend to them.
+
+### Copyright Notice
+
+Unless otherwise stated the following notice applies to all code within this project. See `mod_authors` in `gradle.properties` for the full list of contributors.
+```
+Copyright 2016-2022, 2025-2026 FredTargaryen and contributors
+Rocket Squids is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Rocket Squids is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along with Rocket Squids. If not, see <https://www.gnu.org/licenses/>.
+```
