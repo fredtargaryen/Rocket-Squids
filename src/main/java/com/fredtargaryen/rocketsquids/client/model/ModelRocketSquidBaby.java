@@ -1,3 +1,5 @@
+// Copyright 2016-2022, 2025-2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.content.entity.BabyRocketSquidEntity;

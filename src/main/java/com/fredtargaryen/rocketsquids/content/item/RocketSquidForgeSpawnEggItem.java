@@ -1,3 +1,5 @@
+// Copyright 2025-2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.content.item;
 
 import net.minecraft.server.level.ServerLevel;
