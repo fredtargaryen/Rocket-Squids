@@ -1,3 +1,5 @@
+// Copyright 2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.content.item.custom;
 
 import net.minecraft.world.entity.Entity;

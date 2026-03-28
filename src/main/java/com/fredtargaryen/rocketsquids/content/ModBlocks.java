@@ -1,3 +1,5 @@
+// Copyright 2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.content;
 
 import com.fredtargaryen.rocketsquids.content.block.ConchBlock;

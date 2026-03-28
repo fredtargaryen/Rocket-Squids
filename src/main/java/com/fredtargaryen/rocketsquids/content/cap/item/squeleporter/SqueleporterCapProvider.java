@@ -1,3 +1,5 @@
+// Copyright 2016-2022, 2025-2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.content.cap.item.squeleporter;
 
 import net.minecraft.core.Direction;
