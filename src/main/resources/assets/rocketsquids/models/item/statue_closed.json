@@ -1,0 +1,42 @@
+{
+  "parent": "rocketsquids:block/statue_closed",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 3, 1],
+      "scale": [0.275, 0.275, 0.275]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 3, 1],
+      "scale": [0.275, 0.275, 0.275]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, 90, 15],
+      "translation": [1.13, 3.2, 1.5],
+      "scale": [0.34, 0.34, 0.34]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -90, -15],
+      "translation": [1.13, 3.2, 1.5],
+      "scale": [0.34, 0.34, 0.34]
+    },
+    "ground": {
+      "translation": [0, 2, 0],
+      "scale": [0.25, 0.25, 0.25]
+    },
+    "gui": {
+      "translation": [0, -2.75, 0],
+      "rotation": [22.5, 135, 0],
+      "scale": [0.4, 0.4, 0.4]
+    },
+    "head": {
+      "translation": [0, 13, 7]
+    },
+    "on_shelf": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 0, -1.5],
+      "scale": [1.5, 1.5, 1.5]
+    }
+  }
+}

@@ -1,5 +1,3 @@
-// Copyright 2026 FredTargaryen and contributors
-// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.content;
 
 import net.minecraft.core.registries.Registries;
@@ -27,7 +25,8 @@ public class ModCreativeTabs {
                 output.accept(ModItems.ITEM_CONCH3.get());
                 output.accept(ModItems.NITRO_SAC.get());
                 output.accept(ModItems.TURBO_TUBE.get());
-                output.accept(ModItems.ITEM_STATUE.get());
+                output.accept(ModItems.ITEM_STATUE_CLOSED.get());
+                output.accept(ModItems.ITEM_STATUE_OPEN.get());
                 output.accept(ModItems.SQUELEPORTER_INACTIVE.get());
                 output.accept(ModEntities.SQUID_SPAWN_EGG.get());
             })

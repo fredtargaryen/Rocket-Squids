@@ -33,15 +33,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
-import java.util.Objects;
 import java.util.function.Consumer;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN;
+import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
+import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
 public class ItemConch extends GeoModArmorItem {
     public static final ArmorMaterial MATERIAL_CONCH = new ArmorMaterial() {
@@ -92,7 +95,7 @@ public class ItemConch extends GeoModArmorItem {
     }
 
     /**
-     * Called when the equipped item is right clicked.
+     * Called when the equipped item is right clicked, but not when interacting with a block.
      */
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(
@@ -109,25 +112,17 @@ public class ItemConch extends GeoModArmorItem {
      */
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
-        Level worldIn = context.getLevel();
+        Level level = context.getLevel();
         Player player = context.getPlayer();
-        BlockPos pos = context.getClickedPos();
-        Direction facing = context.getClickedFace();
-        if(!worldIn.isClientSide && Objects.requireNonNull(player).isCrouching()) {
-            BlockState iblockstate = worldIn.getBlockState(pos);
-            Block block = iblockstate.getBlock();
-            if (block == ModBlocks.BLOCK_STATUE.get()) {
-                if (iblockstate.getValue(BlockStateProperties.FACING) == Direction.UP) {
-                    StatueData.forWorld(worldIn).removeStatue(pos);
-                    if (facing == Direction.NORTH) {
-                        worldIn.setBlockAndUpdate(pos, iblockstate.setValue(BlockStateProperties.FACING, Direction.NORTH));
-                        context.getItemInHand().grow(-1);
-                        ((StatueBlock) block).dispenseGift(worldIn, pos, facing);
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-            } else {
-                if (!iblockstate.canBeReplaced()) {
+        assert player != null;
+        if (!level.isClientSide) {
+            BlockPos pos = context.getClickedPos();
+            Direction facing = context.getClickedFace();
+            BlockState state = level.getBlockState(pos);
+            Block block = state.getBlock();
+            if (player.isCrouching()) {
+                // Assume just trying to place the conch block
+                if (!state.canBeReplaced()) {
                     pos = pos.relative(facing);
                 }
 
@@ -141,23 +136,36 @@ public class ItemConch extends GeoModArmorItem {
                     float hitZ = (float) hitVec.z;
                     BlockState conchstate = ModBlocks.BLOCK_CONCH.get().getStateForPlacement(blockContext);
 
-                    if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, conchstate)) {
-                        BlockState iblockstate1 = worldIn.getBlockState(pos);
-                        SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
-                        worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                    if (placeBlockAt(itemstack, player, level, pos, facing, hitX, hitY, hitZ, conchstate)) {
+                        BlockState iblockstate1 = level.getBlockState(pos);
+                        SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, level, pos, player);
+                        level.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                         itemstack.shrink(1);
                     }
 
-                    return InteractionResult.SUCCESS;
-                } else {
-                    return InteractionResult.FAIL;
+                    return InteractionResult.CONSUME;
+                }
+            } else {
+                // If the player has right-clicked a statue, activate it
+                if (block == ModBlocks.BLOCK_STATUE.get()) {
+                    if (!state.getValue(OPEN)) {
+                        if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
+                            BlockState stateBelow = level.getBlockState(pos.below());
+                            if (stateBelow.getBlock() == ModBlocks.BLOCK_STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
+                                pos = pos.below();
+                                state = stateBelow;
+                            }
+                        }
+                        StatueData.forWorld(level).removeStatue(pos);
+                        level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
+                        context.getItemInHand().grow(-1);
+                        ((StatueBlock) block).dispenseGift(level, pos, facing);
+                        return InteractionResult.CONSUME;
+                    }
                 }
             }
         }
-        else {
-            assert context.getPlayer() != null;
-            this.use(context.getLevel(), context.getPlayer(), InteractionHand.MAIN_HAND);
-        }
+
         return InteractionResult.FAIL;
     }
 
@@ -165,9 +173,9 @@ public class ItemConch extends GeoModArmorItem {
      * Called to actually place the block, after the location is determined
      * and all permission checks have been made.
      *
-     * @param stack The item stack that was used to place the block. This can be changed inside the method.
+     * @param stack  The item stack that was used to place the block. This can be changed inside the method.
      * @param player The player who is placing the block. Can be null if the block is not being placed by a player.
-     * @param side The side the player (or machine) right-clicked on.
+     * @param side   The side the player (or machine) right-clicked on.
      */
     @SuppressWarnings("unused")
     public boolean placeBlockAt(ItemStack stack, Player player, Level world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, BlockState newState) {
@@ -178,7 +186,7 @@ public class ItemConch extends GeoModArmorItem {
             ModBlocks.BLOCK_CONCH.get().setPlacedBy(world, pos, state, player, stack);
 
             if (player instanceof ServerPlayer)
-                CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, pos, stack);
+                CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, pos, stack);
         }
 
         return true;
