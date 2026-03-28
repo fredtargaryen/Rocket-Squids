@@ -37,18 +37,6 @@ public class ItemConch3 extends Item {
         return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void appendHoverText(
-            @NotNull ItemStack stack,
-            @Nullable Level level,
-            @NotNull List<Component> tooltipComponents,
-            @NotNull TooltipFlag isAdvanced
-    ) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        tooltipComponents.add(Component.translatable("item.rocketsquids.conch_item_3.lore"));
-    }
-
     /**
      * Returns true if this item has an enchantment glint. By default, this returns
      * <code>stack.isItemEnchanted()</code>, but other items can override it (for instance, written books always return
