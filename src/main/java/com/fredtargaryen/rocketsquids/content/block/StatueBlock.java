@@ -168,11 +168,8 @@ public class StatueBlock extends FallingBlock implements SimpleWaterloggedBlock 
         world.playSound(null, pos, ModSounds.CONCH_NOTES[26],SoundSource.BLOCKS, 1.0F, 1.0F);
         world.playSound(null, pos, ModSounds.CONCH_NOTES[30],SoundSource.BLOCKS, 1.0F, 1.0F);
         if (Objects.requireNonNull(facing) == Direction.NORTH) {
-            ItemEntity squav = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUAVIGATOR.get().getDefaultInstance());
+            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
             // North is negative Z I think
-            squav.setDeltaMovement(0.0, 0.05, -0.1);
-            world.addFreshEntity(squav);
-            ItemEntity squel = new ItemEntity(world, x + 0.5D, y + 0.5D, z - 0.5D, ModItems.SQUAVIGATOR.get().getDefaultInstance());
             squel.setDeltaMovement(0.0, 0.05, -0.1);
             world.addFreshEntity(squel);
         }
