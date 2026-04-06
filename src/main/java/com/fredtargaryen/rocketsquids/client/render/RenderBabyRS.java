@@ -4,7 +4,7 @@ package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquidBaby;
-import com.fredtargaryen.rocketsquids.content.entity.BabyRocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-import static com.fredtargaryen.rocketsquids.client.event.ModClientHandler.BABY_SQUID_BODY_LAYER;
+import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.BABY_SQUID_BODY_LAYER;
 
 @SuppressWarnings("removal")
 public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, ModelRocketSquidBaby<BabyRocketSquidEntity>> {
@@ -47,11 +47,10 @@ public class RenderBabyRS extends MobRenderer<BabyRocketSquidEntity, ModelRocket
     ) {
         float exactPitch = (float) (Mth.lerp(partialTicks, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
         float exactYaw = (float) (Mth.lerp(partialTicks, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
-        //0.5F for adults
+
         matrixStack.translate(0, 0.15, 0);
         matrixStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
         matrixStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
-        //1.2F for adults
         matrixStack.translate(0f, -1.3f, 0f);
     }
 

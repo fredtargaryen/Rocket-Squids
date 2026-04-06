@@ -164,5 +164,10 @@
   "conchb5":
   {
     "sounds": [{"name": "rocketsquids:conchb5","stream": false}]
+  },
+  "recognition":
+  {
+    "sounds": [{"name": "rocketsquids:recognition","stream": false}],
+    "subtitle": "subs.rocketsquids.recognition"
   }
 }

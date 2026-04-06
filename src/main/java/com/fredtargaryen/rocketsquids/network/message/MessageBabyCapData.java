@@ -2,8 +2,8 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.ModRocketSquids;
-import com.fredtargaryen.rocketsquids.content.cap.entity.baby.BabyCap;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.level.capability.entity.baby.BabyCap;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -14,6 +14,10 @@ import java.util.Iterator;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/**
+ * Syncs the capability for baby rocket squids.
+ * Direction: server to client
+ */
 public class MessageBabyCapData {
     private UUID squidToUpdate;
     private CompoundTag capData;
@@ -37,7 +41,7 @@ public class MessageBabyCapData {
             while(squidFinder.hasNext()) {
                 e = squidFinder.next();
                 if(e.getUUID().equals(this.squidToUpdate)) {
-                    e.getCapability(ModRocketSquids.BABYCAP).ifPresent(cap ->
+                    e.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap ->
                             // We can assume e is a baby rocket squid
                             cap.loadNBT(this.capData)
                     );

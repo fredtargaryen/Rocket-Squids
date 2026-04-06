@@ -57,10 +57,10 @@ public class GeneralConfig {
         STATUE_BLACKLIST = serverBuilder.comment("The list of dimensions where statues cannot appear.")
                 .defineList("worldgen.statue.blacklist", DEFAULT_BLACKLIST, string -> true);
         STATUE_FREQUENCY = serverBuilder.comment("One statue will appear in every nxn chunk area. Changing this in an existing world is not recommended.")
-                .defineInRange("worldgen.statue.frequency", 32, 8, 2000);
-        BREED_COOLDOWN = serverBuilder.comment("How much time in ticks do Rocket Squids have to wait before being able to bread again.")
+                .defineInRange("worldgen.statue.frequency", 4, 1, 2000);
+        BREED_COOLDOWN = serverBuilder.comment("How much time in ticks do Rocket Squids have to wait before being able to breed again.")
                 .defineInRange("entity.breeding.cooldown", 3600, 20, 72000);
-        ROCKET_SQUID_EXPLOSIONS_DESTROY = serverBuilder.comment("If Rocket Squids that the player ignites should destroy blocks when they explode")
-                .define("entity.explsion.destructive", true);
+        ROCKET_SQUID_EXPLOSIONS_DESTROY = serverBuilder.comment("If Rocket Squids that have been set on fire should destroy blocks when they explode.")
+                .define("entity.explosion.destructive", true);
     }
 }

@@ -2,12 +2,17 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.client.event.ModClientHandler;
+import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Play a note from the client, but the note is sung by a squid, so it should only be heard by a client player if
+ * they're close enough and wearing the conch.
+ * Direction: server to client
+ */
 public class MessageSquidNote {
     private byte note;
 
@@ -22,7 +27,7 @@ public class MessageSquidNote {
 
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ModClientHandler.playNoteFromMessageConchNeeded(this.note);
+            ClientHandler.playNoteFromMessageConchNeeded(this.note);
         });
         ctx.get().setPacketHandled(true);
     }

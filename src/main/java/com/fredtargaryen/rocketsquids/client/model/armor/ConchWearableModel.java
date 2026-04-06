@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model.armor;
 
-import com.fredtargaryen.rocketsquids.content.item.ItemConch;
+import com.fredtargaryen.rocketsquids.level.item.ItemConch;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

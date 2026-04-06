@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -12,6 +12,10 @@ import java.util.Iterator;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/**
+ * Creates the exploded rocket squid firework effect.
+ * Direction: server to client
+ */
 public class MessageSquidFirework {
     private UUID uuid;
 

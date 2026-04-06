@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.content.entity.BabyRocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -41,7 +41,7 @@ public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends Hiera
         MeshDefinition meshDef = new MeshDefinition();
         PartDefinition root = meshDef.getRoot();
 
-        // making the head/body
+        // make the head/body
         root.addOrReplaceChild("head",
                 CubeListBuilder.create()
                         .texOffs(0, 6)
@@ -49,17 +49,17 @@ public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends Hiera
                 PartPose.offset(0.0F, 0.0F, 0.0F)
         );
 
-        // make the tenticles
+        // make the tentacles
         CubeListBuilder tentCubeList = CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F);
 
         for (int i = 0; i < tentacles; i++) {
-            double doublethink = i * Math.PI * 2.0 / 8.0;
-            float floatx = (float)Math.cos(doublethink) * 1.5F;
+            double tentacleYRot = i * Math.PI * 2.0 / 8.0;
+            float floatx = (float)Math.cos(tentacleYRot) * 1.5F;
             float floaty = 4.0F;
-            float floatz = (float)Math.sin(doublethink) * 1.5F;
-            doublethink = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
-            root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) doublethink, 0.0F));
+            float floatz = (float)Math.sin(tentacleYRot) * 1.5F;
+            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
+            root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 
         return LayerDefinition.create(meshDef, 32, 32);

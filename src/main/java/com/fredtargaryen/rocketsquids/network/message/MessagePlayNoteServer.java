@@ -2,18 +2,24 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.network.message;
 
-import com.fredtargaryen.rocketsquids.ModRocketSquids;
-import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
+/**
+ * Plays a note on the server, for rocket squids to respond to if appropriate.
+ * This causes a {@link MessagePlayNoteClient} to be sent to all players around.
+ * Direction: client to server
+ */
 public class MessagePlayNoteServer {
     private byte note;
     private double x;
@@ -35,19 +41,17 @@ public class MessagePlayNoteServer {
     public void onMessage(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
-            if(note > -1 && note < 36) {
+            if (note > -1 && note < 36) {
                 MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> {
                     assert player != null;
-                    return new PacketDistributor.TargetPoint(this.x, this.y, this.z, 64.0, player.level().dimension());
+                    return new PacketDistributor.TargetPoint(this.x, this.y, this.z, DataReference.PLAYER_HEAR_RANGE, player.level().dimension());
                 }), new MessagePlayNoteClient(this.note));
                 assert player != null;
-                // get the Level, cast to ServerLevel, get all of the entities in the level
                 Iterable<Entity> entityIterable = ((ServerLevel) player.level()).getEntities().getAll();
-                // for each entity in the level we check if its a rocket squid, then make sure its with in 100 blocks
                 for (Entity e : entityIterable) {
                     if (e instanceof RocketSquidEntity) {
-                        if (e.position().distanceTo(player.position()) > 100.0D) {
-                            e.getCapability(ModRocketSquids.ADULTCAP).ifPresent(cap -> cap.processNote(this.note));
+                        if (e.position().distanceTo(player.position()) <= DataReference.SQUID_LISTEN_RANGE) {
+                            e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note));
                         }
                     }
                 }

@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.content.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -45,7 +45,7 @@ public class ModelRocketSquid<T extends RocketSquidEntity> extends HierarchicalM
         MeshDefinition meshDef = new MeshDefinition();
         PartDefinition root = meshDef.getRoot();
 
-        // making the head/body
+        // make the head/body
         root.addOrReplaceChild("head",
                 CubeListBuilder.create()
                         .texOffs(0, 30)
@@ -53,17 +53,17 @@ public class ModelRocketSquid<T extends RocketSquidEntity> extends HierarchicalM
                 PartPose.offset(0.0F, 0.0F, 0.0F)
         );
 
-        // make the tenticles
+        // make the tentacles
         CubeListBuilder tentCubeList = CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-1.0F, -1.0F, -1.0F, 2.0F, 20.0F, 2.0F);
 
         for (int i = 0; i < tentacles; i++) {
-            double doublethink = i * Math.PI * 2.0 / 8.0;
-            float floatx = (float)Math.cos(doublethink) * 5.0F;
+            double tentacleYRot = i * Math.PI * 2.0 / 8.0;
+            float floatx = (float)Math.cos(tentacleYRot) * 5.0F;
             float floaty = 9.0F;
-            float floatz = (float)Math.sin(doublethink) * 5.0F;
-            doublethink = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
-            root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) doublethink, 0.0F));
+            float floatz = (float)Math.sin(tentacleYRot) * 5.0F;
+            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
+            root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 
         // make the saddle
