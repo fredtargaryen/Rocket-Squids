@@ -29,25 +29,32 @@ public class ConchNumberButton extends ExtendedButton {
     @SuppressWarnings("removal")
     private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID, "textures/gui/numbernote.png");
 
+    public boolean playSound;
+
     public ConchNumberButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
         super(x, y, 32, 32, Component.literal(buttonText), (button) -> {
             if(screen.changingNumberNote == -1) {
                 screen.changingNumberNote = buttonId;
+                screen.playNextClickedNoteSound = false;
                 button.setMessage(questionMark);
             }
         });
         this.screen = screen;
         this.id = buttonId;
         this.mc = Minecraft.getInstance();
+        this.playSound = false;
     }
 
     @Override
     public void playDownSound(@NotNull SoundManager soundHandlerIn) {
         int noteId = screen.notes[this.id];
         if(noteId > -1 && screen.playingNotes[noteId] <= 0f) {
-            soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[noteId], 1.0F));
-            MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) noteId, screen.getX(), screen.getY(), screen.getZ()));
-            screen.playingNotes[noteId] = 10f;
+            if (playSound) {
+                soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[noteId], 1.0F));
+                MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) noteId, screen.getX(), screen.getY(), screen.getZ()));
+                screen.playingNotes[noteId] = 10f;
+                playSound = false;
+            }
         }
     }
 

@@ -27,7 +27,7 @@ public class ShakeGoal extends Goal {
         int ticksLeft = this.squid.getShakeTicks();
         if(ticksLeft == -1) {
             //No shake in progress; start one
-            this.squid.setShakeTicks(40);
+            this.squid.setShakeTicks(20);
         }
         else if(ticksLeft == 0) {
             this.squid.setBlasting(true);

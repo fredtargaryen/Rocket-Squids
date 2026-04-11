@@ -42,6 +42,7 @@ public class ConchScreen extends Screen {
     }
 
     int changingNumberNote;
+    public boolean playNextClickedNoteSound;
 
     @SuppressWarnings("removal")
     private static final ResourceLocation NOTE = new ResourceLocation(DataReference.MODID, "textures/gui/note.png");
@@ -81,6 +82,7 @@ public class ConchScreen extends Screen {
             this.notes[i] = -1;
         }
         this.conchNumberButtons = new ArrayList<>();
+        this.playNextClickedNoteSound = true;
     }
 
     /**
@@ -150,6 +152,7 @@ public class ConchScreen extends Screen {
             int index = keyCode - 48; // So alpha key 0 = button 0, alpha key 1 = button 1 etc.
             if(index > -1 && index < 10) {
                 ConchNumberButton cnb = this.conchNumberButtons.get(index == 0 ? 9 : index - 1);
+                cnb.playSound = true;
                 cnb.playDownSound(Minecraft.getInstance().getSoundManager());
             }
         }
@@ -162,8 +165,7 @@ public class ConchScreen extends Screen {
 
         public ConchButton(int buttonId, int x, int y, Component buttonText, ConchScreen screen) {
             super(x, y, 20, 20, buttonText, (button) -> {
-                if(screen.changingNumberNote > -1)
-                {
+                if(screen.changingNumberNote > -1) {
                     screen.notes[screen.changingNumberNote] = buttonId;
                     screen.conchNumberButtons.get(screen.changingNumberNote).setMessage(
                             ConchScreen.buttonNames[buttonId % 12]
@@ -177,10 +179,15 @@ public class ConchScreen extends Screen {
 
         @Override
         public void playDownSound(@NotNull SoundManager soundHandlerIn) {
-            if(ConchScreen.this.playingNotes[this.id] <= 0f) {
-                soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[this.id], 1.0F));
-                MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
-                ConchScreen.this.playingNotes[this.id] = 10f;
+            if (ConchScreen.this.playNextClickedNoteSound) {
+                if (ConchScreen.this.playingNotes[this.id] <= 0f) {
+                    soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[this.id], 1.0F));
+                    MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
+                    ConchScreen.this.playingNotes[this.id] = 10f;
+                }
+            }
+            else {
+                ConchScreen.this.playNextClickedNoteSound = true;
             }
         }
 
