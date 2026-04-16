@@ -3,7 +3,7 @@
 package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
+import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -27,14 +27,14 @@ import org.joml.Vector3f;
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BODY_LAYER;
 
 @SuppressWarnings("removal")
-public class RenderRS extends MobRenderer<RocketSquidEntity, ModelRocketSquid<RocketSquidEntity>> {
+public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
     private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");
     private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid_b.png");
 
-    public RenderRS(
+    public RocketSquidRenderer(
             EntityRendererProvider.Context context
     ) {
-        super(context, new ModelRocketSquid<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
+        super(context, new RocketSquidModel<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
     }
 
     /**

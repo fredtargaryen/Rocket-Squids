@@ -1,6 +1,6 @@
 // Copyright 2026 FredTargaryen and contributors
 // See README.md for full copyright notice and contributor info
-package com.fredtargaryen.rocketsquids.client.model.armor;
+package com.fredtargaryen.rocketsquids.client.model;
 
 import com.fredtargaryen.rocketsquids.level.item.ItemConch;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +9,7 @@ import software.bernie.geckolib.model.GeoModel;
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @SuppressWarnings("removal")
-public class ConchWearableModel extends GeoModel<ItemConch> {
+public class ConchOnHeadModel extends GeoModel<ItemConch> {
     @Override
     public ResourceLocation getModelResource(ItemConch object) {
         return new ResourceLocation(MODID, "geo/armor/conch_armor_model.geo.json");

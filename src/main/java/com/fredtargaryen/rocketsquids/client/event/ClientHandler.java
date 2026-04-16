@@ -4,11 +4,11 @@ package com.fredtargaryen.rocketsquids.client.event;
 
 import com.fredtargaryen.rocketsquids.*;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
-import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquid;
-import com.fredtargaryen.rocketsquids.client.model.ModelRocketSquidBaby;
+import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
+import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
-import com.fredtargaryen.rocketsquids.client.render.RenderBabyRS;
-import com.fredtargaryen.rocketsquids.client.render.RenderRS;
+import com.fredtargaryen.rocketsquids.client.render.BabyRocketSquidRenderer;
+import com.fredtargaryen.rocketsquids.client.render.RocketSquidRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -44,8 +44,8 @@ public class ClientHandler {
         event.registerEntityRenderer(RSEntities.TUBE_TYPE.get(), ThrownItemRenderer::new);
 
         // Register custom entity renderers
-        event.registerEntityRenderer(RSEntities.SQUID_TYPE.get(), RenderRS::new);
-        event.registerEntityRenderer(RSEntities.BABY_SQUID_TYPE.get(), RenderBabyRS::new);
+        event.registerEntityRenderer(RSEntities.SQUID_TYPE.get(), RocketSquidRenderer::new);
+        event.registerEntityRenderer(RSEntities.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
 
     public static final ModelLayerLocation SQUID_BODY_LAYER;
@@ -64,8 +64,8 @@ public class ClientHandler {
 
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(SQUID_BODY_LAYER, ModelRocketSquid::createBodyLayer);
-        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, ModelRocketSquidBaby::createBodyLayer);
+        event.registerLayerDefinition(SQUID_BODY_LAYER, RocketSquidModel::createBodyLayer);
+        event.registerLayerDefinition(BABY_SQUID_BODY_LAYER, BabyRocketSquidModel::createBodyLayer);
     }
 
     @SubscribeEvent

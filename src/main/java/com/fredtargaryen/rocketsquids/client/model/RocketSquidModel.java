@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -20,15 +20,19 @@ import java.util.Arrays;
  * Created using Tabula 7.0.0
  * <p>
  * Further manually edited by barnabeepickle on 12-4-2025,
- * and nearly completely re-worked for 1.17.1 on 12-18-2025
+ * and nearly completely re-worked for 1.17.1 on 12-17-2025
  */
-public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends HierarchicalModel<T> {
+public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalModel<T> {
     private static final int tentacles = 8;
     public final ModelPart[] tent = new ModelPart[tentacles];
+    public final ModelPart saddle;
+    public final ModelPart straps;
     public final ModelPart head;
 
-    public ModelRocketSquidBaby(ModelPart root) {
+    public RocketSquidModel(ModelPart root) {
         this.head = root;
+        this.saddle = this.head.getChild("saddle");
+        this.straps = this.head.getChild("straps");
         Arrays.setAll(this.tent, index -> head.getChild(createTentacleName(index)));
     }
 
@@ -44,27 +48,42 @@ public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends Hiera
         // make the head/body
         root.addOrReplaceChild("head",
                 CubeListBuilder.create()
-                        .texOffs(0, 6)
-                        .addBox(-3.0F, -3.0F, -2.0F, 5.0F, 7.0F, 5.0F),
+                        .texOffs(0, 30)
+                        .addBox(-7.0F, -10.0F, -7.0F, 14.0F, 20.0F, 14.0F),
                 PartPose.offset(0.0F, 0.0F, 0.0F)
         );
 
         // make the tentacles
         CubeListBuilder tentCubeList = CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 5.0F, 1.0F);
+                .texOffs(0, 0).addBox(-1.0F, -1.0F, -1.0F, 2.0F, 20.0F, 2.0F);
 
         for (int i = 0; i < tentacles; i++) {
             double tentacleYRot = i * Math.PI * 2.0 / 8.0;
-            float floatx = (float)Math.cos(tentacleYRot) * 1.5F;
-            float floaty = 4.0F;
-            float floatz = (float)Math.sin(tentacleYRot) * 1.5F;
+            float floatx = (float)Math.cos(tentacleYRot) * 5.0F;
+            float floaty = 9.0F;
+            float floatz = (float)Math.sin(tentacleYRot) * 5.0F;
             tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 
-        return LayerDefinition.create(meshDef, 32, 32);
-    }
+        // make the saddle
+        root.addOrReplaceChild("saddle",
+                CubeListBuilder.create()
+                        .texOffs(106, 53)
+                        .addBox(-5.0F, 0.0F, 7.0F, 10.0F, 10.0F, 1.0F),
+                PartPose.offset(0.0F, 0.0F, 0.0F)
+        );
 
+        // make the straps
+        root.addOrReplaceChild("straps",
+                CubeListBuilder.create()
+                        .texOffs(68, 0)
+                        .addBox(-7.5F, 1.0F, -7.5F, 15.0F, 8.0F, 15.0F),
+                PartPose.offset(0.0F, 0.0F, 0.0F)
+        );
+
+        return LayerDefinition.create(meshDef, 128, 64);
+    }
 
     @Override
     public void setupAnim(
@@ -78,6 +97,8 @@ public class ModelRocketSquidBaby<T extends BabyRocketSquidEntity> extends Hiera
         for (ModelPart modelPart : this.tent) {
             modelPart.xRot = ageInTicks;
         }
+        this.saddle.visible = entity.getSaddled();
+        this.straps.visible = entity.getSaddled();
     }
 
     @Override

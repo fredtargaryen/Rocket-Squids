@@ -4,7 +4,7 @@ package com.fredtargaryen.rocketsquids.level.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
-import com.fredtargaryen.rocketsquids.client.render.armor.ConchWearableRenderer;
+import com.fredtargaryen.rocketsquids.client.render.ConchOnHeadRenderer;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.level.StatueData;
@@ -216,7 +216,7 @@ public class ItemConch extends GeoModArmorItem {
             @Override
             public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                 if (this.renderer == null)
-                    this.renderer = new ConchWearableRenderer();
+                    this.renderer = new ConchOnHeadRenderer();
 
                 // This prepares our GeoArmorRenderer for the current render frame.
                 // These parameters may be null however, so we don't do anything further with them
