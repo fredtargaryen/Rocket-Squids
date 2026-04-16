@@ -21,7 +21,7 @@ If no mod pages are available, or you want to use the bleeding-edge git build, y
 For more information on adding dependencies with ForgeGradle these links may help:
 - [Forge Docs](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/#dependency-configurations)
 - [Forge Community Wiki](https://forge.gemwire.uk/wiki/Dependencies)
-- [ForgeGradle Docs](https://docs.minecraftforge.net/en/fg-6.x/dependencies/).
+- [ForgeGradle Docs](https://docs.minecraftforge.net/en/fg-6.x/dependencies/)
 
 ### Pull Requests
 
