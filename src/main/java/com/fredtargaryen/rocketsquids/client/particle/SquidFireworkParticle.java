@@ -1,26 +1,24 @@
+// Copyright 2016-2022, 2025-2026 FredTargaryen and contributors
+// See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.particle;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.fredtargaryen.rocketsquids.RSParticleTypes;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Almost all code here was copied from FireworkParticle as I couldn't extend
@@ -31,21 +29,21 @@ public class SquidFireworkParticle {
     static class Spark extends SimpleAnimatedParticle {
         private boolean trail;
         private boolean twinkle;
-        private final ParticleManager effectRenderer;
+        private final ParticleEngine effectRenderer;
         private float fadeColourRed;
         private float fadeColourGreen;
         private float fadeColourBlue;
         private boolean hasFadeColour;
 
-        private Spark(ClientWorld p_i50884_1_, double p_i50884_2_, double p_i50884_4_, double p_i50884_6_, double p_i50884_8_, double p_i50884_10_, double p_i50884_12_, ParticleManager p_i50884_14_, IAnimatedSprite p_i50884_15_) {
-            super(p_i50884_1_, p_i50884_2_, p_i50884_4_, p_i50884_6_, p_i50884_15_, -0.004F);
-            this.motionX = p_i50884_8_;
-            this.motionY = p_i50884_10_;
-            this.motionZ = p_i50884_12_;
-            this.effectRenderer = p_i50884_14_;
-            this.particleScale *= 0.75F;
-            this.maxAge = 48 + this.rand.nextInt(12);
-            this.selectSpriteWithAge(p_i50884_15_);
+        private Spark(ClientLevel world, double d, double e, double f, double g, double h, double i, ParticleEngine particleengine, SpriteSet sprites) {
+            super(world, d, e, f, sprites, -0.004F);
+            this.xd = g;
+            this.yd = h;
+            this.zd = i;
+            this.effectRenderer = particleengine;
+            this.scale(0.75F);
+            this.lifetime = 48 + this.random.nextInt(12);
+            this.setSpriteFromAge(sprites);
         }
 
         public void setTrail(boolean trailIn) {
@@ -59,20 +57,20 @@ public class SquidFireworkParticle {
         /**
          * Renders the particle
          */
-        public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo entityIn, float partialTicks) {
-            if (!this.twinkle || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.renderParticle(buffer, entityIn, partialTicks);
+        public void render(@NotNull VertexConsumer buffer, @NotNull Camera entityIn, float partialTicks) {
+            if (!this.twinkle || this.age < this.lifetime / 3 || (this.age + this.lifetime) / 3 % 2 == 0) {
+                super.render(buffer, entityIn, partialTicks);
             }
 
         }
 
         public void tick() {
             super.tick();
-            if (this.trail && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
-                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(this.world, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, this.effectRenderer, this.spriteWithAge);
-                fireworkparticle$spark.setAlphaF(0.99F);
-                fireworkparticle$spark.setColor(this.particleRed, this.particleGreen, this.particleBlue);
-                fireworkparticle$spark.age = fireworkparticle$spark.maxAge / 2;
+            if (this.trail && this.age < this.lifetime / 2 && (this.age + this.lifetime) % 2 == 0) {
+                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(this.level, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D, this.effectRenderer, this.sprites);
+                fireworkparticle$spark.setAlpha(0.99F);
+                fireworkparticle$spark.setColor(this.rCol, this.gCol, this.bCol);
+                fireworkparticle$spark.age = fireworkparticle$spark.lifetime / 2;
                 if (this.hasFadeColour) {
                     fireworkparticle$spark.hasFadeColour = true;
                     fireworkparticle$spark.fadeColourRed = this.fadeColourRed;
@@ -81,58 +79,66 @@ public class SquidFireworkParticle {
                 }
 
                 fireworkparticle$spark.twinkle = this.twinkle;
-                this.effectRenderer.addEffect(fireworkparticle$spark);
+                this.effectRenderer.add(fireworkparticle$spark);
             }
 
         }
 
         public void setSlightAlpha() {
-            this.setAlphaF(0.99F);
+            this.setAlpha(0.99F);
         }
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class SparkFactory implements IParticleFactory<BasicParticleType> {
-        private final IAnimatedSprite spriteSet;
+    public static class SparkFactory implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet spriteSet;
 
-        public SparkFactory(IAnimatedSprite p_i50883_1_) {
-            this.spriteSet = p_i50883_1_;
+        public SparkFactory(SpriteSet spriteSetIn) {
+            this.spriteSet = spriteSetIn;
         }
 
         @Override
-        public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particles, this.spriteSet);
+        public Particle createParticle(
+                @NotNull SimpleParticleType typeIn,
+                @NotNull ClientLevel worldIn,
+                double x,
+                double y,
+                double z,
+                double xSpeed,
+                double ySpeed,
+                double zSpeed
+        ) {
+            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particleEngine, this.spriteSet);
             fireworkparticle$spark.setSlightAlpha();
             return fireworkparticle$spark;
         }
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class SquidStarter extends MetaParticle {
+    public static class SquidStarter extends NoRenderParticle {
         private int age;
-        private final ParticleManager manager;
-        private ListNBT explosions;
-        private boolean twinkle;
+        private final ParticleEngine manager;
+        private ListTag explosions;
         private static final double squareLength = 1.0 / 7.0;
 
-        public SquidStarter(ClientWorld world, double x, double y, double z, ParticleManager manager) {
+        public SquidStarter(ClientLevel world, double x, double y, double z, ParticleEngine manager) {
             super(world, x, y, z);
-            this.motionX = 0.0;
-            this.motionY = 0.0;
-            this.motionZ = 0.0;
+            this.xd = 0.0;
+            this.yd = 0.0;
+            this.zd = 0.0;
             this.manager = manager;
-            this.maxAge = 8;
+            this.lifetime = 8;
             this.explosions = RocketSquidsBase.firework.getList("Explosions", 10);
             if (this.explosions.isEmpty()) {
                 this.explosions = null;
             } else {
-                this.maxAge = this.explosions.size() * 2 - 1;
+                this.lifetime = this.explosions.size() * 2 - 1;
 
                 for (int i = 0; i < this.explosions.size(); ++i) {
-                    CompoundNBT compoundnbt = this.explosions.getCompound(i);
+                    CompoundTag compoundnbt = this.explosions.getCompound(i);
                     if (compoundnbt.getBoolean("Flicker")) {
-                        this.twinkle = true;
-                        this.maxAge += 15;
+                        boolean twinkle = true;
+                        this.lifetime += 15;
                         break;
                     }
                 }
@@ -151,7 +157,7 @@ public class SquidFireworkParticle {
                     flag1 = true;
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        CompoundNBT nbttagcompound = this.explosions.getCompound(i);
+                        CompoundTag nbttagcompound = this.explosions.getCompound(i);
 
                         if (nbttagcompound.getByte("Type") == 1) {
                             flag1 = true;
@@ -163,17 +169,17 @@ public class SquidFireworkParticle {
                 SoundEvent soundevent1;
 
                 if (flag1) {
-                    soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST;
+                    soundevent1 = flag ? SoundEvents.FIREWORK_ROCKET_LARGE_BLAST_FAR : SoundEvents.FIREWORK_ROCKET_LARGE_BLAST;
                 } else {
-                    soundevent1 = flag ? SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST;
+                    soundevent1 = flag ? SoundEvents.FIREWORK_ROCKET_BLAST_FAR : SoundEvents.FIREWORK_ROCKET_BLAST;
                 }
 
-                this.world.playSound(this.posX, this.posY, this.posZ, soundevent1, SoundCategory.AMBIENT, 20.0F, 0.95F + this.rand.nextFloat() * 0.1F, true);
+                this.level.playLocalSound(this.x, this.y, this.z, soundevent1, SoundSource.AMBIENT, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
             }
 
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int k = this.age / 2;
-                CompoundNBT nbttagcompound1 = this.explosions.getCompound(k);
+                CompoundTag nbttagcompound1 = this.explosions.getCompound(k);
                 boolean flag4 = nbttagcompound1.getBoolean("Trail");
                 boolean flag2 = nbttagcompound1.getBoolean("Flicker");
                 int[] aint = nbttagcompound1.getIntArray("Colors");
@@ -192,32 +198,32 @@ public class SquidFireworkParticle {
                                 {2.5 * squareLength, -1.0D}, {3.5 * squareLength, -1.0D}, {3.5 * squareLength, 1.0},
                                 //Top of head
                                 {0.0, 7 * squareLength}},
-                        aint, aint1, flag4, flag2, true);
+                        aint, aint1, flag4, flag2);
 
                 int j = aint[0];
             }
 
             ++this.age;
 
-            if (this.age > this.maxAge) {
+            if (this.age > this.lifetime) {
                 boolean flag3 = this.isFarFromCamera();
-                SoundEvent soundevent = flag3 ? SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR : SoundEvents.ENTITY_FIREWORK_ROCKET_TWINKLE;
-                this.world.playSound(this.posX, this.posY, this.posZ, soundevent, SoundCategory.AMBIENT, 20.0F, 0.9F + this.rand.nextFloat() * 0.15F, true);
-                this.setExpired();
+                SoundEvent soundevent = flag3 ? SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR : SoundEvents.FIREWORK_ROCKET_TWINKLE;
+                this.level.playLocalSound(this.x, this.y, this.z, soundevent, SoundSource.AMBIENT, 20.0F, 0.9F + this.random.nextFloat() * 0.15F, true);
             }
+            this.remove();
         }
 
         private boolean isFarFromCamera() {
             Minecraft minecraft = Minecraft.getInstance();
-            return minecraft.gameRenderer.getActiveRenderInfo().getProjectedView().squareDistanceTo(this.posX, this.posY, this.posZ) >= 256.0D;
+            return minecraft.gameRenderer.getMainCamera().getPosition().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
         }
 
-        private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn, boolean p_92038_8_) {
+        private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn) {
             double d0 = shape[0][0];
             double d1 = shape[0][1];
-            this.createParticle(this.posX, this.posY, this.posZ, d0 * speed, d1 * speed, 0.0D, colours, fadeColours, trail, twinkleIn);
-            float f = this.rand.nextFloat() * (float) Math.PI;
-            double d2 = p_92038_8_ ? 0.034D : 0.34D;
+            this.createParticle(this.x, this.y, this.z, d0 * speed, d1 * speed, 0.0D, colours, fadeColours, trail, twinkleIn);
+            float f = this.random.nextFloat() * (float) Math.PI;
+            double d2 = 0.034D;
 
             for (int i = 0; i < 3; ++i) {
                 double d3 = (double) f + (double) ((float) i * (float) Math.PI) * d2;
@@ -235,7 +241,7 @@ public class SquidFireworkParticle {
                         d9 = d9 * Math.cos(d3);
 
                         for (double d12 = -1.0D; d12 <= 1.0D; d12 += 2.0D) {
-                            this.createParticle(this.posX, this.posY, this.posZ, d9 * d12, d10, d11 * d12, colours, fadeColours, trail, twinkleIn);
+                            this.createParticle(this.x, this.y, this.z, d9 * d12, d10, d11 * d12, colours, fadeColours, trail, twinkleIn);
                         }
                     }
 
@@ -248,15 +254,16 @@ public class SquidFireworkParticle {
         /**
          * Creates a single particle.
          */
-        private void createParticle(double p_92034_1_, double p_92034_3_, double p_92034_5_, double p_92034_7_, double p_92034_9_, double p_92034_11_, int[] p_92034_13_, int[] p_92034_14_, boolean p_92034_15_, boolean p_92034_16_) {
-            SquidFireworkParticle.Spark fireworkparticle$spark = (SquidFireworkParticle.Spark) this.manager.addParticle(RocketSquidsBase.FIREWORK_TYPE, p_92034_1_, p_92034_3_, p_92034_5_, p_92034_7_, p_92034_9_, p_92034_11_);
-            fireworkparticle$spark.setTrail(p_92034_15_);
-            fireworkparticle$spark.setTwinkle(p_92034_16_);
+        private void createParticle(double x, double y, double z, double xMotion, double yMotion, double zMotion, int[] colorSpark, int[] colorSparkFade, boolean trail, boolean twinkle) {
+            SquidFireworkParticle.Spark fireworkparticle$spark = (SquidFireworkParticle.Spark) this.manager.createParticle((ParticleOptions) RSParticleTypes.FIREWORK_TYPE.get(), x, y, z, xMotion, yMotion, zMotion);
+            assert fireworkparticle$spark != null;
+            fireworkparticle$spark.setTrail(trail);
+            fireworkparticle$spark.setTwinkle(twinkle);
             fireworkparticle$spark.setSlightAlpha();
-            int i = this.rand.nextInt(p_92034_13_.length);
-            fireworkparticle$spark.setColor(p_92034_13_[i]);
-            if (p_92034_14_.length > 0) {
-                fireworkparticle$spark.setColorFade(p_92034_14_[this.rand.nextInt(p_92034_14_.length)]);
+            int i = this.random.nextInt(colorSpark.length);
+            fireworkparticle$spark.setColor(colorSpark[i]);
+            if (colorSparkFade.length > 0) {
+                fireworkparticle$spark.setFadeColor(colorSparkFade[this.random.nextInt(colorSparkFade.length)]);
             }
         }
     }

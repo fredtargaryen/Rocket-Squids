@@ -1,33 +1,38 @@
-# Rocket-Squids
-A [Minecraft Forge](https://github.com/MinecraftForge/MinecraftForge) mod all about fire-breathing super squids!
+# Rocket Squids
 
-* Rocket Squids generate uncommonly in small groups. They are capable of swimming, singing, being tickled, and occasionally blasting off at great speeds... among other things.
-* The Whistling Conch is a seashell generating on beaches and the sea floor. To my knowledge, the first musical instrument item in Minecraft.
-* Rare and mysterious statues can be found in the world and may contain unusual treasure.
+![Rocket Squids Banner](src/main/resources/banner.png)
 
-## Information for Players and Pack Developers
-The intention of the mod is to encourage exploration and experimentation. As such very little information is explicitly provided in-game.
-For hints at what to do, it is best to consult [the wiki](https://www.curseforge.com/minecraft/mc-mods/rocket-squids/pages/main), which provides information in sections of increasing explicitness.
-If you are still not satisfied, you can peruse the source code, but prepare to be spoiled on other content.
+Rocket Squids is a Minecraft mod that introduces blundering, balletic megamolluscs for your amusement. If you're here as a player or modpack maker, see the project pages below for more information.
 
-### Helpful Links
-For the Minecraft Forum page [click here](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/mods-discussion/2746649-rocket-squids-last-update-26-7-17-now-for-1-12).
+## Helpful Links
+- [CurseForge project page](https://www.curseforge.com/minecraft/mc-mods/rocket-squids)
+- [Modrinth project page](https://modrinth.com/mod/rocket-squids)
+- [Rocket Squids Wiki](https://www.curseforge.com/minecraft/mc-mods/rocket-squids/pages/main)
+- Please report any issues on [the Issues page](https://github.com/fredtargaryen/Rocket-Squids/issues)
 
-To download a .jar file [click here](https://www.curseforge.com/minecraft/mc-mods/rocket-squids/files).
-### Issues
-Please report any issues on [the Issues page](https://github.com/fredtargaryen/Rocket-Squids/issues).
+## Information for Developers
 
-## Information for mod developers
 ### Compatibility with your mod
-For your mod to work with Rocket Squids, add it as a dependency following the instructions [here](https://github.com/MinecraftForge/ForgeGradle/wiki/Dependencies). 
 
-If you want the dependency to be optional, you can check if Floocraft was loaded with `Loader.isModLoaded("rocketsquidsft")`.
+To use Rocket Squids as a dependency it is recommended to add it through [Curse Maven](https://cursemaven.com/) or [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven).
 
-You can find the latest Rocket Squids files [here](https://www.curseforge.com/minecraft/mc-mods/rocket-squids/files).
+If no mod pages are available, or you want to use the bleeding-edge git build, you should be able to clone and add the whole repo as a dependency in your IDE.
 
-I am not planning on designing any APIs or other compatibility features but will look into compatibility bugs or requests.
+For more information on adding dependencies with ForgeGradle these links may help:
+- [Forge Docs](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/#dependency-configurations)
+- [Forge Community Wiki](https://forge.gemwire.uk/wiki/Dependencies)
+- [ForgeGradle Docs](https://docs.minecraftforge.net/en/fg-6.x/dependencies/)
 
 ### Pull Requests
-Any pull requests are very welcome. There are currently no standards for pull requests but clean code which
-follows the existing patterns is appreciated. If you are making a new feature, consider messaging me first to see if I will accept it!
 
+Any pull requests are very welcome. There are currently no standards for pull requests but clean code which follows the existing patterns is appreciated. If you are making a new feature, consider messaging me first to see if I will accept it!
+
+### Copyright Notice
+
+Unless otherwise stated the following notice applies to all code within this project. See `mod_authors` in `gradle.properties` for the full list of contributors.
+```
+Copyright 2026 FredTargaryen
+Rocket Squids is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Rocket Squids is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along with Rocket Squids. If not, see <https://www.gnu.org/licenses/>.
+```

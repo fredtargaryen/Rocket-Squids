@@ -1,4 +1,5 @@
 # eclipse
+eclipse
 bin
 *.launch
 .settings
@@ -13,15 +14,14 @@ out
 *.iml
 .idea
 
+# vscode
+.vscode
+
 # gradle
 build
 .gradle
-gradle/wrapper*
-gradlew
-gradlew.bat
 
 # other
-eclipse
 run
 logs
 

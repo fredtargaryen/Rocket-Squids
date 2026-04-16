@@ -1,0 +1,173 @@
+{
+  "blastoff":
+  {
+    "sounds": [{"name": "rocketsquids:blastoff","stream": false}],
+    "subtitle": "subs.rocketsquids.blastoff"
+  },
+  "tpin":
+  {
+    "sounds": [{"name": "rocketsquids:tpin","stream": false}],
+    "subtitle": "subs.rocketsquids.tpin"
+  },
+  "tpout":
+  {
+    "sounds": [{"name": "rocketsquids:tpout","stream": false}],
+    "subtitle": "subs.rocketsquids.tpout"
+  },
+  "conchc3":
+  {
+    "sounds": [{"name": "rocketsquids:conchc3","stream": false}]
+  },
+  "conchcs3":
+  {
+    "sounds": [{"name": "rocketsquids:conchcs3","stream": false}]
+  },
+  "conchd3":
+  {
+    "sounds": [{"name": "rocketsquids:conchd3","stream": false}]
+  },
+  "conchds3":
+  {
+    "sounds": [{"name": "rocketsquids:conchds3","stream": false}]
+  },
+  "conche3":
+  {
+    "sounds": [{"name": "rocketsquids:conche3","stream": false}]
+  },
+  "conchf3":
+  {
+    "sounds": [{"name": "rocketsquids:conchf3","stream": false}]
+  },
+  "conchfs3":
+  {
+    "sounds": [{"name": "rocketsquids:conchfs3","stream": false}]
+  },
+  "conchg3":
+  {
+    "sounds": [{"name": "rocketsquids:conchg3","stream": false}]
+  },
+  "conchgs3":
+  {
+    "sounds": [{"name": "rocketsquids:conchgs3","stream": false}]
+  },
+  "concha3":
+  {
+    "sounds": [{"name": "rocketsquids:concha3","stream": false}]
+  },
+  "conchas3":
+  {
+    "sounds": [{"name": "rocketsquids:conchas3","stream": false}]
+  },
+  "conchb3":
+  {
+    "sounds": [{"name": "rocketsquids:conchb3","stream": false}]
+  },
+  "conchc4":
+  {
+    "sounds": [{"name": "rocketsquids:conchc4","stream": false}],
+    "subtitle": "subs.rocketsquids.conchc"
+  },
+  "conchcs4":
+  {
+    "sounds": [{"name": "rocketsquids:conchcs4","stream": false}]
+  },
+  "conchd4":
+  {
+    "sounds": [{"name": "rocketsquids:conchd4","stream": false}],
+    "subtitle": "subs.rocketsquids.conchd"
+  },
+  "conchds4":
+  {
+    "sounds": [{"name": "rocketsquids:conchds4","stream": false}]
+  },
+  "conche4":
+  {
+    "sounds": [{"name": "rocketsquids:conche4","stream": false}],
+    "subtitle": "subs.rocketsquids.conche"
+  },
+  "conchf4":
+  {
+    "sounds": [{"name": "rocketsquids:conchf4","stream": false}],
+    "subtitle": "subs.rocketsquids.conchf"
+  },
+  "conchfs4":
+  {
+    "sounds": [{"name": "rocketsquids:conchfs4","stream": false}]
+  },
+  "conchg4":
+  {
+    "sounds": [{"name": "rocketsquids:conchg4","stream": false}],
+    "subtitle": "subs.rocketsquids.conchg"
+  },
+  "conchgs4":
+  {
+    "sounds": [{"name": "rocketsquids:conchgs4","stream": false}]
+  },
+  "concha4":
+  {
+    "sounds": [{"name": "rocketsquids:concha4","stream": false}],
+    "subtitle": "subs.rocketsquids.concha"
+  },
+  "conchas4":
+  {
+    "sounds": [{"name": "rocketsquids:conchas4","stream": false}]
+  },
+  "conchb4":
+  {
+    "sounds": [{"name": "rocketsquids:conchb4","stream": false}],
+    "subtitle": "subs.rocketsquids.conchb"
+  },
+  "conchc5":
+  {
+    "sounds": [{"name": "rocketsquids:conchc5","stream": false}]
+  },
+  "conchcs5":
+  {
+    "sounds": [{"name": "rocketsquids:conchcs5","stream": false}]
+  },
+  "conchd5":
+  {
+    "sounds": [{"name": "rocketsquids:conchd5","stream": false}]
+  },
+  "conchds5":
+  {
+    "sounds": [{"name": "rocketsquids:conchds5","stream": false}]
+  },
+  "conche5":
+  {
+    "sounds": [{"name": "rocketsquids:conche5","stream": false}]
+  },
+  "conchf5":
+  {
+    "sounds": [{"name": "rocketsquids:conchf5","stream": false}]
+  },
+  "conchfs5":
+  {
+    "sounds": [{"name": "rocketsquids:conchfs5","stream": false}]
+  },
+  "conchg5":
+  {
+    "sounds": [{"name": "rocketsquids:conchg5","stream": false}]
+  },
+  "conchgs5":
+  {
+    "sounds": [{"name": "rocketsquids:conchgs5","stream": false}]
+  },
+  "concha5":
+  {
+    "sounds": [{"name": "rocketsquids:concha5","stream": false}]
+  },
+  "conchas5":
+  {
+    "sounds": [{"name": "rocketsquids:conchas5","stream": false}]
+  },
+  "conchb5":
+  {
+    "sounds": [{"name": "rocketsquids:conchb5","stream": false}]
+  },
+  "recognition":
+  {
+    "sounds": [{"name": "rocketsquids:recognition","stream": false}],
+    "subtitle": "subs.rocketsquids.recognition"
+  }
+}

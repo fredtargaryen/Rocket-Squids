@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=east": { "model": "rocketsquidsft:block/conch" },
-    "facing=south": { "model": "rocketsquidsft:block/conch", "y": 90 },
-    "facing=west": { "model": "rocketsquidsft:block/conch", "y": 180 },
-    "facing=north": { "model": "rocketsquidsft:block/conch", "y": 270 }
-  }
-}

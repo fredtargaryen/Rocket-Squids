@@ -1,0 +1,23 @@
+{
+  "variants":
+  {
+    "facing=north": {
+      "model": "rocketsquids:block/conch", "y": 270
+    },
+    "facing=south": {
+      "model": "rocketsquids:block/conch", "y": 90
+    },
+    "facing=east": {
+      "model": "rocketsquids:block/conch"
+    },
+    "facing=west": {
+      "model": "rocketsquids:block/conch", "y": 180
+    },
+    "facing=up": {
+      "model": "rocketsquids:block/conch"
+    },
+    "facing=down": {
+      "model": "rocketsquids:block/conch"
+    }
+  }
+}
