@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "rocketsquids",
+  "ingredients": [
+    {
+      "item": "rocketsquids:turbo_tube"
+    }
+  ],
+  "result": {
+    "item": "minecraft:gunpowder"
+  }
+}

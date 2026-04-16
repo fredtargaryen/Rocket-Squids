@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "rocketsquids",
+  "ingredients": [
+    {
+      "item": "rocketsquids:nitro_ink_sac"
+    }
+  ],
+  "result": {
+    "item": "minecraft:orange_dye"
+  }
+}
