@@ -2,10 +2,9 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.projectile;
 
-import com.fredtargaryen.rocketsquids.RSEntities;
+import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.RSItems;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -16,8 +15,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -27,17 +24,11 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
         super(type, world);
     }
 
-    public ThrownSacEntity(LivingEntity elb, Level w)
-    {
-        super(RSEntities.SAC_TYPE.get(), elb, w);
+    public ThrownSacEntity(LivingEntity elb, Level w) {
+        super(RSEntityTypes.SAC_TYPE.get(), elb, w);
     }
 
-    @SuppressWarnings("unused")
-    public ThrownSacEntity(PlayMessages.SpawnEntity spawn, Level world) {
-        this(RSEntities.SAC_TYPE.get(), world);
-    }
-
-    private static final MobEffect blindnessPotion = MobEffects.BLINDNESS;
+    private static final Holder<MobEffect> blindnessPotion = MobEffects.BLINDNESS;
 
     @Override
     protected void onHit(@NotNull HitResult result) {
@@ -61,12 +52,12 @@ public class ThrownSacEntity extends ThrowableItemProjectile {
         return RSItems.NITRO_SAC.get();
     }
 
-    /**
-     * THIS IS REQUIRED FOR ALL NON-LIVING MOD ENTITIES FROM NOW ON
-     * Without this, they will not spawn on the client.
-     */
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    /**
+//     * THIS IS REQUIRED FOR ALL NON-LIVING MOD ENTITIES FROM NOW ON
+//     * Without this, they will not spawn on the client.
+//     */
+//    @Override
+//    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 }

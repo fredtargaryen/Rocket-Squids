@@ -2,8 +2,9 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level;
 
-import com.fredtargaryen.rocketsquids.config.GeneralConfig;
+import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -31,39 +32,35 @@ public class StatueData extends SavedData {
         this.statues = new ArrayList<>();
     }
 
-    public StatueData create() {
+    public static StatueData create() {
         return new StatueData();
     }
 
-    public StatueData load(CompoundTag tag) {
-        this.statues = new ArrayList<>();
+    public static StatueData load(CompoundTag tag, HolderLookup.Provider provider) {
+        StatueData data = StatueData.create();
+        data.statues = new ArrayList<>();
         int amount = tag.getInt("amount");
         for (int i = 0; i < amount; ++i) {
-            this.statues.add(tag.getIntArray(String.valueOf(i)));
+            data.statues.add(tag.getIntArray(String.valueOf(i)));
         }
         return new StatueData();
     }
 
-    public static StatueData forWorld(Level world) {
-        StatueData data = new StatueData();
-        return data.forLevel(world);
-    }
-
-    public StatueData forLevel(Level world) {
-        ServerLevel serverWorld = Objects.requireNonNull(world.getServer()).getLevel(world.dimension());
-        assert serverWorld != null;
-        DimensionDataStorage storage = serverWorld.getDataStorage();
-        return storage.computeIfAbsent(this::load, this::create, MODID);
-    }
-
     @Override
-    public @NotNull CompoundTag save(CompoundTag tag) {
+    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         int amount = this.statues.size();
         tag.putInt("amount", this.statues.size());
         for (int i = 0; i < amount; ++i) {
             tag.putIntArray(String.valueOf(i), this.statues.get(i));
         }
         return tag;
+    }
+
+    public static StatueData forLevel(Level world) {
+        ServerLevel serverWorld = Objects.requireNonNull(world.getServer()).getLevel(world.dimension());
+        assert serverWorld != null;
+        DimensionDataStorage storage = serverWorld.getDataStorage();
+        return storage.computeIfAbsent(new Factory<>(StatueData::create, StatueData::load), MODID);
     }
 
     /**
@@ -166,6 +163,6 @@ public class StatueData extends SavedData {
      * @return the chunk area x or z coordinate the BlockPos should be in
      */
     public static int posToChunkArea(int pos) {
-        return (int) Math.floor(posToChunk(pos) / (double) GeneralConfig.STATUE_FREQUENCY.get());
+        return (int) Math.floor(posToChunk(pos) / (double) CommonConfig.STATUE_FREQUENCY);
     }
 }

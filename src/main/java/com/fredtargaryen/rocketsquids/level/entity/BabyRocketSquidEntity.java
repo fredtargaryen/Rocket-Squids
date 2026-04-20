@@ -2,13 +2,14 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity;
 
+import com.fredtargaryen.rocketsquids.RSAttachmentTypes;
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.RSEntities;
-import com.fredtargaryen.rocketsquids.level.capability.entity.baby.BabyCap;
+import com.fredtargaryen.rocketsquids.RSEntityTypes;
+import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabyFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessageBabyCapData;
+import com.fredtargaryen.rocketsquids.network.message.BabyCapDataMessage;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -21,17 +22,17 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
-    private BabyCap squidCap;
+import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
+public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, Level w) {
         super(type, w);
-        this.getCapability(RocketSquidsBase.BABYCAP).ifPresent(cap -> BabyRocketSquidEntity.this.squidCap = cap);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -64,12 +65,13 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public void aiStep() {
         super.aiStep();
+        RocketSquidData data = this.getData(SQUID);
         if(this.tickCount > 72000) {
             if(!this.level().isClientSide()) {
                 this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
-                adult.moveTo(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
+                adult.moveTo(pos.x, pos.y, pos.z, (float) data.getRotYaw(), (float) data.getRotPitch());
                 this.level().addFreshEntity(adult);
             }
         }
@@ -105,22 +107,22 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
             }
 
             //Rotate towards target pitch
-            double trp = this.squidCap.getTargetRotPitch();
-            double rp = this.squidCap.getRotPitch();
+            double trp = data.getTargetRotPitch();
+            double rp = data.getRotPitch();
             if(trp != rp) {
                 //Squids rotate <= 180 degrees either way.
                 //The squid can rotate out of the interval [-PI, PI].
                 rp += (trp - rp) * rotateSpeed;
-                this.squidCap.setRotPitch(rp);
+                data.setRotPitch(rp);
                 this.newPacketRequired = true;
             }
 
             //Rotate towards target yaw
-            double trY = this.squidCap.getTargetRotYaw();
-            double ry = this.squidCap.getRotYaw();
+            double trY = data.getTargetRotYaw();
+            double ry = data.getRotYaw();
             if(trY != ry) {
                 ry += (trY - ry) * rotateSpeed;
-                this.squidCap.setRotYaw(ry);
+                data.setRotYaw(ry);
                 this.newPacketRequired = true;
             }
 
@@ -138,7 +140,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 }
                 if(this.newPacketRequired) {
                     Vec3 pos = this.position();
-                    MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level().dimension())), new MessageBabyCapData(this.getUUID(), this.squidCap));
+                    MessageHandler.sendToPlayersNear((ServerLevel) this.level(), new BabyCapDataMessage(this.getUUID(), data.serializeNBT(null)), pos.x, pos.y, pos.z, 64);
                     this.newPacketRequired = false;
                 }
             }
@@ -177,47 +179,51 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("id", RSEntities.BABY_SQUID_TYPE.toString());
+        compound.putString("id", RSEntityTypes.BABY_SQUID_TYPE.toString());
     }
 
-    //////////////////////
-    //CAPABILITY METHODS//
-    //////////////////////
+    /////////////////////////////
+    //ATTACHMENT DATA ACCESSORS//
+    /////////////////////////////
     public double getPrevRotPitch() {
-        return this.squidCap.getPrevRotPitch();
+        return this.getData(SQUID).getPrevRotPitch();
     }
 
     public double getPrevRotYaw() {
-        return this.squidCap.getPrevRotYaw();
+        return this.getData(SQUID).getPrevRotYaw();
     }
 
     public double getRotPitch() {
-        return this.squidCap.getRotPitch();
+        return this.getData(SQUID).getRotPitch();
     }
 
     public double getRotYaw() {
-        return this.squidCap.getRotYaw();
+        return this.getData(SQUID).getRotYaw();
     }
 
     public void setTargetRotPitch(double targPitch) {
-        if(targPitch != this.squidCap.getTargetRotPitch()) {
-            this.squidCap.setTargetRotPitch(targPitch);
+        RocketSquidData data = this.getData(SQUID);
+        if(targPitch != data.getTargetRotPitch()) {
+            data.setTargetRotPitch(targPitch);
             this.newPacketRequired = true;
         }
     }
 
     public void setTargetRotYaw(double targYaw) {
-        if (targYaw != this.squidCap.getTargetRotYaw()) {
-            this.squidCap.setTargetRotYaw(targYaw);
+        RocketSquidData data = this.getData(SQUID);
+        if (targYaw != data.getTargetRotYaw()) {
+            data.setTargetRotYaw(targYaw);
             this.newPacketRequired = true;
         }
     }
 
     public double getTargRotPitch() {
-        return this.squidCap.getTargetRotPitch();
+        RocketSquidData data = this.getData(SQUID);
+        return data.getTargetRotPitch();
     }
 
     public double getTargRotYaw() {
-        return this.squidCap.getTargetRotYaw();
+        RocketSquidData data = this.getData(SQUID);
+        return data.getTargetRotYaw();
     }
 }

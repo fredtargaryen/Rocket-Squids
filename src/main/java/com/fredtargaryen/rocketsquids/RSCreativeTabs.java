@@ -6,16 +6,16 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 public class RSCreativeTabs {
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    public static final RegistryObject<CreativeModeTab> ROCKET_SQUIDS_TAB = TABS.register("rocket_squid_tab", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ROCKET_SQUIDS_TAB = TABS.register("rocket_squid_tab", () -> CreativeModeTab.builder()
             // Set name of tab to display
             .title(Component.translatable("item_group." + MODID + ".rocket_squid_tab"))
             // Set icon of creative tab
@@ -30,7 +30,7 @@ public class RSCreativeTabs {
                 output.accept(RSItems.ITEM_STATUE_CLOSED.get());
                 output.accept(RSItems.ITEM_STATUE_OPEN.get());
                 output.accept(RSItems.SQUELEPORTER_INACTIVE.get());
-                output.accept(RSEntities.SQUID_SPAWN_EGG.get());
+                output.accept(RSEntityTypes.SQUID_SPAWN_EGG.get());
             })
             .build()
     );

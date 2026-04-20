@@ -5,7 +5,7 @@ package com.fredtargaryen.rocketsquids.client.gui;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.fredtargaryen.rocketsquids.network.message.PlayNoteServerMessage;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
 public class ConchNumberButton extends ExtendedButton {
@@ -26,14 +26,13 @@ public class ConchNumberButton extends ExtendedButton {
 
     private static final Component questionMark = Component.literal("?");
 
-    @SuppressWarnings("removal")
     private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID, "textures/gui/numbernote.png");
 
     public boolean playSound;
 
     public ConchNumberButton(int buttonId, int x, int y, String buttonText, ConchScreen screen) {
         super(x, y, 32, 32, Component.literal(buttonText), (button) -> {
-            if(screen.changingNumberNote == -1) {
+            if (screen.changingNumberNote == -1) {
                 screen.changingNumberNote = buttonId;
                 screen.playNextClickedNoteSound = false;
                 button.setMessage(questionMark);
@@ -48,10 +47,10 @@ public class ConchNumberButton extends ExtendedButton {
     @Override
     public void playDownSound(@NotNull SoundManager soundHandlerIn) {
         int noteId = screen.notes[this.id];
-        if(noteId > -1 && screen.playingNotes[noteId] <= 0f) {
+        if (noteId > -1 && screen.playingNotes[noteId] <= 0f) {
             if (playSound) {
                 soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[noteId], 1.0F));
-                MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) noteId, screen.getX(), screen.getY(), screen.getZ()));
+                MessageHandler.sendToServer(new PlayNoteServerMessage((byte) noteId, screen.getX(), screen.getY(), screen.getZ()));
                 screen.playingNotes[noteId] = 10f;
                 playSound = false;
             }
@@ -88,12 +87,13 @@ public class ConchNumberButton extends ExtendedButton {
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
         guiGraphics.drawCenteredString(fontrenderer,
-                Component.literal("" + (this.id == 9 ? 0: this.id + 1)),
+                Component.literal("" + (this.id == 9 ? 0 : this.id + 1)),
                 this.getX() + this.width / 2, this.getY() + 34, ColorHelper.getColor(255, 255, 255));
     }
 
     private void drawButton(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
         RenderSystem.setShaderColor(red, green, blue, 1f);
-        this.renderTexture(guiGraphics, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
+        guiGraphics.blitSprite(NUMBER, x, y, 32, 32);
+        //this.renderTexture(guiGraphics, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
     }
 }

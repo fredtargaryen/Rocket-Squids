@@ -2,21 +2,18 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
-import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.RSArmorMaterials;
+import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.client.render.ConchOnHeadRenderer;
-import com.fredtargaryen.rocketsquids.RSBlocks;
-import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.level.StatueData;
+import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,22 +23,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
@@ -49,55 +45,12 @@ import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.L
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
 public class ItemConch extends GeoModArmorItem {
-    public static final ArmorMaterial MATERIAL_CONCH = new ArmorMaterial() {
-
-        @Override
-        public int getDurabilityForType(@NotNull Type type) {
-            return 0;
-        }
-
-        @Override
-        public int getDefenseForType(@NotNull Type type) {
-            return 0;
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return 0;
-        }
-
-        @Override
-        public @NotNull SoundEvent getEquipSound() {
-            return SoundEvents.ARMOR_EQUIP_GENERIC;
-        }
-
-        @Override
-        public @Nullable Ingredient getRepairIngredient() {
-            return null;
-        }
-
-        @Override
-        public @NotNull String getName() {
-            return DataReference.MODID + ":conch_item_1";
-        }
-
-        @Override
-        public float getToughness() {
-            return 0;
-        }
-
-        @Override
-        public float getKnockbackResistance() {
-            return 0;
-        }
-    };
-
-    private final ImmutableMultimap<Attribute, AttributeModifier> emptyModifierMap;
+    private final ItemAttributeModifiers emptyModifierMap;
 
     public ItemConch(Item.Properties properties) {
-        super(MATERIAL_CONCH, Type.HELMET, properties);
+        super(RSArmorMaterials.CONCH, Type.HELMET, properties);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        emptyModifierMap = builder.build();
+        emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>(), false);
     }
 
     /**
@@ -140,7 +93,7 @@ public class ItemConch extends GeoModArmorItem {
                     float hitX = (float) hitVec.x;
                     float hitY = (float) hitVec.y;
                     float hitZ = (float) hitVec.z;
-                    BlockState conchstate = RSBlocks.BLOCK_CONCH.get().getStateForPlacement(blockContext);
+                    BlockState conchstate = RSBlocks.CONCH.get().getStateForPlacement(blockContext);
 
                     if (placeBlockAt(itemstack, player, level, pos, facing, hitX, hitY, hitZ, conchstate)) {
                         BlockState iblockstate1 = level.getBlockState(pos);
@@ -155,16 +108,16 @@ public class ItemConch extends GeoModArmorItem {
         } else {
             // If the player has right-clicked a statue, activate it
             if (!level.isClientSide) {
-                if (block == RSBlocks.BLOCK_STATUE.get()) {
+                if (block == RSBlocks.STATUE.get()) {
                     if (!state.getValue(OPEN)) {
                         if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
                             BlockState stateBelow = level.getBlockState(pos.below());
-                            if (stateBelow.getBlock() == RSBlocks.BLOCK_STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
+                            if (stateBelow.getBlock() == RSBlocks.STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
                                 pos = pos.below();
                                 state = stateBelow;
                             }
                         }
-                        StatueData.forWorld(level).removeStatue(new int[]{
+                        StatueData.forLevel(level).removeStatue(new int[]{
                                 0, 0, pos.getX(), pos.getY(), pos.getZ()
                         });
                         level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
@@ -197,8 +150,8 @@ public class ItemConch extends GeoModArmorItem {
         if (!world.setBlock(pos, newState, 11)) return false;
 
         BlockState state = world.getBlockState(pos);
-        if (state.getBlock() == RSBlocks.BLOCK_CONCH.get()) {
-            RSBlocks.BLOCK_CONCH.get().setPlacedBy(world, pos, state, player, stack);
+        if (state.getBlock() == RSBlocks.CONCH.get()) {
+            RSBlocks.CONCH.get().setPlacedBy(world, pos, state, player, stack);
 
             if (player instanceof ServerPlayer)
                 CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, pos, stack);
@@ -231,7 +184,7 @@ public class ItemConch extends GeoModArmorItem {
      * Removes the "When on head:" tooltip, which is too much of a giveaway
      */
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
         return emptyModifierMap;
     }
 }

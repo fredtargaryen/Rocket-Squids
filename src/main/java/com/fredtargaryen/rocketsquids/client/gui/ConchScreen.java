@@ -5,7 +5,7 @@ package com.fredtargaryen.rocketsquids.client.gui;
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessagePlayNoteServer;
+import com.fredtargaryen.rocketsquids.network.message.PlayNoteServerMessage;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class ConchScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         for(int i = 0; i < this.playingNotes.length; i++)
         {
             this.playingNotes[i] -= partialTicks;
@@ -182,7 +182,7 @@ public class ConchScreen extends Screen {
             if (ConchScreen.this.playNextClickedNoteSound) {
                 if (ConchScreen.this.playingNotes[this.id] <= 0f) {
                     soundHandlerIn.play(SimpleSoundInstance.forUI(RSSounds.CONCH_NOTES[this.id], 1.0F));
-                    MessageHandler.INSTANCE.sendToServer(new MessagePlayNoteServer((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
+                    MessageHandler.sendToServer(new PlayNoteServerMessage((byte) this.id, ConchScreen.this.x, ConchScreen.this.y, ConchScreen.this.z));
                     ConchScreen.this.playingNotes[this.id] = 10f;
                 }
             }
@@ -195,7 +195,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
@@ -216,7 +216,8 @@ public class ConchScreen extends Screen {
 
         private void drawNote(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
             RenderSystem.setShaderColor(red, green, blue, 1.0F);
-            this.renderTexture(guiGraphics, NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
+            guiGraphics.blitSprite(NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
+            //this.renderTexture(guiGraphics, NOTE, x + 2, y - 37, 0, 0, 0, 27, 54, 27, 54);
         }
     }
 

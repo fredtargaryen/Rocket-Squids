@@ -12,7 +12,7 @@
     }
   },
   "result": {
-    "item": "minecraft:sand",
+    "id": "minecraft:sand",
     "count": 1
   }
 }
