@@ -60,15 +60,26 @@ import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
 public class RocketSquidEntity extends AbstractRocketSquidEntity {
+    /**
+     * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
+     */
+    private Entity riderToThrow;
+
+    /**
+     * Server only - how long until the squid can make a baby again
+     */
     protected int breedCooldown;
+
+    /**
+     * Server only - whether the squid can make a baby
+     */
     protected boolean breedable;
 
-    /// //////////////
-    /// Client only///
-    /// //////////////
+    /**
+     * Client only - for rotating the player to seat them on the squid's body each frame
+     */
     public boolean riderRotated;
 
-    //May have to remove and use capability instead
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
 
     public RocketSquidEntity(Level par1World) {
@@ -206,6 +217,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), data.serializeNBT(null)));
                 this.newPacketRequired = false;
             }
+
+            // Throw the rider ahead of the squid if they just dismounted
+            if (this.riderToThrow != null) {
+                Vec3 movement = this.getDeltaMovement().scale(2.5);
+                this.riderToThrow.push(movement.x, movement.y, movement.z);
+                this.riderToThrow.hurtMarked = true;
+                this.riderToThrow = null;
+            }
         }
     }
 
@@ -314,13 +333,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     @Override
     public void remove(@NotNull RemovalReason reason) {
-        if (this.getBlasting()) {
-            Entity passenger = this.getFirstPassenger();
-            if (passenger != null) {
-                Vec3 motion = passenger.getDeltaMovement();
-                passenger.setDeltaMovement(motion.x * 2.5, motion.y * 2.5, motion.z * 2.5);
-            }
-        }
         if (this.level().isClientSide()) {
             NeoForge.EVENT_BUS.unregister(this);
         }
@@ -468,8 +480,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     //////////////////
     //RIDING METHODS//
-
-    /// ///////////////
+    //////////////////
 
     @Override
     protected void addPassenger(@NotNull Entity p) {
@@ -512,14 +523,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     protected void removePassenger(@NotNull Entity passenger) {
         super.removePassenger(passenger);
-        if (this.getBlasting()) {
-            Vec3 passengerMotion = passenger.getDeltaMovement();
-            passenger.setDeltaMovement(passengerMotion.x * 2.5,
-                    passengerMotion.y * 2.5,
-                    passengerMotion.z * 2.5);
-        }
         if (this.level().isClientSide()) {
             NeoForge.EVENT_BUS.unregister(this);
+        }
+        else if (this.getBlasting()) {
+            this.riderToThrow = passenger;
         }
     }
 
@@ -573,7 +581,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     /////////////////
     //CLIENT EVENTS//
     /////////////////
-
     /**
      * Add transformations to put player on back of squid.
      */
@@ -619,8 +626,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     ///////
     //NBT//
-
-    /// ////
+    ///////
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
@@ -639,10 +645,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         this.breedCooldown = compound.getShort("Breed Cooldown");
     }
 
-    //////////////////////
-    //CAPABILITY METHODS//
-
-    /// ///////////////////
+    ////////////////////////
+    //ATTACHMENT ACCESSORS//
+    ////////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }
