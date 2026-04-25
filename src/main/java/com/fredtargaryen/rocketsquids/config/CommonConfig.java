@@ -18,21 +18,6 @@ public class CommonConfig {
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ModConfigSpec.IntValue _SPAWN_PROB = BUILDER
-            .comment("Weighted probability of a group of Rocket Squids spawning.")
-            .translation("config.common.squid.spawn.prob")
-            .defineInRange("squid.spawn.prob", 3, 1, 100);
-
-    private static final ModConfigSpec.IntValue _MIN_GROUP_SIZE = BUILDER
-            .comment("Smallest possible size of a group.")
-            .translation("config.common.squid.spawn.min")
-            .defineInRange("squid.spawn.min", 1, 1, 20);
-
-    private static final ModConfigSpec.IntValue _MAX_GROUP_SIZE = BUILDER
-            .comment("Largest possible size of a group.")
-            .translation("config.common.squid.spawn.max")
-            .defineInRange("squid.spawn.max", 4, 1, 40);
-
     private static final ModConfigSpec.IntValue _BREED_COOLDOWN = BUILDER
             .comment("How much time in ticks do Rocket Squids have to wait before being able to breed again.")
             .translation("config.common.squid.breeding.cooldown")
@@ -84,9 +69,6 @@ public class CommonConfig {
     public static List<? extends String> CONCH_WHITELIST;
     public static List<? extends String> CONCH_BLACKLIST;
 
-    public static int SPAWN_PROB;
-    public static int MIN_GROUP_SIZE;
-    public static int MAX_GROUP_SIZE;
     public static int BREED_COOLDOWN;
     public static boolean ROCKET_SQUID_EXPLOSIONS_DESTROY;
 
@@ -101,9 +83,6 @@ public class CommonConfig {
         CONCH_WHITELIST = _CONCH_WHITELIST.get();
         CONCH_BLACKLIST = _CONCH_BLACKLIST.get();
 
-        SPAWN_PROB = _SPAWN_PROB.get();
-        MIN_GROUP_SIZE = _MIN_GROUP_SIZE.get();
-        MAX_GROUP_SIZE = _MAX_GROUP_SIZE.get();
         BREED_COOLDOWN = _BREED_COOLDOWN.get();
         ROCKET_SQUID_EXPLOSIONS_DESTROY = _ROCKET_SQUID_EXPLOSIONS_DESTROY.get();
 
