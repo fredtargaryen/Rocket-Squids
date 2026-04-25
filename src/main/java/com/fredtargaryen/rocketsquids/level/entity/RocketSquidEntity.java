@@ -203,7 +203,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 this.moveToWherePointing();
             }
             if (this.newPacketRequired) {
-                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), new CompoundTag()));
+                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), data.serializeNBT(null)));
                 this.newPacketRequired = false;
             }
         }
@@ -507,16 +507,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         }
         return false;
     }
-
-    /**
-     * Should keep the passenger on, or at least around, the squid's back.
-     * The offset is applied in {@link Entity#positionRider},
-     * prior to {@code 1.20.1} we overrided that method instead of this one.
-     */
-//    @Override
-//    public double getPassengersRidingOffset() {
-//        return 0.75;
-//    }
 
     @Override
     protected void removePassenger(@NotNull Entity passenger) {
