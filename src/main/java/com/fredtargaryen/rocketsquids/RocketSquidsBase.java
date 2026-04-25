@@ -5,15 +5,16 @@ package com.fredtargaryen.rocketsquids;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,24 +77,20 @@ public class RocketSquidsBase {
 
         IEventBus loadingBus = modContainer.getEventBus();
         loadingBus.addListener(this::postRegistration);
+        loadingBus.addListener(this::registerSpawnPlacements);
     }
 
     /**
      * Called after all registry events. Runs in parallel with other SetupEvent handlers.
-     *
-     * @param event FMLCommonSetupEvent
      */
     public void postRegistration(FMLCommonSetupEvent event) {
         setupFirework();
+    }
 
-        // Validate the config
-        if (CommonConfig.MAX_GROUP_SIZE < CommonConfig.MIN_GROUP_SIZE) {
-            CommonConfig.MAX_GROUP_SIZE = CommonConfig.MIN_GROUP_SIZE;
-        }
-
-        // Spawn info (might be redundant due to biomemodifiers)
-        // noinspection deprecation
-        //SpawnPlacements.register(RSEntityTypes.SQUID_TYPE.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) -> true);
-        //ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(RSEntityTypes.SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
+    /**
+     * Register conditions for spawning of this mod's entities
+     */
+    public void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
+        event.register(RSEntityTypes.SQUID_TYPE.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, SpawnPlacementRegisterEvent.Operation.OR);
     }
 }
