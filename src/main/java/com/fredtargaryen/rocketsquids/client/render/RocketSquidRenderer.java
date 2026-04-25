@@ -78,7 +78,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             RandomSource r = par1EntitySquid.getRandom();
             matrixStackIn.translate(r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d);
         }
-        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
+        if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
             //Choose texture
             TextureAtlasSprite tas = ModelBakery.FIRE_0.sprite();
             //Calculate and set translation-rotation matrix
