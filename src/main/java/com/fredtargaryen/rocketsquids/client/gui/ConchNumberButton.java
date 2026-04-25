@@ -82,18 +82,13 @@ public class ConchNumberButton extends ExtendedButton {
             }
         }
 
-        this.drawButton(guiGraphics, this.getX(), this.getY(), red, green, blue);
+        RenderSystem.setShaderColor(red, green, blue, 1f);
+        guiGraphics.blit(NUMBER, this.getX(), this.getY(), 0, 0, 0, 32, 32, 32, 32);
 
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
         guiGraphics.drawCenteredString(fontrenderer,
                 Component.literal("" + (this.id == 9 ? 0 : this.id + 1)),
                 this.getX() + this.width / 2, this.getY() + 34, ColorHelper.getColor(255, 255, 255));
-    }
-
-    private void drawButton(GuiGraphics guiGraphics, int x, int y, float red, float green, float blue) {
-        RenderSystem.setShaderColor(red, green, blue, 1f);
-        guiGraphics.blitSprite(NUMBER, x, y, 32, 32);
-        //this.renderTexture(guiGraphics, NUMBER, x, y, 0, 0, 0, 32, 32, 32, 32);
     }
 }
