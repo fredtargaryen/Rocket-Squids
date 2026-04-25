@@ -570,17 +570,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         return true;
     }
 
-    /**
-     * If the rider should be dismounted from the entity when the entity goes under water
-     *
-     * @param rider The entity that is riding
-     * @return if the entity should be dismounted when under water
-     */
-    @Override
-    public boolean canBeRiddenUnderFluidType(Entity rider) {
-        return true;
-    }
-
     /////////////////
     //CLIENT EVENTS//
     /////////////////
