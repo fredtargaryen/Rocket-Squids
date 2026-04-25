@@ -60,6 +60,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
         poseStack.translate(0f, -1.2f, 0f);
     }
 
+    @Override
     public void render(
             RocketSquidEntity par1EntitySquid,
             float entityYaw,
