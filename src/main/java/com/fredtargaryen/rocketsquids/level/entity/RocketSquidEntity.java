@@ -58,14 +58,29 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class RocketSquidEntity extends AbstractRocketSquidEntity {
+    /**
+     * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
+     */
+    private Entity riderToThrow;
+
+    /**
+     * Server only - how long until the squid can make a baby again
+     */
     private AdultCap squidCap;
 
+    /**
+     * Server only - how long until the squid can make a baby again
+     */
     protected int breedCooldown;
+
+    /**
+     * Server only - whether the squid can make a baby
+     */
     protected boolean breedable;
 
-    /////////////////
-    ///Client only///
-    /////////////////
+    /**
+     * Client only - for rotating the player to seat them on the squid's body each frame
+     */
     public boolean riderRotated;
 
     //May have to remove and use capability instead
@@ -206,6 +221,14 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, 64, this.level().dimension())), new MessageAdultCapData(this.getUUID(), this.squidCap));
                 this.newPacketRequired = false;
             }
+
+            // Throw the rider ahead of the squid if they just dismounted
+            if (this.riderToThrow != null) {
+                Vec3 movement = this.getDeltaMovement().scale(2.5);
+                this.riderToThrow.push(movement.x, movement.y, movement.z);
+                this.riderToThrow.hurtMarked = true;
+                this.riderToThrow = null;
+            }
         }
     }
 
@@ -317,13 +340,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
 
     @Override
     public void remove(@NotNull RemovalReason reason) {
-        if (this.getBlasting()) {
-            Entity passenger = this.getFirstPassenger();
-            if (passenger != null) {
-                Vec3 motion = passenger.getDeltaMovement();
-                passenger.setDeltaMovement(motion.x * 2.5, motion.y * 2.5, motion.z * 2.5);
-            }
-        }
         if (this.level().isClientSide()) {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
@@ -519,14 +535,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     protected void removePassenger(@NotNull Entity passenger) {
         super.removePassenger(passenger);
-        if (this.getBlasting()) {
-            Vec3 passengerMotion = passenger.getDeltaMovement();
-            passenger.setDeltaMovement(passengerMotion.x * 2.5,
-                    passengerMotion.y * 2.5,
-                    passengerMotion.z * 2.5);
-        }
         if (this.level().isClientSide()) {
             MinecraftForge.EVENT_BUS.unregister(this);
+        }
+        else if (this.getBlasting()) {
+            this.riderToThrow = passenger;
         }
     }
 
