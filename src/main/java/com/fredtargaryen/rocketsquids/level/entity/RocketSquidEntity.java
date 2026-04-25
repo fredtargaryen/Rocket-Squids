@@ -428,8 +428,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     // the one with the lesser UUID doesn't
                     this.breedCooldown = CommonConfig.BREED_COOLDOWN;
                     this.spawnHearts((ServerLevel) this.level());
+                    break;
                 default:
-                    // Spectacularly unlikely to happen, but...
+                    // Probably impossible...
                     this.getData(SQUID).setForcedBlast(true);
                     partner.getData(SQUID).setForcedBlast(true);
             }
