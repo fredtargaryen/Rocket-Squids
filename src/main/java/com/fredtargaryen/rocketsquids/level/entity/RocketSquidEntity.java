@@ -81,10 +81,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 12.0D);
     }
 
-//    protected void defineSynchedData() {
-//        super.defineSynchedData();
-//        this.entityData.define(SADDLED, false);
-//    }
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SADDLED, false);
+    }
 
     @Override
     protected void registerGoals() {
