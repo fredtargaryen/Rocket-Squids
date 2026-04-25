@@ -2,8 +2,6 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity;
 
-import com.fredtargaryen.rocketsquids.RSAttachmentTypes;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabyFlopAroundGoal;
@@ -11,19 +9,17 @@ import com.fredtargaryen.rocketsquids.level.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.BabyCapDataMessage;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -48,8 +44,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     }
 
     @Override
-    protected boolean canRide(@NotNull Entity entityIn)
-    {
+    protected boolean canRide(@NotNull Entity entityIn) {
         return false;
     }
 
@@ -66,37 +61,34 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     public void aiStep() {
         super.aiStep();
         RocketSquidData data = this.getData(SQUID);
-        if(this.tickCount > 72000) {
-            if(!this.level().isClientSide()) {
+        if (this.tickCount > 72000) {
+            if (!this.level().isClientSide()) {
                 this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
                 adult.moveTo(pos.x, pos.y, pos.z, (float) data.getRotYaw(), (float) data.getRotPitch());
                 this.level().addFreshEntity(adult);
             }
-        }
-        else {
+        } else {
             //Do on client and server
             //Fraction of distance to target rotation to rotate by each server tick
             double rotateSpeed;
-            if(this.wasTouchingWater) {
+            if (this.wasTouchingWater) {
                 Vec3 motion = this.getDeltaMovement();
                 this.setDeltaMovement(motion.x * 0.9, motion.y * 0.9, motion.z * 0.9);
                 rotateSpeed = 0.06;
-            }
-            else {
+            } else {
                 Vec3 oldMotion = this.getDeltaMovement();
                 double motionX = oldMotion.x;
                 double motionY = oldMotion.y;
                 double motionZ = oldMotion.z;
-                if(this.hurtTime > 0) {
+                if (this.hurtTime > 0) {
                     motionX = 0.0D;
                     motionZ = 0.0D;
                 }
                 if (this.hasEffect(MobEffects.LEVITATION)) {
-                    motionY += 0.05D * (double)(Objects.requireNonNull(this.getEffect(MobEffects.LEVITATION)).getAmplifier() + 1) - motionY;
-                }
-                else if (!this.isNoGravity()) {
+                    motionY += 0.05D * (double) (Objects.requireNonNull(this.getEffect(MobEffects.LEVITATION)).getAmplifier() + 1) - motionY;
+                } else if (!this.isNoGravity()) {
                     motionY -= 0.08D;
                 }
                 motionX *= 0.9800000190734863D;
@@ -109,7 +101,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
             //Rotate towards target pitch
             double trp = data.getTargetRotPitch();
             double rp = data.getRotPitch();
-            if(trp != rp) {
+            if (trp != rp) {
                 //Squids rotate <= 180 degrees either way.
                 //The squid can rotate out of the interval [-PI, PI].
                 rp += (trp - rp) * rotateSpeed;
@@ -120,25 +112,24 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
             //Rotate towards target yaw
             double trY = data.getTargetRotYaw();
             double ry = data.getRotYaw();
-            if(trY != ry) {
+            if (trY != ry) {
                 ry += (trY - ry) * rotateSpeed;
                 data.setRotYaw(ry);
                 this.newPacketRequired = true;
             }
 
-            if(this.level().isClientSide()) {
+            if (this.level().isClientSide()) {
                 //Client side
                 //Handles tentacle angles
                 this.lastTentacleAngle = this.tentacleAngle;
                 //If in water, tentacles oscillate normally
                 this.tentacleAngle = this.wasTouchingWater ? (float) ((Math.PI / 6) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
-            }
-            else {
+            } else {
                 //Server side
-                if(this.isInWater()) {
+                if (this.isInWater()) {
                     this.moveToWherePointing();
                 }
-                if(this.newPacketRequired) {
+                if (this.newPacketRequired) {
                     Vec3 pos = this.position();
                     MessageHandler.sendToPlayersNear((ServerLevel) this.level(), new BabyCapDataMessage(this.getUUID(), data.serializeNBT(null)), pos.x, pos.y, pos.z, 64);
                     this.newPacketRequired = false;
@@ -184,7 +175,8 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
 
     /////////////////////////////
     //ATTACHMENT DATA ACCESSORS//
-    /////////////////////////////
+
+    /// //////////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }
@@ -203,7 +195,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
 
     public void setTargetRotPitch(double targPitch) {
         RocketSquidData data = this.getData(SQUID);
-        if(targPitch != data.getTargetRotPitch()) {
+        if (targPitch != data.getTargetRotPitch()) {
             data.setTargetRotPitch(targPitch);
             this.newPacketRequired = true;
         }
