@@ -250,7 +250,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 if (interactItem == RSItems.SQUELEPORTER_INACTIVE.get()) {
                     //The squeleporter is inactive so store the squid here
                     ItemStack newStack = RSItems.SQUELEPORTER_ACTIVE.get().getDefaultInstance();
-                    SqueleporterData data = newStack.get(SQUELEPORTER);
                     Vec3 pos = player.position();
                     player.level().playSound(null, pos.x, pos.y, pos.z, RSSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     // Set squid data

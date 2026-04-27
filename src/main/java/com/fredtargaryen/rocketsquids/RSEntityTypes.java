@@ -63,7 +63,7 @@ public class RSEntityTypes {
 
     // Register Spawn Egg Items here
     @SuppressWarnings("unused")
-    public static final DeferredHolder<Item, RocketSquidForgeSpawnEggItem> SQUID_SPAWN_EGG = SPAWNEGGITEMS.register("rockets_squid_spawn_egg",
+    public static final DeferredHolder<Item, RocketSquidForgeSpawnEggItem> SQUID_SPAWN_EGG = SPAWNEGGITEMS.register("rocket_squid_spawn_egg",
             () -> new RocketSquidForgeSpawnEggItem(RSEntityTypes.SQUID_TYPE, RSEntityTypes.BABY_SQUID_TYPE, ColorHelper.getColor(150, 30, 30), ColorHelper.getColor(255, 127, 0), new Item.Properties())
     ); // Hey if you wanted to know do not use SpawnEggItem use ForgeSpawnEggItem
 

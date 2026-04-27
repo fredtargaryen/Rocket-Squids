@@ -2,23 +2,22 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.RSItems;
+import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
@@ -40,7 +39,7 @@ public class ItemSqueleporter extends Item {
     ) {
         if (!worldIn.isClientSide) {
             ItemStack stack = playerIn.getItemInHand(handIn);
-            if(stack.getItem() == RSItems.SQUELEPORTER_ACTIVE.get()) {
+            if (stack.getItem() == RSItems.SQUELEPORTER_ACTIVE.get()) {
                 //The squeleporter is active so squid data is stored.
                 SqueleporterData data = stack.get(SQUELEPORTER);
                 CompoundTag squidTags = data.entityData();
