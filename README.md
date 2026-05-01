@@ -14,14 +14,11 @@ Rocket Squids is a Minecraft mod that introduces blundering, balletic megamollus
 
 ### Compatibility with your mod
 
-To use Rocket Squids as a dependency it is recommended to add it through [Curse Maven](https://cursemaven.com/) or [Modrinth Maven](https://support.modrinth.com/en/articles/8801191-modrinth-maven).
+To use Rocket Squids as a dependency it is recommended to add it through Curse Maven or Modrinth Maven. Follow the instructions [here](https://docs.neoforged.net/toolchain/docs/dependencies/) to add Rocket Squids as a dependency.
 
-If no mod pages are available, or you want to use the bleeding-edge git build, you should be able to clone and add the whole repo as a dependency in your IDE.
-
-For more information on adding dependencies with ForgeGradle these links may help:
-- [Forge Docs](https://docs.minecraftforge.net/en/1.20.1/gettingstarted/modfiles/#dependency-configurations)
-- [Forge Community Wiki](https://forge.gemwire.uk/wiki/Dependencies)
-- [ForgeGradle Docs](https://docs.minecraftforge.net/en/fg-6.x/dependencies/)
+Example `build.gradle` dependencies:
+- Curse Maven [(instructions here)](https://cursemaven.com/): `api "curse.maven:rocketsquids-251774:8020311-sources-8020311"`, replacing `8020311` with the long number at the end of the URL of the version you need.
+- Modrinth Maven [(instructions here)](https://support.modrinth.com/en/articles/8801191-modrinth-maven): `api "maven.modrinth:rocket-squids:W8zkzHAm"`, replacing `W8zkzHAm` with the Version ID of the version you need.
 
 ### Pull Requests
 
