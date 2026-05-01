@@ -41,6 +41,7 @@ public class ItemSqueleporter extends Item {
                     CompoundTag squidTags = cap.getSquidData();
                     EntityType.create(squidTags, worldIn).ifPresent(entity -> {
                         RocketSquidEntity newSquid = (RocketSquidEntity) entity;
+                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> squidCap.loadNBT(cap.getSquidCapabilityData()));
                         newSquid.forceRotPitch((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
                         newSquid.forceRotYaw((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
                         Vec3 playerMotion = playerIn.getDeltaMovement();
@@ -48,7 +49,6 @@ public class ItemSqueleporter extends Item {
                         newSquid.addForce(squidTags.getDouble("force"));
                         Vec3 playerPos = playerIn.position();
                         newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
-                        newSquid.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(squidCap -> squidCap.loadNBT(cap.getSquidCapabilityData()));
                         worldIn.addFreshEntity(newSquid);
                         if (newSquid.getSaddled()) {
                             playerIn.startRiding(newSquid);
