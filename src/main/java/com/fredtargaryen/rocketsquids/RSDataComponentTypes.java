@@ -18,7 +18,8 @@ public class RSDataComponentTypes {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SqueleporterData>> SQUELEPORTER = DATA_COMPONENT_TYPES.register("squeleporter",
             () -> DataComponentType.<SqueleporterData>builder()
                     .persistent(SqueleporterData.DISK_CODEC)
-                    .networkSynchronized(SqueleporterData.NETWORK_CODEC)
+                    //.networkSynchronized(SqueleporterData.NETWORK_CODEC)
+                    .cacheEncoding()
                     .build()
     );
 
