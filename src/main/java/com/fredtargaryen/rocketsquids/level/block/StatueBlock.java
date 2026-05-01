@@ -81,7 +81,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && player.isCreative()) {
             DoubleBlockHalf doubleblockhalf = state.getValue(DOUBLE_BLOCK_HALF);
             if (doubleblockhalf == DoubleBlockHalf.UPPER) {
@@ -95,7 +95,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
             }
         }
 
-        super.playerWillDestroy(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable
@@ -140,7 +140,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
                             .setValue(DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER)
                             .setValue(WATERLOGGED, level.getFluidState(abovePos).getType() == Fluids.WATER),
                     3);
-            StatueData.forWorld(level).addStatue(pos);
+            StatueData.forLevel(level).addStatue(pos);
         }
     }
 

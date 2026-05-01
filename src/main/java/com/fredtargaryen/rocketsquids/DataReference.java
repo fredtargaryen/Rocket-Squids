@@ -17,6 +17,10 @@ public class DataReference {
     public static final String MODID = "rocketsquids";
     public static final String MODNAME = "Rocket Squids";
 
+    public static ResourceLocation getResourceLocation(String path) {
+        return new ResourceLocation(MODID, path);
+    }
+
     // Capabilities
     public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
     public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");

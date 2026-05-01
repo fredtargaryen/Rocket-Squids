@@ -3,7 +3,7 @@
 package com.fredtargaryen.rocketsquids.level.levelgen.features;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.config.GeneralConfig;
+import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -35,14 +35,14 @@ public class ConchGen extends Feature<NoneFeatureConfiguration> {
         RandomSource random = context.random();
         BlockPos pos = context.origin();
         // Then we check the config to see if this dimension is allowed
-        if(GeneralConfig.CONCH_USE_WHITELIST.get())
+        if(CommonConfig.CONCH_USE_WHITELIST)
         {
-            List<? extends String> allowedDimensions = GeneralConfig.CONCH_WHITELIST.get();
+            List<? extends String> allowedDimensions = CommonConfig.CONCH_WHITELIST;
             if(!allowedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
         }
         else
         {
-            List<? extends String> blockedDimensions = GeneralConfig.CONCH_BLACKLIST.get();
+            List<? extends String> blockedDimensions = CommonConfig.CONCH_BLACKLIST;
             if(blockedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
         }
 
@@ -52,7 +52,7 @@ public class ConchGen extends Feature<NoneFeatureConfiguration> {
         }
 
         // Setting values
-        world.setBlock(pos, RSBlocks.BLOCK_CONCH.get().defaultBlockState()
+        world.setBlock(pos, RSBlocks.CONCH.get().defaultBlockState()
                 .setValue(BlockStateProperties.FACING, DataReference.randomHorizontalFacing(random))
                 .setValue(BlockStateProperties.WATERLOGGED, world.getBlockState(pos).getBlock() == Blocks.WATER), 3);
         return true;

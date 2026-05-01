@@ -3,7 +3,7 @@
 package com.fredtargaryen.rocketsquids.level.levelgen.features;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.config.GeneralConfig;
+import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.level.StatueData;
 import net.minecraft.core.BlockPos;
@@ -47,15 +47,15 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
         RandomSource random = context.random();
         BlockPos pos = context.origin();
         // Then we check the config to see if this dimension is allowed
-        if (GeneralConfig.STATUE_USE_WHITELIST.get()) {
-            List<? extends String> allowedDimensions = GeneralConfig.STATUE_WHITELIST.get();
+        if (CommonConfig.STATUE_USE_WHITELIST) {
+            List<? extends String> allowedDimensions = CommonConfig.STATUE_WHITELIST;
             if (!allowedDimensions.contains(level.getLevel().dimension().location().toString())) return false;
         } else {
-            List<? extends String> blockedDimensions = GeneralConfig.STATUE_BLACKLIST.get();
+            List<? extends String> blockedDimensions = CommonConfig.STATUE_BLACKLIST;
             if (blockedDimensions.contains(level.getLevel().dimension().location().toString())) return false;
         }
-        StatueData statueManager = StatueData.forWorld(level.getLevel());
-        int frequency = GeneralConfig.STATUE_FREQUENCY.get();
+        StatueData statueManager = StatueData.forLevel(level.getLevel());
+        int frequency = CommonConfig.STATUE_FREQUENCY;
         int chunkX = StatueData.posToChunk(pos.getX());
         int chunkZ = StatueData.posToChunk(pos.getZ());
         int chunkAreaX = StatueData.posToChunkArea(pos.getX());
@@ -94,11 +94,11 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
                         placePos.getZ());
                 Direction facing = DataReference.randomHorizontalFacing(level.getRandom());
                 FluidState fs = level.getFluidState(placePos);
-                level.setBlock(placePos, RSBlocks.BLOCK_STATUE.get().defaultBlockState()
+                level.setBlock(placePos, RSBlocks.STATUE.get().defaultBlockState()
                         .setValue(HORIZONTAL_FACING, facing)
                         .setValue(WATERLOGGED, fs.is(Fluids.WATER)), 3);
                 fs = level.getFluidState(placePos.above());
-                level.setBlock(placePos.above(), RSBlocks.BLOCK_STATUE.get().defaultBlockState()
+                level.setBlock(placePos.above(), RSBlocks.STATUE.get().defaultBlockState()
                         .setValue(HORIZONTAL_FACING, facing)
                         .setValue(DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER)
                         .setValue(WATERLOGGED, fs.is(Fluids.WATER)), 3);

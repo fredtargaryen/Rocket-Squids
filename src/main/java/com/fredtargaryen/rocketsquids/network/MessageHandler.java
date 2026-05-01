@@ -4,24 +4,69 @@ package com.fredtargaryen.rocketsquids.network;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.network.message.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.HandlerThread;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@SuppressWarnings("removal")
+@EventBusSubscriber(modid = DataReference.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class MessageHandler {
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(DataReference.MODID, "channel"),
-            () -> "1.0", //version that will be offered to the server
-            (String s) -> s.equals("1.0"), //client accepted versions
-            (String s) -> s.equals("1.0"));//server accepted versions
+    @SubscribeEvent
+    public static void registerPayloads(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar("1")
+                .executesOn(HandlerThread.NETWORK);
 
-    public static void init() {
-        INSTANCE.registerMessage(0, MessageBabyCapData.class, MessageBabyCapData::toBytes, MessageBabyCapData::new, MessageBabyCapData::onMessage);
-        INSTANCE.registerMessage(1, MessageAdultCapData.class, MessageAdultCapData::toBytes, MessageAdultCapData::new, MessageAdultCapData::onMessage);
-        INSTANCE.registerMessage(2, MessagePlayNoteServer.class, MessagePlayNoteServer::toBytes, MessagePlayNoteServer::new, MessagePlayNoteServer::onMessage);
-        INSTANCE.registerMessage(3, MessagePlayNoteClient.class, MessagePlayNoteClient::toBytes, MessagePlayNoteClient::new, MessagePlayNoteClient::onMessage);
-        INSTANCE.registerMessage(4, MessageSquidNote.class, MessageSquidNote::toBytes, MessageSquidNote::new, MessageSquidNote::onMessage);
-        INSTANCE.registerMessage(5, MessageSquidFirework.class, MessageSquidFirework::toBytes, MessageSquidFirework::new, MessageSquidFirework::onMessage);
+        registrar.playToClient(
+                AdultCapDataMessage.TYPE,
+                AdultCapDataMessage.STREAM_CODEC,
+                AdultCapDataMessage::handle
+        );
+
+        registrar.playToClient(
+                BabyCapDataMessage.TYPE,
+                BabyCapDataMessage.STREAM_CODEC,
+                BabyCapDataMessage::handle
+        );
+
+        registrar.playToClient(
+                PlayNoteClientMessage.TYPE,
+                PlayNoteClientMessage.STREAM_CODEC,
+                PlayNoteClientMessage::handle
+        );
+
+        registrar.playToServer(
+                PlayNoteServerMessage.TYPE,
+                PlayNoteServerMessage.STREAM_CODEC,
+                PlayNoteServerMessage::handle
+        );
+
+        registrar.playToClient(
+                SquidFireworkMessage.TYPE,
+                SquidFireworkMessage.STREAM_CODEC,
+                SquidFireworkMessage::handle
+        );
+
+        registrar.playToClient(
+                SquidNoteMessage.TYPE,
+                SquidNoteMessage.STREAM_CODEC,
+                SquidNoteMessage::handle
+        );
+    }
+
+    public static void sendToServer(CustomPacketPayload message) {
+        PacketDistributor.sendToServer(message);
+    }
+
+    public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, message);
+    }
+
+    public static void sendToPlayersNear(ServerLevel level, CustomPacketPayload message, double x, double y, double z, double radius) {
+        PacketDistributor.sendToPlayersNear(level, null, x, y, z, radius, message);
     }
 }

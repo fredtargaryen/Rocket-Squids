@@ -6,7 +6,6 @@ import com.fredtargaryen.rocketsquids.client.model.ConchOnHeadModel;
 import com.fredtargaryen.rocketsquids.level.item.ItemConch;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
-
 public final class ConchOnHeadRenderer extends GeoArmorRenderer<ItemConch> {
     public ConchOnHeadRenderer() {
         super(new ConchOnHeadModel());

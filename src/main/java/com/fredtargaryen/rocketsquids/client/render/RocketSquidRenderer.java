@@ -50,22 +50,17 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     }
 
     @Override
-    protected void setupRotations(
-            RocketSquidEntity ers,
-            PoseStack matrixStack,
-            float ageInTicks,
-            float rotationYaw,
-            float partialTicks
-    ) {
-        float exactPitch = (float) (Mth.lerp(partialTicks, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
-        float exactYaw = (float) (Mth.lerp(partialTicks, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
+    protected void setupRotations(RocketSquidEntity ers, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
+        float exactPitch = (float) (Mth.lerp(partialTick, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
+        float exactYaw = (float) (Mth.lerp(partialTick, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
 
-        matrixStack.translate(0, 0.5, 0);
-        matrixStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
-        matrixStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
-        matrixStack.translate(0f, -1.2f, 0f);
+        poseStack.translate(0, 0.5, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
+        poseStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
+        poseStack.translate(0f, -1.2f, 0f);
     }
 
+    @Override
     public void render(
             RocketSquidEntity par1EntitySquid,
             float entityYaw,
@@ -76,9 +71,10 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     ) {
         if (par1EntitySquid.getShaking()) {
             RandomSource r = par1EntitySquid.getRandom();
-            matrixStackIn.translate(r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d,r.nextGaussian() * 0.02d);
+            matrixStackIn.translate(r.nextGaussian() * 0.02d, r.nextGaussian() * 0.02d, r.nextGaussian() * 0.02d);
         }
-        else if(par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
+
+        if (par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
             //Choose texture
             TextureAtlasSprite tas = ModelBakery.FIRE_0.sprite();
             //Calculate and set translation-rotation matrix
@@ -93,7 +89,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             matrixStackIn.mulPose(Axis.of(new Vector3f((float) Math.cos(yaw_r), 0f, (float) Math.sin(yaw_r))).rotation((float) pitch_r));
 
             //Prepare to draw
-            RenderSystem.setShaderColor(1f, 1f,1f ,1f);
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
             //Draw the faces. Advised not to touch any of this; creates a pretty cross of fire which is adjusted to be
             //visible even when squid is blasting directly away from viewer.
@@ -103,25 +99,25 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             float maxv = tas.getV1();
             Matrix4f pos = matrixStackIn.last().pose();
             Matrix3f norm = matrixStackIn.last().normal();
-            this.doAVertex(ivb, pos, norm,-0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
-            this.doAVertex(ivb, pos, norm,-0.16f, -1.5f, -0.28f, maxu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm,0.28f, -1.5f, 0.16f, minu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm,0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.16f, -1.5f, -0.28f, maxu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.28f, -1.5f, 0.16f, minu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
 
-            this.doAVertex(ivb, pos, norm, -0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, -0.28f, -1.5f, 0.16f, maxu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, 0.16f, -1.5f, -0.28f, minu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, 0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.28f, -1.5f, 0.16f, maxu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.16f, -1.5f, -0.28f, minu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
 
-            this.doAVertex(ivb, pos, norm, 0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, 0.28f, -1.5f, -0.16f, maxu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, -0.16f, -1.5f, 0.28f, minu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, -0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.28f, -1.5f, -0.16f, maxu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.16f, -1.5f, 0.28f, minu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
 
-            this.doAVertex(ivb, pos, norm, 0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, 0.16f, -1.5f, 0.28f, maxu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, -0.28f, -1.5f, -0.16f, minu, minv, packedLightIn);
-            this.doAVertex(ivb, pos, norm, -0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, 0.16f, -1.5f, 0.28f, maxu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.28f, -1.5f, -0.16f, minu, minv, packedLightIn);
+            this.doAVertex(ivb, matrixStackIn, pos, norm, -0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
 
             //Clear up
             matrixStackIn.popPose();
@@ -134,13 +130,13 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
         return entity.getShaking() ? blasting : normal;
     }
 
-    private void doAVertex(VertexConsumer ivb, Matrix4f pos, Matrix3f norm, float x, float y, float z, float u, float v, int lightLevel) {
+    private void doAVertex(VertexConsumer ivb, PoseStack poseStack, Matrix4f pos, Matrix3f norm, float x, float y, float z, float u, float v, int lightLevel) {
         ivb.vertex(pos, x, y, z)
                 .color(1f, 1f, 1f, 1f)
                 .uv(u, v)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(lightLevel)
-                .normal(norm, 0f, 1f, 0f)
+                .normal(poseStack.last(), 0f, 1f, 0f)
                 .endVertex();
     }
 }

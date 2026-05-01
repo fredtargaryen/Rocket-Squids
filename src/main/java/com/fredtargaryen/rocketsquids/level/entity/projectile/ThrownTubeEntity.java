@@ -2,7 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.projectile;
 
-import com.fredtargaryen.rocketsquids.RSEntities;
+import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.RSItems;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -13,8 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class ThrownTubeEntity extends ThrowableItemProjectile {
@@ -24,11 +22,7 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
 
     public ThrownTubeEntity(LivingEntity elb, Level world)
     {
-        super(RSEntities.TUBE_TYPE.get(), elb, world);
-    }
-
-    public ThrownTubeEntity(PlayMessages.SpawnEntity spawn, Level world) {
-        this(RSEntities.TUBE_TYPE.get(), world);
+        super(RSEntityTypes.TUBE_TYPE.get(), elb, world);
     }
 
     @Override
@@ -45,12 +39,12 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
         return RSItems.TURBO_TUBE.get();
     }
 
-    /**
-     * THIS IS REQUIRED FOR ALL NON-LIVING MOD ENTITIES FROM NOW ON
-     * Without this, they will not spawn on the client.
-     */
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    /**
+//     * THIS IS REQUIRED FOR ALL NON-LIVING MOD ENTITIES FROM NOW ON
+//     * Without this, they will not spawn on the client.
+//     */
+//    @Override
+//    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 }

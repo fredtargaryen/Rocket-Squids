@@ -26,7 +26,4 @@ public abstract class AbstractRocketSquidEntity extends AbstractSquidEntity{
     {
         return true;
     }
-
-    @SuppressWarnings("unused")
-    public abstract boolean canBeRiddenUnderFluidType(Entity rider);
 }

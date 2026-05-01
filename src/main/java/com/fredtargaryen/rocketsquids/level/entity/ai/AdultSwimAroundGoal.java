@@ -3,16 +3,16 @@
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.StatueData;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
+import com.fredtargaryen.rocketsquids.network.message.SquidNoteMessage;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.EnumSet;
 
@@ -126,37 +126,35 @@ public class AdultSwimAroundGoal extends Goal {
                 case LOCATE:
                     //Find nearest statue
                     Vec3 pos = this.squid.position();
-                    int[] statueCoords = StatueData.forWorld(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
+                    int[] statueCoords = StatueData.forLevel(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
                     if (statueCoords == null) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
                         this.squid.setBlastToStatue(false);
                     } else {
-                        //TargetPoint for playing notes related to distance
-                        PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.PLAYER_HEAR_RANGE, this.squid.level().dimension());
                         double zDistance = statueCoords[4] - pos.z;
                         double xDistance = statueCoords[2] - pos.x;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
                         //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
                         this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
                         // Send "Recognition" empty sound for those using subs
-                        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE, this.squid.level().dimension())), new MessageSquidNote((byte) 36));
+                        MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 36), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
                         //Play a celebratory chord
                         if (hozDistanceSquared > 640000.0) {
                             //More than 50 chunks away (50 * 16 = 800 blocks). Low C Major
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 0));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 4));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 7));
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 0), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 4), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 7), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
                         } else if (hozDistanceSquared > 25600.0) {
                             //10-50 chunks away (10 * 16 = 160 blocks). Middle C Major
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 12));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 16));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 19));
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 12), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 16), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 19), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
                         } else {
                             //Less than 10 chunks away. High C Major
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 24));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 28));
-                            MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> squidPoint), new MessageSquidNote((byte) 31));
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 24), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 28), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+                            MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 31), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
                         }
                         if (hozDistanceSquared > 6400.0) {
                             //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
@@ -210,7 +208,7 @@ public class AdultSwimAroundGoal extends Goal {
     private void playNextNote() {
         byte note = this.squid.getTargetNote(this.noteIndex);
         Vec3 pos = this.squid.position();
-        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE, this.squid.level().dimension())), new MessageSquidNote(note));
+        MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage(note), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
         if (this.noteIndex == 2) {
             this.noteIndex = 0;
         } else {

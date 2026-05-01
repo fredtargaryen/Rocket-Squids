@@ -1,4 +1,17 @@
 {
+    "config.common.squid.spawn.prob": "Squid Spawn Probability",
+    "config.common.squid.spawn.min": "Minimum Squid Group Size",
+    "config.common.squid.spawn.max": "Maximum Squid Group Size",
+    "config.common.squid.breeding.cooldown": "Squid Breed Cooldown Time",
+    "config.common.squid.explosion.destructive": "Destructive Squid Explosions",
+    "config.common.worldgen.conch.usewhitelist": "Use Conch Whitelist",
+    "config.common.worldgen.conch.whitelist": "Conch Whitelist",
+    "config.common.worldgen.conch.blacklist": "Conch Blacklist",
+    "config.common.worldgen.statue.usewhitelist": "Use Statue Whitelist",
+    "config.common.worldgen.statue.whitelist": "Statue Whitelist",
+    "config.common.worldgen.statue.blacklist": "Statue Blacklist",
+    "config.common.worldgen.statue.frequency": "Statue Frequency",
+
     "entity.rocketsquids.rocketsquid": "Rocket Squid",
 
     "item.rocketsquids.conch_item_1": "Whistling Conch",
@@ -8,7 +21,7 @@
     "item.rocketsquids.squeleporter_active": "Squeleporter",
     "item.rocketsquids.squeleporter_inactive": "Squeleporter",
     "item.rocketsquids.turbo_tube": "Turbo Tube",
-    "item.rocketsquids.rockets_squid_spawn_egg": "Rocket Squid Spawn Egg",
+    "item.rocketsquids.rocket_squid_spawn_egg": "Rocket Squid Spawn Egg",
 
     "item_group.rocketsquids.rocket_squid_tab": "Rocket Squids",
 

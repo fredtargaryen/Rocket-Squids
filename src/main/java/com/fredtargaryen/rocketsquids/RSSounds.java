@@ -2,24 +2,24 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @SuppressWarnings("removal")
 public class RSSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
-            DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
+            DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
 
-    public static final RegistryObject<SoundEvent> BLASTOFF = registerSoundEvents("blastoff");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BLASTOFF = registerSoundEvents("blastoff");
 
-    public static final RegistryObject<SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
-    public static final RegistryObject<SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
 
     public static SoundEvent[] CONCH_NOTES = new SoundEvent[] {
             SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "conchc3")),
@@ -61,7 +61,7 @@ public class RSSounds {
             SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "recognition"))
     };
 
-    private static RegistryObject<SoundEvent> registerSoundEvents(String name) {
+    private static DeferredHolder<SoundEvent, SoundEvent> registerSoundEvents(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));
     }
 
