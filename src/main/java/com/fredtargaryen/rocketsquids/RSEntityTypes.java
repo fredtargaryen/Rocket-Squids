@@ -38,7 +38,6 @@ public class RSEntityTypes {
                     .setTrackingRange(128)
                     .setUpdateInterval(10)
                     .setShouldReceiveVelocityUpdates(true)
-                    //.setCustomClientFactory(ThrownTubeEntity::new)
                     .build(MODID)
     );
     public static final DeferredHolder<EntityType<?>, EntityType<RocketSquidEntity>> SQUID_TYPE = ENTITIES.register("rocket_squid",
