@@ -12,8 +12,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class ItemConch2 extends Item {
-    public ItemConch2(Item.Properties properties) {
+public class Conch2Item extends Item {
+    public Conch2Item(Item.Properties properties) {
         super(properties);
     }
 

@@ -16,8 +16,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public class ItemNitroInkSac extends Item {
-    public ItemNitroInkSac(Item.Properties properties) {
+public class NitroInkSacItem extends Item {
+    public NitroInkSacItem(Item.Properties properties) {
         super(properties);
     }
 

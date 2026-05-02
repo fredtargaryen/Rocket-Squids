@@ -44,10 +44,10 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
-public class ItemConch extends GeoModArmorItem {
+public class ConchItem extends GeoModArmorItem {
     private final ItemAttributeModifiers emptyModifierMap;
 
-    public ItemConch(Item.Properties properties) {
+    public ConchItem(Item.Properties properties) {
         super(RSArmorMaterials.CONCH, Type.HELMET, properties);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>(), false);

@@ -145,7 +145,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     /**
-     * Should only be called by ItemConch
+     * Should only be called by ConchItem
      */
     public void dispenseGifts(Level level, BlockPos pos, Direction facing) {
         //Play some kind of wonderful "you found treasure" chord
