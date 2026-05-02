@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
-public class ItemSqueleporter extends Item {
-    public ItemSqueleporter(Item.Properties properties) {
+public class SqueleporterItem extends Item {
+    public SqueleporterItem(Item.Properties properties) {
         super(properties);
     }
 

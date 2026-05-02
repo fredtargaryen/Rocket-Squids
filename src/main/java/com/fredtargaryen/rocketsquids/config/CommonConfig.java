@@ -11,7 +11,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.Collections;
 import java.util.List;
 
-@EventBusSubscriber(modid = DataReference.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = DataReference.MODID)
 public class CommonConfig {
     public static List<String> DEFAULT_BLACKLIST = Collections.emptyList();
     public static List<String> DEFAULT_WHITELIST = Collections.singletonList("overworld");

@@ -17,8 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public class ItemTurboTube extends Item {
-    public ItemTurboTube(Item.Properties properties) {
+public class TurboTubeItem extends Item {
+    public TurboTubeItem(Item.Properties properties) {
         super(properties);
     }
 

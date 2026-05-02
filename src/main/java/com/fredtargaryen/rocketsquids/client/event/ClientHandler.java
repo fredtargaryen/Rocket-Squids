@@ -35,15 +35,11 @@ import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientHandler {
     @SuppressWarnings("removal")
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // Register block renderers
-        //ItemBlockRenderTypes.setRenderLayer(RSBlocks.CONCH.get(), RenderType.cutoutMipped());
-        //ItemBlockRenderTypes.setRenderLayer(RSBlocks.STATUE.get(), RenderType.cutoutMipped());
-
         // Register normal entity renderers
         event.registerEntityRenderer(RSEntityTypes.SAC_TYPE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(RSEntityTypes.TUBE_TYPE.get(), ThrownItemRenderer::new);

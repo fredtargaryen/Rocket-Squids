@@ -50,7 +50,7 @@ public class ConchScreen extends Screen {
     public boolean playNextClickedNoteSound;
 
     @SuppressWarnings("removal")
-    private static final ResourceLocation NOTE = new ResourceLocation(DataReference.MODID, "textures/gui/note.png");
+    private static final ResourceLocation NOTE = DataReference.getResourceLocation("textures/gui/note.png");
 
     private static final Component[] buttonNames = {
             Component.literal("C").withStyle(ChatFormatting.WHITE),

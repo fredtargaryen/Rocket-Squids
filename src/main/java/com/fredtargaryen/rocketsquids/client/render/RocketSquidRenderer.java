@@ -28,8 +28,8 @@ import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BO
 
 @SuppressWarnings("removal")
 public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
-    private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");
-    private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid_b.png");
+    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/rocket_squid.png");
+    private static final ResourceLocation blasting = DataReference.getResourceLocation("textures/entity/rocket_squid_b.png");
 
     public RocketSquidRenderer(
             EntityRendererProvider.Context context
@@ -131,12 +131,11 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     }
 
     private void doAVertex(VertexConsumer ivb, PoseStack poseStack, Matrix4f pos, Matrix3f norm, float x, float y, float z, float u, float v, int lightLevel) {
-        ivb.vertex(pos, x, y, z)
-                .color(1f, 1f, 1f, 1f)
-                .uv(u, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(lightLevel)
-                .normal(poseStack.last(), 0f, 1f, 0f)
-                .endVertex();
+        ivb.addVertex(pos, x, y, z)
+                .setColor(1f, 1f, 1f, 1f)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(lightLevel)
+                .setNormal(poseStack.last(), 0f, 1f, 0f);
     }
 }

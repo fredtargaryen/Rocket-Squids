@@ -44,10 +44,10 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
-public class ItemConch extends GeoModArmorItem {
+public class ConchItem extends GeoModArmorItem {
     private final ItemAttributeModifiers emptyModifierMap;
 
-    public ItemConch(Item.Properties properties) {
+    public ConchItem(Item.Properties properties) {
         super(RSArmorMaterials.CONCH, Type.HELMET, properties);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>(), false);
@@ -95,6 +95,8 @@ public class ItemConch extends GeoModArmorItem {
                     float hitZ = (float) hitVec.z;
                     BlockState conchstate = RSBlocks.CONCH.get().getStateForPlacement(blockContext);
 
+                    if (!conchstate.canSurvive(level, pos)) return InteractionResult.FAIL;
+
                     if (placeBlockAt(itemstack, player, level, pos, facing, hitX, hitY, hitZ, conchstate)) {
                         BlockState iblockstate1 = level.getBlockState(pos);
                         SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, level, pos, player);
@@ -106,32 +108,28 @@ public class ItemConch extends GeoModArmorItem {
                 }
             }
         } else {
+            boolean shouldInsertConch = block == RSBlocks.STATUE.get() && !state.getValue(OPEN);
             // If the player has right-clicked a statue, activate it
-            if (!level.isClientSide) {
-                if (block == RSBlocks.STATUE.get()) {
-                    if (!state.getValue(OPEN)) {
-                        if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
-                            BlockState stateBelow = level.getBlockState(pos.below());
-                            if (stateBelow.getBlock() == RSBlocks.STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
-                                pos = pos.below();
-                                state = stateBelow;
-                            }
-                        }
-                        StatueData.forLevel(level).removeStatue(new int[]{
-                                0, 0, pos.getX(), pos.getY(), pos.getZ()
-                        });
-                        level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
-                        context.getItemInHand().grow(-1);
-                        ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
-                        return InteractionResult.CONSUME;
+            if (!level.isClientSide && shouldInsertConch) {
+                if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
+                    BlockState stateBelow = level.getBlockState(pos.below());
+                    if (stateBelow.getBlock() == RSBlocks.STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
+                        pos = pos.below();
+                        state = stateBelow;
                     }
                 }
+                StatueData.forLevel(level).removeStatue(new int[]{
+                        0, 0, pos.getX(), pos.getY(), pos.getZ()
+                });
+                level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
+                context.getItemInHand().grow(-1);
+                ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
+                return InteractionResult.CONSUME;
             }
-        }
-
-        if (level.isClientSide) {
-            this.use(level, player, context.getHand());
-            return InteractionResult.PASS;
+            else if (level.isClientSide && !shouldInsertConch) {
+                this.use(level, player, context.getHand());
+                return InteractionResult.PASS;
+            }
         }
 
         return InteractionResult.FAIL;

@@ -14,8 +14,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-public class ItemConch3 extends Item {
-    public ItemConch3(Item.Properties properties) {
+public class Conch3Item extends Item {
+    public Conch3Item(Item.Properties properties) {
         super(properties);
     }
 
