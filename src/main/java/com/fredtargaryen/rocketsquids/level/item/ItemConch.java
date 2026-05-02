@@ -127,12 +127,15 @@ public class ItemConch extends GeoModArmorItem {
                     }
                 }
             }
+            else {
+                if (block != RSBlocks.STATUE.get()) {
+                    this.use(level, player, context.getHand());
+                    return InteractionResult.PASS;
+                }
+            }
         }
 
-        if (level.isClientSide) {
-            this.use(level, player, context.getHand());
-            return InteractionResult.PASS;
-        }
+
 
         return InteractionResult.FAIL;
     }
