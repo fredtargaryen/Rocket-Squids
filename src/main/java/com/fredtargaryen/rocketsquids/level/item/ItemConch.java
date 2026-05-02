@@ -49,7 +49,6 @@ public class ItemConch extends GeoModArmorItem {
 
     public ItemConch(Item.Properties properties) {
         super(RSArmorMaterials.CONCH, Type.HELMET, properties);
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>(), false);
     }
 
