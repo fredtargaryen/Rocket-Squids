@@ -26,7 +26,7 @@ public class ConchNumberButton extends ExtendedButton {
 
     private static final Component questionMark = Component.literal("?");
 
-    private static final ResourceLocation NUMBER = new ResourceLocation(DataReference.MODID, "textures/gui/numbernote.png");
+    private static final ResourceLocation NUMBER = DataReference.getResourceLocation("textures/gui/numbernote.png");
 
     public boolean playSound;
 

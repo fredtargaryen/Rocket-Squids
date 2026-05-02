@@ -21,11 +21,6 @@ public class DataReference {
         return new ResourceLocation(MODID, path);
     }
 
-    // Capabilities
-    public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
-    public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");
-    public static final ResourceLocation ADULT_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "iadult");
-
     // Conch hearing ranges
     public static final double PLAYER_HEAR_RANGE = 16.0;
     public static final double SQUID_SING_RANGE = 8.0;

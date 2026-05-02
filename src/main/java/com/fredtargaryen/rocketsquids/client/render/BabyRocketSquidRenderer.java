@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.BABY_SQUID_BODY_LAYER;
 
 public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel<BabyRocketSquidEntity>> {
-    private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/baby_rocket_squid.png");
+    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/baby_rocket_squid.png");
 
     public BabyRocketSquidRenderer(
             EntityRendererProvider.Context context

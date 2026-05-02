@@ -28,8 +28,8 @@ import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BO
 
 @SuppressWarnings("removal")
 public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
-    private static final ResourceLocation normal = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid.png");
-    private static final ResourceLocation blasting = new ResourceLocation(DataReference.MODID + ":textures/entity/rocket_squid_b.png");
+    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/rocket_squid.png");
+    private static final ResourceLocation blasting = DataReference.getResourceLocation("textures/entity/rocket_squid_b.png");
 
     public RocketSquidRenderer(
             EntityRendererProvider.Context context
