@@ -3,7 +3,7 @@
 package com.fredtargaryen.rocketsquids;
 
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 
 /**
@@ -11,14 +11,13 @@ import net.minecraft.util.RandomSource;
  * Superflat preset for squid testing:
  * minecraft:glowstone,42*minecraft:water
  */
-@SuppressWarnings("removal")
 public class DataReference {
     // MAIN MOD DETAILS
     public static final String MODID = "rocketsquids";
     public static final String MODNAME = "Rocket Squids";
 
-    public static ResourceLocation getResourceLocation(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static Identifier getIdentifier(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
     // Conch hearing ranges

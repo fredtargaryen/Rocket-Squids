@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  */
 public record SquidNoteMessage(byte note) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SquidNoteMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("note_client_squid"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("note_client_squid"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

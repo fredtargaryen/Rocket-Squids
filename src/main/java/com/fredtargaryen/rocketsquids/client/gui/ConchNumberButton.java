@@ -14,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ public class ConchNumberButton extends ExtendedButton {
 
     private static final Component questionMark = Component.literal("?");
 
-    private static final ResourceLocation NUMBER = DataReference.getResourceLocation("textures/gui/numbernote.png");
+    private static final Identifier NUMBER = DataReference.getIdentifier("textures/gui/numbernote.png");
 
     public boolean playSound;
 

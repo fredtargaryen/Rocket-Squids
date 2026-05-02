@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +28,8 @@ import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BO
 
 @SuppressWarnings("removal")
 public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
-    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/rocket_squid.png");
-    private static final ResourceLocation blasting = DataReference.getResourceLocation("textures/entity/rocket_squid_b.png");
+    private static final Identifier normal = DataReference.getIdentifier("textures/entity/rocket_squid.png");
+    private static final Identifier blasting = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
 
     public RocketSquidRenderer(
             EntityRendererProvider.Context context
@@ -126,7 +126,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(RocketSquidEntity entity) {
+    public @NotNull Identifier getTextureLocation(RocketSquidEntity entity) {
         return entity.getShaking() ? blasting : normal;
     }
 

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  */
 public record PlayNoteClientMessage(byte note) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PlayNoteClientMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("note_client"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("note_client"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

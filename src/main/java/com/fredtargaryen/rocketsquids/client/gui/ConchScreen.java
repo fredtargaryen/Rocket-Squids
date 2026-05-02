@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
@@ -50,7 +50,7 @@ public class ConchScreen extends Screen {
     public boolean playNextClickedNoteSound;
 
     @SuppressWarnings("removal")
-    private static final ResourceLocation NOTE = DataReference.getResourceLocation("textures/gui/note.png");
+    private static final Identifier NOTE = DataReference.getIdentifier("textures/gui/note.png");
 
     private static final Component[] buttonNames = {
             Component.literal("C").withStyle(ChatFormatting.WHITE),

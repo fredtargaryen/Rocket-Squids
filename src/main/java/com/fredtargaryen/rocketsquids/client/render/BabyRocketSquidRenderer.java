@@ -9,14 +9,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.BABY_SQUID_BODY_LAYER;
 
 public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel<BabyRocketSquidEntity>> {
-    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/baby_rocket_squid.png");
+    private static final Identifier normal = DataReference.getIdentifier("textures/entity/baby_rocket_squid.png");
 
     public BabyRocketSquidRenderer(
             EntityRendererProvider.Context context
@@ -48,7 +48,7 @@ public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, 
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull BabyRocketSquidEntity entity) {
+    public @NotNull Identifier getTextureLocation(@NotNull BabyRocketSquidEntity entity) {
         return normal;
     }
 }

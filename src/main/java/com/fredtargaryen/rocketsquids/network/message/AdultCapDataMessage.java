@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public record AdultCapDataMessage(UUID uuid, CompoundTag data) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<AdultCapDataMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("adult_data"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("adult_data"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
