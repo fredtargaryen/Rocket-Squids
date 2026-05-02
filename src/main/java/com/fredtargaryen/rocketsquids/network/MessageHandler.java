@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@EventBusSubscriber(modid = DataReference.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = DataReference.MODID)
 public class MessageHandler {
     @SubscribeEvent
     public static void registerPayloads(final RegisterPayloadHandlersEvent event) {

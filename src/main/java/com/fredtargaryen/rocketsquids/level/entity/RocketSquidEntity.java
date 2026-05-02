@@ -59,7 +59,7 @@ import java.util.UUID;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
-public class RocketSquidEntity extends AbstractRocketSquidEntity {
+public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leashable {
     /**
      * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
      */
@@ -444,35 +444,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     // Probably impossible...
                     this.getData(SQUID).setForcedBlast(true);
                     partner.getData(SQUID).setForcedBlast(true);
-            }
-        }
-    }
-
-    /**
-     * Applies logic related to leashes, for example dragging the entity or breaking the leash.
-     */
-    protected void tickLeash() {
-        super.tickLeash();
-        if (this.isLeashed()) {
-            Entity holder = this.getLeashHolder();
-            if (holder != null && holder.level() == this.level()) {
-                float f = this.distanceTo(holder);
-
-                if (f > 8.0F) {
-                    this.setDeltaMovement(0.0F, 0.0F, 0.0F);
-                }
-
-                if (f > 6.0F) {
-                    Vec3 thisPos = this.position();
-                    Vec3 holderPos = holder.position();
-                    double d0 = (holderPos.x - thisPos.x) / (double) f;
-                    double d1 = (holderPos.y - thisPos.y) / (double) f;
-                    double d2 = (holderPos.z - thisPos.z) / (double) f;
-                    Vec3 motion = this.getDeltaMovement();
-                    this.setDeltaMovement(motion.x + d0 * Math.abs(d0) * 0.4D,
-                            motion.y + d1 * Math.abs(d1) * 0.4D,
-                            motion.z + d2 * Math.abs(d2) * 0.4D);
-                }
             }
         }
     }

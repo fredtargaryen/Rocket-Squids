@@ -18,13 +18,8 @@ public class DataReference {
     public static final String MODNAME = "Rocket Squids";
 
     public static ResourceLocation getResourceLocation(String path) {
-        return new ResourceLocation(MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
-
-    // Capabilities
-    public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
-    public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");
-    public static final ResourceLocation ADULT_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "iadult");
 
     // Conch hearing ranges
     public static final double PLAYER_HEAR_RANGE = 16.0;
