@@ -95,6 +95,8 @@ public class ItemConch extends GeoModArmorItem {
                     float hitZ = (float) hitVec.z;
                     BlockState conchstate = RSBlocks.CONCH.get().getStateForPlacement(blockContext);
 
+                    if (!conchstate.canSurvive(level, pos)) return InteractionResult.FAIL;
+
                     if (placeBlockAt(itemstack, player, level, pos, facing, hitX, hitY, hitZ, conchstate)) {
                         BlockState iblockstate1 = level.getBlockState(pos);
                         SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, level, pos, player);
