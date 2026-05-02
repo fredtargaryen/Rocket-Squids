@@ -105,36 +105,29 @@ public class ItemConch extends GeoModArmorItem {
                 }
             }
         } else {
+            boolean shouldInsertConch = block == RSBlocks.STATUE.get() && !state.getValue(OPEN);
             // If the player has right-clicked a statue, activate it
-            if (!level.isClientSide) {
-                if (block == RSBlocks.STATUE.get()) {
-                    if (!state.getValue(OPEN)) {
-                        if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
-                            BlockState stateBelow = level.getBlockState(pos.below());
-                            if (stateBelow.getBlock() == RSBlocks.STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
-                                pos = pos.below();
-                                state = stateBelow;
-                            }
-                        }
-                        StatueData.forLevel(level).removeStatue(new int[]{
-                                0, 0, pos.getX(), pos.getY(), pos.getZ()
-                        });
-                        level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
-                        context.getItemInHand().grow(-1);
-                        ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
-                        return InteractionResult.CONSUME;
+            if (!level.isClientSide && shouldInsertConch) {
+                if (state.getValue(DOUBLE_BLOCK_HALF) == UPPER) {
+                    BlockState stateBelow = level.getBlockState(pos.below());
+                    if (stateBelow.getBlock() == RSBlocks.STATUE.get() && stateBelow.getValue(DOUBLE_BLOCK_HALF) == LOWER) {
+                        pos = pos.below();
+                        state = stateBelow;
                     }
                 }
+                StatueData.forLevel(level).removeStatue(new int[]{
+                        0, 0, pos.getX(), pos.getY(), pos.getZ()
+                });
+                level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
+                context.getItemInHand().grow(-1);
+                ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
+                return InteractionResult.CONSUME;
             }
-            else {
-                if (block != RSBlocks.STATUE.get()) {
-                    this.use(level, player, context.getHand());
-                    return InteractionResult.PASS;
-                }
+            else if (level.isClientSide && !shouldInsertConch) {
+                this.use(level, player, context.getHand());
+                return InteractionResult.PASS;
             }
         }
-
-
 
         return InteractionResult.FAIL;
     }
