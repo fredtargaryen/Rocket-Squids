@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  *
  * @param note The index of the note to play
  */
-public record SquidNoteMessage(byte note) implements CustomPacketPayload {
+public record SquidNoteMessage(int note) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SquidNoteMessage> TYPE =
             new CustomPacketPayload.Type<>(DataReference.getIdentifier("note_client_squid"));
 
@@ -28,7 +28,7 @@ public record SquidNoteMessage(byte note) implements CustomPacketPayload {
 
     public static final StreamCodec<FriendlyByteBuf, SquidNoteMessage> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.BYTE, SquidNoteMessage::note,
+                    ByteBufCodecs.INT, SquidNoteMessage::note,
                     SquidNoteMessage::new);
 
     public static void handle(final SquidNoteMessage message, final IPayloadContext context) {

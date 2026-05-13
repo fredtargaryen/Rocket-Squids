@@ -16,6 +16,7 @@ import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
+import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -41,6 +42,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -214,7 +216,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                 this.moveToWherePointing();
             }
             if (this.newPacketRequired) {
-                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), data.serializeNBT(null)));
+                TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                data.serialize(vo);
+                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), vo.buildResult()));
                 this.newPacketRequired = false;
             }
 
@@ -255,7 +259,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                     // Set squid data
                     CompoundTag entityData = new CompoundTag();
                     this.addAdditionalSaveData(entityData);
-                    CompoundTag attachmentData = this.getData(SQUID).serializeNBT(null);
+                    CompoundTag attachmentData = ValueIOHelper.getValueIOAsCompoundTag(this.getData(SQUID));
                     newStack.set(SQUELEPORTER, new SqueleporterData(entityData, attachmentData));
                     this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
@@ -263,11 +267,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                         handEquip = EquipmentSlot.OFFHAND;
                     }
                     player.setItemSlot(handEquip, newStack);
-                    player.getCooldowns().addCooldown(newStack.getItem(), 10);
+                    player.getCooldowns().addCooldown(newStack, 10);
                 } else if (interactItem == Items.FLINT_AND_STEEL) {
                     // if the player isn't in creative we damage the flint and steel
                     if (!player.isCreative()) {
-                        interactStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                        interactStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
                     }
                     this.getData(SQUID).setForcedBlast(true);
                     return InteractionResult.SUCCESS;
@@ -431,7 +435,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                     this.breedCooldown = CommonConfig.BREED_COOLDOWN;
                     BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level());
                     assert baby != null;
-                    baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
+                    baby.setPos(thisPos.x, thisPos.y, thisPos.z);
                     this.level().addFreshEntity(baby);
                     this.spawnHearts((ServerLevel) this.level());
                     break;
@@ -530,10 +534,10 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
      * dropEquipment
      */
     @Override
-    protected void dropEquipment() {
-        super.dropEquipment();
+    protected void dropEquipment(ServerLevel level) {
+        super.dropEquipment(level);
         if (this.getSaddled()) {
-            this.spawnAtLocation(Items.SADDLE);
+            this.spawnAtLocation(level, Items.SADDLE);
         }
     }
 
@@ -708,7 +712,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         return this.getData(SQUID).getForcedBlast();
     }
 
-    public byte getTargetNote(byte index) {
+    public int getTargetNote(byte index) {
         return this.getData(SQUID).getTargetNotes()[index];
     }
 }

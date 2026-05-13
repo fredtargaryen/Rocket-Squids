@@ -206,7 +206,7 @@ public class AdultSwimAroundGoal extends Goal {
     }
 
     private void playNextNote() {
-        byte note = this.squid.getTargetNote(this.noteIndex);
+        int note = this.squid.getTargetNote(this.noteIndex);
         Vec3 pos = this.squid.position();
         MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage(note), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
         if (this.noteIndex == 2) {

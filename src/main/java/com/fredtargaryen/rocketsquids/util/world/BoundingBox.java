@@ -41,7 +41,7 @@ public class BoundingBox {
      * @return returns an AABB bounding box
      */
     public AABB cubeFromPositionClamped(BlockPos center, int radiusSize, Level level) {
-        return cubeFromPositionClamped(center, radiusSize, level.getMaxBuildHeight(), level.getMinBuildHeight());
+        return cubeFromPositionClamped(center, radiusSize, level.getMaxY(), level.getMinY());
     }
 
     /** Creates an AABB boundbox of the spesified radius then clamps it to the height limit in box directions.
@@ -51,6 +51,6 @@ public class BoundingBox {
      * @return returns an AABB bounding box
      */
     public AABB cubeFromPositionClamped(BlockPos center, int radiusSize, ServerLevel level) {
-        return cubeFromPositionClamped(center, radiusSize, level.getMaxBuildHeight(), level.getMinBuildHeight());
+        return cubeFromPositionClamped(center, radiusSize, level.getMaxY(), level.getMinY());
     }
 }

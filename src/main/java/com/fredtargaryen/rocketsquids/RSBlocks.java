@@ -20,7 +20,7 @@ public class RSBlocks {
 
     // Register all blocks here
     public static final DeferredHolder<Block, ConchBlock> CONCH = BLOCKS.register("conch",
-            () -> new ConchBlock(Block.Properties.of().mapColor(MapColor.SAND).noCollission())
+            () -> new ConchBlock(Block.Properties.of().mapColor(MapColor.SAND).noCollision())
     );
     public static final DeferredHolder<Block, StatueBlock> STATUE = BLOCKS.register("statue",
             () -> new StatueBlock(BlockBehaviour.Properties.ofFullCopy(STONE).noOcclusion())

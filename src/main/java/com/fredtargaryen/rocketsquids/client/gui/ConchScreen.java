@@ -7,12 +7,13 @@ import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.PlayNoteServerMessage;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -150,16 +151,16 @@ public class ConchScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (this.conchStage == (byte) 3) {
-            int index = keyCode - 48; // So alpha key 0 = button 0, alpha key 1 = button 1 etc.
+            int index = event.key() - 48; // So alpha key 0 = button 0, alpha key 1 = button 1 etc.
             if (index > -1 && index < 10) {
                 ConchNumberButton cnb = this.conchNumberButtons.get(index == 0 ? 9 : index - 1);
                 cnb.playSound = true;
                 cnb.playDownSound(Minecraft.getInstance().getSoundManager());
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     private class ConchButton extends ExtendedButton {
@@ -197,7 +198,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
@@ -210,11 +211,8 @@ public class ConchScreen extends Screen {
                 green = 0.9F * this.id / 36.0F + blue;
             }
 
-            RenderSystem.setShaderColor(red, green, blue, 1.0F);
-            guiGraphics.blit(NOTE, this.getX() + 2, this.getY() - 37, 0, 0, 0, 27, 54, 27, 54);
-
-            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-            guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, NOTE, this.getX() + 2, this.getY() - 37, 0, 0, 27, 54, 27, 54, ColorHelper.color(red, green, blue));
+            guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.WHITE);
         }
     }
 

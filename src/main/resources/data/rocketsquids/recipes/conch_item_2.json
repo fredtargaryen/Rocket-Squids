@@ -8,11 +8,11 @@
   ],
   "key": {
     "1": {
-      "item": "rocketsquids:conch_item_1"
+      "item": "rocketsquids:conch_1"
     }
   },
   "result": {
-    "id": "rocketsquids:conch_item_2",
+    "id": "rocketsquids:conch_2",
     "count": 1
   }
 }

@@ -38,12 +38,12 @@ public class ConchGen extends Feature<NoneFeatureConfiguration> {
         if(CommonConfig.CONCH_USE_WHITELIST)
         {
             List<? extends String> allowedDimensions = CommonConfig.CONCH_WHITELIST;
-            if(!allowedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
+            if(!allowedDimensions.contains(world.getLevel().dimension().identifier().toString())) return false;
         }
         else
         {
             List<? extends String> blockedDimensions = CommonConfig.CONCH_BLACKLIST;
-            if(blockedDimensions.contains(world.getLevel().dimension().location().toString())) return false;
+            if(blockedDimensions.contains(world.getLevel().dimension().identifier().toString())) return false;
         }
 
         // Check if the block below the conch has the ICE BlockTag and if it does then we don't place one there

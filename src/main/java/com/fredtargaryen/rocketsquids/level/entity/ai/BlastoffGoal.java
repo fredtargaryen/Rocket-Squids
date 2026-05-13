@@ -47,7 +47,7 @@ public class BlastoffGoal extends Goal {
                 // Reset
                 this.squid.setShaking(false);
                 this.squid.setBlasting(false);
-                this.squid.hasImpulse = false;
+                this.squid.needsSync = false;
                 this.blastTimer = -1;
             }
         }

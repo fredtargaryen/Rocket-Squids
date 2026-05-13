@@ -5,7 +5,6 @@ package com.fredtargaryen.rocketsquids.level.item;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,13 +22,13 @@ public class Conch3Item extends Item {
      * Called when the equipped item is right clicked.
      */
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(
-            Level worldIn,
+    public @NotNull InteractionResult use(
+            Level level,
             @NotNull Player playerIn,
             @NotNull InteractionHand handIn
     ) {
-        if(worldIn.isClientSide) ClientHandler.openConchClient((byte) 3);
-        return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
+        if (level.isClientSide()) ClientHandler.openConchClient((byte) 3);
+        return InteractionResult.PASS;
     }
 
     /**
@@ -41,8 +40,7 @@ public class Conch3Item extends Item {
      * the glint for enchanted items. Of course, that is unnecessary if the overwritten version always returns true.
      */
     @OnlyIn(Dist.CLIENT)
-    public boolean isFoil(@NotNull ItemStack stack)
-    {
+    public boolean isFoil(@NotNull ItemStack stack) {
         return true;
     }
 }

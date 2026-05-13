@@ -2,19 +2,19 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
-import net.minecraft.core.Holder;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class GeoModArmorItem extends ArmorItem implements GeoItem {
+public class GeoModArmorItem extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public GeoModArmorItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties) {
-        super(armorMaterial, type, properties);
+    public GeoModArmorItem(ArmorMaterial armorMaterial, ArmorType type, Properties properties) {
+        super(properties.humanoidArmor(armorMaterial, type));
     }
 
     // Create our animation controller

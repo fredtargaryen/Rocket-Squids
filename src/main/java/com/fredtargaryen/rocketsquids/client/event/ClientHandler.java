@@ -17,10 +17,15 @@ import com.fredtargaryen.rocketsquids.network.message.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -49,18 +54,20 @@ public class ClientHandler {
         event.registerEntityRenderer(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
 
+    /**
+     * Unused provider passed to certain methods so that they don't complain
+     */
+    private static final HolderLookup.Provider dummyLookupProvider;
+
     public static final ModelLayerLocation SQUID_BODY_LAYER;
+    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
 
     static {
         assert RSEntityTypes.SQUID_TYPE.getId() != null;
         SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body");
-    }
-
-    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
-
-    static {
         assert RSEntityTypes.BABY_SQUID_TYPE.getId() != null;
         BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.BABY_SQUID_TYPE.getId(), "body");
+        dummyLookupProvider = VanillaRegistries.createLookup();
     }
 
     @SubscribeEvent
@@ -71,7 +78,7 @@ public class ClientHandler {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(RSParticleTypes.FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
+        event.registerSpriteSet(RSParticleTypes.FIREWORK_TYPE.get(), SquidFireworkParticle.SparkProvider::new);
     }
 
     public static void openConchClient(byte conchStage) {
@@ -82,13 +89,7 @@ public class ClientHandler {
         Player player = Minecraft.getInstance().player;
         // Check if the player is wearing the conch
         assert player != null;
-        Iterable<ItemStack> armour = player.getArmorSlots();
-        Iterator<ItemStack> iter = armour.iterator();
-        iter.next();
-        iter.next();
-        iter.next();
-        ItemStack helmet = iter.next();
-        if (helmet.getItem() == RSItems.ITEM_CONCH.get()) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).getItem() == RSItems.ITEM_CONCH.get()) {
             Vec3 pos = player.position();
             player.level().playLocalSound(pos.x, pos.y, pos.z, RSSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }
@@ -102,7 +103,8 @@ public class ClientHandler {
         while (squidFinder.hasNext()) {
             e = squidFinder.next();
             if (e.getUUID().equals(message.uuid())) {
-                e.getData(SQUID).deserializeNBT(null, message.data());
+                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
+                e.getData(SQUID).deserialize(vi);
             }
         }
     }
@@ -115,7 +117,8 @@ public class ClientHandler {
         while (squidFinder.hasNext()) {
             e = squidFinder.next();
             if (e.getUUID().equals(message.uuid())) {
-                e.getData(SQUID).deserializeNBT(null, message.data());
+                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
+                e.getData(SQUID).deserialize(vi);
             }
         }
     }

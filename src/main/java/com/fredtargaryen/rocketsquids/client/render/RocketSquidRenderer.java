@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
+import com.fredtargaryen.rocketsquids.client.render.state.RocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,6 +20,7 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -26,70 +28,72 @@ import org.joml.Vector3f;
 
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BODY_LAYER;
 
-@SuppressWarnings("removal")
-public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidModel<RocketSquidEntity>> {
+public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidRenderState, RocketSquidModel> {
     private static final Identifier normal = DataReference.getIdentifier("textures/entity/rocket_squid.png");
     private static final Identifier blasting = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
+    private final RandomSource random = RandomSource.create();
 
     public RocketSquidRenderer(
             EntityRendererProvider.Context context
     ) {
-        super(context, new RocketSquidModel<>(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
-    }
-
-    /**
-     * Defines what float the third param in setRotationAngles of ModelBase is
-     * par2 = time elapsed since last render call
-     */
-    @Override
-    protected float getBob(
-            RocketSquidEntity squid,
-            float partialTicks
-    ) {
-        return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
+        super(context, new RocketSquidModel(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
     }
 
     @Override
-    protected void setupRotations(RocketSquidEntity ers, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-        float exactPitch = (float) (Mth.lerp(partialTick, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
-        float exactYaw = (float) (Mth.lerp(partialTick, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
+    public RocketSquidRenderState createRenderState() {
+        return new RocketSquidRenderState();
+    }
 
+    @Override
+    public void extractRenderState(RocketSquidEntity squid, RocketSquidRenderState state, float partialTick) {
+        state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
+        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()) * 180 / Math.PI);
+        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()) * 180 / Math.PI);
+        state.saddled = squid.getSaddled();
+        state.shaking = squid.getShaking();
+        state.blasting = squid.getBlasting();
+        state.isInWater = squid.isInWater();
+    }
+
+    @Override
+    public Vec3 getRenderOffset(RocketSquidRenderState state) {
+        Vec3 vec3 = super.getRenderOffset(state);
+        if (state.shaking) {
+            return vec3.add(this.random.nextGaussian() * 0.02d,
+                    this.random.nextGaussian() * 0.02d,
+                    this.random.nextGaussian() * 0.02d);
+        }
+        return vec3;
+    }
+
+    @Override
+    protected void setupRotations(RocketSquidRenderState state, PoseStack poseStack, float bodyRot, float scale) {
         poseStack.translate(0, 0.5, 0);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
-        poseStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180f - state.yBodyRot));
+        poseStack.mulPose(Axis.XN.rotationDegrees(state.xBodyRot));
         poseStack.translate(0f, -1.2f, 0f);
     }
 
     @Override
     public void render(
-            RocketSquidEntity par1EntitySquid,
-            float entityYaw,
-            float partialTicks,
+            RocketSquidRenderState state,
             @NotNull PoseStack matrixStackIn,
             @NotNull MultiBufferSource bufferIn,
             int packedLightIn
     ) {
-        if (par1EntitySquid.getShaking()) {
-            RandomSource r = par1EntitySquid.getRandom();
-            matrixStackIn.translate(r.nextGaussian() * 0.02d, r.nextGaussian() * 0.02d, r.nextGaussian() * 0.02d);
-        }
-
-        if (par1EntitySquid.getBlasting() && !par1EntitySquid.isInWater()) {
+        if (state.blasting && !state.isInWater) {
             //Choose texture
             TextureAtlasSprite tas = ModelBakery.FIRE_0.sprite();
             //Calculate and set translation-rotation matrix
             matrixStackIn.pushPose();
             VertexConsumer ivb = bufferIn.getBuffer(Sheets.cutoutBlockSheet());
-            double yaw_r = par1EntitySquid.getRotYaw();
-            double pitch_r = par1EntitySquid.getRotPitch();
+            double yaw_r = state.yBodyRot;
+            double pitch_r = state.xBodyRot;
             double adjusted_h_flame_offset = 0.35 * Math.sin(pitch_r);
             matrixStackIn.translate(adjusted_h_flame_offset * Math.sin(yaw_r),
                     0.5 - (0.3 * Math.cos(pitch_r)),
                     -adjusted_h_flame_offset * Math.cos(yaw_r));
             matrixStackIn.mulPose(Axis.of(new Vector3f((float) Math.cos(yaw_r), 0f, (float) Math.sin(yaw_r))).rotation((float) pitch_r));
-
-            //Prepare to draw
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
             //Draw the faces. Advised not to touch any of this; creates a pretty cross of fire which is adjusted to be
             //visible even when squid is blasting directly away from viewer.
@@ -122,12 +126,12 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             //Clear up
             matrixStackIn.popPose();
         }
-        super.render(par1EntitySquid, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+        super.render(state, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override
-    public @NotNull Identifier getTextureLocation(RocketSquidEntity entity) {
-        return entity.getShaking() ? blasting : normal;
+    public @NotNull Identifier getTextureLocation(RocketSquidRenderState state) {
+        return state.shaking ? blasting : normal;
     }
 
     private void doAVertex(VertexConsumer ivb, PoseStack poseStack, Matrix4f pos, Matrix3f norm, float x, float y, float z, float u, float v, int lightLevel) {

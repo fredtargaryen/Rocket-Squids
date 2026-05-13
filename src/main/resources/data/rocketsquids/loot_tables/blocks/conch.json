@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "rocketsquids:conch_item_1"
+          "name": "rocketsquids:conch_1"
         }
       ],
       "conditions": [
