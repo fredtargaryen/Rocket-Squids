@@ -69,7 +69,11 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
-                adult.moveTo(pos.x, pos.y, pos.z, (float) this.squidCap.getRotYaw(), (float) this.squidCap.getRotPitch());
+                adult.moveTo(pos.x, pos.y, pos.z);
+                adult.forceRotPitch(this.squidCap.getRotPitch());
+                adult.setTargetRotPitch(this.squidCap.getTargetRotPitch());
+                adult.forceRotYaw(this.squidCap.getRotYaw());
+                adult.setTargetRotYaw(this.squidCap.getTargetRotYaw());
                 this.level().addFreshEntity(adult);
             }
         }
