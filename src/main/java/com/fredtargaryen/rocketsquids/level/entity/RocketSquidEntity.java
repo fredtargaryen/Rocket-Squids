@@ -658,11 +658,11 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         }
     }
 
-    public double getTargRotPitch() {
+    public double getTargetRotPitch() {
         return this.getData(SQUID).getTargetRotPitch();
     }
 
-    public double getTargRotYaw() {
+    public double getTargetRotYaw() {
         return this.getData(SQUID).getTargetRotYaw();
     }
 

@@ -61,7 +61,11 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
-                adult.moveTo(pos.x, pos.y, pos.z, (float) data.getRotYaw(), (float) data.getRotPitch());
+                adult.moveTo(pos.x, pos.y, pos.z);
+                adult.forceRotPitch(this.getRotPitch());
+                adult.setTargetRotPitch(this.getTargetRotPitch());
+                adult.forceRotYaw(this.getRotYaw());
+                adult.setTargetRotYaw(this.getTargetRotYaw());
                 this.level().addFreshEntity(adult);
             }
         } else {
@@ -204,12 +208,12 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
         }
     }
 
-    public double getTargRotPitch() {
+    public double getTargetRotPitch() {
         RocketSquidData data = this.getData(SQUID);
         return data.getTargetRotPitch();
     }
 
-    public double getTargRotYaw() {
+    public double getTargetRotYaw() {
         RocketSquidData data = this.getData(SQUID);
         return data.getTargetRotYaw();
     }

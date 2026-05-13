@@ -168,8 +168,8 @@ public class AdultSwimAroundGoal extends Goal {
                     }
                     break;
                 case TURN:
-                    double trp = this.squid.getTargRotPitch();
-                    double Try = this.squid.getTargRotYaw();
+                    double trp = this.squid.getTargetRotPitch();
+                    double Try = this.squid.getTargetRotYaw();
                     if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
                         this.squid.setShaking(true);
                         this.statueBlastStage = StatueBlastStage.NONE;

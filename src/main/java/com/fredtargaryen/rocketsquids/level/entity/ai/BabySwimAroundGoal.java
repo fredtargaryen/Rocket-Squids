@@ -76,8 +76,8 @@ public class BabySwimAroundGoal extends Goal {
             this.scheduleNextMove();
         }
 
-        double trp = this.squid.getTargRotPitch();
-        double Try = this.squid.getTargRotYaw();
+        double trp = this.squid.getTargetRotPitch();
+        double Try = this.squid.getTargetRotYaw();
         if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
             this.doTurn(this.squid.areBlocksInWay());
         }
