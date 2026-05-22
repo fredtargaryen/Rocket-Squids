@@ -3,20 +3,16 @@
 package com.fredtargaryen.rocketsquids.level;
 
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Objects;
-
-import static com.fredtargaryen.rocketsquids.DataReference.MODID;
+import java.util.*;
 
 public class StatueData extends SavedData {
     /**
@@ -25,42 +21,38 @@ public class StatueData extends SavedData {
      * The first 2 ints are the chunk area x and z
      * The other 3 ints are the statue base block x, y and z
      */
-    private ArrayList<int[]> statues;
+    private List<List<Integer>> statues;
+
+    public static final SavedDataType<StatueData> ID = new SavedDataType<>(
+            // The identifier of the saved data
+            // Used as the path within the level's `data` folder
+            "statues",
+            // The initial constructor
+            StatueData::new,
+            // The codec used to serialize the data
+            RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.list(Codec.list(Codec.INT)).fieldOf("statues").forGetter(sd -> sd.statues)
+            ).apply(instance, StatueData::new))
+    );
 
     public StatueData() {
         super();
         this.statues = new ArrayList<>();
     }
 
+    public StatueData(List<List<Integer>> coordLists) {
+        this.statues = coordLists;
+    }
+
     public static StatueData create() {
         return new StatueData();
     }
 
-    public static StatueData load(CompoundTag tag, HolderLookup.Provider provider) {
-        StatueData data = StatueData.create();
-        data.statues = new ArrayList<>();
-        int amount = tag.getInt("amount");
-        for (int i = 0; i < amount; ++i) {
-            data.statues.add(tag.getIntArray(String.valueOf(i)));
-        }
-        return new StatueData();
-    }
-
-    @Override
-    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-        int amount = this.statues.size();
-        tag.putInt("amount", this.statues.size());
-        for (int i = 0; i < amount; ++i) {
-            tag.putIntArray(String.valueOf(i), this.statues.get(i));
-        }
-        return tag;
-    }
-
-    public static StatueData forLevel(Level world) {
-        ServerLevel serverWorld = Objects.requireNonNull(world.getServer()).getLevel(world.dimension());
-        assert serverWorld != null;
-        DimensionDataStorage storage = serverWorld.getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(StatueData::create, StatueData::load), MODID);
+    public static StatueData forLevel(Level level) {
+        ServerLevel serverLevel = Objects.requireNonNull(level.getServer()).getLevel(level.dimension());
+        assert serverLevel != null;
+        DimensionDataStorage storage = serverLevel.getDataStorage();
+        return storage.computeIfAbsent(ID);
     }
 
     /**
@@ -68,12 +60,12 @@ public class StatueData extends SavedData {
      *
      * @param statuePos Expected to be a list of 5 ints: chunk group x, chunk group y, BlockPos x, BlockPos y and BlockPos z
      */
-    public void addStatue(int[] statuePos) {
-        for (int[] next : this.statues) {
-            if (next[2] == statuePos[2] && next[3] == statuePos[3] && next[4] == statuePos[4]) {
+    public void addStatue(List<Integer> statuePos) {
+        for (List<Integer> next : this.statues) {
+            if (next.get(2) == statuePos.get(2) && next.get(3) == statuePos.get(3) && next.get(4) == statuePos.get(4)) {
                 // Exists in data but update calculated chunk area coords in case they changed
-                next[0] = statuePos[0];
-                next[1] = statuePos[1];
+                next.set(0, statuePos.get(0));
+                next.set(1, statuePos.get(1));
                 setDirty();
                 return;
             }
@@ -91,13 +83,12 @@ public class StatueData extends SavedData {
     public void addStatue(BlockPos pos) {
         int x = pos.getX();
         int z = pos.getZ();
-        this.addStatue(new int[]{
+        this.addStatue(Arrays.asList(
                 posToChunkArea(x),
                 posToChunkArea(z),
                 x,
                 pos.getY(),
-                z
-        });
+                z));
     }
 
     /**
@@ -105,25 +96,25 @@ public class StatueData extends SavedData {
      *
      * @param statuePos Expected to be a list of 5 ints: chunk group x, chunk group y, BlockPos x, BlockPos y and BlockPos z
      */
-    public void removeStatue(int[] statuePos) {
-        Iterator<int[]> iter = this.statues.iterator();
+    public void removeStatue(List<Integer> statuePos) {
+        Iterator<List<Integer>> iter = this.statues.iterator();
         while (iter.hasNext()) {
-            int[] next = iter.next();
-            if (next[2] == statuePos[2] && next[3] == statuePos[3] && next[4] == statuePos[4]) {
+            List<Integer> next = iter.next();
+            if (next.get(2) == statuePos.get(2) && next.get(3) == statuePos.get(3) && next.get(4) == statuePos.get(4)) {
                 iter.remove();
                 setDirty();
             }
         }
     }
 
-    public int[] getNearestStatuePos(double x, double y, double z) {
+    public List<Integer> getNearestStatuePos(double x, double y, double z) {
         if (this.statues.isEmpty()) return null;
-        int[] minloc = {0, 0, 0, 0, 0};
+        List<Integer> minloc = Arrays.asList(0, 0, 0, 0, 0);
         double minDistance = Double.POSITIVE_INFINITY;
-        for (int[] nextLoc : this.statues) {
-            double nextXDist = nextLoc[2] - x;
-            double nextYDist = nextLoc[3] - y;
-            double nextZDist = nextLoc[4] - z;
+        for (List<Integer> nextLoc : this.statues) {
+            double nextXDist = nextLoc.get(2) - x;
+            double nextYDist = nextLoc.get(3) - y;
+            double nextZDist = nextLoc.get(4) - z;
             double nextDist = Math.sqrt(nextXDist * nextXDist + nextYDist * nextYDist + nextZDist * nextZDist);
             if (nextDist < minDistance) {
                 minDistance = nextDist;
@@ -133,9 +124,9 @@ public class StatueData extends SavedData {
         return minloc;
     }
 
-    public int[] getChunkArea(int chunkX, int chunkZ) {
-        for (int[] i : this.statues) {
-            if (i[0] == chunkX && i[1] == chunkZ) {
+    public List<Integer> getChunkArea(int chunkX, int chunkZ) {
+        for (List<Integer> i : this.statues) {
+            if (i.get(0) == chunkX && i.get(1) == chunkZ) {
                 return i;
             }
         }

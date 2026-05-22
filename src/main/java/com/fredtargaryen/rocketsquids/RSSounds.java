@@ -3,7 +3,6 @@
 package com.fredtargaryen.rocketsquids;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -21,7 +20,7 @@ public class RSSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
 
-    public static SoundEvent[] CONCH_NOTES = new SoundEvent[] {
+    public static SoundEvent[] CONCH_NOTES = new SoundEvent[]{
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchc3")),
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchcs3")),
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchd3")),
@@ -66,8 +65,8 @@ public class RSSounds {
     }
 
     public static void register(IEventBus eventBus) {
-        for(SoundEvent soundEvent : CONCH_NOTES) {
-            SOUND_EVENTS.register(soundEvent.getLocation().getPath(), () -> soundEvent);
+        for (SoundEvent soundEvent : CONCH_NOTES) {
+            SOUND_EVENTS.register(soundEvent.location().getPath(), () -> soundEvent);
         }
         SOUND_EVENTS.register(eventBus);
     }

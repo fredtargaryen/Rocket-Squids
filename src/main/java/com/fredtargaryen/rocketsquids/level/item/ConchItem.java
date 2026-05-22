@@ -31,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
@@ -110,9 +111,9 @@ public class ConchItem extends GeoModArmorItem {
                         state = stateBelow;
                     }
                 }
-                StatueData.forLevel(level).removeStatue(new int[]{
+                StatueData.forLevel(level).removeStatue(Arrays.asList(
                         0, 0, pos.getX(), pos.getY(), pos.getZ()
-                });
+                ));
                 level.setBlockAndUpdate(pos, state.setValue(OPEN, true));
                 context.getItemInHand().grow(-1);
                 ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));

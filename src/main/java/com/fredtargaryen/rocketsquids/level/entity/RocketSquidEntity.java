@@ -17,6 +17,7 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
+import com.ibm.icu.impl.UResource;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -43,6 +44,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -257,10 +260,10 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                     Vec3 pos = player.position();
                     player.level().playSound(null, pos.x, pos.y, pos.z, RSSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     // Set squid data
-                    CompoundTag entityData = new CompoundTag();
-                    this.addAdditionalSaveData(entityData);
+                    TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                    this.addAdditionalSaveData(vo);
                     CompoundTag attachmentData = ValueIOHelper.getValueIOAsCompoundTag(this.getData(SQUID));
-                    newStack.set(SQUELEPORTER, new SqueleporterData(entityData, attachmentData));
+                    newStack.set(SQUELEPORTER, new SqueleporterData(vo.buildResult(), attachmentData));
                     this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
                     if (hand == InteractionHand.OFF_HAND) {
@@ -433,7 +436,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                 case 1:
                     // the one with the greater UUID creates the child
                     this.breedCooldown = CommonConfig.BREED_COOLDOWN;
-                    BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level());
+                    BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level(), EntitySpawnReason.BREEDING);
                     assert baby != null;
                     baby.setPos(thisPos.x, thisPos.y, thisPos.z);
                     this.level().addFreshEntity(baby);
@@ -483,7 +486,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
      */
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource damageSource) {
+    public boolean causeFallDamage(double distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
             if (Math.sin(this.getData(SQUID).getRotPitch()) < -0.7071067811865) {
                 for (Entity entity : this.getPassengers()) {
@@ -503,11 +506,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         else if (this.getBlasting()) {
             this.riderToThrow = passenger;
         }
-    }
-
-    @Override
-    public boolean startRiding(@NotNull Entity entityIn, boolean force) {
-        return false;
     }
 
     @Override
@@ -556,37 +554,37 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     //CLIENT EVENTS//
     /////////////////
     /**
-     * Add transformations to put player on back of squid.
+     * Add transformations to put player on back of squid. TODO add player uuid or something via RegisterRenderStateModifiersEvent, then get uuid from render state here
      */
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-        if (event.getEntity() == this.getFirstPassenger()) {
-            float partialTick = event.getPartialTick();
-
-            RocketSquidData data = this.getData(SQUID);
-            double prevPitchRads = data.getPrevRotPitch();
-            double pitchRads = data.getRotPitch();
-            double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
-            double squidAngle = exactPitchRads - (Math.PI / 2.0);
-
-            double prevYawRads = data.getPrevRotYaw();
-            double yawRads = data.getRotYaw();
-            double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
-
-            double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
-
-            this.riderRotated = true;
-            PoseStack stack = event.getPoseStack();
-            stack.pushPose();
-            // Rotate the rider to match the squid's rotation
-            Quaternionf quat = new Quaternionf()
-                    .rotateLocalX((float) (squidAngle))
-                    .rotateLocalY((float) -exactYawRads);
-            stack.mulPose(quat);
-            // Keep the rider from floating away from the saddle
-            stack.translate(0.0, translation, 0.0);
-        }
+//        if (event.getEntity() == this.getFirstPassenger()) {
+//            float partialTick = event.getPartialTick();
+//
+//            RocketSquidData data = this.getData(SQUID);
+//            double prevPitchRads = data.getPrevRotPitch();
+//            double pitchRads = data.getRotPitch();
+//            double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
+//            double squidAngle = exactPitchRads - (Math.PI / 2.0);
+//
+//            double prevYawRads = data.getPrevRotYaw();
+//            double yawRads = data.getRotYaw();
+//            double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
+//
+//            double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
+//
+//            this.riderRotated = true;
+//            PoseStack stack = event.getPoseStack();
+//            stack.pushPose();
+//            // Rotate the rider to match the squid's rotation
+//            Quaternionf quat = new Quaternionf()
+//                    .rotateLocalX((float) (squidAngle))
+//                    .rotateLocalY((float) -exactYawRads);
+//            stack.mulPose(quat);
+//            // Keep the rider from floating away from the saddle
+//            stack.translate(0.0, translation, 0.0);
+//        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -602,21 +600,21 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     //NBT//
     ///////
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("id", EntityType.getKey(RSEntityTypes.SQUID_TYPE.get()).toString());
+    public void addAdditionalSaveData(ValueOutput vo) {
+        super.addAdditionalSaveData(vo);
+        vo.putString("id", EntityType.getKey(RSEntityTypes.SQUID_TYPE.get()).toString());
         Vec3 motion = this.getDeltaMovement();
-        compound.putDouble("force", Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z));
-        compound.putBoolean("Saddle", this.getSaddled());
-        compound.putInt("Breed Cooldown", this.breedCooldown);
+        vo.putDouble("force", Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z));
+        vo.putBoolean("Saddle", this.getSaddled());
+        vo.putInt("Breed Cooldown", this.breedCooldown);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
+    public void readAdditionalSaveData(ValueInput vi) {
+        super.readAdditionalSaveData(vi);
         //Force comes from reading motion tags
-        this.setSaddled(compound.getBoolean("Saddle"));
-        this.breedCooldown = compound.getShort("Breed Cooldown");
+        this.setSaddled(vi.getBooleanOr("Saddle", false));
+        this.breedCooldown = vi.getShortOr("Breed Cooldown", (short) 0);
     }
 
     ////////////////////////

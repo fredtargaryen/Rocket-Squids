@@ -22,6 +22,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
@@ -60,24 +61,25 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
         int chunkZ = StatueData.posToChunk(pos.getZ());
         int chunkAreaX = StatueData.posToChunkArea(pos.getX());
         int chunkAreaZ = StatueData.posToChunkArea(pos.getZ());
-        int[] statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
+        List<Integer> statueLocation = statueManager.getChunkArea(chunkAreaX, chunkAreaZ);
         if (statueLocation == null) {
             //A statue location hasn't been decided for this chunk area. Decide one
-            statueLocation = new int[]{chunkAreaX, chunkAreaZ,
+            statueLocation = Arrays.asList(
+                    chunkAreaX, chunkAreaZ,
                     //Random chunk in the sizexsize area
                     (chunkAreaX * frequency + random.nextInt(frequency))
                             //Random block in the 16x16 chunk
                             * 16 + random.nextInt(16),
                     0,
                     (chunkAreaZ * frequency + random.nextInt(frequency))
-                            * 16 + random.nextInt(16)};
+                            * 16 + random.nextInt(16));
             statueManager.addStatue(statueLocation);
         }
-        if (chunkX == StatueData.posToChunk(statueLocation[2]) && chunkZ == StatueData.posToChunk(statueLocation[4])) {
+        if (chunkX == StatueData.posToChunk(statueLocation.get(2)) && chunkZ == StatueData.posToChunk(statueLocation.get(4))) {
             int chunkMinY = chunkGen.getMinY();
             int chunkMaxY = chunkMinY + chunkGen.getGenDepth() - 2;
             List<Integer> statueBasePositions = new ArrayList<>();
-            BlockPos placePos = new BlockPos(statueLocation[2], chunkMinY, statueLocation[4]);
+            BlockPos placePos = new BlockPos(statueLocation.get(2), chunkMinY, statueLocation.get(4));
             statueManager.removeStatue(statueLocation);
             // Find all instances in this column of a solid block with a viable block above
             while (placePos.getY() < chunkMaxY) {
@@ -102,7 +104,7 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
                         .setValue(HORIZONTAL_FACING, facing)
                         .setValue(DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER)
                         .setValue(WATERLOGGED, fs.is(Fluids.WATER)), 3);
-                statueLocation[3] = placePos.getY();
+                statueLocation.set(3, placePos.getY());
                 statueManager.addStatue(statueLocation);
                 return true;
             }

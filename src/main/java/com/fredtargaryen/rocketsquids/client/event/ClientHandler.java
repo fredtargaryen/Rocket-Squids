@@ -85,7 +85,7 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
     }
 
-    public static void playNoteFromMessageConchNeeded(byte note) {
+    public static void playNoteFromMessageConchNeeded(int note) {
         Player player = Minecraft.getInstance().player;
         // Check if the player is wearing the conch
         assert player != null;

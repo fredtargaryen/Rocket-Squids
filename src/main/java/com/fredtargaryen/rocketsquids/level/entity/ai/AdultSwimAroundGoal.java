@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public class AdultSwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
@@ -126,14 +127,14 @@ public class AdultSwimAroundGoal extends Goal {
                 case LOCATE:
                     //Find nearest statue
                     Vec3 pos = this.squid.position();
-                    int[] statueCoords = StatueData.forLevel(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
+                    List<Integer> statueCoords = StatueData.forLevel(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
                     if (statueCoords == null) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
                         this.squid.setBlastToStatue(false);
                     } else {
-                        double zDistance = statueCoords[4] - pos.z;
-                        double xDistance = statueCoords[2] - pos.x;
+                        double zDistance = statueCoords.get(4) - pos.z;
+                        double xDistance = statueCoords.get(2) - pos.x;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
                         //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
                         this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
@@ -162,7 +163,7 @@ public class AdultSwimAroundGoal extends Goal {
                             this.squid.setTargetRotPitch(Math.PI / 4.0);
                         } else {
                             //Less than 80 blocks away; blast directly towards the statue
-                            this.squid.setTargetRotPitch(Math.atan2(pos.y - statueCoords[3], Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
+                            this.squid.setTargetRotPitch(Math.atan2(pos.y - statueCoords.get(3), Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
                         }
                         this.statueBlastStage = StatueBlastStage.TURN;
                     }

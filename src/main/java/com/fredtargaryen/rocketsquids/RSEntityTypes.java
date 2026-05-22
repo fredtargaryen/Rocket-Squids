@@ -9,6 +9,9 @@ import com.fredtargaryen.rocketsquids.level.entity.projectile.ThrownTubeEntity;
 import com.fredtargaryen.rocketsquids.level.item.RocketSquidForgeSpawnEggItem;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
@@ -30,7 +33,7 @@ public class RSEntityTypes {
                     .setTrackingRange(64)
                     .setUpdateInterval(10)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(MODID)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("thrown_nitro_ink_sac")))
     );
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownTubeEntity>> TUBE_TYPE = ENTITIES.register("turbo_tube",
             () -> EntityType.Builder.<ThrownTubeEntity>of(ThrownTubeEntity::new, MobCategory.MISC)
@@ -38,7 +41,7 @@ public class RSEntityTypes {
                     .setTrackingRange(128)
                     .setUpdateInterval(10)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(MODID)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("turbo_tube")))
     );
     public static final DeferredHolder<EntityType<?>, EntityType<RocketSquidEntity>> SQUID_TYPE = ENTITIES.register("rocket_squid",
             () -> EntityType.Builder.<RocketSquidEntity>of((type, world) -> new RocketSquidEntity(world), MobCategory.WATER_CREATURE)
@@ -46,7 +49,7 @@ public class RSEntityTypes {
                     .setTrackingRange(128)
                     .setUpdateInterval(10)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(MODID)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("rocket_squid")))
     );
     @SuppressWarnings("RedundantTypeArguments")
     public static final DeferredHolder<EntityType<?>, EntityType<BabyRocketSquidEntity>> BABY_SQUID_TYPE = ENTITIES.register("baby_rocket_squid",
@@ -55,7 +58,7 @@ public class RSEntityTypes {
                     .setTrackingRange(64)
                     .setUpdateInterval(10)
                     .setShouldReceiveVelocityUpdates(true)
-                    .build(MODID)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("baby_rocket_squid")))
     );
 
     private static final DeferredRegister<Item> SPAWNEGGITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MODID);
