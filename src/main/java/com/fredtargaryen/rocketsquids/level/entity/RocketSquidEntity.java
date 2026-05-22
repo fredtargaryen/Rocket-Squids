@@ -17,8 +17,6 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
-import com.ibm.icu.impl.UResource;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -47,15 +45,12 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -348,7 +343,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     /**
      * Spawns the squid firework particles for when they explode.
      */
-    @OnlyIn(Dist.CLIENT)
     public void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
         Vec3 pos = this.position();
@@ -457,7 +451,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     //////////////////
     //RIDING METHODS//
-    //////////////////
+
+    /// ///////////////
 
     @Override
     protected void addPassenger(@NotNull Entity p) {
@@ -502,8 +497,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         super.removePassenger(passenger);
         if (this.level().isClientSide()) {
             NeoForge.EVENT_BUS.unregister(this);
-        }
-        else if (this.getBlasting()) {
+        } else if (this.getBlasting()) {
             this.riderToThrow = passenger;
         }
     }
@@ -556,7 +550,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     /**
      * Add transformations to put player on back of squid. TODO add player uuid or something via RegisterRenderStateModifiersEvent, then get uuid from render state here
      */
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
 //        if (event.getEntity() == this.getFirstPassenger()) {
@@ -587,7 +580,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 //        }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void popRotation(RenderPlayerEvent.Post event) {
         if (this.riderRotated) {
@@ -598,7 +590,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     ///////
     //NBT//
-    ///////
+
+    /// ////
     @Override
     public void addAdditionalSaveData(ValueOutput vo) {
         super.addAdditionalSaveData(vo);
@@ -619,7 +612,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     ////////////////////////
     //ATTACHMENT ACCESSORS//
-    ////////////////////////
+
+    /// /////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }

@@ -23,12 +23,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -39,7 +37,6 @@ import java.util.Iterator;
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientHandler {
     @SuppressWarnings("removal")

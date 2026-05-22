@@ -19,15 +19,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Almost all code here was copied from FireworkParticle as I couldn't extend
  */
-@OnlyIn(Dist.CLIENT)
 public class SquidFireworkParticle {
-    @OnlyIn(Dist.CLIENT)
     static class Spark extends SimpleAnimatedParticle {
         private boolean trail;
         private boolean twinkle;
@@ -86,7 +83,6 @@ public class SquidFireworkParticle {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class SparkProvider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
 
@@ -112,7 +108,6 @@ public class SquidFireworkParticle {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class SquidStarter extends NoRenderParticle {
         private int age;
         private final ParticleEngine manager;

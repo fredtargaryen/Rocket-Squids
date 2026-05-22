@@ -9,8 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public class Conch3Item extends Item {
@@ -39,7 +37,7 @@ public class Conch3Item extends Item {
      * Note that if you override this method, you generally want to also call the super version (on {@link Item}) to get
      * the glint for enchanted items. Of course, that is unnecessary if the overwritten version always returns true.
      */
-    @OnlyIn(Dist.CLIENT)
+    @Override
     public boolean isFoil(@NotNull ItemStack stack) {
         return true;
     }
