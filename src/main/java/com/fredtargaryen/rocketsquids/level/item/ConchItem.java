@@ -2,6 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
+import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.level.StatueData;
@@ -9,6 +10,7 @@ import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,8 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.equipment.ArmorMaterial;
-import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -39,6 +40,7 @@ import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.L
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
 public class ConchItem extends GeoModArmorItem {
+    public static final ResourceKey<EquipmentAsset> CONCH_EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, DataReference.getIdentifier("conch"));
     private final ItemAttributeModifiers emptyModifierMap;
 
     public ConchItem(Item.Properties properties) {
@@ -47,7 +49,7 @@ public class ConchItem extends GeoModArmorItem {
     }
 
     /**
-     * Called when the equipped item is right clicked, but not when interacting with a block.
+     * Called when the equipped item is right-clicked, but not when interacting with a block.
      */
     @Override
     public @NotNull InteractionResult use(
@@ -159,12 +161,12 @@ public class ConchItem extends GeoModArmorItem {
                 map.put(ArmorType.HELMET, 0);
                 map.put(ArmorType.BODY, 0);
             }),
-            0,
+            1,
             SoundEvents.ARMOR_EQUIP_GENERIC,
             0F,
             0F,
             null,
-            null
+            CONCH_EQUIPMENT_ASSET
             );
 
     /**

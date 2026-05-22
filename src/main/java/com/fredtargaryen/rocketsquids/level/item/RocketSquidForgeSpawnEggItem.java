@@ -15,24 +15,16 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 // This is a hacked version of DeferredSpawnEggItem that overrides spawnOffspringFromSpawnEgg so we can spawn a different entity,
 // I did this because WaterAnimal is not an instanceof AgableMob which is a requirement for spawnOffspringFromSpawnEgg aswell
 // as needing the baby rocket squid to be a separate entity since of course WaterAnimal is not an instanceof AgableMob -barnabeepickle 12/12/2025
 
 public class RocketSquidForgeSpawnEggItem extends SpawnEggItem {
-    private final Supplier<? extends EntityType<?>> babyTypeSupplier;
-
     public RocketSquidForgeSpawnEggItem(
-            Supplier<? extends EntityType<? extends Mob>> adultType,
-            Supplier<? extends EntityType<? extends Mob>> babyType,
-            int backgroundColor,
-            int highlightColor,
             Item.Properties props
     ) {
         super(props);
-        this.babyTypeSupplier = babyType;
     }
 
     @Override
@@ -47,7 +39,7 @@ public class RocketSquidForgeSpawnEggItem extends SpawnEggItem {
         if (!this.spawnsEntity(stack, entityType)) {
             return Optional.empty();
         } else {
-            Mob mobentity = (Mob) this.babyTypeSupplier.get().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
+            Mob mobentity = entityType.create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
             if (mobentity == null) {
                 return Optional.empty();
