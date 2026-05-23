@@ -32,6 +32,7 @@ public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, 
 
     @Override
     public void extractRenderState(BabyRocketSquidEntity squid, BabyRocketSquidRenderState state, float partialTick) {
+        super.extractRenderState(squid, state, partialTick);
         state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
         state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()) * 180 / Math.PI);
         state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()) * 180 / Math.PI);
