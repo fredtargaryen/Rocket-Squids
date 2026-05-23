@@ -16,6 +16,7 @@ import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.message.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.registries.VanillaRegistries;
@@ -29,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
@@ -50,6 +52,14 @@ public class ClientHandler {
         event.registerEntityRenderer(RSEntityTypes.SQUID_TYPE.get(), RocketSquidRenderer::new);
         event.registerEntityRenderer(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
+
+//    @SubscribeEvent
+//    public static void onClientSetup(FMLClientSetupEvent event) {
+//        EntityRenderers.register(RSEntityTypes.SAC_TYPE.get(), ThrownItemRenderer::new);
+//        EntityRenderers.register(RSEntityTypes.TUBE_TYPE.get(), ThrownItemRenderer::new);
+//        EntityRenderers.register(RSEntityTypes.SQUID_TYPE.get(), RocketSquidRenderer::new);
+//        EntityRenderers.register(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
+//    }
 
     /**
      * Unused provider passed to certain methods so that they don't complain
