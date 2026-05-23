@@ -143,7 +143,6 @@ public class ConchScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         for (int i = 0; i < this.playingNotes.length; i++) {
             this.playingNotes[i] -= partialTicks;
         }
