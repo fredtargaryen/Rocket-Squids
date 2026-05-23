@@ -39,9 +39,9 @@ public class ColorHelper {
      * Converts RGB floats in the interval [0f-1f] to a full colour int with no safeguarding
      */
     public static int color(float rf, float gf, float bf) {
-        int ri = (int) rf * 255;
-        int gi = (int) gf * 255;
-        int bi = (int) bf * 255;
+        int ri = (int) (rf * 255);
+        int gi = (int) (gf * 255);
+        int bi = (int) (bf * 255);
         return ALPHA | (ri << 16) | (gi << 8) | bi;
     }
 }
