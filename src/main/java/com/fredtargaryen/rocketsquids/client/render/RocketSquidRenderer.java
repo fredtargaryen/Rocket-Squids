@@ -47,6 +47,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
 
     @Override
     public void extractRenderState(RocketSquidEntity squid, RocketSquidRenderState state, float partialTick) {
+        super.extractRenderState(squid, state, partialTick);
         state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
         state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()) * 180 / Math.PI);
         state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()) * 180 / Math.PI);
@@ -82,6 +83,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             @NotNull SubmitNodeCollector collector,
             CameraRenderState cameraState
     ) {
+        super.submit(state, poseStack, collector, cameraState);
         if (state.blasting && !state.isInWater) {
             //Calculate and set translation-rotation matrix
             poseStack.pushPose();
@@ -100,7 +102,6 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
             //Clear up
             poseStack.popPose();
         }
-        super.submit(state, poseStack, collector, cameraState);
     }
 
     /**
