@@ -6,7 +6,6 @@ import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.projectile.ThrownSacEntity;
 import com.fredtargaryen.rocketsquids.level.entity.projectile.ThrownTubeEntity;
-import com.fredtargaryen.rocketsquids.level.item.RocketSquidForgeSpawnEggItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -16,7 +15,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
@@ -59,17 +57,9 @@ public class RSEntityTypes {
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("baby_rocket_squid")))
     );
 
-    private static final DeferredRegister.Items SPAWNEGGITEMS = DeferredRegister.createItems(MODID);
-
-    // Register Spawn Egg Items here
-    @SuppressWarnings("unused")
-    public static final DeferredItem<RocketSquidForgeSpawnEggItem> SQUID_SPAWN_EGG = SPAWNEGGITEMS.registerItem("rocket_squid_spawn_egg", RocketSquidForgeSpawnEggItem::new, props -> props);
-    // Hey if you wanted to know do not use SpawnEggItem use ForgeSpawnEggItem
-
     public static void register(IEventBus eventBus) {
         eventBus.register(RSEntityTypes.class);
         ENTITIES.register(eventBus);
-        SPAWNEGGITEMS.register(eventBus);
     }
 
     @SubscribeEvent

@@ -5,6 +5,7 @@ package com.fredtargaryen.rocketsquids;
 import com.fredtargaryen.rocketsquids.level.item.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -26,6 +27,7 @@ public class RSItems {
     public static final DeferredItem<BlockItem> ITEM_STATUE_OPEN = ITEMS.registerSimpleBlockItem("statue_open", RSBlocks.STATUE, props -> props.stacksTo(1));
     public static final DeferredItem<SqueleporterItem> SQUELEPORTER_ACTIVE = ITEMS.registerItem("squeleporter_active", SqueleporterItem::new, props -> props.stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<SqueleporterItem> SQUELEPORTER_INACTIVE = ITEMS.registerItem("squeleporter_inactive", SqueleporterItem::new, props -> props.stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<SpawnEggItem> ROCKET_SQUID_SPAWN_EGG = ITEMS.registerItem("rocket_squid_spawn_egg", props -> new SpawnEggItem(props.spawnEgg(RSEntityTypes.SQUID_TYPE.get())));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
