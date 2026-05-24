@@ -612,8 +612,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     ////////////////////////
     //ATTACHMENT ACCESSORS//
-
-    /// /////////////////////
+    ////////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }

@@ -6,6 +6,7 @@ import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.render.state.RocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -49,8 +50,8 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     public void extractRenderState(RocketSquidEntity squid, RocketSquidRenderState state, float partialTick) {
         super.extractRenderState(squid, state, partialTick);
         state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
-        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()) * 180 / Math.PI);
-        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()) * 180 / Math.PI);
+        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()));
+        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()));
         state.saddled = squid.getSaddled();
         state.shaking = squid.getShaking();
         state.blasting = squid.getBlasting();
@@ -71,8 +72,8 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     @Override
     protected void setupRotations(RocketSquidRenderState state, PoseStack poseStack, float bodyRot, float scale) {
         poseStack.translate(0, 0.5, 0);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180f - state.yBodyRot));
-        poseStack.mulPose(Axis.XN.rotationDegrees(state.xBodyRot));
+        poseStack.mulPose(Axis.YP.rotation(RotationHelper.PI_F - state.yBodyRot));
+        poseStack.mulPose(Axis.XN.rotation(state.xBodyRot));
         poseStack.translate(0f, -1.2f, 0f);
     }
 
@@ -114,27 +115,26 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
         float maxu = this.fireTexture.getU1();
         float maxv = this.fireTexture.getV1();
         Matrix4f pos = pose.pose();
-        Matrix3f norm = pose.normal();
-        int packedLightIn = 15;
-        this.doAVertex(consumer, pose, pos, norm, -0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.16f, -1.5f, -0.28f, maxu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.28f, -1.5f, 0.16f, minu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
+        int packedLightIn = 255;
+        this.doAVertex(consumer, pose, pos, -0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.16f, -1.5f, -0.28f, maxu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.28f, -1.5f, 0.16f, minu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
 
-        this.doAVertex(consumer, pose, pos, norm, -0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.28f, -1.5f, 0.16f, maxu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.16f, -1.5f, -0.28f, minu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.28f, -1.5f, 0.16f, maxu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.16f, -1.5f, -0.28f, minu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
 
-        this.doAVertex(consumer, pose, pos, norm, 0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.28f, -1.5f, -0.16f, maxu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.16f, -1.5f, 0.28f, minu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.22f, 0.0f, -0.22f, maxu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.28f, -1.5f, -0.16f, maxu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.16f, -1.5f, 0.28f, minu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.22f, 0.0f, 0.22f, minu, maxv, packedLightIn);
 
-        this.doAVertex(consumer, pose, pos, norm, 0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, 0.16f, -1.5f, 0.28f, maxu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.28f, -1.5f, -0.16f, minu, minv, packedLightIn);
-        this.doAVertex(consumer, pose, pos, norm, -0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.22f, 0.0f, 0.22f, maxu, maxv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, 0.16f, -1.5f, 0.28f, maxu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.28f, -1.5f, -0.16f, minu, minv, packedLightIn);
+        this.doAVertex(consumer, pose, pos, -0.22f, 0.0f, -0.22f, minu, maxv, packedLightIn);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
         return state.shaking ? blasting : normal;
     }
 
-    private void doAVertex(VertexConsumer consumer, PoseStack.Pose pose, Matrix4f pos, Matrix3f norm, float x, float y, float z, float u, float v, int lightLevel) {
+    private void doAVertex(VertexConsumer consumer, PoseStack.Pose pose, Matrix4f pos, float x, float y, float z, float u, float v, int lightLevel) {
         consumer.addVertex(pos, x, y, z)
                 .setColor(1f, 1f, 1f, 1f)
                 .setUv(u, v)
