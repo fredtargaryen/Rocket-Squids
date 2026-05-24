@@ -1,9 +1,4 @@
 {
   "layers": {
-    "humanoid": [
-      {
-        "texture": "rocketsquids:humanoid/conch"
-      }
-    ]
   }
 }
