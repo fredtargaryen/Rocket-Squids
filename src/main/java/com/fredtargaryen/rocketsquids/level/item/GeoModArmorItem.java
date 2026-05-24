@@ -17,6 +17,10 @@ public class GeoModArmorItem extends Item implements GeoItem {
         super(properties.humanoidArmor(armorMaterial, type));
     }
 
+    public GeoModArmorItem(Item.Properties props) {
+        super(props);
+    }
+
     // Create our animation controller
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

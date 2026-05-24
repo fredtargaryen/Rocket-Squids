@@ -2,7 +2,6 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
-import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.level.StatueData;
@@ -10,20 +9,19 @@ import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.equipment.*;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -31,21 +29,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
 public class ConchItem extends GeoModArmorItem {
-    public static final ResourceKey<EquipmentAsset> CONCH_EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, DataReference.getIdentifier("conch"));
-    private final ItemAttributeModifiers emptyModifierMap;
-
     public ConchItem(Item.Properties properties) {
-        super(CONCH, ArmorType.HELMET, properties);
-        emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>());
+        super(properties.durability(0)
+                .component(
+                        DataComponents.EQUIPPABLE,
+                        Equippable.builder(ArmorType.HELMET.getSlot())
+                                .setEquipSound(SoundEvents.ARMOR_EQUIP_GENERIC)
+                                .build()
+                ));
     }
 
     /**
@@ -150,30 +148,5 @@ public class ConchItem extends GeoModArmorItem {
         }
 
         return true;
-    }
-
-    public static final ArmorMaterial CONCH = new ArmorMaterial(
-            1,
-            Util.make(new EnumMap<>(ArmorType.class), map -> {
-                map.put(ArmorType.BOOTS, 0);
-                map.put(ArmorType.LEGGINGS, 0);
-                map.put(ArmorType.CHESTPLATE, 0);
-                map.put(ArmorType.HELMET, 0);
-                map.put(ArmorType.BODY, 0);
-            }),
-            1,
-            SoundEvents.ARMOR_EQUIP_GENERIC,
-            0F,
-            0F,
-            null,
-            CONCH_EQUIPMENT_ASSET
-            );
-
-    /**
-     * Removes the "When on head:" tooltip, which is too much of a giveaway
-     */
-    //@Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers() {
-        return emptyModifierMap;
     }
 }
