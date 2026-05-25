@@ -6,6 +6,9 @@ import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.level.StatueData;
 import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
+import com.geckolib.animatable.client.GeoRenderProvider;
+import com.geckolib.renderer.GeoArmorRenderer;
+import com.google.common.base.Suppliers;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +34,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
@@ -148,5 +154,20 @@ public class ConchItem extends GeoModArmorItem {
         }
 
         return true;
+    }
+
+    /**
+     * Registers the renderer for the worn conch
+     */
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private final Supplier<GeoArmorRenderer<ConchItem, ?>> renderer = Suppliers.memoize(() -> new GeoArmorRenderer<>(ConchItem.this));
+
+            @Override
+            public GeoArmorRenderer<?, ?> getGeoArmorRenderer(ItemStack itemStack, EquipmentSlot equipmentSlot) {
+                return this.renderer.get();
+            }
+        });
     }
 }

@@ -7,10 +7,9 @@ import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.PlayNoteServerMessage;
 import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -62,7 +61,7 @@ public class ConchNumberButton extends ExtendedButton {
      * Draws this button to the screen.
      */
     @Override
-    public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         Font fontrenderer = mc.font;
         this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
         float red, green, blue;
@@ -84,8 +83,8 @@ public class ConchNumberButton extends ExtendedButton {
         }
 
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, NUMBER, this.getX(), this.getY(), 0, 0, 32, 32, 32, 32, ColorHelper.color(red, green, blue));
-        guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
-        guiGraphics.drawCenteredString(fontrenderer,
+        guiGraphics.centeredText(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.getColor(255, 255, 255));
+        guiGraphics.centeredText(fontrenderer,
                 Component.literal("" + (this.id == 9 ? 0 : this.id + 1)),
                 this.getX() + this.width / 2, this.getY() + 34, ColorHelper.WHITE);
     }

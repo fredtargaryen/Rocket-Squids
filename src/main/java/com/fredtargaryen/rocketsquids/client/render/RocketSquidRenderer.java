@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -38,7 +38,7 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
 
     public RocketSquidRenderer(EntityRendererProvider.Context context) {
         super(context, new RocketSquidModel(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
-        this.fireTexture = context.getMaterials().get(ModelBakery.FIRE_0);
+        this.fireTexture = context.getSprites().get(ModelBakery.FIRE_0);
     }
 
     @Override

@@ -2,6 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level;
 
+import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,7 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.storage.SavedDataStorage;
 
 import java.util.*;
 
@@ -26,7 +27,7 @@ public class StatueData extends SavedData {
     public static final SavedDataType<StatueData> ID = new SavedDataType<>(
             // The identifier of the saved data
             // Used as the path within the level's `data` folder
-            "statues",
+            DataReference.getIdentifier("statues"),
             // The initial constructor
             StatueData::new,
             // The codec used to serialize the data
@@ -51,7 +52,7 @@ public class StatueData extends SavedData {
     public static StatueData forLevel(Level level) {
         ServerLevel serverLevel = Objects.requireNonNull(level.getServer()).getLevel(level.dimension());
         assert serverLevel != null;
-        DimensionDataStorage storage = serverLevel.getDataStorage();
+        SavedDataStorage storage = serverLevel.getDataStorage();
         return storage.computeIfAbsent(ID);
     }
 

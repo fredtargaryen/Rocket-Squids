@@ -10,7 +10,7 @@ import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -142,11 +142,11 @@ public class ConchScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks) {
         for (int i = 0; i < this.playingNotes.length; i++) {
             this.playingNotes[i] -= partialTicks;
         }
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class ConchScreen extends Screen {
          * Draws this button to the screen.
          */
         @Override
-        public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        public void extractContents(@NotNull GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks) {
             Font fontrenderer = mc.font;
             this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
             float red, green, blue;
@@ -210,8 +210,8 @@ public class ConchScreen extends Screen {
                 green = 0.9F * this.id / 36.0F + blue;
             }
 
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, NOTE, this.getX() + 2, this.getY() - 37, 0, 0, 27, 54, 27, 54, ColorHelper.color(red, green, blue));
-            guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.WHITE);
+            GuiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, NOTE, this.getX() + 2, this.getY() - 37, 0, 0, 27, 54, 27, 54, ColorHelper.color(red, green, blue));
+            GuiGraphicsExtractor.centeredText(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, ColorHelper.WHITE);
         }
     }
 
