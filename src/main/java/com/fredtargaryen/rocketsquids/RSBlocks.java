@@ -4,7 +4,6 @@ package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.level.block.ConchBlock;
 import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
@@ -12,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
