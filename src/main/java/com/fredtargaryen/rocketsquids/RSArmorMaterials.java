@@ -22,7 +22,7 @@ public class RSArmorMaterials {
             () -> new ArmorMaterial(
                     new HashMap<>(),
                     0,
-                    SoundEvents.ARMOR_EQUIP_GENERIC,
+                    SoundEvents.ARMOR_EQUIP_TURTLE,
                     () -> null,
                     new ArrayList<>(),
                     0,
