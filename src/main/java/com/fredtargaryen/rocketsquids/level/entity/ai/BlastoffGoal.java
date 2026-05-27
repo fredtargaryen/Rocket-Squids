@@ -36,20 +36,27 @@ public class BlastoffGoal extends Goal {
             this.squid.playSound(RSSounds.BLASTOFF.get(), 1.0F, 1.0F);
             this.squid.addForce(2.952);
         } else if (this.blastTimer > 0) {
-            // Continue blast
-            this.blastTimer--;
-            this.squid.pointToWhereMoving();
+            if (this.squid.getForcedBlast() && this.squid.areBlocksInWay()) {
+                this.squid.explode();
+                this.reset();
+            } else {
+                // Continue blast
+                this.blastTimer--;
+                this.squid.pointToWhereMoving();
+            }
         } else {
             if (this.squid.getForcedBlast()) {
                 // Explode, so resetting doesn't matter
                 this.squid.explode();
-            } else {
-                // Reset
-                this.squid.setShaking(false);
-                this.squid.setBlasting(false);
-                this.squid.needsSync = false;
-                this.blastTimer = -1;
             }
+            this.reset();
         }
+    }
+
+    private void reset() {
+        this.squid.setShaking(false);
+        this.squid.setBlasting(false);
+        this.squid.needsSync = false;
+        this.blastTimer = -1;
     }
 }
