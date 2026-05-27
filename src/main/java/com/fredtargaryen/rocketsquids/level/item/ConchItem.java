@@ -2,6 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.item;
 
+import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSBlocks;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.level.StatueData;
@@ -13,6 +14,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,6 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -42,14 +46,17 @@ import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.L
 import static net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
 
 public class ConchItem extends GeoModArmorItem {
+    public static final ResourceKey<EquipmentAsset> CONCH_EQUIPMENT_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, DataReference.getIdentifier("conch"));
+
     public ConchItem(Item.Properties properties) {
-        super(properties.durability(0)
+        super(properties
+                .durability(0)
                 .component(
                         DataComponents.EQUIPPABLE,
                         Equippable.builder(ArmorType.HELMET.getSlot())
-                                .setEquipSound(SoundEvents.ARMOR_EQUIP_GENERIC)
-                                .build()
-                ));
+                                .setEquipSound(SoundEvents.ARMOR_EQUIP_NAUTILUS)
+                                .setAsset(CONCH_EQUIPMENT_ASSET)
+                                .build()));
     }
 
     /**
