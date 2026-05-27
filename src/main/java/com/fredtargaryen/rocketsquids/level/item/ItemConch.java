@@ -68,7 +68,7 @@ public class ItemConch extends GeoModArmorItem {
 
         @Override
         public @NotNull SoundEvent getEquipSound() {
-            return SoundEvents.ARMOR_EQUIP_GENERIC;
+            return SoundEvents.ARMOR_EQUIP_TURTLE;
         }
 
         @Override
