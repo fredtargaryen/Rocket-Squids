@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids.level.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,5 +26,10 @@ public abstract class AbstractRocketSquidEntity extends AbstractSquidEntity{
     protected boolean canRide(@NotNull Entity entityIn)
     {
         return true;
+    }
+
+    @Override
+    public boolean canBeLeashed(Player player) {
+        return !this.isLeashed();
     }
 }
