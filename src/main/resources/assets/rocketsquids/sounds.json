@@ -1,7 +1,7 @@
 {
   "blastoff":
   {
-    "sounds": [{"name": "rocketsquids:blastoff","stream": false}],
+    "sounds": [{"name": "rocketsquids:blastoff","stream": true}],
     "subtitle": "subs.rocketsquids.blastoff"
   },
   "tpin":
