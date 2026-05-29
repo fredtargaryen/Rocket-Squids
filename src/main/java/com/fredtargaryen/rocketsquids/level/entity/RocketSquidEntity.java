@@ -5,6 +5,7 @@ package com.fredtargaryen.rocketsquids.level.entity;
 import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.RSItems;
 import com.fredtargaryen.rocketsquids.RSSounds;
+import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
@@ -17,6 +18,7 @@ import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -51,6 +53,7 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -552,32 +555,33 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-//        if (event.getEntity() == this.getFirstPassenger()) {
-//            float partialTick = event.getPartialTick();
-//
-//            RocketSquidData data = this.getData(SQUID);
-//            double prevPitchRads = data.getPrevRotPitch();
-//            double pitchRads = data.getRotPitch();
-//            double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
-//            double squidAngle = exactPitchRads - (Math.PI / 2.0);
-//
-//            double prevYawRads = data.getPrevRotYaw();
-//            double yawRads = data.getRotYaw();
-//            double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
-//
-//            double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
-//
-//            this.riderRotated = true;
-//            PoseStack stack = event.getPoseStack();
-//            stack.pushPose();
-//            // Rotate the rider to match the squid's rotation
-//            Quaternionf quat = new Quaternionf()
-//                    .rotateLocalX((float) (squidAngle))
-//                    .rotateLocalY((float) -exactYawRads);
-//            stack.mulPose(quat);
-//            // Keep the rider from floating away from the saddle
-//            stack.translate(0.0, translation, 0.0);
-//        }
+        UUID uuid = event.getRenderState().getRenderData(ClientHandler.PLAYER_ID);
+        if (this.getFirstPassenger().getUUID().equals(uuid)) {
+            float partialTick = event.getPartialTick();
+
+            RocketSquidData data = this.getData(SQUID);
+            double prevPitchRads = data.getPrevRotPitch();
+            double pitchRads = data.getRotPitch();
+            double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
+            double squidAngle = exactPitchRads - (Math.PI / 2.0);
+
+            double prevYawRads = data.getPrevRotYaw();
+            double yawRads = data.getRotYaw();
+            double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
+
+            double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
+
+            this.riderRotated = true;
+            PoseStack stack = event.getPoseStack();
+            stack.pushPose();
+            // Rotate the rider to match the squid's rotation
+            Quaternionf quat = new Quaternionf()
+                    .rotateLocalX((float) (squidAngle))
+                    .rotateLocalY((float) -exactYawRads);
+            stack.mulPose(quat);
+            // Keep the rider from floating away from the saddle
+            stack.translate(0.0, translation, 0.0);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -612,7 +616,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     ////////////////////////
     //ATTACHMENT ACCESSORS//
-    ////////////////////////
+
+    /// /////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }
