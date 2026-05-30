@@ -41,8 +41,16 @@ public class StatueData extends SavedData {
         this.statues = new ArrayList<>();
     }
 
+    /**
+     * Construct statue data from previously-serialised data.
+     * Annoyingly the data is immutable when deserialised so we copy it all into ArrayLists.
+     * Hopefully there's a way out there of deserialising it into mutable lists
+     */
     public StatueData(List<List<Integer>> coordLists) {
-        this.statues = coordLists;
+        this.statues = new ArrayList<>();
+        coordLists.stream()
+                .map(ArrayList::new)
+                .forEach(c -> this.statues.add(c));
     }
 
     public static StatueData create() {
