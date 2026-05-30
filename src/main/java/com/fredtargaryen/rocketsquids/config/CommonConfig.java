@@ -14,7 +14,7 @@ import java.util.List;
 @EventBusSubscriber(modid = DataReference.MODID)
 public class CommonConfig {
     public static List<String> DEFAULT_BLACKLIST = Collections.emptyList();
-    public static List<String> DEFAULT_WHITELIST = Collections.singletonList("overworld");
+    public static List<String> DEFAULT_WHITELIST = Collections.singletonList("minecraft:overworld");
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
