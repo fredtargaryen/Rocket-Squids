@@ -50,7 +50,6 @@ public class ConchItem extends GeoModArmorItem {
 
     public ConchItem(Item.Properties properties) {
         super(properties
-                .durability(0)
                 .component(
                         DataComponents.EQUIPPABLE,
                         Equippable.builder(ArmorType.HELMET.getSlot())
