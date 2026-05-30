@@ -6,16 +6,14 @@ import com.fredtargaryen.rocketsquids.level.StatueData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -30,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
-
 
 public class StatueBlock extends Block implements SimpleWaterloggedBlock {
     public StatueBlock(Block.Properties properties) {
@@ -59,14 +56,16 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
     @Override
     public @NotNull BlockState updateShape(
             BlockState state,
-            @NotNull Direction direction,
-            @NotNull BlockState neighborState,
-            @NotNull LevelAccessor level,
-            @NotNull BlockPos pos,
-            @NotNull BlockPos neighborPos
+            LevelReader level,
+            ScheduledTickAccess scheduledTickAccess,
+            BlockPos pos,
+            Direction direction,
+            BlockPos neighborPos,
+            BlockState neighborState,
+            RandomSource random
     ) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            scheduledTickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
 
         DoubleBlockHalf doubleBlockHalf = state.getValue(DOUBLE_BLOCK_HALF);
@@ -76,13 +75,13 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
                     .setValue(OPEN, neighborState.getValue(OPEN))
                     : Blocks.AIR.defaultBlockState();
         } else {
-            return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+            return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random);
         }
     }
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && player.isCreative()) {
+        if (!level.isClientSide() && player.isCreative()) {
             DoubleBlockHalf doubleblockhalf = state.getValue(DOUBLE_BLOCK_HALF);
             if (doubleblockhalf == DoubleBlockHalf.UPPER) {
                 BlockPos blockpos = pos.below();
@@ -102,7 +101,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos blockPos = context.getClickedPos();
         Level level = context.getLevel();
-        if (blockPos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(blockPos.above()).canBeReplaced(context)) {
+        if (blockPos.getY() < level.getMaxY() - 1 && level.getBlockState(blockPos.above()).canBeReplaced(context)) {
             FluidState fluidState = level.getFluidState(blockPos);
             return this.defaultBlockState()
                     .setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
@@ -134,7 +133,7 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
             @Nullable LivingEntity placer,
             @NotNull ItemStack stack
     ) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockPos abovePos = pos.above();
             level.setBlock(abovePos, state
                             .setValue(DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER)
@@ -169,12 +168,6 @@ public class StatueBlock extends Block implements SimpleWaterloggedBlock {
         ItemEntity conch = new ItemEntity(level, x + 0.5D, y + 0.5D, z + 0.5D, RSItems.ITEM_CONCH3.get().getDefaultInstance());
         conch.setDeltaMovement(treasureVelocity);
         level.addFreshEntity(conch);
-    }
-
-    // Waterlogging related overrides
-    @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
-        return !(Boolean) state.getValue(WATERLOGGED);
     }
 
     @Override

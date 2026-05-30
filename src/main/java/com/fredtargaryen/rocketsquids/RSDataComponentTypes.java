@@ -19,6 +19,7 @@ public class RSDataComponentTypes {
             () -> DataComponentType.<SqueleporterData>builder()
                     .persistent(SqueleporterData.DISK_CODEC)
                     .cacheEncoding()
+                    .ignoreSwapAnimation()
                     .build()
     );
 

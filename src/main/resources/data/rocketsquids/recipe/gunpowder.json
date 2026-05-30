@@ -1,12 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "group": "rocketsquids",
   "ingredients": [
-    {
-      "item": "rocketsquids:nitro_ink_sac"
-    }
+    "rocketsquids:turbo_tube"
   ],
   "result": {
-    "id": "minecraft:orange_dye"
+    "id": "minecraft:gunpowder"
   }
 }

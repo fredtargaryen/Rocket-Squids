@@ -29,7 +29,7 @@ import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
  */
 public record PlayNoteServerMessage(byte note, double x, double y, double z) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PlayNoteServerMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("note_server"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("note_server"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

@@ -5,6 +5,7 @@ package com.fredtargaryen.rocketsquids.level.entity;
 import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.RSItems;
 import com.fredtargaryen.rocketsquids.RSSounds;
+import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
@@ -16,6 +17,7 @@ import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
+import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -41,9 +43,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
@@ -214,7 +217,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                 this.moveToWherePointing();
             }
             if (this.newPacketRequired) {
-                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), data.serializeNBT(null)));
+                TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                data.serialize(vo);
+                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), vo.buildResult()));
                 this.newPacketRequired = false;
             }
 
@@ -253,21 +258,21 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                     Vec3 pos = player.position();
                     player.level().playSound(null, pos.x, pos.y, pos.z, RSSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     // Set squid data
-                    CompoundTag entityData = new CompoundTag();
-                    this.addAdditionalSaveData(entityData);
-                    CompoundTag attachmentData = this.getData(SQUID).serializeNBT(null);
-                    newStack.set(SQUELEPORTER, new SqueleporterData(entityData, attachmentData));
+                    TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                    this.addAdditionalSaveData(vo);
+                    CompoundTag attachmentData = ValueIOHelper.getValueIOAsCompoundTag(this.getData(SQUID));
+                    newStack.set(SQUELEPORTER, new SqueleporterData(vo.buildResult(), attachmentData));
                     this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
                     if (hand == InteractionHand.OFF_HAND) {
                         handEquip = EquipmentSlot.OFFHAND;
                     }
                     player.setItemSlot(handEquip, newStack);
-                    player.getCooldowns().addCooldown(newStack.getItem(), 10);
+                    player.getCooldowns().addCooldown(newStack, 10);
                 } else if (interactItem == Items.FLINT_AND_STEEL) {
                     // if the player isn't in creative we damage the flint and steel
                     if (!player.isCreative()) {
-                        interactStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                        interactStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
                     }
                     this.getData(SQUID).setForcedBlast(true);
                     return InteractionResult.SUCCESS;
@@ -341,7 +346,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     /**
      * Spawns the squid firework particles for when they explode.
      */
-    @OnlyIn(Dist.CLIENT)
     public void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
         Vec3 pos = this.position();
@@ -429,9 +433,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
                 case 1:
                     // the one with the greater UUID creates the child
                     this.breedCooldown = CommonConfig.BREED_COOLDOWN;
-                    BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level());
+                    BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level(), EntitySpawnReason.BREEDING);
                     assert baby != null;
-                    baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
+                    baby.setPos(thisPos.x, thisPos.y, thisPos.z);
                     this.level().addFreshEntity(baby);
                     this.spawnHearts((ServerLevel) this.level());
                     break;
@@ -450,7 +454,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     //////////////////
     //RIDING METHODS//
-    //////////////////
+
+    /// ///////////////
 
     @Override
     protected void addPassenger(@NotNull Entity p) {
@@ -479,7 +484,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
      * Between these angles the player would appear to hit the ground first so the player should be hurt.
      */
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource damageSource) {
+    public boolean causeFallDamage(double distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
             if (Math.sin(this.getData(SQUID).getRotPitch()) < -0.7071067811865) {
                 for (Entity entity : this.getPassengers()) {
@@ -495,15 +500,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         super.removePassenger(passenger);
         if (this.level().isClientSide()) {
             NeoForge.EVENT_BUS.unregister(this);
-        }
-        else if (this.getBlasting()) {
+        } else if (this.getBlasting()) {
             this.riderToThrow = passenger;
         }
-    }
-
-    @Override
-    public boolean startRiding(@NotNull Entity entityIn, boolean force) {
-        return false;
     }
 
     @Override
@@ -530,10 +529,10 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
      * dropEquipment
      */
     @Override
-    protected void dropEquipment() {
-        super.dropEquipment();
+    protected void dropEquipment(ServerLevel level) {
+        super.dropEquipment(level);
         if (this.getSaddled()) {
-            this.spawnAtLocation(Items.SADDLE);
+            this.spawnAtLocation(level, Items.SADDLE);
         }
     }
 
@@ -552,12 +551,12 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
     //CLIENT EVENTS//
     /////////////////
     /**
-     * Add transformations to put player on back of squid.
+     * Add transformations to put player on back of squid. TODO add player uuid or something via RegisterRenderStateModifiersEvent, then get uuid from render state here
      */
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
-        if (event.getEntity() == this.getFirstPassenger()) {
+        UUID uuid = event.getRenderState().getRenderData(ClientHandler.PLAYER_ID);
+        if (this.getFirstPassenger().getUUID().equals(uuid)) {
             float partialTick = event.getPartialTick();
 
             RocketSquidData data = this.getData(SQUID);
@@ -585,7 +584,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void popRotation(RenderPlayerEvent.Post event) {
         if (this.riderRotated) {
@@ -596,28 +594,30 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
 
     ///////
     //NBT//
-    ///////
+
+    /// ////
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("id", EntityType.getKey(RSEntityTypes.SQUID_TYPE.get()).toString());
+    public void addAdditionalSaveData(ValueOutput vo) {
+        super.addAdditionalSaveData(vo);
+        vo.putString("id", EntityType.getKey(RSEntityTypes.SQUID_TYPE.get()).toString());
         Vec3 motion = this.getDeltaMovement();
-        compound.putDouble("force", Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z));
-        compound.putBoolean("Saddle", this.getSaddled());
-        compound.putInt("Breed Cooldown", this.breedCooldown);
+        vo.putDouble("force", Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z));
+        vo.putBoolean("Saddle", this.getSaddled());
+        vo.putInt("Breed Cooldown", this.breedCooldown);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
+    public void readAdditionalSaveData(ValueInput vi) {
+        super.readAdditionalSaveData(vi);
         //Force comes from reading motion tags
-        this.setSaddled(compound.getBoolean("Saddle"));
-        this.breedCooldown = compound.getShort("Breed Cooldown");
+        this.setSaddled(vi.getBooleanOr("Saddle", false));
+        this.breedCooldown = vi.getShortOr("Breed Cooldown", (short) 0);
     }
 
     ////////////////////////
     //ATTACHMENT ACCESSORS//
-    ////////////////////////
+
+    /// /////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }
@@ -708,7 +708,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leas
         return this.getData(SQUID).getForcedBlast();
     }
 
-    public byte getTargetNote(byte index) {
+    public int getTargetNote(byte index) {
         return this.getData(SQUID).getTargetNotes()[index];
     }
 }

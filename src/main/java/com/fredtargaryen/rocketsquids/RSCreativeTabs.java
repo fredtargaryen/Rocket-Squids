@@ -30,7 +30,7 @@ public class RSCreativeTabs {
                 output.accept(RSItems.ITEM_STATUE_CLOSED.get());
                 output.accept(RSItems.ITEM_STATUE_OPEN.get());
                 output.accept(RSItems.SQUELEPORTER_INACTIVE.get());
-                output.accept(RSEntityTypes.SQUID_SPAWN_EGG.get());
+                output.accept(RSItems.ROCKET_SQUID_SPAWN_EGG.get());
             })
             .build()
     );

@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public record SquidFireworkMessage(UUID uuid) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SquidFireworkMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("firework"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("firework"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

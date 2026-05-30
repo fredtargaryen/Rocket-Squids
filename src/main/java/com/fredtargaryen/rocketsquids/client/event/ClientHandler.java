@@ -2,10 +2,7 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.event;
 
-import com.fredtargaryen.rocketsquids.RSEntityTypes;
-import com.fredtargaryen.rocketsquids.RSItems;
-import com.fredtargaryen.rocketsquids.RSParticleTypes;
-import com.fredtargaryen.rocketsquids.RSSounds;
+import com.fredtargaryen.rocketsquids.*;
 import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
@@ -15,26 +12,37 @@ import com.fredtargaryen.rocketsquids.client.render.RocketSquidRenderer;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.message.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.Iterator;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientHandler {
     @SuppressWarnings("removal")
@@ -49,18 +57,39 @@ public class ClientHandler {
         event.registerEntityRenderer(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
 
+    public static final ContextKey<UUID> PLAYER_ID = new ContextKey<>(DataReference.getIdentifier("player_id"));
+
+    @SubscribeEvent
+    public static void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+            @Override
+            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
+                renderState.setRenderData(PLAYER_ID, avatar.getUUID());
+            }
+        });
+    }
+
+    /**
+     * Unused provider passed to certain methods so that they don't complain
+     */
+    private static final HolderLookup.Provider dummyLookupProvider;
+
     public static final ModelLayerLocation SQUID_BODY_LAYER;
+    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
 
     static {
         assert RSEntityTypes.SQUID_TYPE.getId() != null;
         SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body");
-    }
-
-    public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
-
-    static {
         assert RSEntityTypes.BABY_SQUID_TYPE.getId() != null;
         BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.BABY_SQUID_TYPE.getId(), "body");
+        dummyLookupProvider = HolderLookup.Provider.create(Stream.empty());
+    }
+
+    @SubscribeEvent
+    public static void populateCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(RSItems.ROCKET_SQUID_SPAWN_EGG.get());
+        }
     }
 
     @SubscribeEvent
@@ -71,24 +100,18 @@ public class ClientHandler {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(RSParticleTypes.FIREWORK_TYPE.get(), SquidFireworkParticle.SparkFactory::new);
+        event.registerSpriteSet(RSParticleTypes.FIREWORK_TYPE.get(), SquidFireworkParticle.SparkProvider::new);
     }
 
     public static void openConchClient(byte conchStage) {
         Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
     }
 
-    public static void playNoteFromMessageConchNeeded(byte note) {
+    public static void playNoteFromMessageConchNeeded(int note) {
         Player player = Minecraft.getInstance().player;
         // Check if the player is wearing the conch
         assert player != null;
-        Iterable<ItemStack> armour = player.getArmorSlots();
-        Iterator<ItemStack> iter = armour.iterator();
-        iter.next();
-        iter.next();
-        iter.next();
-        ItemStack helmet = iter.next();
-        if (helmet.getItem() == RSItems.ITEM_CONCH.get()) {
+        if (player.getItemBySlot(EquipmentSlot.HEAD).getItem() == RSItems.ITEM_CONCH.get()) {
             Vec3 pos = player.position();
             player.level().playLocalSound(pos.x, pos.y, pos.z, RSSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
         }
@@ -102,7 +125,8 @@ public class ClientHandler {
         while (squidFinder.hasNext()) {
             e = squidFinder.next();
             if (e.getUUID().equals(message.uuid())) {
-                e.getData(SQUID).deserializeNBT(null, message.data());
+                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
+                e.getData(SQUID).deserialize(vi);
             }
         }
     }
@@ -115,7 +139,8 @@ public class ClientHandler {
         while (squidFinder.hasNext()) {
             e = squidFinder.next();
             if (e.getUUID().equals(message.uuid())) {
-                e.getData(SQUID).deserializeNBT(null, message.data());
+                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
+                e.getData(SQUID).deserialize(vi);
             }
         }
     }

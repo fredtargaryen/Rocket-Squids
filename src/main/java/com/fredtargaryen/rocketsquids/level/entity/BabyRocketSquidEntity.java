@@ -2,14 +2,12 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity;
 
-import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabyFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.BabyCapDataMessage;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -19,6 +17,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +60,8 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 this.remove(RemovalReason.DISCARDED);
                 RocketSquidEntity adult = new RocketSquidEntity(this.level());
                 Vec3 pos = this.position();
-                adult.moveTo(pos.x, pos.y, pos.z, (float) data.getRotYaw(), (float) data.getRotPitch());
+                adult.setPos(pos.x, pos.y, pos.z);
+                adult.setData(SQUID, data);
                 this.level().addFreshEntity(adult);
             }
         } else {
@@ -126,7 +126,9 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 }
                 if (this.newPacketRequired) {
                     Vec3 pos = this.position();
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.level(), new BabyCapDataMessage(this.getUUID(), data.serializeNBT(null)), pos.x, pos.y, pos.z, 64);
+                    TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                    data.serialize(vo);
+                    MessageHandler.sendToPlayersNear((ServerLevel) this.level(), new BabyCapDataMessage(this.getUUID(), vo.buildResult()), pos.x, pos.y, pos.z, 64);
                     this.newPacketRequired = false;
                 }
             }
@@ -151,21 +153,6 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
     public boolean shouldDropExperience() {
         // since this is a baby we don't want it to drop xp
         return false;
-    }
-
-    /**
-     * Entity won't drop items if this returns false
-     */
-    @Override
-    protected boolean shouldDropLoot() {
-        // since this is a baby we don't want it to drop items
-        return false;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("id", RSEntityTypes.BABY_SQUID_TYPE.toString());
     }
 
     /////////////////////////////

@@ -1,18 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "rocketsquids",
+  "key": {
+    "1": "rocketsquids:conch_1"
+  },
   "pattern": [
     "1  ",
     " 1 ",
     "  1"
   ],
-  "key": {
-    "1": {
-      "item": "rocketsquids:conch_item_1"
-    }
-  },
   "result": {
-    "id": "rocketsquids:conch_item_2",
-    "count": 1
+    "id": "rocketsquids:conch_2"
   }
 }

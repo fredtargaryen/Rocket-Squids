@@ -6,7 +6,7 @@ import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
@@ -58,7 +58,6 @@ public class RocketSquidsBase {
     public RocketSquidsBase(IEventBus eventBus, ModContainer modContainer) {
         RSBlocks.register(eventBus);
         RSItems.register(eventBus);
-        RSArmorMaterials.register(eventBus);
         RSAttachmentTypes.register(eventBus);
         // Also populates the creative tab
         RSCreativeTabs.register(eventBus);

@@ -10,6 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
@@ -23,7 +24,7 @@ import java.util.UUID;
  */
 public record AdultCapDataMessage(UUID uuid, CompoundTag data) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<AdultCapDataMessage> TYPE =
-            new CustomPacketPayload.Type<>(DataReference.getResourceLocation("adult_data"));
+            new CustomPacketPayload.Type<>(DataReference.getIdentifier("adult_data"));
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

@@ -3,13 +3,13 @@
 package com.fredtargaryen.rocketsquids.level.attachment;
 
 import com.fredtargaryen.rocketsquids.RocketSquidsBase;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 import java.util.Random;
 
-public class RocketSquidData implements INBTSerializable<CompoundTag> {
+public class RocketSquidData implements ValueIOSerializable {
     private static final double doublePi = Math.PI * 2;
     private static final byte[] note_ids = {12, 14, 16, 17, 19, 21, 23};
 
@@ -25,8 +25,8 @@ public class RocketSquidData implements INBTSerializable<CompoundTag> {
     private boolean blasting;
     private boolean blastToStatue;
     private boolean forcedBlast;
-    private byte[] latestNotes;
-    private byte[] targetNotes;
+    private int[] latestNotes;
+    private int[] targetNotes;
     private int brokenNotes;
 
     public RocketSquidData() {
@@ -42,9 +42,9 @@ public class RocketSquidData implements INBTSerializable<CompoundTag> {
         this.blasting = false;
         this.blastToStatue = false;
         this.forcedBlast = false;
-        this.latestNotes = new byte[]{-1, -1, -1};
+        this.latestNotes = new int[]{-1, -1, -1};
         Random notePicker = new Random();
-        this.targetNotes = new byte[]{
+        this.targetNotes = new int[]{
                 note_ids[notePicker.nextInt(7)],
                 note_ids[notePicker.nextInt(7)],
                 note_ids[notePicker.nextInt(7)]
@@ -178,11 +178,11 @@ public class RocketSquidData implements INBTSerializable<CompoundTag> {
         this.forcedBlast = b;
     }
 
-    public byte[] getLatestNotes() {
+    public int[] getLatestNotes() {
         return this.latestNotes;
     }
 
-    public void setLatestNotes(byte[] ln) {
+    public void setLatestNotes(int[] ln) {
         try {
             this.latestNotes[0] = ln[0];
             this.latestNotes[1] = ln[1];
@@ -195,19 +195,19 @@ public class RocketSquidData implements INBTSerializable<CompoundTag> {
         }
     }
 
-    public byte[] getTargetNotes() {
+    public int[] getTargetNotes() {
         return this.targetNotes;
     }
 
-    public void setTargetNotes(byte[] tn) {
+    public void setTargetNotes(int[] tn) {
         this.targetNotes = tn;
     }
 
-    public void processNote(byte note) {
+    public void processNote(int note) {
         this.latestNotes[0] = this.latestNotes[1];
         this.latestNotes[1] = this.latestNotes[2];
         this.latestNotes[2] = note;
-        if(this.latestNotes[0] == this.targetNotes[0]
+        if (this.latestNotes[0] == this.targetNotes[0]
                 && this.latestNotes[1] == this.targetNotes[1]
                 && this.latestNotes[2] == this.targetNotes[2]) {
             this.blastToStatue = true;
@@ -215,32 +215,30 @@ public class RocketSquidData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        tag.putDouble("pitch", this.rotPitch);
-        tag.putDouble("yaw", this.rotYaw);
-        tag.putDouble("targetPitch", this.targetRotPitch);
-        tag.putDouble("targetYaw", this.targetRotYaw);
-        tag.putBoolean("shaking", this.shaking);
-        tag.putBoolean("blasting", this.blasting);
-        tag.putBoolean("forcedblast", this.forcedBlast);
-        tag.putByteArray("latestnotes", this.latestNotes);
-        tag.putByteArray("targetnotes", this.targetNotes);
-        tag.putBoolean("blasttostatue", this.blastToStatue);
-        return tag;
+    public void serialize(ValueOutput vo) {
+        vo.putDouble("pitch", this.rotPitch);
+        vo.putDouble("yaw", this.rotYaw);
+        vo.putDouble("targetPitch", this.targetRotPitch);
+        vo.putDouble("targetYaw", this.targetRotYaw);
+        vo.putBoolean("shaking", this.shaking);
+        vo.putBoolean("blasting", this.blasting);
+        vo.putBoolean("forcedblast", this.forcedBlast);
+        vo.putIntArray("latestnotes", this.latestNotes);
+        vo.putIntArray("targetnotes", this.targetNotes);
+        vo.putBoolean("blasttostatue", this.blastToStatue);
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        this.setRotPitch(tag.getDouble("pitch"));
-        this.setRotYaw(tag.getDouble("yaw"));
-        this.setTargetRotPitch(tag.getDouble("targetPitch"));
-        this.setTargetRotYaw(tag.getDouble("targetYaw"));
-        this.setShaking(tag.getBoolean("shaking"));
-        this.setBlasting(tag.getBoolean("blasting"));
-        this.setForcedBlast(tag.getBoolean("forcedblast"));
-        this.setLatestNotes(tag.getByteArray("latestnotes"));
-        this.setTargetNotes(tag.getByteArray("targetnotes"));
-        this.setBlastToStatue(tag.getBoolean("blasttostatue"));
+    public void deserialize(ValueInput vi) {
+        this.setRotPitch(vi.getDoubleOr("pitch", 0.0));
+        this.setRotYaw(vi.getDoubleOr("yaw", 0.0));
+        this.setTargetRotPitch(vi.getDoubleOr("targetPitch", 0.0));
+        this.setTargetRotYaw(vi.getDoubleOr("targetYaw", 0.0));
+        this.setShaking(vi.getBooleanOr("shaking", false));
+        this.setBlasting(vi.getBooleanOr("blasting", false));
+        this.setForcedBlast(vi.getBooleanOr("forcedblast", false));
+        this.setLatestNotes(vi.getIntArray("latestnotes").orElse(new int[]{-1, -1, -1}));
+        this.setTargetNotes(vi.getIntArray("targetnotes").orElse(new int[]{-1, -1, -1}));
+        this.setBlastToStatue(vi.getBooleanOr("blasttostatue", false));
     }
 }

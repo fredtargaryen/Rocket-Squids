@@ -4,51 +4,50 @@ package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
+import com.fredtargaryen.rocketsquids.client.render.state.BabyRocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.BABY_SQUID_BODY_LAYER;
 
-public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidModel<BabyRocketSquidEntity>> {
-    private static final ResourceLocation normal = DataReference.getResourceLocation("textures/entity/baby_rocket_squid.png");
+public class BabyRocketSquidRenderer extends MobRenderer<BabyRocketSquidEntity, BabyRocketSquidRenderState, BabyRocketSquidModel> {
+    private static final Identifier normal = DataReference.getIdentifier("textures/entity/baby_rocket_squid.png");
 
     public BabyRocketSquidRenderer(
             EntityRendererProvider.Context context
     ) {
-        super(context, new BabyRocketSquidModel<>(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
-    }
-
-    /**
-     * Defines what float the third param in setRotationAngles of ModelBase is
-     * par2 = time elapsed since last render call
-     */
-    @Override
-    protected float getBob(
-            BabyRocketSquidEntity squid,
-            float partialTicks
-    ) {
-        return squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTicks;
+        super(context, new BabyRocketSquidModel(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
     }
 
     @Override
-    protected void setupRotations(BabyRocketSquidEntity ers, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-        float exactPitch = (float) (Mth.lerp(partialTick, ers.getPrevRotPitch(), ers.getRotPitch()) * 180 / Math.PI);
-        float exactYaw = (float) (Mth.lerp(partialTick, ers.getPrevRotYaw(), ers.getRotYaw()) * 180 / Math.PI);
+    public BabyRocketSquidRenderState createRenderState() {
+        return new BabyRocketSquidRenderState();
+    }
 
+    @Override
+    public void extractRenderState(BabyRocketSquidEntity squid, BabyRocketSquidRenderState state, float partialTick) {
+        super.extractRenderState(squid, state, partialTick);
+        state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
+        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()) * 180 / Math.PI);
+        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()) * 180 / Math.PI);
+    }
+
+    @Override
+    protected void setupRotations(BabyRocketSquidRenderState state, PoseStack poseStack, float bodyRot, float scale) {
         poseStack.translate(0, 0.15, 0);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180f - exactYaw));
-        poseStack.mulPose(Axis.XN.rotationDegrees(exactPitch));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180f - state.yBodyRot));
+        poseStack.mulPose(Axis.XN.rotationDegrees(state.xBodyRot));
         poseStack.translate(0f, -1.3f, 0f);
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull BabyRocketSquidEntity entity) {
+    public @NotNull Identifier getTextureLocation(@NotNull BabyRocketSquidRenderState state) {
         return normal;
     }
 }

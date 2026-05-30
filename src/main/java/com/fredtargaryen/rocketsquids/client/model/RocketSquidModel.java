@@ -2,9 +2,10 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
+import com.fredtargaryen.rocketsquids.client.render.state.RocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -22,7 +23,7 @@ import java.util.Arrays;
  * Further manually edited by barnabeepickle on 12-4-2025,
  * and nearly completely re-worked for 1.17.1 on 12-17-2025
  */
-public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalModel<T> {
+public class RocketSquidModel extends EntityModel<RocketSquidRenderState> {
     private static final int tentacles = 8;
     public final ModelPart[] tent = new ModelPart[tentacles];
     public final ModelPart saddle;
@@ -30,6 +31,7 @@ public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalM
     public final ModelPart head;
 
     public RocketSquidModel(ModelPart root) {
+        super(root);
         this.head = root;
         this.saddle = this.head.getChild("saddle");
         this.straps = this.head.getChild("straps");
@@ -59,9 +61,9 @@ public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalM
 
         for (int i = 0; i < tentacles; i++) {
             double tentacleYRot = i * Math.PI * 2.0 / 8.0;
-            float floatx = (float)Math.cos(tentacleYRot) * 5.0F;
+            float floatx = (float) Math.cos(tentacleYRot) * 5.0F;
             float floaty = 9.0F;
-            float floatz = (float)Math.sin(tentacleYRot) * 5.0F;
+            float floatz = (float) Math.sin(tentacleYRot) * 5.0F;
             tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
@@ -86,23 +88,11 @@ public class RocketSquidModel<T extends RocketSquidEntity> extends HierarchicalM
     }
 
     @Override
-    public void setupAnim(
-            @NotNull T entity,
-            float limbSwing,
-            float limbSwingAmount,
-            float ageInTicks,
-            float netHeadYaw,
-            float headPitch
-    ) {
+    public void setupAnim(RocketSquidRenderState state) {
         for (ModelPart modelPart : this.tent) {
-            modelPart.xRot = ageInTicks;
+            modelPart.xRot = state.tentacleAngle;
         }
-        this.saddle.visible = entity.getSaddled();
-        this.straps.visible = entity.getSaddled();
-    }
-
-    @Override
-    public @NotNull ModelPart root() {
-        return this.head;
+        this.saddle.visible = state.saddled;
+        this.straps.visible = state.saddled;
     }
 }

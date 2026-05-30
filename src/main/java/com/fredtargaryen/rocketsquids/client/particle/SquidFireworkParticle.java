@@ -2,46 +2,45 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.particle;
 
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.RSParticleTypes;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.*;
+import com.fredtargaryen.rocketsquids.RocketSquidsBase;
+import com.fredtargaryen.rocketsquids.util.color.ColorHelper;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Almost all code here was copied from FireworkParticle as I couldn't extend
  */
-@OnlyIn(Dist.CLIENT)
 public class SquidFireworkParticle {
-    @OnlyIn(Dist.CLIENT)
     static class Spark extends SimpleAnimatedParticle {
         private boolean trail;
         private boolean twinkle;
-        private final ParticleEngine effectRenderer;
-        private float fadeColourRed;
-        private float fadeColourGreen;
-        private float fadeColourBlue;
-        private boolean hasFadeColour;
+        private final ParticleEngine engine;
+        private float fadeR;
+        private float fadeG;
+        private float fadeB;
+        private boolean hasFade;
 
-        private Spark(ClientLevel world, double d, double e, double f, double g, double h, double i, ParticleEngine particleengine, SpriteSet sprites) {
-            super(world, d, e, f, sprites, -0.004F);
-            this.xd = g;
-            this.yd = h;
-            this.zd = i;
-            this.effectRenderer = particleengine;
-            this.scale(0.75F);
+        private Spark(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ParticleEngine engine, SpriteSet sprites) {
+            super(world, x, y, z, sprites, -0.004F);
+            this.gravity = -0.004F;
+            this.xd = xSpeed;
+            this.yd = ySpeed;
+            this.zd = zSpeed;
+            this.engine = engine;
+            this.quadSize *= 0.75F;
             this.lifetime = 48 + this.random.nextInt(12);
             this.setSpriteFromAge(sprites);
         }
@@ -54,67 +53,60 @@ public class SquidFireworkParticle {
             this.twinkle = twinkleIn;
         }
 
-        /**
-         * Renders the particle
-         */
-        public void render(@NotNull VertexConsumer buffer, @NotNull Camera entityIn, float partialTicks) {
+        @Override
+        public void extract(QuadParticleRenderState p_451199_, Camera p_446370_, float p_445772_) {
             if (!this.twinkle || this.age < this.lifetime / 3 || (this.age + this.lifetime) / 3 % 2 == 0) {
-                super.render(buffer, entityIn, partialTicks);
+                super.extract(p_451199_, p_446370_, p_445772_);
             }
-
         }
 
         public void tick() {
             super.tick();
             if (this.trail && this.age < this.lifetime / 2 && (this.age + this.lifetime) % 2 == 0) {
-                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(this.level, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D, this.effectRenderer, this.sprites);
+                SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(
+                        this.level, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D, this.engine, this.sprites);
                 fireworkparticle$spark.setAlpha(0.99F);
                 fireworkparticle$spark.setColor(this.rCol, this.gCol, this.bCol);
                 fireworkparticle$spark.age = fireworkparticle$spark.lifetime / 2;
-                if (this.hasFadeColour) {
-                    fireworkparticle$spark.hasFadeColour = true;
-                    fireworkparticle$spark.fadeColourRed = this.fadeColourRed;
-                    fireworkparticle$spark.fadeColourGreen = this.fadeColourGreen;
-                    fireworkparticle$spark.fadeColourBlue = this.fadeColourBlue;
+                if (this.hasFade) {
+                    fireworkparticle$spark.hasFade = true;
+                    fireworkparticle$spark.fadeR = this.fadeR;
+                    fireworkparticle$spark.fadeG = this.fadeG;
+                    fireworkparticle$spark.fadeB = this.fadeB;
                 }
 
                 fireworkparticle$spark.twinkle = this.twinkle;
-                this.effectRenderer.add(fireworkparticle$spark);
+                this.engine.add(fireworkparticle$spark);
             }
 
         }
-
-        public void setSlightAlpha() {
-            this.setAlpha(0.99F);
-        }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class SparkFactory implements ParticleProvider<SimpleParticleType> {
-        private final SpriteSet spriteSet;
+    public static class SparkProvider implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet sprites;
 
-        public SparkFactory(SpriteSet spriteSetIn) {
-            this.spriteSet = spriteSetIn;
+        public SparkProvider(SpriteSet sprites) {
+            this.sprites = sprites;
         }
 
         @Override
         public Particle createParticle(
                 @NotNull SimpleParticleType typeIn,
-                @NotNull ClientLevel worldIn,
+                @NotNull ClientLevel level,
                 double x,
                 double y,
                 double z,
                 double xSpeed,
                 double ySpeed,
-                double zSpeed
+                double zSpeed,
+                RandomSource random
         ) {
-            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particleEngine, this.spriteSet);
-            fireworkparticle$spark.setSlightAlpha();
+            SquidFireworkParticle.Spark fireworkparticle$spark = new SquidFireworkParticle.Spark(
+                    level, x, y, z, xSpeed, ySpeed, zSpeed, Minecraft.getInstance().particleEngine, this.sprites);
             return fireworkparticle$spark;
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static class SquidStarter extends NoRenderParticle {
         private int age;
         private final ParticleEngine manager;
@@ -128,15 +120,15 @@ public class SquidFireworkParticle {
             this.zd = 0.0;
             this.manager = manager;
             this.lifetime = 8;
-            this.explosions = RocketSquidsBase.firework.getList("Explosions", 10);
+            this.explosions = RocketSquidsBase.firework.getList("Explosions").orElse(new ListTag());
             if (this.explosions.isEmpty()) {
                 this.explosions = null;
             } else {
                 this.lifetime = this.explosions.size() * 2 - 1;
 
                 for (int i = 0; i < this.explosions.size(); ++i) {
-                    CompoundTag compoundnbt = this.explosions.getCompound(i);
-                    if (compoundnbt.getBoolean("Flicker")) {
+                    CompoundTag compoundnbt = this.explosions.getCompound(i).orElse(new CompoundTag());
+                    if (compoundnbt.getBoolean("Flicker").orElse(true)) {
                         boolean twinkle = true;
                         this.lifetime += 15;
                         break;
@@ -157,9 +149,9 @@ public class SquidFireworkParticle {
                     flag1 = true;
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        CompoundTag nbttagcompound = this.explosions.getCompound(i);
+                        CompoundTag nbttagcompound = this.explosions.getCompound(i).orElse(new CompoundTag());
 
-                        if (nbttagcompound.getByte("Type") == 1) {
+                        if (nbttagcompound.getByte("Type").orElse((byte) 1) == 1) {
                             flag1 = true;
                             break;
                         }
@@ -179,11 +171,15 @@ public class SquidFireworkParticle {
 
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int k = this.age / 2;
-                CompoundTag nbttagcompound1 = this.explosions.getCompound(k);
-                boolean flag4 = nbttagcompound1.getBoolean("Trail");
-                boolean flag2 = nbttagcompound1.getBoolean("Flicker");
-                int[] aint = nbttagcompound1.getIntArray("Colors");
-                int[] aint1 = nbttagcompound1.getIntArray("FadeColors");
+                CompoundTag nbttagcompound1 = this.explosions.getCompound(k).orElse(new CompoundTag());
+                boolean flag4 = nbttagcompound1.getBoolean("Trail").orElse(false);
+                boolean flag2 = nbttagcompound1.getBoolean("Flicker").orElse(true);
+                int[] aint = nbttagcompound1.getIntArray("Colors").orElse(new int[]{
+                        ColorHelper.WHITE
+                });
+                int[] aint1 = nbttagcompound1.getIntArray("FadeColors").orElse(new int[]{
+                        ColorHelper.WHITE
+                });
 
                 if (aint.length == 0) {
                     aint = new int[]{0};
@@ -215,7 +211,7 @@ public class SquidFireworkParticle {
 
         private boolean isFarFromCamera() {
             Minecraft minecraft = Minecraft.getInstance();
-            return minecraft.gameRenderer.getMainCamera().getPosition().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
+            return minecraft.gameRenderer.getMainCamera().position().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
         }
 
         private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn) {
@@ -259,7 +255,6 @@ public class SquidFireworkParticle {
             assert fireworkparticle$spark != null;
             fireworkparticle$spark.setTrail(trail);
             fireworkparticle$spark.setTwinkle(twinkle);
-            fireworkparticle$spark.setSlightAlpha();
             int i = this.random.nextInt(colorSpark.length);
             fireworkparticle$spark.setColor(colorSpark[i]);
             if (colorSparkFade.length > 0) {

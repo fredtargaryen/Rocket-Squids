@@ -2,16 +2,15 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
+import com.fredtargaryen.rocketsquids.client.render.state.BabyRocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
-
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -22,12 +21,13 @@ import java.util.Arrays;
  * Further manually edited by barnabeepickle on 12-4-2025,
  * and nearly completely re-worked for 1.17.1 on 12-18-2025
  */
-public class BabyRocketSquidModel<T extends BabyRocketSquidEntity> extends HierarchicalModel<T> {
+public class BabyRocketSquidModel extends EntityModel<BabyRocketSquidRenderState> {
     private static final int tentacles = 8;
     public final ModelPart[] tent = new ModelPart[tentacles];
     public final ModelPart head;
 
     public BabyRocketSquidModel(ModelPart root) {
+        super(root);
         this.head = root;
         Arrays.setAll(this.tent, index -> head.getChild(createTentacleName(index)));
     }
@@ -55,9 +55,9 @@ public class BabyRocketSquidModel<T extends BabyRocketSquidEntity> extends Hiera
 
         for (int i = 0; i < tentacles; i++) {
             double tentacleYRot = i * Math.PI * 2.0 / 8.0;
-            float floatx = (float)Math.cos(tentacleYRot) * 1.5F;
+            float floatx = (float) Math.cos(tentacleYRot) * 1.5F;
             float floaty = 4.0F;
-            float floatz = (float)Math.sin(tentacleYRot) * 1.5F;
+            float floatz = (float) Math.sin(tentacleYRot) * 1.5F;
             tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
@@ -67,21 +67,9 @@ public class BabyRocketSquidModel<T extends BabyRocketSquidEntity> extends Hiera
 
 
     @Override
-    public void setupAnim(
-            @NotNull T entity,
-            float limbSwing,
-            float limbSwingAmount,
-            float ageInTicks,
-            float netHeadYaw,
-            float headPitch
-    ) {
+    public void setupAnim(BabyRocketSquidRenderState state) {
         for (ModelPart modelPart : this.tent) {
-            modelPart.xRot = ageInTicks;
+            modelPart.xRot = state.tentacleAngle;
         }
-    }
-
-    @Override
-    public @NotNull ModelPart root() {
-        return this.head;
     }
 }

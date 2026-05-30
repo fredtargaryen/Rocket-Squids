@@ -4,12 +4,12 @@ package com.fredtargaryen.rocketsquids.level.entity.projectile;
 
 import com.fredtargaryen.rocketsquids.RSEntityTypes;
 import com.fredtargaryen.rocketsquids.RSItems;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -20,9 +20,8 @@ public class ThrownTubeEntity extends ThrowableItemProjectile {
         super(type, world);
     }
 
-    public ThrownTubeEntity(LivingEntity elb, Level world)
-    {
-        super(RSEntityTypes.TUBE_TYPE.get(), elb, world);
+    public ThrownTubeEntity(ServerLevel level, LivingEntity owner, ItemStack stack) {
+        super(RSEntityTypes.TUBE_TYPE.get(), owner, level, stack);
     }
 
     @Override
