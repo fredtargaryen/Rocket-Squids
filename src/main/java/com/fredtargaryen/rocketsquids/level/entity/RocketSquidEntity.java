@@ -22,12 +22,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -37,6 +40,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.AgeableWaterCreature;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -54,15 +58,27 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
-public class RocketSquidEntity extends AbstractSquidEntity implements Leashable {
+public class RocketSquidEntity extends AgeableWaterCreature implements Leashable {
+    protected boolean newPacketRequired;
+
+    public boolean randomSpawnView = true;
+
+    ///////////////
+    //CLIENT ONLY//
+    /// ////////////
+    public float tentacleAngle;
+    public float lastTentacleAngle;
+
     /**
      * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
      */
@@ -83,6 +99,25 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
     public RocketSquidEntity(Level par1World) {
         super(RSEntityTypes.SQUID_TYPE.get(), par1World);
         this.riderRotated = false;
+        if (this.randomSpawnView) {
+            this.getLookControl().setLookAt(new Vec3(new Vector3f(Mth.nextFloat(par1World.getRandom(), 0.0F, 100.0F))));
+        }
+    }
+
+    /**
+     * Returns the sound this mob makes when it dies.
+     */
+    @Override
+    protected SoundEvent getDeathSound() {
+        return null;
+    }
+
+    /**
+     * Returns the sound this mob makes when it is hurt.
+     */
+    @Override
+    protected SoundEvent getHurtSound(@NotNull DamageSource ds) {
+        return null;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -422,6 +457,117 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
 
     public boolean canBreed() {
         return !this.isBaby() && this.breedCooldown <= 0 && !this.hasPassengers();
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isFood(ItemStack stack) {
+        Item stackItem = stack.getItem();
+        return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH || stackItem == Items.GUNPOWDER;
+    }
+
+    /**
+     * A squid will be pointing 1-3 directions at a time.
+     *
+     * @return Whether a solid block is in the way in all directions pointed, so the squid can't move much
+     */
+    @SuppressWarnings("deprecation")
+    public boolean areBlocksInWay() {
+        BlockPos squidPos = this.blockPosition();
+        for (Direction dir : this.getDirectionsPointing()) {
+            if (!this.level().getBlockState(squidPos.relative(dir)).isSolid()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<Direction> getDirectionsPointing() {
+        ArrayList<Direction> directions = new ArrayList<>();
+        Vec3 direction = this.getDirectionAsVec3();
+        //A threshold; if a component is beyond this the squid is considered pointing in that direction
+        double t = 0.45;//0.3125;
+        if (direction.y > t) {
+            directions.add(Direction.UP);
+        } else if (direction.y < -t) {
+            directions.add(Direction.DOWN);
+        }
+        //South is positive z I think
+        if (direction.z > t) {
+            directions.add(Direction.SOUTH);
+        } else if (direction.z < -t) {
+            directions.add(Direction.NORTH);
+        }
+        //East is positive x I think
+        if (direction.x > t) {
+            directions.add(Direction.EAST);
+        } else if (direction.x < -t) {
+            directions.add(Direction.WEST);
+        }
+        return directions;
+    }
+
+    public Vec3 getDirectionAsVec3() {
+        double rp = this.getRotPitch();
+        double ry = this.getRotYaw();
+        double yDir = Math.cos(rp);
+        double hozDir = Math.sin(rp);
+        double zDir = hozDir * Math.cos(ry);
+        double xDir = hozDir * -Math.sin(ry);
+        return new Vec3(xDir, yDir, zDir);
+    }
+
+    public void addForce(double force) {
+        if (!this.level().isClientSide()) {
+            Vec3 motion = this.getDeltaMovement();
+            Vec3 direction = this.getDirectionAsVec3();
+            this.setDeltaMovement(
+                    motion.x + direction.x * force,
+                    motion.y + direction.y * force,
+                    motion.z + direction.z * force);
+            this.setOnGround(false);
+        }
+    }
+
+    /**
+     * Get the current force, and recalculate the motion based on the current angle of the squid
+     */
+    public void moveToWherePointing() {
+        Vec3 motion = this.getDeltaMovement();
+        double force = Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z);
+        Vec3 direction = this.getDirectionAsVec3();
+        this.setDeltaMovement(
+                direction.x * force,
+                direction.y * force,
+                direction.z * force);
+        this.setOnGround(false);
+    }
+
+    /**
+     * Set the rotation so that the squid is pointing along the desired direction vector
+     *
+     * @param vec       normalised vector representing intended squid direction
+     * @param deviation random addition to the angles so it doesn't look too perfect
+     */
+    public void pointToVector(Vec3 vec, double deviation) {
+        double hozDir = Math.sqrt(vec.x * vec.x + vec.z * vec.z);
+        this.setTargetRotYaw(Math.acos(vec.z / hozDir) + deviation * (this.random.nextBoolean() ? 1 : -1));
+        this.setTargetRotPitch(Math.acos(vec.y) + deviation * (this.random.nextBoolean() ? 1 : -1));
+    }
+
+    /**
+     * Turn the entity based on its motion vector
+     */
+    public void pointToWhereMoving() {
+        Vec3 motion = this.getDeltaMovement();
+        if (!(Math.abs(motion.y) < 0.0785 && motion.x == 0.0 && motion.z == 0.0)) {
+            //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.
+            //The global z movement is given by this.motionZ.
+            //In addForce, this.motionZ is given by horizontalForce * cos(yaw).
+            //By rearranging, horizontalForce = this.motionZ / cos(yaw).
+            //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
+            double speed = motion.z / Math.cos(this.getRotYaw());
+            this.setTargetRotPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
+        }
     }
 
     /**
