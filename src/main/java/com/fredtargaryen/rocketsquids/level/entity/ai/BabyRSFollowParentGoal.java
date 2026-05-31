@@ -2,7 +2,6 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -10,12 +9,12 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import java.util.List;
 
 public class BabyRSFollowParentGoal extends Goal {
-    private final BabyRocketSquidEntity baby;
+    private final RocketSquidEntity baby;
     private Entity parent;
     private final double speedModifier;
     private int timeToRecalcPath;
 
-    public BabyRSFollowParentGoal(BabyRocketSquidEntity baby, double d) {
+    public BabyRSFollowParentGoal(RocketSquidEntity baby, double d) {
         this.baby = baby;
         this.speedModifier = d;
     }
