@@ -62,7 +62,7 @@ import java.util.UUID;
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
-public class RocketSquidEntity extends AbstractRocketSquidEntity implements Leashable {
+public class RocketSquidEntity extends AbstractSquidEntity implements Leashable {
     /**
      * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
      */

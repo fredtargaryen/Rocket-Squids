@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.item.Item;
@@ -62,7 +63,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     @SuppressWarnings("unused")
     public boolean isFood(ItemStack stack) {
         Item stackItem = stack.getItem();
-        return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH;
+        return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH || stackItem == Items.GUNPOWDER;
     }
 
     @Override
@@ -174,6 +175,12 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
             double speed = motion.z / Math.cos(this.getRotYaw());
             this.setTargetRotPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
         }
+    }
+
+    @Override
+    protected boolean canRide(@NotNull Entity entityIn)
+    {
+        return true;
     }
 
     /////////////////////////////

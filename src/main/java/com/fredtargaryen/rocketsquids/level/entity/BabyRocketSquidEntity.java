@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
-public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
+public class BabyRocketSquidEntity extends AbstractSquidEntity {
     public BabyRocketSquidEntity(EntityType<? extends BabyRocketSquidEntity> type, Level w) {
         super(type, w);
     }
