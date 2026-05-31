@@ -104,7 +104,7 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
         this.goalSelector.addGoal(0, new BlastoffGoal(this));
         this.goalSelector.addGoal(1, new ShakeGoal(this));
         this.goalSelector.addGoal(2, new SwimAroundGoal(this));
-        this.goalSelector.addGoal(3, new AdultFlopAroundGoal(this));
+        this.goalSelector.addGoal(3, new FlopAroundGoal(this));
     }
 
     /**
