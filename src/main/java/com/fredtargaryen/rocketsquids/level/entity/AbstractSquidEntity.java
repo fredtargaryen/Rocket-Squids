@@ -9,7 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.animal.AgeableWaterCreature;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,14 +20,14 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public abstract class AbstractSquidEntity extends WaterAnimal {
+public abstract class AbstractSquidEntity extends AgeableWaterCreature {
     protected boolean newPacketRequired;
 
     public boolean randomSpawnView = true;
 
     ///////////////
     //CLIENT ONLY//
-    ///////////////
+    /// ////////////
     public float tentacleAngle;
     public float lastTentacleAngle;
 
@@ -42,8 +42,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected SoundEvent getHurtSound(@NotNull DamageSource ds)
-    {
+    protected SoundEvent getHurtSound(@NotNull DamageSource ds) {
         return null;
     }
 
@@ -51,8 +50,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
      * Returns the sound this mob makes when it dies.
      */
     @Override
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return null;
     }
 
@@ -73,13 +71,14 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
 
     /**
      * A squid will be pointing 1-3 directions at a time.
+     *
      * @return Whether a solid block is in the way in all directions pointed, so the squid can't move much
      */
     @SuppressWarnings("deprecation")
     public boolean areBlocksInWay() {
         BlockPos squidPos = this.blockPosition();
-        for(Direction dir : this.getDirectionsPointing()) {
-            if(!this.level().getBlockState(squidPos.relative(dir)).isSolid()) {
+        for (Direction dir : this.getDirectionsPointing()) {
+            if (!this.level().getBlockState(squidPos.relative(dir)).isSolid()) {
                 return false;
             }
         }
@@ -91,24 +90,21 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
         Vec3 direction = this.getDirectionAsVec3();
         //A threshold; if a component is beyond this the squid is considered pointing in that direction
         double t = 0.45;//0.3125;
-        if(direction.y > t) {
+        if (direction.y > t) {
             directions.add(Direction.UP);
-        }
-        else if(direction.y < -t) {
+        } else if (direction.y < -t) {
             directions.add(Direction.DOWN);
         }
         //South is positive z I think
-        if(direction.z > t) {
+        if (direction.z > t) {
             directions.add(Direction.SOUTH);
-        }
-        else if(direction.z < -t) {
+        } else if (direction.z < -t) {
             directions.add(Direction.NORTH);
         }
         //East is positive x I think
-        if(direction.x > t) {
+        if (direction.x > t) {
             directions.add(Direction.EAST);
-        }
-        else if(direction.x < -t) {
+        } else if (direction.x < -t) {
             directions.add(Direction.WEST);
         }
         return directions;
@@ -125,7 +121,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     }
 
     public void addForce(double force) {
-        if(!this.level().isClientSide()) {
+        if (!this.level().isClientSide()) {
             Vec3 motion = this.getDeltaMovement();
             Vec3 direction = this.getDirectionAsVec3();
             this.setDeltaMovement(
@@ -152,7 +148,8 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
 
     /**
      * Set the rotation so that the squid is pointing along the desired direction vector
-     * @param vec normalised vector representing intended squid direction
+     *
+     * @param vec       normalised vector representing intended squid direction
      * @param deviation random addition to the angles so it doesn't look too perfect
      */
     public void pointToVector(Vec3 vec, double deviation) {
@@ -166,7 +163,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
      */
     public void pointToWhereMoving() {
         Vec3 motion = this.getDeltaMovement();
-        if(!(Math.abs(motion.y) < 0.0785 && motion.x == 0.0 && motion.z == 0.0)) {
+        if (!(Math.abs(motion.y) < 0.0785 && motion.x == 0.0 && motion.z == 0.0)) {
             //The aim is to find the local z movement to decide if the squid should pitch backwards or forwards.
             //The global z movement is given by this.motionZ.
             //In addForce, this.motionZ is given by horizontalForce * cos(yaw).
@@ -178,16 +175,19 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
     }
 
     @Override
-    protected boolean canRide(@NotNull Entity entityIn)
-    {
+    protected boolean canRide(@NotNull Entity entityIn) {
         return true;
     }
 
     /////////////////////////////
     //CAPABILITY ROTATION STUFF//
-    /////////////////////////////
+
+    /// //////////////////////////
     public abstract double getRotPitch();
+
     public abstract double getRotYaw();
+
     public abstract void setTargetRotPitch(double target);
+
     public abstract void setTargetRotYaw(double target);
 }

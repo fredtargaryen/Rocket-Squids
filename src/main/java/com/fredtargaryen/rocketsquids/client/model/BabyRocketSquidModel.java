@@ -2,17 +2,12 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.client.model;
 
-import com.fredtargaryen.rocketsquids.client.render.state.BabyRocketSquidRenderState;
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-
-import java.util.Arrays;
 
 /**
  * RocketSquidModel - FredTargaryen
@@ -21,19 +16,9 @@ import java.util.Arrays;
  * Further manually edited by barnabeepickle on 12-4-2025,
  * and nearly completely re-worked for 1.17.1 on 12-18-2025
  */
-public class BabyRocketSquidModel extends EntityModel<BabyRocketSquidRenderState> {
-    private static final int tentacles = 8;
-    public final ModelPart[] tent = new ModelPart[tentacles];
-    public final ModelPart head;
-
+public class BabyRocketSquidModel extends RocketSquidModel {
     public BabyRocketSquidModel(ModelPart root) {
         super(root);
-        this.head = root;
-        Arrays.setAll(this.tent, index -> head.getChild(createTentacleName(index)));
-    }
-
-    private static String createTentacleName(int index) {
-        return "tent" + index;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -62,14 +47,19 @@ public class BabyRocketSquidModel extends EntityModel<BabyRocketSquidRenderState
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 
+        // Baby squids can't be ridden so have invisible saddles and straps forever
+        // make the saddle
+        root.addOrReplaceChild("saddle",
+                CubeListBuilder.create(),
+                PartPose.offset(0.0F, 0.0F, 0.0F)
+        );
+
+        // make the straps
+        root.addOrReplaceChild("straps",
+                CubeListBuilder.create(),
+                PartPose.offset(0.0F, 0.0F, 0.0F)
+        );
+
         return LayerDefinition.create(meshDef, 32, 32);
-    }
-
-
-    @Override
-    public void setupAnim(BabyRocketSquidRenderState state) {
-        for (ModelPart modelPart : this.tent) {
-            modelPart.xRot = state.tentacleAngle;
-        }
     }
 }

@@ -3,11 +3,19 @@
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -90,6 +98,25 @@ public class RocketSquidsBase {
      * Register conditions for spawning of this mod's entities
      */
     public void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-        event.register(RSEntityTypes.SQUID_TYPE.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
+        event.register(
+                RSEntityTypes.SQUID_TYPE.get(),
+                SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                RocketSquidsBase::checkRocketSquidSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.OR);
+    }
+
+    /**
+     * Copy of {@link WaterAnimal#checkSurfaceWaterAnimalSpawnRules} that accepts rocket squids
+     */
+    public static boolean checkRocketSquidSpawnRules(
+            EntityType<? extends RocketSquidEntity> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+    ) {
+        int seaLevel = level.getSeaLevel();
+        int minSpawnLevel = seaLevel - 13;
+        return pos.getY() >= minSpawnLevel
+                && pos.getY() <= seaLevel
+                && level.getFluidState(pos.below()).is(FluidTags.WATER)
+                && level.getBlockState(pos.above()).is(Blocks.WATER);
     }
 }

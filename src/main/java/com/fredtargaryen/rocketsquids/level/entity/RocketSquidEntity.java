@@ -10,7 +10,10 @@ import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
-import com.fredtargaryen.rocketsquids.level.entity.ai.*;
+import com.fredtargaryen.rocketsquids.level.entity.ai.BlastoffGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.FlopAroundGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.SwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
@@ -71,11 +74,6 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
     protected int breedCooldown;
 
     /**
-     * Server only - whether the squid can make a baby
-     */
-    protected boolean breedable;
-
-    /**
      * Client only - for rotating the player to seat them on the squid's body each frame
      */
     public boolean riderRotated;
@@ -84,7 +82,6 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
 
     public RocketSquidEntity(Level par1World) {
         super(RSEntityTypes.SQUID_TYPE.get(), par1World);
-        this.breedable = true;
         this.riderRotated = false;
     }
 
@@ -105,6 +102,13 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
         this.goalSelector.addGoal(1, new ShakeGoal(this));
         this.goalSelector.addGoal(2, new SwimAroundGoal(this));
         this.goalSelector.addGoal(3, new FlopAroundGoal(this));
+    }
+
+    /**
+     * Intention is for babies to turn into adults in 5 minutes real-time
+     */
+    protected int getBabyStartAge() {
+        return -6000;
     }
 
     /**
@@ -236,6 +240,11 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
     @Override
     public void travel(@NotNull Vec3 motion) {
         this.move(MoverType.SELF, this.getDeltaMovement());
+    }
+
+    @Override
+    public @org.jspecify.annotations.Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
+        return RSEntityTypes.SQUID_TYPE.get().create(level, EntitySpawnReason.BREEDING);
     }
 
     @Override
@@ -412,7 +421,7 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
     }
 
     public boolean canBreed() {
-        return this.breedable && this.breedCooldown <= 0 && !this.hasPassengers();
+        return !this.isBaby() && this.breedCooldown <= 0 && !this.hasPassengers();
     }
 
     /**
@@ -429,11 +438,7 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
                 // run .compareTo() on it to find which squid has the greater UUID
                 case 1:
                     // the one with the greater UUID creates the child
-                    this.breedCooldown = CommonConfig.BREED_COOLDOWN;
-                    BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level(), EntitySpawnReason.BREEDING);
-                    assert baby != null;
-                    baby.setPos(thisPos.x, thisPos.y, thisPos.z);
-                    this.level().addFreshEntity(baby);
+                    this.spawnChildFromBreeding((ServerLevel) this.level(), partner);
                     this.spawnHearts((ServerLevel) this.level());
                     break;
                 case -1:
@@ -504,7 +509,7 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
 
     @Override
     protected boolean canRide(@NotNull Entity entityIn) {
-        return this.isVehicle();
+        return !this.isBaby();
     }
 
     public boolean getSaddled() {
@@ -544,11 +549,16 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
         return true;
     }
 
+    @Override
+    public boolean shouldDropExperience() {
+        return !this.isBaby();
+    }
+
     /////////////////
     //CLIENT EVENTS//
     /////////////////
     /**
-     * Add transformations to put player on back of squid. TODO add player uuid or something via RegisterRenderStateModifiersEvent, then get uuid from render state here
+     * Add transformations to put player on back of squid.
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void addRotation(RenderPlayerEvent.Pre event) {
@@ -707,5 +717,38 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
 
     public int getTargetNote(byte index) {
         return this.getData(SQUID).getTargetNotes()[index];
+    }
+
+    public void resetBreedCooldown() {
+        this.breedCooldown = CommonConfig.BREED_COOLDOWN;
+    }
+
+    public void spawnChildFromBreeding(ServerLevel level, RocketSquidEntity partner) {
+        AgeableMob offspring = this.getBreedOffspring(level, partner);
+        final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this, partner, offspring);
+        final boolean cancelled = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
+        offspring = event.getChild();
+        if (cancelled) {
+            //Reset the "inLove" state for the animals
+            this.setAge(6000);
+            partner.setAge(6000);
+            this.resetBreedCooldown();
+            partner.resetBreedCooldown();
+            return;
+        }
+        if (offspring != null) {
+            offspring.setBaby(true);
+            offspring.snapTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+            this.finalizeSpawnChildFromBreeding(level, partner, offspring);
+            level.addFreshEntityWithPassengers(offspring);
+        }
+    }
+
+    public void finalizeSpawnChildFromBreeding(ServerLevel level, RocketSquidEntity partner, @org.jspecify.annotations.Nullable AgeableMob offspring) {
+        this.setAge(6000);
+        partner.setAge(6000);
+        this.resetBreedCooldown();
+        partner.resetBreedCooldown();
+        level.broadcastEntityEvent(this, (byte) 18);
     }
 }

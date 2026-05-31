@@ -7,7 +7,6 @@ import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
-import com.fredtargaryen.rocketsquids.client.render.BabyRocketSquidRenderer;
 import com.fredtargaryen.rocketsquids.client.render.RocketSquidRenderer;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.message.*;
@@ -54,7 +53,6 @@ public class ClientHandler {
 
         // Register custom entity renderers
         event.registerEntityRenderer(RSEntityTypes.SQUID_TYPE.get(), RocketSquidRenderer::new);
-        event.registerEntityRenderer(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
 
     public static final ContextKey<UUID> PLAYER_ID = new ContextKey<>(DataReference.getIdentifier("player_id"));
@@ -78,10 +76,8 @@ public class ClientHandler {
     public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
 
     static {
-        assert RSEntityTypes.SQUID_TYPE.getId() != null;
         SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body");
-        assert RSEntityTypes.BABY_SQUID_TYPE.getId() != null;
-        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.BABY_SQUID_TYPE.getId(), "body");
+        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body_baby");
         dummyLookupProvider = HolderLookup.Provider.create(Stream.empty());
     }
 

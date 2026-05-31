@@ -2,7 +2,6 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids;
 
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.projectile.ThrownSacEntity;
 import com.fredtargaryen.rocketsquids.level.entity.projectile.ThrownTubeEntity;
@@ -47,15 +46,6 @@ public class RSEntityTypes {
                     .setShouldReceiveVelocityUpdates(true)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("rocket_squid")))
     );
-    @SuppressWarnings("RedundantTypeArguments")
-    public static final DeferredHolder<EntityType<?>, EntityType<BabyRocketSquidEntity>> BABY_SQUID_TYPE = ENTITIES.register("baby_rocket_squid",
-            () -> EntityType.Builder.<BabyRocketSquidEntity>of(BabyRocketSquidEntity::new, MobCategory.WATER_CREATURE)
-                    .sized(0.4F, 0.4F)
-                    .setTrackingRange(64)
-                    .setUpdateInterval(10)
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(ResourceKey.create(Registries.ENTITY_TYPE, DataReference.getIdentifier("baby_rocket_squid")))
-    );
 
     public static void register(IEventBus eventBus) {
         eventBus.register(RSEntityTypes.class);
@@ -66,6 +56,5 @@ public class RSEntityTypes {
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         // Entity attributes are stored in their class under the createAttributes() method, not in the registry code
         event.put(RSEntityTypes.SQUID_TYPE.get(), RocketSquidEntity.createAttributes().build());
-        event.put(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidEntity.createAttributes().build());
     }
 }
