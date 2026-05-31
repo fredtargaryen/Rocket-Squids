@@ -4,7 +4,6 @@ package com.fredtargaryen.rocketsquids.level.entity;
 
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BabyFlopAroundGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.BabySwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.BabyCapDataMessage;
 import net.minecraft.core.particles.ParticleTypes;
@@ -37,7 +36,6 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new BabySwimAroundGoal(this, 0.15));
         this.goalSelector.addGoal(1, new BabyFlopAroundGoal(this));
         //this.goalSelector.addGoal(2, new BabyRSFollowParentGoal(this, 1.0));
     }
@@ -157,8 +155,7 @@ public class BabyRocketSquidEntity extends AbstractSquidEntity {
 
     /////////////////////////////
     //ATTACHMENT DATA ACCESSORS//
-
-    /// //////////////////////////
+    /////////////////////////////
     public double getPrevRotPitch() {
         return this.getData(SQUID).getPrevRotPitch();
     }

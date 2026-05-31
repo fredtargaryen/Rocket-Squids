@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 import java.util.List;
 
-public class AdultSwimAroundGoal extends Goal {
+public class SwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
     private byte noteIndex;
     private int tickCounter;
@@ -31,15 +31,13 @@ public class AdultSwimAroundGoal extends Goal {
     }
 
     private final RandomSource r;
-    private final double swimForce;
     private StatueBlastStage statueBlastStage;
 
-    public AdultSwimAroundGoal(RocketSquidEntity ers) {
+    public SwimAroundGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
         this.setFlags(EnumSet.of(Flag.MOVE));
         this.r = this.squid.getRandom();
-        this.swimForce = 0.25;
         this.noteIndex = 0;
         this.statueBlastStage = StatueBlastStage.NONE;
         this.tickCounter = 0;
@@ -110,7 +108,8 @@ public class AdultSwimAroundGoal extends Goal {
      * Need to allow some time for the note to play, as well as some silent time
      */
     private void scheduleNextNote() {
-        this.nextScheduledNote += 20 + this.r.nextInt(10);
+        if (!this.squid.isBaby())
+            this.nextScheduledNote += 20 + this.r.nextInt(10);
     }
 
     @Override
@@ -118,7 +117,7 @@ public class AdultSwimAroundGoal extends Goal {
         ++this.tickCounter;
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
-        if (this.squid.getBlastToStatue()) {
+        if (!this.squid.isBaby() && this.squid.getBlastToStatue()) {
             //Override all behaviour if it heard its target notes and needs to find and blast to a statue
             switch (this.statueBlastStage) {
                 case NONE:
@@ -182,21 +181,33 @@ public class AdultSwimAroundGoal extends Goal {
             }
         } else {
             if (this.tickCounter > this.nextScheduledMove) this.scheduleNextMove();
-            if (this.tickCounter > this.nextScheduledNote) this.scheduleNextNote();
+            if (!this.squid.isBaby() && this.tickCounter > this.nextScheduledNote) this.scheduleNextNote();
 
             //Move and play notes if scheduled
             if (this.tickCounter == this.nextScheduledMove) {
-                int randomInt = this.r.nextInt(11);
-                if (randomInt == 0) {
-                    if (!this.squid.areBlocksInWay()) {
-                        this.squid.setShaking(true);
+                if (this.squid.isBaby()) {
+                    int randomInt = this.r.nextInt(2);
+                    if (randomInt == 0) {
+                        this.doTurn(false, this.squid.areBlocksInWay());
+                        this.scheduleNextMove();
+                    } else {
+                        if (!this.squid.areBlocksInWay()) this.squid.addForce(0.15);
+                        this.scheduleNextMove();
                     }
-                } else if (randomInt < 6) {
-                    this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
-                    this.scheduleNextMove();
-                } else {
-                    if (!this.squid.areBlocksInWay()) this.squid.addForce(this.swimForce);
-                    this.scheduleNextMove();
+                }
+                else {
+                    int randomInt = this.r.nextInt(11);
+                    if (randomInt == 0) {
+                        if (!this.squid.areBlocksInWay()) {
+                            this.squid.setShaking(true);
+                        }
+                    } else if (randomInt < 6) {
+                        this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
+                        this.scheduleNextMove();
+                    } else {
+                        if (!this.squid.areBlocksInWay()) this.squid.addForce(0.25);
+                        this.scheduleNextMove();
+                    }
                 }
             }
             if (this.tickCounter == this.nextScheduledNote) {

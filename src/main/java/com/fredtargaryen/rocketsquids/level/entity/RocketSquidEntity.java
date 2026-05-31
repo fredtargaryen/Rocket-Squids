@@ -10,10 +10,7 @@ import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
-import com.fredtargaryen.rocketsquids.level.entity.ai.AdultFlopAroundGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.AdultSwimAroundGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.BlastoffGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
@@ -106,7 +103,7 @@ public class RocketSquidEntity extends AbstractSquidEntity implements Leashable 
         super.registerGoals();
         this.goalSelector.addGoal(0, new BlastoffGoal(this));
         this.goalSelector.addGoal(1, new ShakeGoal(this));
-        this.goalSelector.addGoal(2, new AdultSwimAroundGoal(this));
+        this.goalSelector.addGoal(2, new SwimAroundGoal(this));
         this.goalSelector.addGoal(3, new AdultFlopAroundGoal(this));
     }
 
