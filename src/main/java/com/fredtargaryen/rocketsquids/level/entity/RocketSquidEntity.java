@@ -13,6 +13,7 @@ import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.SwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -42,6 +43,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -561,9 +563,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     public ArrayList<Direction> getDirectionsPointing() {
         ArrayList<Direction> directions = new ArrayList<>();
-        Vec3 direction = this.getDirectionAsVec3();
-        //A threshold; if a component is beyond this the squid is considered pointing in that direction
-        double t = 0.45;//0.3125;
+        Vec3 direction = RotationHelper.getSquidDirection(this);
+        double t = RotationHelper.DIRECTION_POINT_THRESHOLD;
         if (direction.y > t) {
             directions.add(Direction.UP);
         } else if (direction.y < -t) {
@@ -584,20 +585,10 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return directions;
     }
 
-    public Vec3 getDirectionAsVec3() {
-        double rp = this.getEntityData().get(PITCH);
-        double ry = this.getEntityData().get(YAW);
-        double yDir = Math.cos(rp);
-        double hozDir = Math.sin(rp);
-        double zDir = hozDir * Math.cos(ry);
-        double xDir = hozDir * -Math.sin(ry);
-        return new Vec3(xDir, yDir, zDir);
-    }
-
     public void addForce(double force) {
         if (!this.level().isClientSide()) {
             Vec3 motion = this.getDeltaMovement();
-            Vec3 direction = this.getDirectionAsVec3();
+            Vec3 direction = RotationHelper.getSquidDirection(this);
             this.setDeltaMovement(
                     motion.x + direction.x * force,
                     motion.y + direction.y * force,
@@ -612,7 +603,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     public void moveToWherePointing() {
         Vec3 motion = this.getDeltaMovement();
         double force = Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z);
-        Vec3 direction = this.getDirectionAsVec3();
+        Vec3 direction = RotationHelper.getSquidDirection(this);
         this.setDeltaMovement(
                 direction.x * force,
                 direction.y * force,
