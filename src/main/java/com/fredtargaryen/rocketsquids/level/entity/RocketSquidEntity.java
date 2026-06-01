@@ -43,7 +43,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -932,7 +931,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     public void setLatestNotes(int[] ln) {
         if (ln.length != 3) {
             RocketSquidsBase.LOGGER.error("Tried to set a latest notes value of incorrect length; resetting to default");
-            this.latestNotes = new int[] {-1, -1, -1};
+            this.latestNotes = new int[]{-1, -1, -1};
             return;
         }
         this.latestNotes = ln;
