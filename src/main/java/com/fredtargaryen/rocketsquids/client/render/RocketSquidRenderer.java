@@ -53,8 +53,8 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
         super.extractRenderState(squid, state, partialTick);
         state.isBaby = squid.isBaby();
         state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
-        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()));
-        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()));
+        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPreviousPitch(), squid.getPitch()));
+        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPreviousYaw(), squid.getYaw()));
         state.saddled = squid.getSaddled();
         state.shaking = squid.getShaking();
         state.blasting = squid.getBlasting();

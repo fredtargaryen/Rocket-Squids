@@ -65,8 +65,8 @@ public class SwimAroundGoal extends Goal {
             assert pass != null;
             float pp = (float) ((pass.getXRot() + 90.0F) * Math.PI / 180.0F);
             float py = (float) (pass.getYHeadRot() * Math.PI / 180.0F);
-            float unclamped_sp = (float) this.squid.getRotPitch();
-            float unclamped_sy = (float) this.squid.getRotYaw();
+            float unclamped_sp = (float) this.squid.getPitch();
+            float unclamped_sy = (float) this.squid.getYaw();
             //Clamp them to [-2PI, 2PI]
             float clamped_sp = unclamped_sp;
             while (clamped_sp > Math.PI * 2) clamped_sp -= (float) (Math.PI * 2);
@@ -79,8 +79,8 @@ public class SwimAroundGoal extends Goal {
             if (Math.abs(pitchDiff) >= 0.005 || Math.abs(yawDiff) >= 0.005) {
                 //Player rotation is sufficiently far from squid rotation for the squid to start a new turn
                 //Turn by the difference in rotations, to avoid having to spin into the [-PI, PI] range
-                this.squid.setTargetRotPitch(unclamped_sp + pitchDiff);
-                this.squid.setTargetRotYaw(unclamped_sy + yawDiff);
+                this.squid.setTargetPitch(unclamped_sp + pitchDiff);
+                this.squid.setTargetYaw(unclamped_sy + yawDiff);
             }
         } else {
             if (blocked) {
@@ -89,8 +89,8 @@ public class SwimAroundGoal extends Goal {
                 this.squid.pointToVector(new Vec3(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
             } else {
                 //Random doubles between -PI and PI, added to current rotation
-                this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
-                this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetPitch(this.squid.getPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetYaw(this.squid.getYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
             }
         }
     }
@@ -115,9 +115,9 @@ public class SwimAroundGoal extends Goal {
     @Override
     public void tick() {
         ++this.tickCounter;
-        double rp = this.squid.getRotPitch();
-        double ry = this.squid.getRotYaw();
-        if (!this.squid.isBaby() && this.squid.getBlastToStatue()) {
+        double rp = this.squid.getPitch();
+        double ry = this.squid.getYaw();
+        if (!this.squid.isBaby() && this.squid.blastingToStatue) {
             //Override all behaviour if it heard its target notes and needs to find and blast to a statue
             switch (this.statueBlastStage) {
                 case NONE:
@@ -130,13 +130,13 @@ public class SwimAroundGoal extends Goal {
                     if (statueCoords == null) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     } else {
                         double zDistance = statueCoords.get(4) - pos.z;
                         double xDistance = statueCoords.get(2) - pos.x;
                         double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
                         //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
-                        this.squid.setTargetRotYaw(Math.atan2(-xDistance, zDistance));
+                        this.squid.setTargetYaw(Math.atan2(-xDistance, zDistance));
                         // Send "Recognition" empty sound for those using subs
                         MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 36), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
                         //Play a celebratory chord
@@ -159,21 +159,21 @@ public class SwimAroundGoal extends Goal {
                         if (hozDistanceSquared > 6400.0) {
                             //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
                             //A squid can go about 80 blocks at surface level and 45 degrees so this should prevent some annoying overshooting
-                            this.squid.setTargetRotPitch(Math.PI / 4.0);
+                            this.squid.setTargetPitch(Math.PI / 4.0);
                         } else {
                             //Less than 80 blocks away; blast directly towards the statue
-                            this.squid.setTargetRotPitch(Math.atan2(pos.y - statueCoords.get(3), Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
+                            this.squid.setTargetPitch(Math.atan2(pos.y - statueCoords.get(3), Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
                         }
                         this.statueBlastStage = StatueBlastStage.TURN;
                     }
                     break;
                 case TURN:
-                    double trp = this.squid.getTargRotPitch();
-                    double Try = this.squid.getTargRotYaw();
+                    double trp = this.squid.getTargetPitch();
+                    double Try = this.squid.getTargetYaw();
                     if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
                         this.squid.setShaking(true);
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     }
                     break;
                 default:

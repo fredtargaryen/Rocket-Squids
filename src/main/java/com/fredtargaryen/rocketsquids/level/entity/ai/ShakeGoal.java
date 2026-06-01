@@ -17,8 +17,7 @@ public class ShakeGoal extends Goal {
     }
 
     @Override
-    public boolean canUse()
-    {
+    public boolean canUse() {
         return this.squid.getShaking();
     }
 
@@ -27,14 +26,14 @@ public class ShakeGoal extends Goal {
         int ticksLeft = this.squid.getShakeTicks();
         if(ticksLeft == -1) {
             //No shake in progress; start one
-            this.squid.setShakeTicks(20);
+            this.squid.setShakeTicks((byte) 20);
         }
         else if(ticksLeft == 0) {
             this.squid.setBlasting(true);
-            this.squid.setShakeTicks(-1);
+            this.squid.setShakeTicks((byte) -1);
         }
         else {
-            this.squid.setShakeTicks(ticksLeft - 1);
+            this.squid.setShakeTicks((byte) (ticksLeft - 1));
         }
     }
 }

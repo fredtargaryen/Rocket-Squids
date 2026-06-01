@@ -66,7 +66,7 @@ public class RocketSquidsBase {
     public RocketSquidsBase(IEventBus eventBus, ModContainer modContainer) {
         RSBlocks.register(eventBus);
         RSItems.register(eventBus);
-        RSAttachmentTypes.register(eventBus);
+        RSEntityDataSerializers.register(eventBus);
         // Also populates the creative tab
         RSCreativeTabs.register(eventBus);
         RSDataComponentTypes.register(eventBus);

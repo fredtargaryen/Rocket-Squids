@@ -40,7 +40,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
-import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
 @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientHandler {
@@ -110,34 +109,6 @@ public class ClientHandler {
         if (player.getItemBySlot(EquipmentSlot.HEAD).getItem() == RSItems.ITEM_CONCH.get()) {
             Vec3 pos = player.position();
             player.level().playLocalSound(pos.x, pos.y, pos.z, RSSounds.CONCH_NOTES[note], SoundSource.NEUTRAL, 1.0F, 1.0F, true);
-        }
-    }
-
-    public static void handleMessage(AdultCapDataMessage message) {
-        if (Minecraft.getInstance().level == null) return;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
-        Iterator<Entity> squidFinder = l.iterator();
-        Entity e;
-        while (squidFinder.hasNext()) {
-            e = squidFinder.next();
-            if (e.getUUID().equals(message.uuid())) {
-                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
-                e.getData(SQUID).deserialize(vi);
-            }
-        }
-    }
-
-    public static void handleMessage(BabyCapDataMessage message) {
-        if (Minecraft.getInstance().level == null) return;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
-        Iterator<Entity> squidFinder = l.iterator();
-        Entity e;
-        while (squidFinder.hasNext()) {
-            e = squidFinder.next();
-            if (e.getUUID().equals(message.uuid())) {
-                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
-                e.getData(SQUID).deserialize(vi);
-            }
         }
     }
 
