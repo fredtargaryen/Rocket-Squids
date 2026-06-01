@@ -136,7 +136,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     public RocketSquidEntity(Level level) {
         super(RSEntityTypes.SQUID_TYPE.get(), level);
         this.riderRotated = false;
-        this.getLookControl().setLookAt(new Vec3(new Vector3f(Mth.nextFloat(level.getRandom(), 0.0F, 100.0F))));
+        this.forcePitchInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
+        this.forceYawInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
         RandomSource r = level.getRandom();
         this.latestNotes = new int[]{-1, -1, -1};
         this.targetNotes = new int[]{
@@ -873,11 +874,13 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forcePitchInstant(double pitch) {
+        this.getEntityData().set(PITCH_PREV, pitch);
         this.getEntityData().set(PITCH, pitch);
         this.getEntityData().set(PITCH_TARGET, pitch);
     }
 
     public void forceYawInstant(double yaw) {
+        this.getEntityData().set(YAW_PREV, yaw);
         this.getEntityData().set(YAW, yaw);
         this.getEntityData().set(YAW_TARGET, yaw);
     }

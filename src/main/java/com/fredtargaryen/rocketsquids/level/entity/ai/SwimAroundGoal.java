@@ -7,6 +7,7 @@ import com.fredtargaryen.rocketsquids.level.StatueData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidNoteMessage;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -85,7 +86,7 @@ public class SwimAroundGoal extends Goal {
         } else {
             if (blocked) {
                 //Just point the opposite way
-                Vec3 direction = this.squid.getDirectionAsVec3();
+                Vec3 direction = RotationHelper.getSquidDirection(this.squid);
                 this.squid.pointToVector(new Vec3(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
             } else {
                 //Random doubles between -PI and PI, added to current rotation
