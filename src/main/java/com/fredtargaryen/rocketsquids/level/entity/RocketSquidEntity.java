@@ -9,7 +9,7 @@ import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BlastoffGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.FlopAroundGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.CountdownGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.SwimAroundGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
@@ -53,7 +53,6 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -75,7 +74,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     private static final EntityDataAccessor<Double> YAW_TARGET = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
 
     private static final EntityDataAccessor<Boolean> SHAKING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Byte> SHAKE_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> COUNTDOWN_TICKS = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
 
     private static final EntityDataAccessor<Boolean> BLASTING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Byte> BLAST_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
@@ -177,7 +176,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         builder.define(YAW, 0.0);
         builder.define(YAW_TARGET, 0.0);
         builder.define(SHAKING, false);
-        builder.define(SHAKE_TICKS_REMAINING, (byte) -1);
+        builder.define(COUNTDOWN_TICKS, (byte) -1);
         builder.define(BLASTING, false);
         builder.define(BLAST_TICKS_REMAINING, (byte) -1);
         builder.define(SADDLED, false);
@@ -187,7 +186,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new BlastoffGoal(this));
-        this.goalSelector.addGoal(1, new ShakeGoal(this));
+        this.goalSelector.addGoal(1, new CountdownGoal(this));
         this.goalSelector.addGoal(2, new SwimAroundGoal(this));
         this.goalSelector.addGoal(3, new FlopAroundGoal(this));
     }
@@ -735,12 +734,12 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         this.getEntityData().set(SHAKING, shaking);
     }
 
-    public byte getShakeTicks() {
-        return this.getEntityData().get(SHAKE_TICKS_REMAINING);
+    public byte getCountdownTicks() {
+        return this.getEntityData().get(COUNTDOWN_TICKS);
     }
 
-    public void setShakeTicks(byte shakeTicks) {
-        this.getEntityData().set(SHAKE_TICKS_REMAINING, shakeTicks);
+    public void setCountdownTicks(byte countdownTicks) {
+        this.getEntityData().set(COUNTDOWN_TICKS, countdownTicks);
     }
 
     public boolean getBlasting() {

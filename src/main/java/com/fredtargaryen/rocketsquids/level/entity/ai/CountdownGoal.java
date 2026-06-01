@@ -7,10 +7,10 @@ import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-public class ShakeGoal extends Goal {
+public class CountdownGoal extends Goal {
     private final RocketSquidEntity squid;
 
-    public ShakeGoal(RocketSquidEntity ers) {
+    public CountdownGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
         this.setFlags(EnumSet.of(Flag.MOVE));
@@ -18,22 +18,22 @@ public class ShakeGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.squid.getShaking();
+        return this.squid.getShaking() && !this.squid.getBlasting();
     }
 
     @Override
     public void tick() {
-        int ticksLeft = this.squid.getShakeTicks();
+        int ticksLeft = this.squid.getCountdownTicks();
         if(ticksLeft == -1) {
-            //No shake in progress; start one
-            this.squid.setShakeTicks((byte) 20);
+            //No countdown in progress; start one
+            this.squid.setCountdownTicks((byte) 20);
         }
         else if(ticksLeft == 0) {
             this.squid.setBlasting(true);
-            this.squid.setShakeTicks((byte) -1);
+            this.squid.setCountdownTicks((byte) -1);
         }
         else {
-            this.squid.setShakeTicks((byte) (ticksLeft - 1));
+            this.squid.setCountdownTicks((byte) (ticksLeft - 1));
         }
     }
 }
