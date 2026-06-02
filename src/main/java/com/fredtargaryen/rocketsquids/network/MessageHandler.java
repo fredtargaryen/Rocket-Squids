@@ -22,18 +22,6 @@ public class MessageHandler {
                 .executesOn(HandlerThread.NETWORK);
 
         registrar.playToClient(
-                AdultCapDataMessage.TYPE,
-                AdultCapDataMessage.STREAM_CODEC,
-                AdultCapDataMessage::handle
-        );
-
-        registrar.playToClient(
-                BabyCapDataMessage.TYPE,
-                BabyCapDataMessage.STREAM_CODEC,
-                BabyCapDataMessage::handle
-        );
-
-        registrar.playToClient(
                 PlayNoteClientMessage.TYPE,
                 PlayNoteClientMessage.STREAM_CODEC,
                 PlayNoteClientMessage::handle

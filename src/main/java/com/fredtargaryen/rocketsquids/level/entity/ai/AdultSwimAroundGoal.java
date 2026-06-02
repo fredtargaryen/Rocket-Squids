@@ -117,7 +117,7 @@ public class AdultSwimAroundGoal extends Goal {
         ++this.tickCounter;
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
-        if (this.squid.getBlastToStatue()) {
+        if (this.squid.blastingToStatue) {
             //Override all behaviour if it heard its target notes and needs to find and blast to a statue
             switch (this.statueBlastStage) {
                 case NONE:
@@ -130,7 +130,7 @@ public class AdultSwimAroundGoal extends Goal {
                     if (statueCoords == null) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     } else {
                         double zDistance = statueCoords[4] - pos.z;
                         double xDistance = statueCoords[2] - pos.x;
@@ -173,7 +173,7 @@ public class AdultSwimAroundGoal extends Goal {
                     if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
                         this.squid.setShaking(true);
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     }
                     break;
                 default:
@@ -206,9 +206,9 @@ public class AdultSwimAroundGoal extends Goal {
     }
 
     private void playNextNote() {
-        byte note = this.squid.getTargetNote(this.noteIndex);
+        int note = this.squid.getTargetNote(this.noteIndex);
         Vec3 pos = this.squid.position();
-        MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage(note), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
+        MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) note), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
         if (this.noteIndex == 2) {
             this.noteIndex = 0;
         } else {

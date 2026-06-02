@@ -15,8 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
-
 /**
  * Plays a note on the server, for rocket squids to respond to if appropriate.
  * This causes a {@link PlayNoteClientMessage} to be sent to all players around.
@@ -60,7 +58,7 @@ public record PlayNoteServerMessage(byte note, double x, double y, double z) imp
                 for (Entity e : entityIterable) {
                     if (e instanceof RocketSquidEntity) {
                         if (e.position().distanceTo(player.position()) <= DataReference.SQUID_LISTEN_RANGE) {
-                            e.getData(SQUID).processNote(note);
+                            ((RocketSquidEntity) e).processNote(note);
                         }
                     }
                 }

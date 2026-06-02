@@ -59,10 +59,10 @@ public class RocketSquidsBase {
         RSBlocks.register(eventBus);
         RSItems.register(eventBus);
         RSArmorMaterials.register(eventBus);
-        RSAttachmentTypes.register(eventBus);
         // Also populates the creative tab
         RSCreativeTabs.register(eventBus);
         RSDataComponentTypes.register(eventBus);
+        RSEntityDataSerializers.register(eventBus);
         // Also registers the spawn egg
         RSEntityTypes.register(eventBus);
         // Register our world gen features
