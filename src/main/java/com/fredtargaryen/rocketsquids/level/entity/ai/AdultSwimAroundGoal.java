@@ -3,8 +3,8 @@
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.StatueData;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.MessageSquidNote;
 import net.minecraft.util.RandomSource;
@@ -117,7 +117,7 @@ public class AdultSwimAroundGoal extends Goal {
         ++this.tickCounter;
         double rp = this.squid.getRotPitch();
         double ry = this.squid.getRotYaw();
-        if (this.squid.getBlastToStatue()) {
+        if (this.squid.blastingToStatue) {
             //Override all behaviour if it heard its target notes and needs to find and blast to a statue
             switch (this.statueBlastStage) {
                 case NONE:
@@ -130,7 +130,7 @@ public class AdultSwimAroundGoal extends Goal {
                     if (statueCoords == null) {
                         //StatueManager doesn't have any statues loaded
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     } else {
                         //TargetPoint for playing notes related to distance
                         PacketDistributor.TargetPoint squidPoint = new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.PLAYER_HEAR_RANGE, this.squid.level().dimension());
@@ -170,12 +170,12 @@ public class AdultSwimAroundGoal extends Goal {
                     }
                     break;
                 case TURN:
-                    double trp = this.squid.getTargRotPitch();
-                    double Try = this.squid.getTargRotYaw();
+                    double trp = this.squid.getTargetRotPitch();
+                    double Try = this.squid.getTargetRotYaw();
                     if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
                         this.squid.setShaking(true);
                         this.statueBlastStage = StatueBlastStage.NONE;
-                        this.squid.setBlastToStatue(false);
+                        this.squid.blastingToStatue = false;
                     }
                     break;
                 default:
@@ -208,9 +208,9 @@ public class AdultSwimAroundGoal extends Goal {
     }
 
     private void playNextNote() {
-        byte note = this.squid.getTargetNote(this.noteIndex);
+        int note = this.squid.getTargetNote(this.noteIndex);
         Vec3 pos = this.squid.position();
-        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE, this.squid.level().dimension())), new MessageSquidNote(note));
+        MessageHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE, this.squid.level().dimension())), new MessageSquidNote((byte) note));
         if (this.noteIndex == 2) {
             this.noteIndex = 0;
         } else {

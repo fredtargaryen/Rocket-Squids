@@ -17,6 +17,10 @@ public class DataReference {
     public static final String MODID = "rocketsquids";
     public static final String MODNAME = "Rocket Squids";
 
+    public static final double DOUBLE_PI = Math.PI * 2;
+
+    public static final int[] C_MAJOR_SCALE = {12, 14, 16, 17, 19, 21, 23};
+
     // Capabilities
     public static final ResourceLocation SQUELEPORTER_LOCATION = new ResourceLocation(DataReference.MODID, "isqueleporter");
     public static final ResourceLocation BABY_CAP_LOCATION = new ResourceLocation(DataReference.MODID, "ibaby");

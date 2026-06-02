@@ -3,7 +3,6 @@
 package com.fredtargaryen.rocketsquids.network.message;
 
 import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.RocketSquidsBase;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import io.netty.buffer.ByteBuf;
@@ -51,7 +50,7 @@ public class MessagePlayNoteServer {
                 for (Entity e : entityIterable) {
                     if (e instanceof RocketSquidEntity) {
                         if (e.position().distanceTo(player.position()) <= DataReference.SQUID_LISTEN_RANGE) {
-                            e.getCapability(RocketSquidsBase.ADULTCAP).ifPresent(cap -> cap.processNote(this.note));
+                            ((RocketSquidEntity) e).processNote(this.note);
                         }
                     }
                 }

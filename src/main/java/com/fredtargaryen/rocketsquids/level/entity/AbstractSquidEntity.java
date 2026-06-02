@@ -22,19 +22,20 @@ import java.util.ArrayList;
 public abstract class AbstractSquidEntity extends WaterAnimal {
     protected boolean newPacketRequired;
 
-    public boolean randomSpawnView = true;
-
-    ///////////////
-    //CLIENT ONLY//
-    ///////////////
+    //Client-only properties that don't need to be synced to the server
+    /**
+     * Client only - the angle that the rocket squid's tentacles should be at
+     */
     public float tentacleAngle;
+
+    /**
+     * Client only - follows the value of {@link #tentacleAngle}; used for interpolation each frame
+     */
     public float lastTentacleAngle;
 
     public AbstractSquidEntity(EntityType<? extends AbstractSquidEntity> type, Level world) {
         super(type, world);
-        if (this.randomSpawnView) {
-            this.getLookControl().setLookAt(new Vec3(new Vector3f(Mth.nextFloat(world.getRandom(), 0.0F, 100.0F))));
-        }
+        this.getLookControl().setLookAt(new Vec3(new Vector3f(Mth.nextFloat(world.getRandom(), 0.0F, 100.0F))));
     }
 
     /**

@@ -5,17 +5,11 @@ package com.fredtargaryen.rocketsquids;
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
 import com.fredtargaryen.rocketsquids.level.capability.entity.adult.AdultCap;
-import com.fredtargaryen.rocketsquids.level.capability.entity.adult.AdultCapProvider;
-import com.fredtargaryen.rocketsquids.level.capability.entity.baby.BabyCap;
-import com.fredtargaryen.rocketsquids.level.capability.entity.baby.BabyCapProvider;
 import com.fredtargaryen.rocketsquids.level.capability.item.squeleporter.SqueleporterCap;
 import com.fredtargaryen.rocketsquids.level.capability.item.squeleporter.SqueleporterCapProvider;
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
-import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -91,6 +85,7 @@ public class RocketSquidsBase {
         RSCreativeTabs.register(modEventBus);
         // Also registers the spawn egg
         RSEntities.register(modEventBus);
+        RSEntityDataSerializers.register(modEventBus);
         // Register our world gen features
         RSFeatures.register(modEventBus);
         RSParticleTypes.register(modEventBus);
@@ -124,29 +119,15 @@ public class RocketSquidsBase {
         ROCKET_SQUID_SPAWN_INFO = new MobSpawnSettings.SpawnerData(RSEntities.SQUID_TYPE.get(), GeneralConfig.SPAWN_PROB.get(), GeneralConfig.MIN_GROUP_SIZE.get(), GeneralConfig.MAX_GROUP_SIZE.get());
     }
 
-    ///////////////////
-    ///CAPABILIITIES///
-    ///////////////////
-    public static final Capability<AdultCap> ADULTCAP = AdultCapProvider.ADULTCAP;
-    public static final Capability<BabyCap> BABYCAP = BabyCapProvider.BABYCAP;
-
+    /// ////////////////
+    /// CAPABILIITIES///
+    /// ////////////////
     public static final Capability<SqueleporterCap> SQUELEPORTER_CAP = SqueleporterCapProvider.SQUELEPORTER_CAP;
 
     @SubscribeEvent
     public void onRegisterCapabilitiesEvent(RegisterCapabilitiesEvent event) {
         event.register(AdultCap.class);
-        event.register(BabyCap.class);
         event.register(SqueleporterCap.class);
-    }
-
-    @SubscribeEvent
-    public void onEntityAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> evt) {
-        Entity e = evt.getObject();
-        if (e instanceof RocketSquidEntity) {
-            evt.addCapability(DataReference.ADULT_CAP_LOCATION, new AdultCapProvider());
-        } else if (e instanceof BabyRocketSquidEntity) {
-            evt.addCapability(DataReference.BABY_CAP_LOCATION, new BabyCapProvider());
-        }
     }
 
     @SubscribeEvent

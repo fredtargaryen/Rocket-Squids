@@ -17,11 +17,9 @@ public class MessageHandler {
             (String s) -> s.equals("1.0"));//server accepted versions
 
     public static void init() {
-        INSTANCE.registerMessage(0, MessageBabyCapData.class, MessageBabyCapData::toBytes, MessageBabyCapData::new, MessageBabyCapData::onMessage);
-        INSTANCE.registerMessage(1, MessageAdultCapData.class, MessageAdultCapData::toBytes, MessageAdultCapData::new, MessageAdultCapData::onMessage);
-        INSTANCE.registerMessage(2, MessagePlayNoteServer.class, MessagePlayNoteServer::toBytes, MessagePlayNoteServer::new, MessagePlayNoteServer::onMessage);
-        INSTANCE.registerMessage(3, MessagePlayNoteClient.class, MessagePlayNoteClient::toBytes, MessagePlayNoteClient::new, MessagePlayNoteClient::onMessage);
-        INSTANCE.registerMessage(4, MessageSquidNote.class, MessageSquidNote::toBytes, MessageSquidNote::new, MessageSquidNote::onMessage);
-        INSTANCE.registerMessage(5, MessageSquidFirework.class, MessageSquidFirework::toBytes, MessageSquidFirework::new, MessageSquidFirework::onMessage);
+        INSTANCE.registerMessage(0, MessagePlayNoteServer.class, MessagePlayNoteServer::toBytes, MessagePlayNoteServer::new, MessagePlayNoteServer::onMessage);
+        INSTANCE.registerMessage(1, MessagePlayNoteClient.class, MessagePlayNoteClient::toBytes, MessagePlayNoteClient::new, MessagePlayNoteClient::onMessage);
+        INSTANCE.registerMessage(2, MessageSquidNote.class, MessageSquidNote::toBytes, MessageSquidNote::new, MessageSquidNote::onMessage);
+        INSTANCE.registerMessage(3, MessageSquidFirework.class, MessageSquidFirework::toBytes, MessageSquidFirework::new, MessageSquidFirework::onMessage);
     }
 }
