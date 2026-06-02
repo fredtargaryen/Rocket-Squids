@@ -13,6 +13,8 @@ import com.fredtargaryen.rocketsquids.network.message.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.HolderLookup;
@@ -23,8 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -112,6 +112,16 @@ public class ClientHandler {
         }
     }
 
+    /**
+     * Creates the firework effect when a rocket squid explodes.
+     *
+     * @param squidPos The position of the rocket squid that's exploding
+     */
+    public static void doSquidFireworkParticles(ClientLevel level, Vec3 squidPos) {
+        ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
+        effectRenderer.add(new SquidFireworkParticle.SquidStarter(level, squidPos.x, squidPos.y, squidPos.z, effectRenderer));
+    }
+
     public static void handleMessage(PlayNoteClientMessage message) {
         Player ep = Minecraft.getInstance().player;
         assert ep != null;
@@ -121,14 +131,15 @@ public class ClientHandler {
 
     public static void handleMessage(SquidFireworkMessage message) {
         assert Minecraft.getInstance().level != null;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
+        ClientLevel level = Minecraft.getInstance().level;
+        Iterable<Entity> l = level.entitiesForRendering();
         Iterator<Entity> squidFinder = l.iterator();
         Entity entity;
         while (squidFinder.hasNext()) {
             entity = squidFinder.next();
             if (entity.getUUID().equals(message.uuid())) {
                 RocketSquidEntity rocketSquidEntity = (RocketSquidEntity) entity;
-                rocketSquidEntity.doFireworkParticles();
+                doSquidFireworkParticles(level, rocketSquidEntity.position());
                 break;
             }
         }

@@ -3,6 +3,7 @@
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -26,7 +27,7 @@ public class FlopAroundGoal extends Goal {
         if (this.squid.onGround()) {
             this.squid.setTargetPitch(Math.PI / 2);
         } else if(Math.abs(this.squid.getDeltaMovement().y) > 0.008){
-            this.squid.pointToWhereMoving();
+            RotationHelper.pointSquidInDirectionMoving(this.squid);
         }
     }
 }

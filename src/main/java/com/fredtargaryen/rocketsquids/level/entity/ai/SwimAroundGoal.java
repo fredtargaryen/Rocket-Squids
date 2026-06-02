@@ -87,7 +87,7 @@ public class SwimAroundGoal extends Goal {
             if (blocked) {
                 //Just point the opposite way
                 Vec3 direction = RotationHelper.getSquidDirection(this.squid);
-                this.squid.pointToVector(new Vec3(-direction.x, -direction.y, -direction.z), Math.PI / 3.0);
+                RotationHelper.pointSquidInDirection(this.squid, direction.scale(-1), Math.PI / 3.0);
             } else {
                 //Random doubles between -PI and PI, added to current rotation
                 this.squid.setTargetPitch(this.squid.getPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));

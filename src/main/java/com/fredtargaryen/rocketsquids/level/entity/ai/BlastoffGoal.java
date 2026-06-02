@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids.level.entity.ai;
 
 import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -42,7 +43,7 @@ public class BlastoffGoal extends Goal {
             } else {
                 // Continue blast
                 this.blastTimer--;
-                this.squid.pointToWhereMoving();
+                RotationHelper.pointSquidInDirectionMoving(this.squid);
             }
         } else {
             if (this.squid.forcedBlast) {
