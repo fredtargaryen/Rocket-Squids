@@ -6,6 +6,7 @@ import com.fredtargaryen.rocketsquids.RSItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,6 +84,11 @@ public class ConchBlock extends Block {
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return canSupportCenter(level, pos.below(), Direction.UP);
+    }
+
+    @Override
+    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+        return TriState.FALSE;
     }
 
     /**
