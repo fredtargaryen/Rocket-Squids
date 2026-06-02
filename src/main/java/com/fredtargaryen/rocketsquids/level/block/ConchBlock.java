@@ -86,6 +86,11 @@ public class ConchBlock extends Block {
         return canSupportCenter(level, pos.below(), Direction.UP);
     }
 
+    @Override
+    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, net.neoforged.neoforge.common.IPlantable plantable) {
+        return false;
+    }
+
     /**
      * Get the Item that this Block should drop when harvested.
      */
