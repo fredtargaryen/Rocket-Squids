@@ -21,6 +21,10 @@ public class DataReference {
         return new ResourceLocation(MODID, path);
     }
 
+    public static double DOUBLE_PI = Math.PI * 2.0;
+
+    public static final int[] C_MAJOR_SCALE = {12, 14, 16, 17, 19, 21, 23};
+
     // Conch hearing ranges
     public static final double PLAYER_HEAR_RANGE = 16.0;
     public static final double SQUID_SING_RANGE = 8.0;

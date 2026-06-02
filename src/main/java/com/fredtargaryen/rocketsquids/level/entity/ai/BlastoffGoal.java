@@ -25,7 +25,7 @@ public class BlastoffGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.squid.getBlasting() || this.squid.getForcedBlast();
+        return this.squid.getBlasting() || this.squid.forcedBlast;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BlastoffGoal extends Goal {
             this.squid.playSound(RSSounds.BLASTOFF.get(), 1.0F, 1.0F);
             this.squid.addForce(2.952);
         } else if (this.blastTimer > 0) {
-            if (this.squid.getForcedBlast() && this.squid.areBlocksInWay()) {
+            if (this.squid.forcedBlast && this.squid.areBlocksInWay()) {
                 this.squid.explode();
                 this.reset();
             } else {
@@ -45,7 +45,7 @@ public class BlastoffGoal extends Goal {
                 this.squid.pointToWhereMoving();
             }
         } else {
-            if (this.squid.getForcedBlast()) {
+            if (this.squid.forcedBlast) {
                 // Explode, so resetting doesn't matter
                 this.squid.explode();
             }

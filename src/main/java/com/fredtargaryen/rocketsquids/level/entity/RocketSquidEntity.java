@@ -2,19 +2,15 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity;
 
-import com.fredtargaryen.rocketsquids.RSEntityTypes;
-import com.fredtargaryen.rocketsquids.RSItems;
-import com.fredtargaryen.rocketsquids.RSSounds;
+import com.fredtargaryen.rocketsquids.*;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
-import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.AdultFlopAroundGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.AdultSwimAroundGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.BlastoffGoal;
 import com.fredtargaryen.rocketsquids.level.entity.ai.ShakeGoal;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.AdultCapDataMessage;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -28,6 +24,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -48,7 +45,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 
@@ -56,14 +52,54 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
+import static com.fredtargaryen.rocketsquids.DataReference.C_MAJOR_SCALE;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
 public class RocketSquidEntity extends AbstractRocketSquidEntity {
+    //Properties controlled by the server, but which have a visual effect so need to be synced to clients
+    private static final EntityDataAccessor<Double> PITCH_PREV = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> PITCH = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> PITCH_TARGET = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+
+    private static final EntityDataAccessor<Double> YAW_PREV = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> YAW = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> YAW_TARGET = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+
+    private static final EntityDataAccessor<Boolean> SHAKING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> COUNTDOWN_TICKS = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
+
+    private static final EntityDataAccessor<Boolean> BLASTING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> BLAST_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
+
+    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
+
+
+    //Server-only properties that don't need to be synced to clients
     /**
      * Server only - temp rider reference in order to throw the rider a certain distance ahead when they dismount during {@link RocketSquidEntity#aiStep}
      */
     private Entity riderToThrow;
+
+    /**
+     * Server only - whether the squid is in the process of blasting to a statue
+     */
+    public boolean blastingToStatue;
+
+    /**
+     * Server only - whether the current blast was induced and immediate (e.g. using flint and steel).
+     * Causes the rocket squid to explode when the blast ends
+     */
+    public boolean forcedBlast;
+
+    /**
+     * Server only - the three most recent notes heard by the rocket squid
+     */
+    public int[] latestNotes;
+
+    /**
+     * Server only - the three notes a rocket squid needs to hear before it blasts towards a statue
+     */
+    public int[] targetNotes;
 
     /**
      * Server only - how long until the squid can make a baby again
@@ -75,17 +111,20 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
      */
     protected boolean breedable;
 
+    //Client-only properties that don't need to be synced to the server
     /**
      * Client only - for rotating the player to seat them on the squid's body each frame
      */
     public boolean riderRotated;
 
-    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
-
-    public RocketSquidEntity(Level par1World) {
-        super(RSEntityTypes.SQUID_TYPE.get(), par1World);
+    public RocketSquidEntity(Level level) {
+        super(RSEntityTypes.SQUID_TYPE.get(), level);
         this.breedable = true;
         this.riderRotated = false;
+        this.forcePitchInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
+        this.forceYawInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
+        this.latestNotes = new int[]{-1, -1, -1};
+        this.setNewTargetNotes(level.getRandom());
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -95,6 +134,16 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
+        builder.define(PITCH_PREV, 0.0);
+        builder.define(PITCH, 0.0);
+        builder.define(PITCH_TARGET, 0.0);
+        builder.define(YAW_PREV, 0.0);
+        builder.define(YAW, 0.0);
+        builder.define(YAW_TARGET, 0.0);
+        builder.define(SHAKING, false);
+        builder.define(COUNTDOWN_TICKS, (byte) -1);
+        builder.define(BLASTING, false);
+        builder.define(BLAST_TICKS_REMAINING, (byte) -1);
         builder.define(SADDLED, false);
     }
 
@@ -114,7 +163,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public void aiStep() {
         super.aiStep();
-        RocketSquidData data = this.getData(SQUID);
+
         // This is ran on both the Client and the Server
         // Fraction of distance to target rotation to rotate by each server tick
         double rotateSpeed;
@@ -146,31 +195,30 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         boolean onFire = false;
         if (this.isOnFire() || this.isInLava()) {
             onFire = true;
-            data.setForcedBlast(true);
-            this.newPacketRequired = true;
+            this.forcedBlast = true;
         }
-        if (onFire || data.getForcedBlast()) {
+        if (onFire || this.forcedBlast) {
             this.playSound(RSSounds.BLASTOFF.get(), 0.5F, 1.0F);
-            data.setBlasting(true);
+            this.setBlasting(true);
         }
 
         //Rotate towards target pitch
-        double trp = data.getTargetRotPitch();
-        double rp = data.getRotPitch();
+        double trp = this.getEntityData().get(PITCH_TARGET);
+        double rp = this.getEntityData().get(PITCH);
         if (trp != rp) {
             //Squids rotate <= 180 degrees either way.
             //The squid can rotate out of the interval [-PI, PI].
             rp += (trp - rp) * rotateSpeed;
-            data.setRotPitch(rp);
+            this.setRotPitch(rp);
             this.newPacketRequired = true;
         }
 
         //Rotate towards target yaw
-        double trY = data.getTargetRotYaw();
-        double ry = data.getRotYaw();
+        double trY = this.getTargetRotYaw();
+        double ry = this.getRotYaw();
         if (trY != ry) {
             ry += (trY - ry) * rotateSpeed;
-            data.setRotYaw(ry);
+            this.setRotYaw(ry);
             this.newPacketRequired = true;
         }
 
@@ -180,17 +228,17 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             //Client side
             //Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
-            if (data.getBlasting()) {
+            if (this.getEntityData().get(BLASTING)) {
                 //Tentacles quickly close up
                 this.tentacleAngle = 0;
-            } else if (data.getShaking()) {
+            } else if (this.getEntityData().get(SHAKING)) {
                 //Tentacles stick out at 60 degrees
                 this.tentacleAngle = (float) Math.PI / 3;
             } else {
                 //If in water, tentacles oscillate normally
                 this.tentacleAngle = this.isInWater() ? (float) ((Math.PI / 6) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
             }
-            if (data.getBlasting()) {
+            if (this.getEntityData().get(BLASTING)) {
                 if (this.isInWater()) {
                     double smallerX = pos.x - 0.25;
                     double largerX = pos.x + 0.25;
@@ -212,10 +260,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             }
             if (this.isInWater() && !this.getShaking() && !this.getBlasting()) {
                 this.moveToWherePointing();
-            }
-            if (this.newPacketRequired) {
-                PacketDistributor.sendToPlayersNear((ServerLevel) this.level(), null, pos.x, pos.y, pos.z, 64, new AdultCapDataMessage(this.getUUID(), data.serializeNBT(null)));
-                this.newPacketRequired = false;
             }
 
             // Throw the rider ahead of the squid if they just dismounted
@@ -254,9 +298,9 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     player.level().playSound(null, pos.x, pos.y, pos.z, RSSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     // Set squid data
                     CompoundTag entityData = new CompoundTag();
+                    this.save(entityData);
                     this.addAdditionalSaveData(entityData);
-                    CompoundTag attachmentData = this.getData(SQUID).serializeNBT(null);
-                    newStack.set(SQUELEPORTER, new SqueleporterData(entityData, attachmentData));
+                    newStack.set(SQUELEPORTER, new SqueleporterData(entityData));
                     this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                     EquipmentSlot handEquip = EquipmentSlot.MAINHAND;
                     if (hand == InteractionHand.OFF_HAND) {
@@ -269,7 +313,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     if (!player.isCreative()) {
                         interactStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
                     }
-                    this.getData(SQUID).setForcedBlast(true);
+                    this.forcedBlast = true;
                     return InteractionResult.SUCCESS;
                 } else if (interactItem == Items.SADDLE) {
                     if (!this.getSaddled()) {
@@ -341,7 +385,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     /**
      * Spawns the squid firework particles for when they explode.
      */
-    @OnlyIn(Dist.CLIENT)
     public void doFireworkParticles() {
         ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
         Vec3 pos = this.position();
@@ -428,7 +471,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                 // run .compareTo() on it to find which squid has the greater UUID
                 case 1:
                     // the one with the greater UUID creates the child
-                    this.breedCooldown = CommonConfig.BREED_COOLDOWN;
+                    this.breedCooldown = CommonConfig.BREED_COOLDOWN; // the breed cooldown is set in the config file
                     BabyRocketSquidEntity baby = RSEntityTypes.BABY_SQUID_TYPE.get().create(this.level());
                     assert baby != null;
                     baby.moveTo(thisPos.x, thisPos.y, thisPos.z, 0.0F, 0.0F);
@@ -437,13 +480,8 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
                     break;
                 case -1:
                     // the one with the lesser UUID doesn't
-                    this.breedCooldown = CommonConfig.BREED_COOLDOWN;
+                    this.breedCooldown = CommonConfig.BREED_COOLDOWN; // the breed cooldown is set in the config file
                     this.spawnHearts((ServerLevel) this.level());
-                    break;
-                default:
-                    // Probably impossible...
-                    this.getData(SQUID).setForcedBlast(true);
-                    partner.getData(SQUID).setForcedBlast(true);
             }
         }
     }
@@ -510,7 +548,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     @Override
     public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
-            if (Math.sin(this.getData(SQUID).getRotPitch()) < -0.7071067811865) {
+            if (Math.sin(this.getRotPitch()) < -0.7071067811865) {
                 for (Entity entity : this.getPassengers()) {
                     entity.causeFallDamage(distance, damageMultiplier, damageSource);
                 }
@@ -524,8 +562,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         super.removePassenger(passenger);
         if (this.level().isClientSide()) {
             NeoForge.EVENT_BUS.unregister(this);
-        }
-        else if (this.getBlasting()) {
+        } else if (this.getBlasting()) {
             this.riderToThrow = passenger;
         }
     }
@@ -580,6 +617,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
     /////////////////
     //CLIENT EVENTS//
     /////////////////
+
     /**
      * Add transformations to put player on back of squid.
      */
@@ -589,14 +627,13 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         if (event.getEntity() == this.getFirstPassenger()) {
             float partialTick = event.getPartialTick();
 
-            RocketSquidData data = this.getData(SQUID);
-            double prevPitchRads = data.getPrevRotPitch();
-            double pitchRads = data.getRotPitch();
+            double prevPitchRads = this.getPrevRotPitch();
+            double pitchRads = this.getRotPitch();
             double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
             double squidAngle = exactPitchRads - (Math.PI / 2.0);
 
-            double prevYawRads = data.getPrevRotYaw();
-            double yawRads = data.getRotYaw();
+            double prevYawRads = this.getPrevRotYaw();
+            double yawRads = this.getRotYaw();
             double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
 
             double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
@@ -634,6 +671,16 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         compound.putDouble("force", Math.sqrt(motion.x * motion.x + motion.y * motion.y + motion.z * motion.z));
         compound.putBoolean("Saddle", this.getSaddled());
         compound.putInt("Breed Cooldown", this.breedCooldown);
+        compound.putDouble("pitch", this.getEntityData().get(PITCH));
+        compound.putDouble("targetPitch", this.getEntityData().get(PITCH_TARGET));
+        compound.putDouble("yaw", this.getEntityData().get(YAW));
+        compound.putDouble("targetYaw", this.getEntityData().get(YAW_TARGET));
+        compound.putBoolean("shaking", this.getEntityData().get(SHAKING));
+        compound.putBoolean("blasting", this.getEntityData().get(BLASTING));
+        compound.putBoolean("forcedblast", this.forcedBlast);
+        compound.putIntArray("latestnotes", this.latestNotes);
+        compound.putIntArray("targetnotes", this.targetNotes);
+        compound.putBoolean("blasttostatue", this.blastingToStatue);
     }
 
     @Override
@@ -642,102 +689,136 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         //Force comes from reading motion tags
         this.setSaddled(compound.getBoolean("Saddle"));
         this.breedCooldown = compound.getShort("Breed Cooldown");
+        this.getEntityData().set(PITCH, compound.getDouble("pitch"));
+        this.getEntityData().set(YAW, compound.getDouble("yaw"));
+        this.getEntityData().set(PITCH_TARGET, compound.getDouble("targetPitch"));
+        this.getEntityData().set(YAW_TARGET, compound.getDouble("targetYaw"));
+        this.getEntityData().set(SHAKING, compound.getBoolean("shaking"));
+        this.getEntityData().set(BLASTING, compound.getBoolean("blasting"));
+        this.forcedBlast = compound.getBoolean("forcedblast");
+        this.setLatestNotes(compound.getIntArray("latestnotes"));
+        this.targetNotes = compound.getIntArray("targetnotes");
+        if (this.targetNotes.length != 3) this.setNewTargetNotes(this.random);
+        this.blastingToStatue = compound.getBoolean("blasttostatue");
     }
 
-    ////////////////////////
-    //ATTACHMENT ACCESSORS//
-    ////////////////////////
     public double getPrevRotPitch() {
-        return this.getData(SQUID).getPrevRotPitch();
+        return this.getEntityData().get(PITCH_PREV);
     }
 
     public double getPrevRotYaw() {
-        return this.getData(SQUID).getPrevRotYaw();
+        return this.getEntityData().get(YAW_PREV);
     }
 
     public double getRotPitch() {
-        return this.getData(SQUID).getRotPitch();
+        return this.getEntityData().get(PITCH);
+    }
+
+    public void setRotPitch(double d) {
+        this.getEntityData().set(PITCH_PREV, this.getEntityData().get(PITCH));
+        this.getEntityData().set(PITCH, d);
     }
 
     public double getRotYaw() {
-        return this.getData(SQUID).getRotYaw();
+        return this.getEntityData().get(YAW);
+    }
+
+    public void setRotYaw(double d) {
+        this.getEntityData().set(YAW_PREV, this.getEntityData().get(YAW));
+        this.getEntityData().set(YAW, d);
     }
 
     public void forceRotPitch(double rotPitch) {
-        this.getData(SQUID).setRotPitch(rotPitch);
-        this.getData(SQUID).setTargetRotPitch(rotPitch);
+        this.setRotPitch(rotPitch);
+        this.setTargetRotPitch(rotPitch);
     }
 
     public void forceRotYaw(double rotYaw) {
-        this.getData(SQUID).setRotYaw(rotYaw);
-        this.getData(SQUID).setTargetRotYaw(rotYaw);
+        this.setRotYaw(rotYaw);
+        this.setTargetRotYaw(rotYaw);
     }
 
     public void setTargetRotPitch(double targPitch) {
-        if (targPitch != this.getData(SQUID).getTargetRotPitch()) {
-            this.getData(SQUID).setTargetRotPitch(targPitch);
-            this.newPacketRequired = true;
-        }
+        this.getEntityData().set(PITCH_TARGET, targPitch);
     }
 
     public void setTargetRotYaw(double targYaw) {
-        if (targYaw != this.getData(SQUID).getTargetRotYaw()) {
-            this.getData(SQUID).setTargetRotYaw(targYaw);
-            this.newPacketRequired = true;
-        }
+        this.getEntityData().set(YAW_TARGET, targYaw);
     }
 
-    public double getTargRotPitch() {
-        return this.getData(SQUID).getTargetRotPitch();
+    public double getTargetRotPitch() {
+        return this.getEntityData().get(PITCH_TARGET);
     }
 
-    public double getTargRotYaw() {
-        return this.getData(SQUID).getTargetRotYaw();
+    public double getTargetRotYaw() {
+        return this.getEntityData().get(YAW_TARGET);
+    }
+
+    public void forcePitchInstant(double pitch) {
+        this.getEntityData().set(PITCH_PREV, pitch);
+        this.getEntityData().set(PITCH, pitch);
+        this.getEntityData().set(PITCH_TARGET, pitch);
+    }
+
+    public void forceYawInstant(double yaw) {
+        this.getEntityData().set(YAW_PREV, yaw);
+        this.getEntityData().set(YAW, yaw);
+        this.getEntityData().set(YAW_TARGET, yaw);
     }
 
     public boolean getBlasting() {
-        return this.getData(SQUID).getBlasting();
+        return this.getEntityData().get(BLASTING);
     }
 
     public void setBlasting(boolean b) {
-        if (b != this.getData(SQUID).getBlasting()) {
-            this.getData(SQUID).setBlasting(b);
-            this.newPacketRequired = true;
-        }
+        this.getEntityData().set(BLASTING, b);
     }
 
     public boolean getShaking() {
-        return this.getData(SQUID).getShaking();
+        return this.getEntityData().get(SHAKING);
     }
 
     public void setShaking(boolean b) {
-        if (b != this.getData(SQUID).getShaking()) {
-            this.getData(SQUID).setShaking(b);
-            this.newPacketRequired = true;
-        }
+        this.getEntityData().set(SHAKING, b);
     }
 
     public int getShakeTicks() {
-        return this.getData(SQUID).getShakeTicks();
+        return this.getEntityData().get(COUNTDOWN_TICKS);
     }
 
     public void setShakeTicks(int ticks) {
-        this.getData(SQUID).setShakeTicks(ticks);
+        this.getEntityData().set(COUNTDOWN_TICKS, (byte) ticks);
     }
 
-    public boolean getBlastToStatue() {
-        return this.getData(SQUID).getBlastToStatue();
+    public void processNote(byte note) {
+        this.latestNotes[0] = this.latestNotes[1];
+        this.latestNotes[1] = this.latestNotes[2];
+        this.latestNotes[2] = note;
+        if (this.latestNotes[0] == this.targetNotes[0]
+                && this.latestNotes[1] == this.targetNotes[1]
+                && this.latestNotes[2] == this.targetNotes[2]) {
+            this.blastingToStatue = true;
+        }
     }
 
-    public void setBlastToStatue(boolean blast) {
-        this.getData(SQUID).setBlastToStatue(blast);
+    public int getTargetNote(byte index) {
+        return this.targetNotes[index];
     }
 
-    public boolean getForcedBlast() {
-        return this.getData(SQUID).getForcedBlast();
+    public void setLatestNotes(int[] ln) {
+        if (ln.length != 3) {
+            RocketSquidsBase.LOGGER.error("Tried to set a latest notes value of incorrect length; resetting to default");
+            this.latestNotes = new int[]{-1, -1, -1};
+            return;
+        }
+        this.latestNotes = ln;
     }
 
-    public byte getTargetNote(byte index) {
-        return this.getData(SQUID).getTargetNotes()[index];
+    private void setNewTargetNotes(RandomSource r) {
+        this.targetNotes = new int[]{
+                C_MAJOR_SCALE[r.nextInt(7)],
+                C_MAJOR_SCALE[r.nextInt(7)],
+                C_MAJOR_SCALE[r.nextInt(7)]
+        };
     }
 }
