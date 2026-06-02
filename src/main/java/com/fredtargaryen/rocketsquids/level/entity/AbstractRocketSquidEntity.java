@@ -17,12 +17,6 @@ public abstract class AbstractRocketSquidEntity extends AbstractSquidEntity{
     }
 
     @Override
-    public boolean isFood(ItemStack stack) {
-        Item stackItem = stack.getItem();
-        return stackItem == Items.COD || stackItem == Items.SALMON || stackItem == Items.TROPICAL_FISH || stackItem == Items.GUNPOWDER;
-    }
-
-    @Override
     protected boolean canRide(@NotNull Entity entityIn)
     {
         return true;
