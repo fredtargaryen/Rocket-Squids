@@ -4,7 +4,6 @@ package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.config.Config;
 import com.fredtargaryen.rocketsquids.config.GeneralConfig;
-import com.fredtargaryen.rocketsquids.level.capability.entity.adult.AdultCap;
 import com.fredtargaryen.rocketsquids.level.capability.item.squeleporter.SqueleporterCap;
 import com.fredtargaryen.rocketsquids.level.capability.item.squeleporter.SqueleporterCapProvider;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
@@ -126,7 +125,6 @@ public class RocketSquidsBase {
 
     @SubscribeEvent
     public void onRegisterCapabilitiesEvent(RegisterCapabilitiesEvent event) {
-        event.register(AdultCap.class);
         event.register(SqueleporterCap.class);
     }
 
