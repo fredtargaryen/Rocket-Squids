@@ -10,6 +10,7 @@ import com.fredtargaryen.rocketsquids.level.entity.ai.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
+import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -325,7 +326,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                     Vec3 pos = player.position();
                     player.level().playSound(null, pos.x, pos.y, pos.z, RSSounds.SQUIDTP_IN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     // Set squid data
-                    TagValueOutput vo = TagValueOutput.createWithoutContext(null);
+                    TagValueOutput vo = ValueIOHelper.getNewEmptyCompoundTagAsValueOutput();
                     this.save(vo);
                     newStack.set(SQUELEPORTER, new SqueleporterData(vo.buildResult()));
                     this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
@@ -335,12 +336,14 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                     }
                     player.setItemSlot(handEquip, newStack);
                     player.getCooldowns().addCooldown(newStack, 10);
+                    return InteractionResult.SUCCESS;
                 } else if (interactItem == Items.FLINT_AND_STEEL) {
                     // if the player isn't in creative we damage the flint and steel
                     if (!player.isCreative()) {
                         interactStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
                     }
                     this.forcedBlast = true;
+                    this.blastoff();
                     return InteractionResult.SUCCESS;
                 } else if (interactItem == Items.SADDLE) {
                     if (!this.getSaddled()) {
@@ -350,7 +353,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                     player.startRiding(this);
                     return InteractionResult.SUCCESS;
                 } else if (interactItem == Items.FEATHER) {
-                    this.getEntityData().set(SHAKING, true);
+                    this.beginCountdown();
                     return InteractionResult.SUCCESS;
                 } else {
                     if (this.getSaddled() && !this.isVehicle()) {
@@ -596,7 +599,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public boolean getBlasting() {
-        return this.getEntityData().get(BLAST_TICKS_REMAINING) >= 0;
+        return this.getEntityData().get(BLAST_TICKS_REMAINING) > 0;
     }
 
     public void setBlasting(boolean blasting) {
