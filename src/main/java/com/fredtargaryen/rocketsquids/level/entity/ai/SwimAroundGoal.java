@@ -2,13 +2,8 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
-import com.fredtargaryen.rocketsquids.DataReference;
-import com.fredtargaryen.rocketsquids.level.StatueData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
-import com.fredtargaryen.rocketsquids.network.MessageHandler;
-import com.fredtargaryen.rocketsquids.network.message.SquidNoteMessage;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -16,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
-import java.util.List;
 
 public class SwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
@@ -36,6 +30,39 @@ public class SwimAroundGoal extends Goal {
     @Override
     public boolean canUse() {
         return this.squid.isInWater();
+    }
+
+    @Override
+    public void tick() {
+        ++this.tickCounter;
+        if (this.tickCounter > this.nextScheduledMove) this.scheduleNextMove();
+
+        //Move and play notes if scheduled
+        if (this.tickCounter == this.nextScheduledMove) {
+            if (this.squid.isBaby()) {
+                int randomInt = this.r.nextInt(2);
+                if (randomInt == 0) {
+                    this.doTurn(false, this.squid.areBlocksInWay());
+                    this.scheduleNextMove();
+                } else {
+                    if (!this.squid.areBlocksInWay()) this.squid.addForce(0.15);
+                    this.scheduleNextMove();
+                }
+            } else {
+                int randomInt = this.r.nextInt(11);
+                if (randomInt == 0) {
+                    if (!this.squid.areBlocksInWay()) {
+                        this.squid.beginCountdown();
+                    }
+                } else if (randomInt < 6) {
+                    this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
+                    this.scheduleNextMove();
+                } else {
+                    if (!this.squid.areBlocksInWay()) this.squid.addForce(0.25);
+                    this.scheduleNextMove();
+                }
+            }
+        }
     }
 
     /**
@@ -89,91 +116,5 @@ public class SwimAroundGoal extends Goal {
      */
     private void scheduleNextMove() {
         this.nextScheduledMove += 10 + this.r.nextInt(20);
-    }
-
-    @Override
-    public void tick() {
-        ++this.tickCounter;
-        double rp = this.squid.getPitch();
-        double ry = this.squid.getYaw();
-        if (!this.squid.isBaby() && this.squid.blastingToStatue) {
-            //Override all behaviour if it heard its target notes and needs to find and blast to a statue
-            //Find nearest statue
-            Vec3 pos = this.squid.position();
-            List<Integer> statueCoords = StatueData.forLevel(this.squid.level()).getNearestStatuePos(pos.x, pos.y, pos.z);
-            if (statueCoords == null) {
-                //StatueManager doesn't have any statues loaded
-                this.squid.blastingToStatue = false;
-            } else {
-                double zDistance = statueCoords.get(4) - pos.z;
-                double xDistance = statueCoords.get(2) - pos.x;
-                double hozDistanceSquared = zDistance * zDistance + xDistance * xDistance;
-                //Turn in direction of nearest statue. Not sure why but these values are necessary for it to point correctly
-                this.squid.setTargetYaw(Math.atan2(-xDistance, zDistance));
-                // Send "Recognition" empty sound for those using subs
-                MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 36), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                //Play a celebratory chord
-                if (hozDistanceSquared > 640000.0) {
-                    //More than 50 chunks away (50 * 16 = 800 blocks). Low C Major
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 0), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 4), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 7), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                } else if (hozDistanceSquared > 25600.0) {
-                    //10-50 chunks away (10 * 16 = 160 blocks). Middle C Major
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 12), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 16), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 19), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                } else {
-                    //Less than 10 chunks away. High C Major
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 24), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 28), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                    MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage((byte) 31), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-                }
-                if (hozDistanceSquared > 6400.0) {
-                    //More than 80 blocks (5 chunks) away horizontally; blast at 45 degrees so the player can hopefully see easily
-                    //A squid can go about 80 blocks at surface level and 45 degrees so this should prevent some annoying overshooting
-                    this.squid.setTargetPitch(Math.PI / 4.0);
-                } else {
-                    //Less than 80 blocks away; blast directly towards the statue
-                    this.squid.setTargetPitch(Math.atan2(pos.y - statueCoords.get(3), Math.sqrt(hozDistanceSquared)) + Math.PI / 2.0);
-                }
-            }
-            double trp = this.squid.getTargetPitch();
-            double Try = this.squid.getTargetYaw();
-            if (Math.abs(trp - rp) < 0.0005 && Math.abs(Try - ry) < 0.0005) {
-                this.squid.setShaking(true);
-                this.squid.blastingToStatue = false;
-            }
-        } else {
-            if (this.tickCounter > this.nextScheduledMove) this.scheduleNextMove();
-
-            //Move and play notes if scheduled
-            if (this.tickCounter == this.nextScheduledMove) {
-                if (this.squid.isBaby()) {
-                    int randomInt = this.r.nextInt(2);
-                    if (randomInt == 0) {
-                        this.doTurn(false, this.squid.areBlocksInWay());
-                        this.scheduleNextMove();
-                    } else {
-                        if (!this.squid.areBlocksInWay()) this.squid.addForce(0.15);
-                        this.scheduleNextMove();
-                    }
-                }
-                else {
-                    int randomInt = this.r.nextInt(11);
-                    if (randomInt == 0) {
-                        if (!this.squid.areBlocksInWay()) {
-                            this.squid.beginCountdown();
-                        }
-                    } else if (randomInt < 6) {
-                        this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
-                        this.scheduleNextMove();
-                    } else {
-                        if (!this.squid.areBlocksInWay()) this.squid.addForce(0.25);
-                        this.scheduleNextMove();
-                    }
-                }
-            }
-        }
     }
 }
