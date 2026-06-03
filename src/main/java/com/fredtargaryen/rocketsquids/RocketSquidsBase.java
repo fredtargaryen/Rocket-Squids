@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,7 +15,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
@@ -23,17 +23,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @Mod(value = MODID)
 public class RocketSquidsBase {
     // Get our logger
-    public static final Logger LOGGER = LogManager.getLogger();
-
-    public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     /**
      * A custom firework that looks kinda like a Rocket Squid, created in {@link RocketSquidsBase#setupFirework()}
