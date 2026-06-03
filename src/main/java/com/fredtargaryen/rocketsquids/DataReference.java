@@ -25,6 +25,11 @@ public class DataReference {
     public static final int[] C_MAJOR_SCALE = {12, 14, 16, 17, 19, 21, 23};
 
     /**
+     * How many AI ticks (10 per second) a rocket squid should be counting down before blasting off
+     */
+    public static final byte DEFAULT_COUNTDOWN_LENGTH = 20;
+
+    /**
      * How many AI ticks (10 per second) a rocket squid blast should last
      */
     public static final byte DEFAULT_BLAST_LENGTH = 15;

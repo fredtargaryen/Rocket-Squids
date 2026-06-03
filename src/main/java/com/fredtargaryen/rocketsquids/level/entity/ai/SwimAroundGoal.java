@@ -20,10 +20,8 @@ import java.util.List;
 
 public class SwimAroundGoal extends Goal {
     private final RocketSquidEntity squid;
-    private byte noteIndex;
     private int tickCounter;
     private int nextScheduledMove;
-    private int nextScheduledNote;
 
     private enum StatueBlastStage {
         NONE,
@@ -39,11 +37,9 @@ public class SwimAroundGoal extends Goal {
         this.squid = ers;
         this.setFlags(EnumSet.of(Flag.MOVE));
         this.r = this.squid.getRandom();
-        this.noteIndex = 0;
         this.statueBlastStage = StatueBlastStage.NONE;
         this.tickCounter = 0;
         this.nextScheduledMove = 0;
-        this.nextScheduledNote = 0;
     }
 
     @Override
@@ -102,15 +98,6 @@ public class SwimAroundGoal extends Goal {
      */
     private void scheduleNextMove() {
         this.nextScheduledMove += 10 + this.r.nextInt(20);
-    }
-
-    /**
-     * Schedule the next note for 2-3 seconds in the future.
-     * Need to allow some time for the note to play, as well as some silent time
-     */
-    private void scheduleNextNote() {
-        if (!this.squid.isBaby())
-            this.nextScheduledNote += 20 + this.r.nextInt(10);
     }
 
     @Override
@@ -182,7 +169,6 @@ public class SwimAroundGoal extends Goal {
             }
         } else {
             if (this.tickCounter > this.nextScheduledMove) this.scheduleNextMove();
-            if (!this.squid.isBaby() && this.tickCounter > this.nextScheduledNote) this.scheduleNextNote();
 
             //Move and play notes if scheduled
             if (this.tickCounter == this.nextScheduledMove) {
@@ -200,7 +186,7 @@ public class SwimAroundGoal extends Goal {
                     int randomInt = this.r.nextInt(11);
                     if (randomInt == 0) {
                         if (!this.squid.areBlocksInWay()) {
-                            this.squid.setShaking(true);
+                            this.squid.beginCountdown();
                         }
                     } else if (randomInt < 6) {
                         this.doTurn(this.squid.getFirstPassenger() instanceof Player, this.squid.areBlocksInWay());
@@ -211,21 +197,6 @@ public class SwimAroundGoal extends Goal {
                     }
                 }
             }
-            if (this.tickCounter == this.nextScheduledNote) {
-                this.playNextNote();
-                this.scheduleNextNote();
-            }
-        }
-    }
-
-    private void playNextNote() {
-        int note = this.squid.getTargetNote(this.noteIndex);
-        Vec3 pos = this.squid.position();
-        MessageHandler.sendToPlayersNear((ServerLevel) this.squid.level(), new SquidNoteMessage(note), pos.x, pos.y, pos.z, DataReference.SQUID_SING_RANGE);
-        if (this.noteIndex == 2) {
-            this.noteIndex = 0;
-        } else {
-            ++this.noteIndex;
         }
     }
 }

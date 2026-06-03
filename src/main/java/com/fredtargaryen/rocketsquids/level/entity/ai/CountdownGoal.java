@@ -18,22 +18,15 @@ public class CountdownGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.squid.getShaking() && !this.squid.getBlasting();
+        return this.squid.getCountdownTicks() > 0;
     }
 
     @Override
     public void tick() {
-        int ticksLeft = this.squid.getCountdownTicks();
-        if(ticksLeft == -1) {
-            //No countdown in progress; start one
-            this.squid.setCountdownTicks((byte) 20);
-        }
-        else if(ticksLeft == 0) {
-            this.squid.setBlasting(true);
-            this.squid.setCountdownTicks((byte) -1);
-        }
-        else {
-            this.squid.setCountdownTicks((byte) (ticksLeft - 1));
+        byte ticksLeft = this.squid.getCountdownTicks();
+        this.squid.setCountdownTicks(--ticksLeft);
+        if(ticksLeft == 0) {
+            this.squid.blastoff();
         }
     }
 }

@@ -4,20 +4,13 @@ package com.fredtargaryen.rocketsquids.level.entity;
 
 import com.fredtargaryen.rocketsquids.*;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
-import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
-import com.fredtargaryen.rocketsquids.level.entity.ai.BlastoffGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.FlopAroundGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.CountdownGoal;
-import com.fredtargaryen.rocketsquids.level.entity.ai.SwimAroundGoal;
+import com.fredtargaryen.rocketsquids.level.entity.ai.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -209,8 +202,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         super.registerGoals();
         this.goalSelector.addGoal(0, new BlastoffGoal(this));
         this.goalSelector.addGoal(1, new CountdownGoal(this));
-        this.goalSelector.addGoal(2, new SwimAroundGoal(this));
-        this.goalSelector.addGoal(3, new FlopAroundGoal(this));
+        this.goalSelector.addGoal(2, new SingGoal(this));
+        this.goalSelector.addGoal(3, new SwimAroundGoal(this));
+        this.goalSelector.addGoal(4, new FlopAroundGoal(this));
     }
 
     /**
@@ -607,12 +601,34 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         this.getEntityData().set(COUNTDOWN_TICKS, countdownTicks);
     }
 
+    public void beginCountdown() {
+        SynchedEntityData sed = this.getEntityData();
+        sed.set(SHAKING, true);
+        sed.set(COUNTDOWN_TICKS, DataReference.DEFAULT_COUNTDOWN_LENGTH);
+    }
+
     public boolean getBlasting() {
         return this.getEntityData().get(BLAST_TICKS_REMAINING) >= 0;
     }
 
     public void setBlasting(boolean blasting) {
         this.getEntityData().set(BLAST_TICKS_REMAINING, blasting ? DataReference.DEFAULT_BLAST_LENGTH : -1);
+    }
+
+    public byte getBlastTicksRemaining() {
+        return this.getEntityData().get(BLAST_TICKS_REMAINING);
+    }
+
+    public void setBlastTicksRemaining(byte ticksRemaining) {
+        this.getEntityData().set(BLAST_TICKS_REMAINING, ticksRemaining);
+    }
+
+    public void blastoff() {
+        SynchedEntityData sed = this.getEntityData();
+        sed.set(SHAKING, true);
+        sed.set(BLAST_TICKS_REMAINING, DataReference.DEFAULT_BLAST_LENGTH);
+        this.playSound(RSSounds.BLASTOFF.get(), 1.0F, 1.0F);
+        this.addForce(2.952);
     }
 
     public boolean getSaddled() {
