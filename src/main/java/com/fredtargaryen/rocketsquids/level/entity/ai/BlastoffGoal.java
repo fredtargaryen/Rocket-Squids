@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids.level.entity.ai;
 
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
@@ -20,6 +21,12 @@ public class BlastoffGoal extends Goal {
     @Override
     public boolean canUse() {
         return this.squid.getBlastTicksRemaining() > 0;
+    }
+
+    @Override
+    public void start() {
+        RandomSource r = this.squid.getRandom();
+        this.squid.setTargetRoll(r.nextDouble() * Math.PI * (r.nextBoolean() ? 1 : -1));
     }
 
     @Override

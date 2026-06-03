@@ -66,6 +66,10 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     private static final EntityDataAccessor<Double> YAW = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
     private static final EntityDataAccessor<Double> YAW_TARGET = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
 
+    private static final EntityDataAccessor<Double> ROLL_PREV = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> ROLL = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+    private static final EntityDataAccessor<Double> ROLL_TARGET = SynchedEntityData.defineId(RocketSquidEntity.class, RSEntityDataSerializers.DOUBLE.get());
+
     private static final EntityDataAccessor<Boolean> SHAKING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final EntityDataAccessor<Byte> COUNTDOWN_TICKS = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
@@ -146,6 +150,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         builder.define(YAW_PREV, 0.0);
         builder.define(YAW, 0.0);
         builder.define(YAW_TARGET, 0.0);
+        builder.define(ROLL_PREV, 0.0);
+        builder.define(ROLL, 0.0);
+        builder.define(ROLL_TARGET, 0.0);
         builder.define(SHAKING, false);
         builder.define(COUNTDOWN_TICKS, (byte) -1);
         builder.define(BLAST_TICKS_REMAINING, (byte) -1);
@@ -160,6 +167,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         vo.putDouble("TargetPitch", sed.get(PITCH_TARGET));
         vo.putDouble("CurrentYaw", sed.get(YAW));
         vo.putDouble("TargetYaw", sed.get(YAW_TARGET));
+        vo.putDouble("CurrentRoll", sed.get(ROLL));
+        vo.putDouble("TargetRoll", sed.get(ROLL_TARGET));
         vo.putBoolean("Shaking", sed.get(SHAKING));
         vo.putByte("CountdownTicks", sed.get(COUNTDOWN_TICKS));
         vo.putByte("BlastTicksRemaining", sed.get(BLAST_TICKS_REMAINING));
@@ -178,6 +187,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         sed.set(PITCH_TARGET, vi.getDoubleOr("TargetPitch", 0.0));
         sed.set(YAW, vi.getDoubleOr("CurrentYaw", 0.0));
         sed.set(YAW_TARGET, vi.getDoubleOr("TargetYaw", 0.0));
+        sed.set(ROLL, vi.getDoubleOr("CurrentRoll", 0.0));
+        sed.set(ROLL_TARGET, vi.getDoubleOr("TargetRoll", 0.0));
         sed.set(SHAKING, vi.getBooleanOr("Shaking", false));
         sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) -1));
         sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) -1));
@@ -261,6 +272,14 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         if (trY != ry) {
             ry += (trY - ry) * rotateSpeed;
             this.setYaw(ry);
+        }
+
+        //Rotate towards target roll
+        double trr = this.getEntityData().get(ROLL_TARGET);
+        double rr = this.getEntityData().get(ROLL);
+        if (trr != rr) {
+            rr += (trr - rr) * rotateSpeed;
+            this.setRoll(rr);
         }
 
         Vec3 pos = this.position();
@@ -576,6 +595,52 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         this.getEntityData().set(YAW_TARGET, y);
     }
 
+    public double getPreviousRoll() {
+        return this.getEntityData().get(ROLL_PREV);
+    }
+
+    public double getRoll() {
+        return this.getEntityData().get(ROLL);
+    }
+
+    private void setRoll(double roll) {
+        this.getEntityData().set(ROLL_PREV, this.getEntityData().get(ROLL));
+        this.getEntityData().set(ROLL, roll);
+    }
+
+    public void forceRollInstant(double roll) {
+        this.getEntityData().set(ROLL_PREV, roll);
+        this.getEntityData().set(ROLL, roll);
+        this.getEntityData().set(ROLL_TARGET, roll);
+    }
+
+    public double getTargetRoll() {
+        return this.getEntityData().get(ROLL_TARGET);
+    }
+
+    public void setTargetRoll(double r) {
+        double currentRoll = this.getEntityData().get(ROLL);
+        //Set current rotation to be within [-PI, PI].
+        //Any operations on current rotation are also applied to target rotation.
+        //Target rotation can be outside the interval; it will be
+        //current rotation and brought back in next time this method is called.
+        while (currentRoll < -Math.PI) {
+            currentRoll += DOUBLE_PI;
+        }
+        while (r < -Math.PI) {
+            r += DOUBLE_PI;
+        }
+        while (currentRoll > Math.PI) {
+            currentRoll -= DOUBLE_PI;
+        }
+        while (r > Math.PI) {
+            r -= DOUBLE_PI;
+        }
+        this.getEntityData().set(ROLL_PREV, currentRoll);
+        this.getEntityData().set(ROLL, currentRoll);
+        this.getEntityData().set(ROLL_TARGET, r);
+    }
+
     public boolean getShaking() {
         return this.getEntityData().get(SHAKING);
     }
@@ -825,6 +890,10 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             double yawRads = data.get(YAW);
             double exactYawRads = prevYawRads + (yawRads - prevYawRads) * partialTick;
 
+            double prevRollRads = data.get(ROLL_PREV);
+            double rollRads = data.get(ROLL);
+            double exactRollRads = prevRollRads + (rollRads - prevRollRads) * partialTick;
+
             double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
 
             this.riderRotated = true;
@@ -832,7 +901,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             stack.pushPose();
             // Rotate the rider to match the squid's rotation
             Quaternionf quat = new Quaternionf()
-                    .rotateLocalX((float) (squidAngle))
+                    .rotateLocalZ((float) exactRollRads)
+                    .rotateLocalX((float) squidAngle)
                     .rotateLocalY((float) -exactYawRads);
             stack.mulPose(quat);
             // Keep the rider from floating away from the saddle
