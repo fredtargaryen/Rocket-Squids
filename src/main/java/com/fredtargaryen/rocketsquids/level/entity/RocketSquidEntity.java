@@ -117,13 +117,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
      */
     public boolean riderRotated;
 
-
-    //Unknown if these variables are still needed - check when everything else is done
-    /**
-     * Server only - how long until the squid can make a baby again
-     */
-    protected int breedCooldown;
-
     public RocketSquidEntity(Level level) {
         super(RSEntityTypes.SQUID_TYPE.get(), level);
         this.riderRotated = false;
@@ -171,7 +164,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         vo.putByte("BlastTicksRemaining", sed.get(BLAST_TICKS_REMAINING));
         vo.putBoolean("Saddled", sed.get(SADDLED));
         vo.putBoolean("BlastingToStatue", this.blastingToStatue);
-        vo.putInt("BreedCooldown", this.breedCooldown);
         vo.putBoolean("ForcedBlast", this.forcedBlast);
         vo.putIntArray("LatestNotes", this.latestNotes);
         vo.putIntArray("TargetNotes", this.targetNotes);
@@ -190,7 +182,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) -1));
         sed.set(SADDLED, vi.getBooleanOr("Saddled", false));
         this.blastingToStatue = vi.getBooleanOr("BlastingToStatue", false);
-        this.breedCooldown = vi.getIntOr("BreedCooldown", 1);
         this.forcedBlast = vi.getBooleanOr("ForcedBlast", false);
         this.setLatestNotes(vi.getIntArray("LatestNotes").orElse(new int[]{-1, -1, -1}));
         this.targetNotes = vi.getIntArray("TargetNotes").orElse(new int[]{-1, -1, -1});
@@ -200,11 +191,12 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new BlastoffGoal(this));
-        this.goalSelector.addGoal(1, new CountdownGoal(this));
-        this.goalSelector.addGoal(2, new SingGoal(this));
-        this.goalSelector.addGoal(3, new SwimAroundGoal(this));
-        this.goalSelector.addGoal(4, new FlopAroundGoal(this));
+        this.goalSelector.addGoal(0, new BlastToStatueGoal(this));
+        this.goalSelector.addGoal(1, new BlastoffGoal(this));
+        this.goalSelector.addGoal(2, new CountdownGoal(this));
+        this.goalSelector.addGoal(3, new SingGoal(this));
+        this.goalSelector.addGoal(4, new SwimAroundGoal(this));
+        this.goalSelector.addGoal(5, new FlopAroundGoal(this));
     }
 
     /**
@@ -302,10 +294,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             }
         } else {
             //Server side
-            //Handle breeding ticks
-            if (this.breedCooldown > 0) {
-                --this.breedCooldown;
-            }
             if (this.isInWater() && !this.getEntityData().get(SHAKING) && !this.getBlasting()) {
                 RotationHelper.moveSquidInDirectionPointing(this);
             }
@@ -676,7 +664,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public boolean canBreed() {
-        return !this.isBaby() && this.breedCooldown <= 0 && !this.hasPassengers();
+        return !this.isBaby() && this.getAge() == 0 && !this.hasPassengers();
     }
 
     @Override
@@ -703,7 +691,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
      */
     private void breed(RocketSquidEntity partner) {
         if (!this.level().isClientSide()) {
-            Vec3 thisPos = this.position();
             // get the UUID of the "partner" rocket squid
             UUID partnerUUID = partner.getUUID();
             switch (this.uuid.compareTo(partnerUUID)) {
@@ -715,7 +702,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                     break;
                 case -1:
                     // the one with the lesser UUID doesn't
-                    this.breedCooldown = CommonConfig.BREED_COOLDOWN;
                     this.spawnHearts((ServerLevel) this.level());
                     break;
                 default:
@@ -726,10 +712,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         }
     }
 
-    public void resetBreedCooldown() {
-        this.breedCooldown = CommonConfig.BREED_COOLDOWN;
-    }
-
     public void spawnChildFromBreeding(ServerLevel level, RocketSquidEntity partner) {
         AgeableMob offspring = this.getBreedOffspring(level, partner);
         final net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent event = new net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent(this, partner, offspring);
@@ -737,10 +719,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         offspring = event.getChild();
         if (cancelled) {
             //Reset the "inLove" state for the animals
-            this.setAge(6000);
-            partner.setAge(6000);
-            this.resetBreedCooldown();
-            partner.resetBreedCooldown();
+            this.setAge(CommonConfig.BREED_COOLDOWN);
+            partner.setAge(CommonConfig.BREED_COOLDOWN);
             return;
         }
         if (offspring != null) {
@@ -752,10 +732,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void finalizeSpawnChildFromBreeding(ServerLevel level, RocketSquidEntity partner, @org.jspecify.annotations.Nullable AgeableMob offspring) {
-        this.setAge(6000);
-        partner.setAge(6000);
-        this.resetBreedCooldown();
-        partner.resetBreedCooldown();
+        this.setAge(CommonConfig.BREED_COOLDOWN);
+        partner.setAge(CommonConfig.BREED_COOLDOWN);
         level.broadcastEntityEvent(this, (byte) 18);
     }
 

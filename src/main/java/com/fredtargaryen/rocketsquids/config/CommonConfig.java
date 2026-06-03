@@ -19,9 +19,9 @@ public class CommonConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     private static final ModConfigSpec.IntValue _BREED_COOLDOWN = BUILDER
-            .comment("How much time in ticks do Rocket Squids have to wait before being able to breed again.")
+            .comment("How much time in ticks do Rocket Squids have to wait before being able to breed again. 6000 for most creatures.")
             .translation("config.common.squid.breeding.cooldown")
-            .defineInRange("squid.breeding.cooldown", 3600, 20, 72000);
+            .defineInRange("squid.breeding.cooldown", 6000, 20, 72000);
 
     private static final ModConfigSpec.BooleanValue _ROCKET_SQUID_EXPLOSIONS_DESTROY = BUILDER
             .comment("If Rocket Squids that have been set on fire should destroy blocks when they explode.")
