@@ -680,7 +680,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         compound.putBoolean("forcedblast", this.forcedBlast);
         compound.putIntArray("latestnotes", this.latestNotes);
         compound.putIntArray("targetnotes", this.targetNotes);
-        compound.putBoolean("blasttostatue", this.blastingToStatue);
     }
 
     @Override
@@ -699,7 +698,6 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
         this.setLatestNotes(compound.getIntArray("latestnotes"));
         this.targetNotes = compound.getIntArray("targetnotes");
         if (this.targetNotes.length != 3) this.setNewTargetNotes(this.random);
-        this.blastingToStatue = compound.getBoolean("blasttostatue");
     }
 
     public double getPrevRotPitch() {
