@@ -25,7 +25,7 @@ public class BlastoffGoal extends Goal {
     @Override
     public void tick() {
         byte ticksLeft = this.squid.getBlastTicksRemaining();
-        this.squid.setCountdownTicks(--ticksLeft);
+        this.squid.setBlastTicksRemaining(--ticksLeft);
         if (this.squid.forcedBlast) {
             if (ticksLeft == 0 || this.squid.areBlocksInWay()){
                 this.squid.explode();
