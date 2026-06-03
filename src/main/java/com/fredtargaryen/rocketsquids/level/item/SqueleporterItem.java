@@ -6,6 +6,7 @@ import com.fredtargaryen.rocketsquids.RSItems;
 import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -46,9 +47,9 @@ public class SqueleporterItem extends Item {
                     RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                     newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
                     newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
+                    RotationHelper.moveSquidInDirectionPointing(newSquid);
                     Vec3 playerMotion = playerIn.getDeltaMovement();
                     newSquid.push(playerMotion.x, playerMotion.y, playerMotion.z);
-                    newSquid.addForce(squidVi.getDoubleOr("force", 0.0));
                     Vec3 playerPos = playerIn.position();
                     newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
                     level.addFreshEntity(newSquid);
