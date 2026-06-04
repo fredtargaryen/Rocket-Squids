@@ -3,11 +3,12 @@
 package com.fredtargaryen.rocketsquids.level.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.RSBlocks;
+import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.client.render.ConchOnHeadRenderer;
-import com.fredtargaryen.rocketsquids.RSBlocks;
-import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.fredtargaryen.rocketsquids.level.StatueData;
+import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -16,7 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -68,7 +68,7 @@ public class ItemConch extends GeoModArmorItem {
 
         @Override
         public @NotNull SoundEvent getEquipSound() {
-            return SoundEvents.ARMOR_EQUIP_TURTLE;
+            return RSSounds.CONCH_EQUIP.get();
         }
 
         @Override
@@ -172,8 +172,7 @@ public class ItemConch extends GeoModArmorItem {
                 context.getItemInHand().grow(-1);
                 ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
                 return InteractionResult.CONSUME;
-            }
-            else if (level.isClientSide && !shouldInsertConch) {
+            } else if (level.isClientSide && !shouldInsertConch) {
                 this.use(level, player, context.getHand());
                 return InteractionResult.PASS;
             }

@@ -21,6 +21,8 @@ public class RSSounds {
     public static final RegistryObject<SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
     public static final RegistryObject<SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
 
+    public static final RegistryObject<SoundEvent> CONCH_EQUIP = registerSoundEvents("conch_equip");
+
     public static SoundEvent[] CONCH_NOTES = new SoundEvent[] {
             SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "conchc3")),
             SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "conchcs3")),
