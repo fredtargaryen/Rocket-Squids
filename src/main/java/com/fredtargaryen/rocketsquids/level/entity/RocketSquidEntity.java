@@ -884,7 +884,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             double prevPitchRads = data.get(PITCH_PREV);
             double pitchRads = data.get(PITCH);
             double exactPitchRads = prevPitchRads + (pitchRads - prevPitchRads) * partialTick;
-            double squidAngle = exactPitchRads - (Math.PI / 2.0);
+            double pitchForTranslation = exactPitchRads - (Math.PI / 2.0);
 
             double prevYawRads = data.get(YAW_PREV);
             double yawRads = data.get(YAW);
@@ -894,7 +894,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             double rollRads = data.get(ROLL);
             double exactRollRads = prevRollRads + (rollRads - prevRollRads) * partialTick;
 
-            double translation = -0.2 * Math.abs(Math.sin(squidAngle / 2.0));
+            double pitchTranslation = -0.2 * Math.abs(Math.sin(pitchForTranslation / 2.0));
+            double rollTranslation = -0.2 * Math.abs(Math.sin(exactRollRads / 2.0));
 
             this.riderRotated = true;
             PoseStack stack = event.getPoseStack();
@@ -902,11 +903,11 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             // Rotate the rider to match the squid's rotation
             Quaternionf quat = new Quaternionf()
                     .rotateLocalZ((float) exactRollRads)
-                    .rotateLocalX((float) squidAngle)
+                    .rotateLocalX((float) pitchForTranslation)
                     .rotateLocalY((float) -exactYawRads);
             stack.mulPose(quat);
             // Keep the rider from floating away from the saddle
-            stack.translate(0.0, translation, 0.0);
+            stack.translate(0.0, pitchTranslation + rollTranslation, 0.0);
         }
     }
 
