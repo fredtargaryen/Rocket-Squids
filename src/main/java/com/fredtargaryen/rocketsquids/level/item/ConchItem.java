@@ -8,7 +8,6 @@ import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.client.render.ConchOnHeadRenderer;
 import com.fredtargaryen.rocketsquids.level.StatueData;
 import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
-import com.google.common.collect.ImmutableMultimap;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.BlockPos;
@@ -20,8 +19,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +46,6 @@ public class ConchItem extends GeoModArmorItem {
 
     public ConchItem(Item.Properties properties) {
         super(RSArmorMaterials.CONCH, Type.HELMET, properties);
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         emptyModifierMap = new ItemAttributeModifiers(new ArrayList<>(), false);
     }
 
@@ -125,8 +121,7 @@ public class ConchItem extends GeoModArmorItem {
                 context.getItemInHand().grow(-1);
                 ((StatueBlock) block).dispenseGifts(level, pos, state.getValue(HORIZONTAL_FACING));
                 return InteractionResult.CONSUME;
-            }
-            else if (level.isClientSide && !shouldInsertConch) {
+            } else if (level.isClientSide && !shouldInsertConch) {
                 this.use(level, player, context.getHand());
                 return InteractionResult.PASS;
             }
