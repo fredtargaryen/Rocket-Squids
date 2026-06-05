@@ -19,6 +19,8 @@ public class RSSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> CONCH_EQUIP = registerSoundEvents("conch_equip");
+
     public static SoundEvent[] CONCH_NOTES = new SoundEvent[]{
             SoundEvent.createVariableRangeEvent(DataReference.getResourceLocation("conchc3")),
             SoundEvent.createVariableRangeEvent(DataReference.getResourceLocation("conchcs3")),
