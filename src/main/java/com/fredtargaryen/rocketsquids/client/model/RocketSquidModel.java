@@ -24,7 +24,7 @@ import java.util.Arrays;
  * and nearly completely re-worked for 1.17.1 on 12-17-2025
  */
 public class RocketSquidModel extends EntityModel<RocketSquidRenderState> {
-    private static final int tentacles = 8;
+    protected static final int tentacles = 8;
     public final ModelPart[] tent = new ModelPart[tentacles];
     public final ModelPart saddle;
     public final ModelPart straps;
@@ -38,7 +38,7 @@ public class RocketSquidModel extends EntityModel<RocketSquidRenderState> {
         Arrays.setAll(this.tent, index -> head.getChild(createTentacleName(index)));
     }
 
-    private static String createTentacleName(int index) {
+    protected static String createTentacleName(int index) {
         return "tent" + index;
     }
 

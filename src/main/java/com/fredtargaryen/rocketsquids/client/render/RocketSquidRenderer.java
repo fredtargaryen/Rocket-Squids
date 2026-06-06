@@ -3,6 +3,7 @@
 package com.fredtargaryen.rocketsquids.client.render;
 
 import com.fredtargaryen.rocketsquids.DataReference;
+import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.render.state.RocketSquidRenderState;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
@@ -11,8 +12,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.AgeableMobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -23,21 +24,22 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.BABY_SQUID_BODY_LAYER;
 import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BODY_LAYER;
 
-public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSquidRenderState, RocketSquidModel> {
-    private static final Identifier normal = DataReference.getIdentifier("textures/entity/rocket_squid.png");
-    private static final Identifier blasting = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
+public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, RocketSquidRenderState, RocketSquidModel> {
+    private static final Identifier ADULT_NORMAL = DataReference.getIdentifier("textures/entity/rocket_squid.png");
+    private static final Identifier ADULT_BLASTING = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
+    private static final Identifier BABY = DataReference.getIdentifier("textures/entity/baby_rocket_squid.png");
     private final TextureAtlasSprite fireTexture;
 
     private final RandomSource random = RandomSource.create();
 
     public RocketSquidRenderer(EntityRendererProvider.Context context) {
-        super(context, new RocketSquidModel(context.bakeLayer(SQUID_BODY_LAYER)), 1.0f);
+        super(context, new RocketSquidModel(context.bakeLayer(SQUID_BODY_LAYER)), new BabyRocketSquidModel(context.bakeLayer(BABY_SQUID_BODY_LAYER)), 1.0f);
         this.fireTexture = context.getSprites().get(ModelBakery.FIRE_0);
     }
 
@@ -49,9 +51,10 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
     @Override
     public void extractRenderState(RocketSquidEntity squid, RocketSquidRenderState state, float partialTick) {
         super.extractRenderState(squid, state, partialTick);
+        state.isBaby = squid.isBaby();
         state.tentacleAngle = squid.lastTentacleAngle + (squid.tentacleAngle - squid.lastTentacleAngle) * partialTick;
-        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotPitch(), squid.getRotPitch()));
-        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPrevRotYaw(), squid.getRotYaw()));
+        state.xBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPreviousPitch(), squid.getPitch()));
+        state.yBodyRot = (float) (Mth.lerp(state.partialTick, squid.getPreviousYaw(), squid.getYaw()));
         state.saddled = squid.getSaddled();
         state.shaking = squid.getShaking();
         state.blasting = squid.getBlasting();
@@ -71,10 +74,10 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
 
     @Override
     protected void setupRotations(RocketSquidRenderState state, PoseStack poseStack, float bodyRot, float scale) {
-        poseStack.translate(0, 0.5, 0);
+        poseStack.translate(0, state.isBaby ? 0.15 : 0.5, 0);
         poseStack.mulPose(Axis.YP.rotation(RotationHelper.PI_F - state.yBodyRot));
         poseStack.mulPose(Axis.XN.rotation(state.xBodyRot));
-        poseStack.translate(0f, -1.2f, 0f);
+        poseStack.translate(0f, state.isBaby ? -1.3f : -1.2f, 0f);
     }
 
     @Override
@@ -139,7 +142,9 @@ public class RocketSquidRenderer extends MobRenderer<RocketSquidEntity, RocketSq
 
     @Override
     public @NotNull Identifier getTextureLocation(RocketSquidRenderState state) {
-        return state.shaking ? blasting : normal;
+        if (state.isBaby) return BABY;
+        if (state.shaking) return ADULT_BLASTING;
+        return ADULT_NORMAL;
     }
 
     private void doAVertex(VertexConsumer consumer, PoseStack.Pose pose, Matrix4f pos, float x, float y, float z, float u, float v, int lightLevel) {

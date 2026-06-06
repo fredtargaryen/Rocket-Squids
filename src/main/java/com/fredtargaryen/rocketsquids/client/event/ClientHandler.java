@@ -7,13 +7,14 @@ import com.fredtargaryen.rocketsquids.client.gui.ConchScreen;
 import com.fredtargaryen.rocketsquids.client.model.BabyRocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.model.RocketSquidModel;
 import com.fredtargaryen.rocketsquids.client.particle.SquidFireworkParticle;
-import com.fredtargaryen.rocketsquids.client.render.BabyRocketSquidRenderer;
 import com.fredtargaryen.rocketsquids.client.render.RocketSquidRenderer;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.network.message.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.HolderLookup;
@@ -24,8 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,7 +40,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
-import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 
 @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class ClientHandler {
@@ -54,7 +52,6 @@ public class ClientHandler {
 
         // Register custom entity renderers
         event.registerEntityRenderer(RSEntityTypes.SQUID_TYPE.get(), RocketSquidRenderer::new);
-        event.registerEntityRenderer(RSEntityTypes.BABY_SQUID_TYPE.get(), BabyRocketSquidRenderer::new);
     }
 
     public static final ContextKey<UUID> PLAYER_ID = new ContextKey<>(DataReference.getIdentifier("player_id"));
@@ -78,10 +75,8 @@ public class ClientHandler {
     public static final ModelLayerLocation BABY_SQUID_BODY_LAYER;
 
     static {
-        assert RSEntityTypes.SQUID_TYPE.getId() != null;
         SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body");
-        assert RSEntityTypes.BABY_SQUID_TYPE.getId() != null;
-        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.BABY_SQUID_TYPE.getId(), "body");
+        BABY_SQUID_BODY_LAYER = new ModelLayerLocation(RSEntityTypes.SQUID_TYPE.getId(), "body_baby");
         dummyLookupProvider = HolderLookup.Provider.create(Stream.empty());
     }
 
@@ -117,32 +112,14 @@ public class ClientHandler {
         }
     }
 
-    public static void handleMessage(AdultCapDataMessage message) {
-        if (Minecraft.getInstance().level == null) return;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
-        Iterator<Entity> squidFinder = l.iterator();
-        Entity e;
-        while (squidFinder.hasNext()) {
-            e = squidFinder.next();
-            if (e.getUUID().equals(message.uuid())) {
-                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
-                e.getData(SQUID).deserialize(vi);
-            }
-        }
-    }
-
-    public static void handleMessage(BabyCapDataMessage message) {
-        if (Minecraft.getInstance().level == null) return;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
-        Iterator<Entity> squidFinder = l.iterator();
-        Entity e;
-        while (squidFinder.hasNext()) {
-            e = squidFinder.next();
-            if (e.getUUID().equals(message.uuid())) {
-                ValueInput vi = TagValueInput.create(null, dummyLookupProvider, message.data());
-                e.getData(SQUID).deserialize(vi);
-            }
-        }
+    /**
+     * Creates the firework effect when a rocket squid explodes.
+     *
+     * @param squidPos The position of the rocket squid that's exploding
+     */
+    public static void doSquidFireworkParticles(ClientLevel level, Vec3 squidPos) {
+        ParticleEngine effectRenderer = Minecraft.getInstance().particleEngine;
+        effectRenderer.add(new SquidFireworkParticle.SquidStarter(level, squidPos.x, squidPos.y, squidPos.z, effectRenderer));
     }
 
     public static void handleMessage(PlayNoteClientMessage message) {
@@ -154,14 +131,15 @@ public class ClientHandler {
 
     public static void handleMessage(SquidFireworkMessage message) {
         assert Minecraft.getInstance().level != null;
-        Iterable<Entity> l = Minecraft.getInstance().level.entitiesForRendering();
+        ClientLevel level = Minecraft.getInstance().level;
+        Iterable<Entity> l = level.entitiesForRendering();
         Iterator<Entity> squidFinder = l.iterator();
         Entity entity;
         while (squidFinder.hasNext()) {
             entity = squidFinder.next();
             if (entity.getUUID().equals(message.uuid())) {
                 RocketSquidEntity rocketSquidEntity = (RocketSquidEntity) entity;
-                rocketSquidEntity.doFireworkParticles();
+                doSquidFireworkParticles(level, rocketSquidEntity.position());
                 break;
             }
         }

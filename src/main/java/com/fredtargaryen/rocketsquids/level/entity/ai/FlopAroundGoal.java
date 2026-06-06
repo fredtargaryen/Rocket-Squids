@@ -2,31 +2,32 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
-import com.fredtargaryen.rocketsquids.level.entity.BabyRocketSquidEntity;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-public class BabyFlopAroundGoal extends Goal {
-    private final BabyRocketSquidEntity squid;
+public class FlopAroundGoal extends Goal {
+    private final RocketSquidEntity squid;
 
-    public BabyFlopAroundGoal(BabyRocketSquidEntity ebrs) {
+    public FlopAroundGoal(RocketSquidEntity ers) {
         super();
-        this.squid = ebrs;
+        this.squid = ers;
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
-        return !this.squid.isInWater();
+        return !this.squid.isInWater() && !this.squid.isInLava() && !this.squid.getBlasting();
     }
 
     @Override
     public void tick() {
         if (this.squid.onGround()) {
-            this.squid.setTargetRotPitch(Math.PI / 2);
+            this.squid.setTargetPitch(Math.PI / 2);
         } else if(Math.abs(this.squid.getDeltaMovement().y) > 0.008){
-            this.squid.pointToWhereMoving();
+            RotationHelper.pointSquidInDirectionMoving(this.squid);
         }
     }
 }

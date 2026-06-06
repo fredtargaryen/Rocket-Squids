@@ -44,11 +44,11 @@ public class AdultSwimAroundRiderRotationTestGoal extends Goal {
     public void doTurn() {
         // Set up starting rotation
         if (this.tickCounter == 1) {
-            this.squid.setTargetRotPitch(0.0);
-            this.squid.setTargetRotPitch(0.0);
+            this.squid.setTargetPitch(0.0);
+            this.squid.setTargetYaw(0.0);
         }
         else {
-            this.squid.setTargetRotPitch(this.squid.getRotPitch() + (Math.PI / 2.0));
+            this.squid.setTargetPitch(this.squid.getPitch() + (Math.PI / 2.0));
             //this.squid.setTargetRotYaw(this.squid.getRotYaw() + (Math.PI / 2.0));
         }
     }

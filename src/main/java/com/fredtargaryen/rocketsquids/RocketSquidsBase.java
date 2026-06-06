@@ -3,11 +3,19 @@
 package com.fredtargaryen.rocketsquids;
 
 import com.fredtargaryen.rocketsquids.config.CommonConfig;
+import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.mojang.logging.LogUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
-import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -15,17 +23,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
 @Mod(value = MODID)
 public class RocketSquidsBase {
     // Get our logger
-    public static final Logger LOGGER = LogManager.getLogger();
-
-    public static MobSpawnSettings.SpawnerData ROCKET_SQUID_SPAWN_INFO;
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     /**
      * A custom firework that looks kinda like a Rocket Squid, created in {@link RocketSquidsBase#setupFirework()}
@@ -58,7 +63,7 @@ public class RocketSquidsBase {
     public RocketSquidsBase(IEventBus eventBus, ModContainer modContainer) {
         RSBlocks.register(eventBus);
         RSItems.register(eventBus);
-        RSAttachmentTypes.register(eventBus);
+        RSEntityDataSerializers.register(eventBus);
         // Also populates the creative tab
         RSCreativeTabs.register(eventBus);
         RSDataComponentTypes.register(eventBus);
@@ -90,6 +95,25 @@ public class RocketSquidsBase {
      * Register conditions for spawning of this mod's entities
      */
     public void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-        event.register(RSEntityTypes.SQUID_TYPE.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
+        event.register(
+                RSEntityTypes.SQUID_TYPE.get(),
+                SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                RocketSquidsBase::checkRocketSquidSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.OR);
+    }
+
+    /**
+     * Copy of {@link WaterAnimal#checkSurfaceWaterAnimalSpawnRules} that accepts rocket squids
+     */
+    public static boolean checkRocketSquidSpawnRules(
+            EntityType<? extends RocketSquidEntity> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random
+    ) {
+        int seaLevel = level.getSeaLevel();
+        int minSpawnLevel = seaLevel - 13;
+        return pos.getY() >= minSpawnLevel
+                && pos.getY() <= seaLevel
+                && level.getFluidState(pos.below()).is(FluidTags.WATER)
+                && level.getBlockState(pos.above()).is(Blocks.WATER);
     }
 }

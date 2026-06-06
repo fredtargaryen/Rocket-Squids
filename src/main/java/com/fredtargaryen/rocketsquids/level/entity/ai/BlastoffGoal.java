@@ -2,61 +2,44 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
-import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
 public class BlastoffGoal extends Goal {
-    /**
-     * Roughly how long blasts last, in AI ticks (of which there are only 10 per second)
-     */
-    private static final int blastTickLength = 15;
     private final RocketSquidEntity squid;
-    private int blastTimer;
 
     public BlastoffGoal(RocketSquidEntity ers) {
         super();
         this.squid = ers;
         this.setFlags(EnumSet.of(Flag.MOVE));
-        this.blastTimer = -1;
     }
 
     @Override
     public boolean canUse() {
-        return this.squid.getBlasting() || this.squid.getForcedBlast();
+        return this.squid.getBlastTicksRemaining() > 0;
     }
 
     @Override
     public void tick() {
-        if (this.blastTimer < 0) {
-            // Begin blast
-            this.blastTimer = blastTickLength;
-            this.squid.playSound(RSSounds.BLASTOFF.get(), 1.0F, 1.0F);
-            this.squid.addForce(2.952);
-        } else if (this.blastTimer > 0) {
-            if (this.squid.getForcedBlast() && this.squid.areBlocksInWay()) {
+        byte ticksLeft = this.squid.getBlastTicksRemaining();
+        this.squid.setBlastTicksRemaining(--ticksLeft);
+        if (this.squid.forcedBlast) {
+            if (ticksLeft == 0 || this.squid.areBlocksInWay()){
                 this.squid.explode();
-                this.reset();
-            } else {
-                // Continue blast
-                this.blastTimer--;
-                this.squid.pointToWhereMoving();
+                return;
             }
-        } else {
-            if (this.squid.getForcedBlast()) {
-                // Explode, so resetting doesn't matter
-                this.squid.explode();
-            }
-            this.reset();
         }
+        RotationHelper.pointSquidInDirectionMoving(this.squid);
     }
 
-    private void reset() {
+    @Override
+    public void stop() {
         this.squid.setShaking(false);
-        this.squid.setBlasting(false);
+        this.squid.setBlastTicksRemaining((byte) 0);
+        this.squid.forcedBlast = false;
         this.squid.needsSync = false;
-        this.blastTimer = -1;
     }
 }

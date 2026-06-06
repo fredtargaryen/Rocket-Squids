@@ -4,11 +4,10 @@ package com.fredtargaryen.rocketsquids.level.item;
 
 import com.fredtargaryen.rocketsquids.RSItems;
 import com.fredtargaryen.rocketsquids.RSSounds;
-import com.fredtargaryen.rocketsquids.level.attachment.RocketSquidData;
 import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
+import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -22,7 +21,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import static com.fredtargaryen.rocketsquids.RSAttachmentTypes.SQUID;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
 public class SqueleporterItem extends Item {
@@ -44,18 +42,14 @@ public class SqueleporterItem extends Item {
             if (stack.getItem() == RSItems.SQUELEPORTER_ACTIVE.get()) {
                 //The squeleporter is active so squid data is stored.
                 SqueleporterData data = stack.get(SQUELEPORTER);
-                ValueInput squidVi = ValueIOHelper.getCompoundTagAsValueInput(data.entityData());
+                ValueInput squidVi = ValueIOHelper.getCompoundTagAsValueInput(data.squidData());
                 EntityType.create(squidVi, level, EntitySpawnReason.MOB_SUMMONED).ifPresent(entity -> {
                     RocketSquidEntity newSquid = (RocketSquidEntity) entity;
-                    ValueInput attachmentVi = ValueIOHelper.getCompoundTagAsValueInput(data.attachmentData());
-                    RocketSquidData newSquidData = new RocketSquidData();
-                    newSquidData.deserialize(attachmentVi);
-                    newSquid.setData(SQUID, newSquidData);
-                    newSquid.forceRotPitch((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
-                    newSquid.forceRotYaw((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
+                    newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
+                    newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
+                    RotationHelper.moveSquidInDirectionPointing(newSquid);
                     Vec3 playerMotion = playerIn.getDeltaMovement();
                     newSquid.push(playerMotion.x, playerMotion.y, playerMotion.z);
-                    newSquid.addForce(squidVi.getDoubleOr("force", 0.0));
                     Vec3 playerPos = playerIn.position();
                     newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
                     level.addFreshEntity(newSquid);
