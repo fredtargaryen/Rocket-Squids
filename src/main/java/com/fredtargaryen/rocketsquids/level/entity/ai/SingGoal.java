@@ -29,7 +29,7 @@ public class SingGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !this.squid.isBaby() && this.squid.isInWater() && !this.squid.getShaking() && this.squid.blastingToStatue;
+        return !this.squid.isBaby() && this.squid.isInWater() && !this.squid.getShaking() && !this.squid.blastingToStatue;
     }
 
     /**
