@@ -14,6 +14,11 @@
     "sounds": [{"name": "rocketsquids:tpout","stream": false}],
     "subtitle": "subs.rocketsquids.tpout"
   },
+  "conch_equip":
+  {
+    "sounds": [{"name": "minecraft:mob/turtle/armor", "stream": false}],
+    "subtitle": "subs.rocketsquids.conch_equip"
+  },
   "conchc3":
   {
     "sounds": [{"name": "rocketsquids:conchc3","stream": false}]

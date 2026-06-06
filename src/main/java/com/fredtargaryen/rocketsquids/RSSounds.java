@@ -10,7 +10,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.fredtargaryen.rocketsquids.DataReference.MODID;
 
-@SuppressWarnings("removal")
 public class RSSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
@@ -19,6 +18,8 @@ public class RSSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_IN = registerSoundEvents("tpin");
     public static final DeferredHolder<SoundEvent, SoundEvent> SQUIDTP_OUT = registerSoundEvents("tpout");
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> CONCH_EQUIP = registerSoundEvents("conch_equip");
 
     public static SoundEvent[] CONCH_NOTES = new SoundEvent[]{
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchc3")),
