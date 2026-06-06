@@ -47,14 +47,7 @@ public class StatueGen extends Feature<NoneFeatureConfiguration> {
         ChunkGenerator chunkGen = context.chunkGenerator();
         RandomSource random = context.random();
         BlockPos pos = context.origin();
-        // Then we check the config to see if this dimension is allowed
-        if (CommonConfig.STATUE_USE_WHITELIST) {
-            List<? extends String> allowedDimensions = CommonConfig.STATUE_WHITELIST;
-            if (!allowedDimensions.contains(level.getLevel().dimension().identifier().toString())) return false;
-        } else {
-            List<? extends String> blockedDimensions = CommonConfig.STATUE_BLACKLIST;
-            if (blockedDimensions.contains(level.getLevel().dimension().identifier().toString())) return false;
-        }
+
         StatueData statueManager = StatueData.forLevel(level.getLevel());
         int frequency = CommonConfig.STATUE_FREQUENCY;
         int chunkX = StatueData.posToChunk(pos.getX());
