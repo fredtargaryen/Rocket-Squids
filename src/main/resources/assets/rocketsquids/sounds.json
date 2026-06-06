@@ -1,7 +1,7 @@
 {
   "blastoff":
   {
-    "sounds": [{"name": "rocketsquids:blastoff","stream": false}],
+    "sounds": [{"name": "rocketsquids:blastoff","stream": true}],
     "subtitle": "subs.rocketsquids.blastoff"
   },
   "tpin":
@@ -13,6 +13,11 @@
   {
     "sounds": [{"name": "rocketsquids:tpout","stream": false}],
     "subtitle": "subs.rocketsquids.tpout"
+  },
+  "conch_equip":
+  {
+    "sounds": [{"name": "minecraft:mob/turtle/armor", "stream": false}],
+    "subtitle": "subs.rocketsquids.conch_equip"
   },
   "conchc3":
   {

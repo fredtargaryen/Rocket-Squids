@@ -4,6 +4,7 @@ package com.fredtargaryen.rocketsquids.level.item;
 
 import com.fredtargaryen.rocketsquids.DataReference;
 import com.fredtargaryen.rocketsquids.RSBlocks;
+import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.client.event.ClientHandler;
 import com.fredtargaryen.rocketsquids.level.StatueData;
 import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
@@ -53,7 +54,7 @@ public class ConchItem extends GeoModArmorItem {
                 .component(
                         DataComponents.EQUIPPABLE,
                         Equippable.builder(ArmorType.HELMET.getSlot())
-                                .setEquipSound(SoundEvents.ARMOR_EQUIP_NAUTILUS)
+                                .setEquipSound(RSSounds.CONCH_EQUIP)
                                 .setAsset(CONCH_EQUIPMENT_ASSET)
                                 .build()));
     }
