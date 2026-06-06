@@ -108,6 +108,7 @@ public class SwimAroundGoal extends Goal {
                 this.squid.setTargetYaw(this.squid.getYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
             }
         }
+        this.squid.setTargetRoll(this.squid.getRoll() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
     }
 
     /**
