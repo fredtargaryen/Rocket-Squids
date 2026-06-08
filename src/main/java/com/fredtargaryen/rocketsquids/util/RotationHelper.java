@@ -54,6 +54,19 @@ public class RotationHelper {
      */
     public static final double DIRECTION_POINT_THRESHOLD = Math.sqrt(1.0 / 3.0) - 0.1;
 
+    /**
+     * "Wind" a value back to within the normal rotation range [-Math.PI, Math.PI].
+     * For example a value of 2.5PI would be reset to 0.5PI.
+     *
+     * @param d The value to reset
+     * @return The value, rotated until within the normal range
+     */
+    public static double resetRotationValueWithinRange(double d) {
+        while (d > Math.PI) d -= DOUBLE_PI;
+        while (d < -Math.PI) d += DOUBLE_PI;
+        return d;
+    }
+
     public static ArrayList<Direction> getBlockDirectionsSquidIsPointing(RocketSquidEntity e) {
         ArrayList<Direction> directions = new ArrayList<>();
         Vec3 direction = RotationHelper.getSquidDirection(e);

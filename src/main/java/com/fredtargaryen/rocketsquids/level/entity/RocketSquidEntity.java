@@ -521,6 +521,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forcePitchInstant(double pitch) {
+        pitch = RotationHelper.resetRotationValueWithinRange(pitch);
         this.getEntityData().set(PITCH_PREV, pitch);
         this.getEntityData().set(PITCH, pitch);
         this.getEntityData().set(PITCH_TARGET, pitch);
@@ -530,27 +531,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(PITCH_TARGET);
     }
 
+    /**
+     * Set the target pitch for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetPitch(double p) {
-        double currentPitch = this.getEntityData().get(PITCH);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentPitch < -Math.PI) {
-            currentPitch += DOUBLE_PI;
+        double currentPitchClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(PITCH));
+        double difference = RotationHelper.resetRotationValueWithinRange(p) - currentPitchClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (p < -Math.PI) {
-            p += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentPitch > Math.PI) {
-            currentPitch -= DOUBLE_PI;
-        }
-        while (p > Math.PI) {
-            p -= DOUBLE_PI;
-        }
-        this.getEntityData().set(PITCH_PREV, currentPitch);
-        this.getEntityData().set(PITCH, currentPitch);
-        this.getEntityData().set(PITCH_TARGET, p);
+        this.getEntityData().set(PITCH_PREV, currentPitchClamped);
+        this.getEntityData().set(PITCH, currentPitchClamped);
+        this.getEntityData().set(PITCH_TARGET, currentPitchClamped + difference);
     }
 
     public double getPreviousYaw() {
@@ -567,6 +565,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forceYawInstant(double yaw) {
+        yaw = RotationHelper.resetRotationValueWithinRange(yaw);
         this.getEntityData().set(YAW_PREV, yaw);
         this.getEntityData().set(YAW, yaw);
         this.getEntityData().set(YAW_TARGET, yaw);
@@ -576,27 +575,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(YAW_TARGET);
     }
 
+    /**
+     * Set the target yaw for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetYaw(double y) {
-        double currentYaw = this.getEntityData().get(YAW);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentYaw < -Math.PI) {
-            currentYaw += DOUBLE_PI;
+        double currentYawClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(YAW));
+        double difference = RotationHelper.resetRotationValueWithinRange(y) - currentYawClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (y < -Math.PI) {
-            y += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentYaw > Math.PI) {
-            currentYaw -= DOUBLE_PI;
-        }
-        while (y > Math.PI) {
-            y -= DOUBLE_PI;
-        }
-        this.getEntityData().set(YAW_PREV, currentYaw);
-        this.getEntityData().set(YAW, currentYaw);
-        this.getEntityData().set(YAW_TARGET, y);
+        this.getEntityData().set(YAW_PREV, currentYawClamped);
+        this.getEntityData().set(YAW, currentYawClamped);
+        this.getEntityData().set(YAW_TARGET, currentYawClamped + difference);
     }
 
     public double getPreviousRoll() {
@@ -613,6 +609,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forceRollInstant(double roll) {
+        roll = RotationHelper.resetRotationValueWithinRange(roll);
         this.getEntityData().set(ROLL_PREV, roll);
         this.getEntityData().set(ROLL, roll);
         this.getEntityData().set(ROLL_TARGET, roll);
@@ -622,27 +619,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(ROLL_TARGET);
     }
 
+    /**
+     * Set the target roll for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetRoll(double r) {
-        double currentRoll = this.getEntityData().get(ROLL);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentRoll < -Math.PI) {
-            currentRoll += DOUBLE_PI;
+        double currentRollClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(ROLL));
+        double difference = RotationHelper.resetRotationValueWithinRange(r) - currentRollClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (r < -Math.PI) {
-            r += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentRoll > Math.PI) {
-            currentRoll -= DOUBLE_PI;
-        }
-        while (r > Math.PI) {
-            r -= DOUBLE_PI;
-        }
-        this.getEntityData().set(ROLL_PREV, currentRoll);
-        this.getEntityData().set(ROLL, currentRoll);
-        this.getEntityData().set(ROLL_TARGET, r);
+        this.getEntityData().set(ROLL_PREV, currentRollClamped);
+        this.getEntityData().set(ROLL, currentRollClamped);
+        this.getEntityData().set(ROLL_TARGET, currentRollClamped + difference);
     }
 
     public boolean getShaking() {
