@@ -20,8 +20,6 @@ public class DataReference {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    public static final double DOUBLE_PI = Math.PI * 2;
-
     public static final int[] C_MAJOR_SCALE = {12, 14, 16, 17, 19, 21, 23};
 
     /**

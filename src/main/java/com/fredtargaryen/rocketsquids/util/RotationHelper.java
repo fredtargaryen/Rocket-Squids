@@ -12,6 +12,8 @@ import java.util.ArrayList;
 public class RotationHelper {
     public static final float PI_F = (float) Math.PI;
 
+    public static final double DOUBLE_PI = Math.PI * 2;
+
     /**
      * To convert an angle from degrees to radians multiply it by this
      */

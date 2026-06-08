@@ -53,8 +53,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.fredtargaryen.rocketsquids.DataReference.C_MAJOR_SCALE;
-import static com.fredtargaryen.rocketsquids.DataReference.DOUBLE_PI;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
+import static com.fredtargaryen.rocketsquids.util.RotationHelper.DOUBLE_PI;
 
 public class RocketSquidEntity extends AgeableWaterCreature implements Leashable {
     //Properties controlled by the server, but which have a visual effect so need to be synced to clients
