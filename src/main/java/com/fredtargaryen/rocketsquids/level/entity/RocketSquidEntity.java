@@ -127,6 +127,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         this.riderRotated = false;
         this.forcePitchInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
         this.forceYawInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
+        this.forceRollInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
         RandomSource r = level.getRandom();
         this.latestNotes = new int[]{-1, -1, -1};
         this.targetNotes = new int[]{
