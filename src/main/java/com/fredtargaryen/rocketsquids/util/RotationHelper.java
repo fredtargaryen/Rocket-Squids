@@ -9,6 +9,31 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 
+/**
+ * Contains helpful methods and notes to do with squid rotation.
+ * Rocket Squids ignore the normal pitch and yaw variables of Minecraft creatures and implement their own pitch, yaw and roll variables,
+ * which is why in the debug hitbox and direction screen (F3+B) they all appear to point east (towards positive X or +X).
+ * These values are doubles and in radians, but degrees are used in the table below for simplicity.
+ * "Pointing" below means the direction of the squid's body so pointing up means parallel to the y axis with the body going up and tentacles (arms, technically) going down.
+ * "Facing" refers to the direction the eyes are looking in.
+ * Table of directions:
+ * Pitch    Yaw Roll    Direction
+ * 0        0   0       Pointing up, facing south (+Z)
+ * 90       0   0       Pointing south (+Z), facing down
+ * 180      0   0       Pointing down, facing north (-Z)
+ * -90      0   0       Pointing north (-Z)
+ * 0        90  0       Pointing up, facing west (-X)
+ * 0        180 0       Pointing up, facing north (-Z)
+ * 0        -90 0       Pointing up, facing east (+X)
+ * 90       0   90      Pointing south (+Z), facing east (+X)
+ * 90       0   180     Pointing south (+Z), facing up
+ * 90       0   -90     Pointing south (+Z), facing west (-X)
+ *
+ * Rotation applies the Yaw, then Pitch, then Roll.
+ * You could think of Yaw as the rotation around the global y axis,
+ * Pitch as how far forward it's leaning,
+ * and Roll as a final rotation around its "local y axis".
+ */
 public class RotationHelper {
     public static final float PI_F = (float) Math.PI;
 
@@ -20,9 +45,14 @@ public class RotationHelper {
     public static final double DEG2RAD = Math.PI / 180.0;
 
     /**
+     * To convert an angle from radians to degrees multiply it by this
+     */
+    public static final double RAD2DEG = 180.0 / Math.PI;
+
+    /**
      * If a component of a direction vector is beyond this threshold the squid is considered pointing in that direction
      */
-    public static final double DIRECTION_POINT_THRESHOLD = Math.sqrt(1.0/3.0) - 0.1;
+    public static final double DIRECTION_POINT_THRESHOLD = Math.sqrt(1.0 / 3.0) - 0.1;
 
     public static ArrayList<Direction> getBlockDirectionsSquidIsPointing(RocketSquidEntity e) {
         ArrayList<Direction> directions = new ArrayList<>();
