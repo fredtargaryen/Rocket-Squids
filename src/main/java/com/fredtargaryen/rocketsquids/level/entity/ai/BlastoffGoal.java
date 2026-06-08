@@ -26,7 +26,7 @@ public class BlastoffGoal extends Goal {
     @Override
     public void start() {
         RandomSource r = this.squid.getRandom();
-        this.squid.setTargetRoll(r.nextDouble() * Math.PI * (r.nextBoolean() ? 1 : -1));
+        this.squid.setTargetRoll(this.squid.getSaddled() ? 0.0 : r.nextDouble() * Math.PI * (r.nextBoolean() ? 1 : -1));
     }
 
     @Override
