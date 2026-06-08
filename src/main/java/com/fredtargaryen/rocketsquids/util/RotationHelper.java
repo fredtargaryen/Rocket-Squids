@@ -11,14 +11,17 @@ import java.util.ArrayList;
 
 /**
  * Contains helpful methods and notes to do with squid rotation.
+ * <p>
  * Rocket Squids ignore the normal pitch and yaw variables of Minecraft creatures and implement their own pitch, yaw and roll variables,
  * which is why in the debug hitbox and direction screen (F3+B) they all appear to point east (towards positive X or +X).
  * These values are doubles and in radians, but degrees are used in the table below for simplicity.
+ * <p>
  * "Pointing" below means the direction of the squid's body so pointing up means parallel to the y axis with the body going up and tentacles (arms, technically) going down.
  * "Facing" refers to the direction the eyes are looking in.
+ * <p>
  * Table of directions:
  * Pitch    Yaw Roll    Direction
- * 0        0   0       Pointing up, facing south (+Z)
+ * 0        0   0       Pointing up, facing south (+Z) (On its left is east (+X))
  * 90       0   0       Pointing south (+Z), facing down
  * 180      0   0       Pointing down, facing north (-Z)
  * -90      0   0       Pointing north (-Z)
@@ -28,7 +31,7 @@ import java.util.ArrayList;
  * 90       0   90      Pointing south (+Z), facing east (+X)
  * 90       0   180     Pointing south (+Z), facing up
  * 90       0   -90     Pointing south (+Z), facing west (-X)
- *
+ * <p>
  * Rotation applies the Yaw, then Pitch, then Roll.
  * You could think of Yaw as the rotation around the global y axis,
  * Pitch as how far forward it's leaning,
