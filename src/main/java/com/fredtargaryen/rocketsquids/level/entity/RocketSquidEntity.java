@@ -193,10 +193,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         sed.set(ROLL, vi.getDoubleOr("CurrentRoll", 0.0));
         sed.set(ROLL_TARGET, vi.getDoubleOr("TargetRoll", 0.0));
         sed.set(SHAKING, vi.getBooleanOr("Shaking", false));
-        sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) -1));
-        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) -1));
         sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) 0));
         sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) 0));
+        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("TrickTicksRemaining", (byte) 0));
         sed.set(SADDLED, vi.getBooleanOr("Saddled", false));
         this.blastingToStatue = vi.getBooleanOr("BlastingToStatue", false);
         this.forcedBlast = vi.getBooleanOr("ForcedBlast", false);
@@ -670,10 +669,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     public boolean getBlasting() {
         return this.getEntityData().get(BLAST_TICKS_REMAINING) > 0;
-    }
-
-    public void setBlasting(boolean blasting) {
-        this.getEntityData().set(BLAST_TICKS_REMAINING, blasting ? DataReference.DEFAULT_BLAST_LENGTH : -1);
     }
 
     public byte getBlastTicksRemaining() {
