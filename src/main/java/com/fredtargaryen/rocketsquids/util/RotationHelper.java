@@ -6,6 +6,8 @@ import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 import java.util.ArrayList;
 
@@ -92,6 +94,20 @@ public class RotationHelper {
             directions.add(Direction.WEST);
         }
         return directions;
+    }
+
+    /**
+     * Applies the squid's full rotation, including roll values, to a vector.
+     */
+    public static Vec3 applySquidRotationFull(RocketSquidEntity entity, Vec3 vec) {
+        Quaternionf quat = new Quaternionf()
+                .rotateLocalY((float) entity.getRoll())
+                .rotateLocalX((float) entity.getPitch())
+                .rotateLocalY((float) -entity.getYaw());
+
+        Vector3d v = quat.transform(new Vector3d(vec.x, vec.y, vec.z));
+
+        return new Vec3(v.x, v.y, v.z);
     }
 
     /**

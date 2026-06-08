@@ -9,9 +9,12 @@ import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
+import com.fredtargaryen.rocketsquids.network.message.TrickMessage;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -74,6 +77,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     private static final EntityDataAccessor<Byte> COUNTDOWN_TICKS = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Byte> BLAST_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> TRICK_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
 
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -104,6 +108,11 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
      * Server only - the three notes a rocket squid needs to hear before it blasts towards a statue
      */
     public int[] targetNotes;
+
+    /**
+     * Server only - parameters for doing a trick, set by a message to the server if a player is riding, or occasionally by the squid itself if it chooses to do a trick
+     */
+    public TrickParameters trickParams;
 
 
     //Client-only properties that don't need to be synced to the server
@@ -155,10 +164,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         builder.define(ROLL, 0.0);
         builder.define(ROLL_TARGET, 0.0);
         builder.define(SHAKING, false);
-        builder.define(COUNTDOWN_TICKS, (byte) -1);
-        builder.define(BLAST_TICKS_REMAINING, (byte) -1);
         builder.define(COUNTDOWN_TICKS, (byte) 0);
         builder.define(BLAST_TICKS_REMAINING, (byte) 0);
+        builder.define(TRICK_TICKS_REMAINING, (byte) 0);
         builder.define(SADDLED, false);
     }
 
@@ -175,6 +183,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         vo.putBoolean("Shaking", sed.get(SHAKING));
         vo.putByte("CountdownTicks", sed.get(COUNTDOWN_TICKS));
         vo.putByte("BlastTicksRemaining", sed.get(BLAST_TICKS_REMAINING));
+        vo.putByte("TrickTicksRemaining", sed.get(TRICK_TICKS_REMAINING));
         vo.putBoolean("Saddled", sed.get(SADDLED));
         vo.putBoolean("BlastingToStatue", this.blastingToStatue);
         vo.putBoolean("ForcedBlast", this.forcedBlast);
@@ -207,12 +216,13 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new BlastToStatueGoal(this));
-        this.goalSelector.addGoal(1, new BlastoffGoal(this));
-        this.goalSelector.addGoal(2, new CountdownGoal(this));
-        this.goalSelector.addGoal(3, new SingGoal(this));
-        this.goalSelector.addGoal(4, new SwimAroundGoal(this));
-        this.goalSelector.addGoal(5, new FlopAroundGoal(this));
+        this.goalSelector.addGoal(0, new TrickGoal(this));
+        this.goalSelector.addGoal(1, new BlastToStatueGoal(this));
+        this.goalSelector.addGoal(2, new BlastoffGoal(this));
+        this.goalSelector.addGoal(3, new CountdownGoal(this));
+        this.goalSelector.addGoal(4, new SingGoal(this));
+        this.goalSelector.addGoal(5, new SwimAroundGoal(this));
+        this.goalSelector.addGoal(6, new FlopAroundGoal(this));
     }
 
     /**
@@ -282,8 +292,17 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         }
 
         if (this.level().isClientSide()) {
-            //Client side
-            //Handles tentacle angles
+            // Client side
+            // Have to roll (haha) our own vehicle-jumping mechanics because vanilla vehicle-jumping relies on being
+            // fully in control of the squid
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && this.getFirstPassenger() == player) {
+                if (player.input.keyPresses.jump() && this.getBlasting() && !this.getTricking()) {
+                    // Do a trick!
+                    MessageHandler.sendToServer(new TrickMessage(this.uuid, TrickParameters.createFromClientInput(player.input)));
+                }
+            }
+            // Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
             if (this.getBlasting()) {
                 //Tentacles quickly close up
@@ -661,6 +680,23 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     public void setBlastTicksRemaining(byte ticksRemaining) {
         this.getEntityData().set(BLAST_TICKS_REMAINING, ticksRemaining);
+    }
+
+    public boolean getTricking() {
+        return this.getEntityData().get(TRICK_TICKS_REMAINING) > 0;
+    }
+
+    public byte getTrickTicksRemaining() {
+        return this.getEntityData().get(TRICK_TICKS_REMAINING);
+    }
+
+    public void setTrickTicksRemaining(byte ticksRemaining) {
+        this.getEntityData().set(TRICK_TICKS_REMAINING, ticksRemaining);
+    }
+
+    public void doTrick(TrickParameters trickParams) {
+        this.trickParams = trickParams;
+        this.getEntityData().set(TRICK_TICKS_REMAINING, DataReference.DEFAULT_TRICK_LENGTH);
     }
 
     public void blastoff() {
