@@ -250,14 +250,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             this.setDeltaMovement(motionX, motionY, motionZ);
         }
 
-        boolean onFire = false;
         if (this.isOnFire() || this.isInLava()) {
-            onFire = true;
             this.forcedBlast = true;
-        }
-        if (onFire || this.forcedBlast) {
-            this.playSound(RSSounds.BLASTOFF.get(), 0.5F, 1.0F);
-            this.getEntityData().set(BLAST_TICKS_REMAINING, DataReference.DEFAULT_BLAST_LENGTH);
+            this.blastoff();
         }
 
         //Rotate towards target pitch
@@ -286,8 +281,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             this.setRoll(rr);
         }
 
-        Vec3 pos = this.position();
-
         if (this.level().isClientSide()) {
             //Client side
             //Handles tentacle angles
@@ -303,6 +296,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                 this.tentacleAngle = this.isInWater() ? (float) ((Math.PI / 6) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
             }
             if (this.getBlasting()) {
+                Vec3 pos = this.position();
                 if (this.isInWater()) {
                     double smallerX = pos.x - 0.25;
                     double largerX = pos.x + 0.25;
@@ -318,10 +312,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             }
         } else {
             //Server side
-            if (this.isInWater() && !this.getEntityData().get(SHAKING) && !this.getBlasting()) {
-                RotationHelper.moveSquidInDirectionPointing(this);
-            }
-
             // Throw the rider ahead of the squid if they just dismounted
             if (this.riderToThrow != null) {
                 Vec3 movement = this.getDeltaMovement().scale(2.5);
