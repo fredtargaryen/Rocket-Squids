@@ -157,6 +157,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         builder.define(SHAKING, false);
         builder.define(COUNTDOWN_TICKS, (byte) -1);
         builder.define(BLAST_TICKS_REMAINING, (byte) -1);
+        builder.define(COUNTDOWN_TICKS, (byte) 0);
+        builder.define(BLAST_TICKS_REMAINING, (byte) 0);
         builder.define(SADDLED, false);
     }
 
@@ -193,6 +195,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         sed.set(SHAKING, vi.getBooleanOr("Shaking", false));
         sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) -1));
         sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) -1));
+        sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) 0));
+        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) 0));
         sed.set(SADDLED, vi.getBooleanOr("Saddled", false));
         this.blastingToStatue = vi.getBooleanOr("BlastingToStatue", false);
         this.forcedBlast = vi.getBooleanOr("ForcedBlast", false);
