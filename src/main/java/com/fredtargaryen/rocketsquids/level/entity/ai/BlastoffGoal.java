@@ -34,6 +34,14 @@ public class BlastoffGoal extends Goal {
     public void tick() {
         byte ticksLeft = this.squid.getBlastTicksRemaining();
         this.squid.setBlastTicksRemaining(--ticksLeft);
+        if (ticksLeft == 0) {
+            // Blast finished; reset squid state
+            this.squid.setShaking(false);
+            if (this.squid.forcedBlast) {
+                this.squid.explode();
+                return;
+            }
+        }
         if (ticksLeft == 3 && !this.squid.getSaddled()) {
             // Decide whether the squid feels like doing a trick
             RandomSource r = this.squid.getRandom();
@@ -47,20 +55,10 @@ public class BlastoffGoal extends Goal {
                 this.squid.doTrick(tp);
             }
         }
-        if (this.squid.forcedBlast) {
-            if (ticksLeft == 0 || this.squid.areBlocksInWay()){
-                this.squid.explode();
-                return;
-            }
+        if (this.squid.forcedBlast && this.squid.areBlocksInWay()) {
+            this.squid.explode();
+            return;
         }
         RotationHelper.pointSquidInDirectionMoving(this.squid);
-    }
-
-    @Override
-    public void stop() {
-        this.squid.setShaking(false);
-        this.squid.setBlastTicksRemaining((byte) 0);
-        this.squid.forcedBlast = false;
-        this.squid.needsSync = false;
     }
 }
