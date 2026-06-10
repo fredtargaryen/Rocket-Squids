@@ -19,6 +19,11 @@
     "sounds": [{"name": "minecraft:mob/turtle/armor", "stream": false}],
     "subtitle": "subs.rocketsquids.conch_equip"
   },
+  "trick":
+  {
+    "sounds": [{"name": "rocketsquids:trick", "stream": false}],
+    "subtitle": "subs.rocketsquids.trick"
+  },
   "conchc3":
   {
     "sounds": [{"name": "rocketsquids:conchc3","stream": false}]

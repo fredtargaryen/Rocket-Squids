@@ -2,9 +2,11 @@
 // See README.md for full copyright notice and contributor info
 package com.fredtargaryen.rocketsquids.level.entity.ai;
 
+import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.TrickParameters;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -44,9 +46,9 @@ public class TrickGoal extends Goal {
         double boostY = trickParams.forwardAxis() * (trickParams.sideAxis() == 0 ? boostSpeed : diagonalBoostSpeed);
         double boostX = trickParams.sideAxis() * (trickParams.forwardAxis() == 0 ? boostSpeed : diagonalBoostSpeed);
         this.squid.addDeltaMovement(RotationHelper.applySquidRotationFull(this.squid, new Vec3(boostX, boostY, boostZ)));
-        Vec3 pos = this.squid.position();
-        Vec3 smokePos = RotationHelper.applySquidRotationFull(this.squid, new Vec3(0.0, 0.0, 0.25));
-        ((ServerLevel) this.squid.level()).sendParticles(ParticleTypes.LARGE_SMOKE.getType(), pos.x, pos.y, pos.z, 10, smokePos.x, smokePos.y, smokePos.z, 0.0D);
+        this.squid.playSound(RSSounds.TRICK.get());
+        Vec3 smokePos = this.squid.position().add(RotationHelper.applySquidRotationFull(this.squid, new Vec3(0.0, 0.0, 0.75)));
+        ((ServerLevel) this.squid.level()).sendParticles(ParticleTypes.EXPLOSION.getType(), smokePos.x, smokePos.y, smokePos.z, 6, 0.5, 0.5, 0.5, 0.1D);
     }
 
     @Override
