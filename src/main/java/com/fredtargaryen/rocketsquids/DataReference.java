@@ -35,7 +35,7 @@ public class DataReference {
     /**
      * How many AI ticks (10 per second) a rocket squid trick should last
      */
-    public static final byte DEFAULT_TRICK_LENGTH = 10;
+    public static final byte DEFAULT_TRICK_LENGTH = 12;
 
     // Conch hearing ranges
     public static final double PLAYER_HEAR_RANGE = 16.0;
