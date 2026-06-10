@@ -44,6 +44,8 @@ public class TrickGoal extends Goal {
         double boostY = trickParams.forwardAxis() * (trickParams.sideAxis() == 0 ? boostSpeed : diagonalBoostSpeed);
         double boostX = trickParams.sideAxis() * (trickParams.forwardAxis() == 0 ? boostSpeed : diagonalBoostSpeed);
         this.squid.addDeltaMovement(RotationHelper.applySquidRotationFull(this.squid, new Vec3(boostX, boostY, boostZ)));
+        Vec3 pos = this.squid.position();
+        ((ServerLevel) this.squid.level()).sendParticles(ParticleTypes.LARGE_SMOKE.getType(), pos.x, pos.y, pos.z, 5, 0.25D, 0.0D, 0.25D, 0.0D);
     }
 
     @Override
