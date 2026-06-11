@@ -232,7 +232,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     public void aiStep() {
         super.aiStep();
-        // This is ran on both the Client and the Server
+        // This is run on both the Client and the Server
         // Fraction of distance to target rotation to rotate by each server tick
         double rotateSpeed;
         if (this.isInWater()) {
@@ -259,6 +259,8 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             rotateSpeed = 0.15;
             this.setDeltaMovement(motionX, motionY, motionZ);
         }
+
+        if (this.getBlasting()) rotateSpeed = 0.25;
 
         if (this.isOnFire() || this.isInLava()) {
             this.forcedBlast = true;
