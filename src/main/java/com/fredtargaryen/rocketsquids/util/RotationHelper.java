@@ -139,7 +139,7 @@ public class RotationHelper {
             //By rearranging, horizontalForce = this.motionZ / cos(yaw).
             //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
             double speed = motion.z / Math.cos(squid.getYaw());
-            squid.setTargetPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
+            squid.setTargetPitch(Math.PI / 2.0 - Math.atan2(motion.y, speed));
         }
     }
 
