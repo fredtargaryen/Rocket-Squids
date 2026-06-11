@@ -167,7 +167,7 @@ public abstract class AbstractSquidEntity extends WaterAnimal {
             //By rearranging, horizontalForce = this.motionZ / cos(yaw).
             //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
             double speed = motion.z / Math.cos(this.getRotYaw());
-            this.setTargetRotPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
+            this.setTargetRotPitch(Math.PI / 2.0 - Math.atan2(motion.y, speed));
         }
     }
 
