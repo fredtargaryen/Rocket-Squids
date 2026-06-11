@@ -6,7 +6,6 @@ import com.fredtargaryen.rocketsquids.RSSounds;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.level.entity.TrickParameters;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -54,15 +53,15 @@ public class TrickGoal extends Goal {
     @Override
     public void tick() {
         byte ticksLeft = this.squid.getTrickTicksRemaining();
-        this.squid.setTrickTicksRemaining(--ticksLeft);
         if (this.trickParams.sideAxis() == 0) {
             this.squid.setTargetPitch(this.squid.getTargetPitch() + this.trickParams.forwardAxis() * angleIncrement);
         } else {
             this.squid.setTargetRoll(this.squid.getTargetRoll() - this.trickParams.sideAxis() * angleIncrement);
-            int pitchChangeAmount = this.trickParams.forwardAxis() * (ticksLeft > 9 || ticksLeft < 3 ? 1 : -1);
+            int pitchChangeAmount = this.trickParams.forwardAxis() * (ticksLeft > 9 || ticksLeft < 4 ? 1 : -1);
             this.squid.setTargetPitch(this.squid.getTargetPitch() + 0.5 * pitchChangeAmount * angleIncrement);
-            int yawChangeAmount = this.trickParams.sideAxis() * this.trickParams.forwardAxis() * (ticksLeft < 7 ? -1 : 1);
             this.squid.setTargetYaw(this.squid.getTargetYaw() + 1.0 * yawChangeAmount * angleIncrement);
+            int yawChangeAmount = this.trickParams.sideAxis() * this.trickParams.forwardAxis() * (ticksLeft < 6 ? -1 : 1);
         }
+        this.squid.setTrickTicksRemaining(--ticksLeft);
     }
 }
