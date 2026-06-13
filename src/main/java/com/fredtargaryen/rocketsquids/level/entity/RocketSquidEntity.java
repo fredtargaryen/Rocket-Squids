@@ -198,7 +198,7 @@ public class RocketSquidEntity extends AbstractRocketSquidEntity {
             this.forcedBlast = true;
         }
         if (onFire || this.forcedBlast) {
-            this.playSound(RSSounds.BLASTOFF.get(), 0.5F, 1.0F);
+            this.playSound(RSSounds.BLASTOFF.get(), 1.0F, 1.0F);
             this.setBlasting(true);
         }
 
