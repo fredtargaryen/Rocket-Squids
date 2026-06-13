@@ -64,7 +64,7 @@ public class RocketSquidModel extends EntityModel<RocketSquidRenderState> {
             float floatx = (float) Math.cos(tentacleYRot) * 5.0F;
             float floaty = 9.0F;
             float floatz = (float) Math.sin(tentacleYRot) * 5.0F;
-            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
+            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2.0);
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 

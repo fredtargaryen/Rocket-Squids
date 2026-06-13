@@ -104,11 +104,11 @@ public class SwimAroundGoal extends Goal {
                 RotationHelper.pointSquidInDirection(this.squid, direction.scale(-1), Math.PI / 3.0);
             } else {
                 //Random doubles between -PI and PI, added to current rotation
-                this.squid.setTargetPitch(this.squid.getPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
-                this.squid.setTargetYaw(this.squid.getYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetPitch(this.squid.getPitch() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetYaw(this.squid.getYaw() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
             }
         }
-        this.squid.setTargetRoll(this.squid.getRoll() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+        this.squid.setTargetRoll(this.squid.getRoll() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
     }
 
     /**
