@@ -45,8 +45,8 @@ public class BabySwimAroundGoal extends Goal {
         }
         else {
             //Random doubles between -PI and PI, added to current rotation
-            this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
-            this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4 * (this.r.nextBoolean() ? 1 : -1)));
+            this.squid.setTargetRotPitch(this.squid.getRotPitch() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
+            this.squid.setTargetRotYaw(this.squid.getRotYaw() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
         }
     }
 

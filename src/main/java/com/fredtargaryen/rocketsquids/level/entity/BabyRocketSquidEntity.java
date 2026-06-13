@@ -139,7 +139,7 @@ public class BabyRocketSquidEntity extends AbstractRocketSquidEntity {
                 //Handles tentacle angles
                 this.lastTentacleAngle = this.tentacleAngle;
                 //If in water, tentacles oscillate normally
-                this.tentacleAngle = this.wasTouchingWater ? (float) ((Math.PI / 6) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
+                this.tentacleAngle = this.wasTouchingWater ? (float) ((Math.PI / 6.0) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
             } else {
                 //Server side
                 if (this.isInWater()) {
