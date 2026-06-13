@@ -857,11 +857,16 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     public boolean causeFallDamage(double distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
-            if (Math.sin(this.getEntityData().get(PITCH)) < -0.7071067811865) {
-                for (Entity entity : this.getPassengers()) {
-                    entity.causeFallDamage(distance, damageMultiplier, damageSource);
-                }
+            double riderDownness = new Vec3(0.0, -1.0, 0.0).dot(RotationHelper.applySquidRotationFull(this, new Vec3(0.0, 0.0, -1.0)));
+            if (riderDownness < -0.17) {
+                // Angle between rider and ground over ~100 degrees, so the squid hits first and takes the damage
+                return false;
             }
+            else if (riderDownness < 0.0) {
+                // Just over 90 degrees so the squid takes half the damage
+                damageMultiplier *= 0.5;
+            }
+            return super.causeFallDamage(distance, damageMultiplier, damageSource);
         }
         return false;
     }
