@@ -57,11 +57,11 @@ public class TrickGoal extends Goal {
             this.squid.setTargetPitch(this.squid.getTargetPitch() + this.trickParams.forwardAxis() * angleIncrement);
         } else {
             // Got to be yaw first
-            int yawChangeAmount = this.trickParams.forwardAxis() * this.trickParams.sideAxis() * (ticksLeft > 6 ? 1 : -1);
-            this.squid.setTargetYaw(this.squid.getTargetYaw() + 0.5 * yawChangeAmount * angleIncrement);
+            double yawChangeAmount = this.trickParams.forwardAxis() * this.trickParams.sideAxis() * (ticksLeft > 6 ? 0.5 : -0.5);
+            this.squid.setTargetYaw(this.squid.getTargetYaw() + yawChangeAmount * angleIncrement);
             // Then pitch
-            int pitchChangeAmount = this.trickParams.forwardAxis() * (ticksLeft > 9 || ticksLeft < 4 ? 1 : -1);
-            this.squid.setTargetPitch(this.squid.getTargetPitch() + 0.5 * pitchChangeAmount * angleIncrement);
+            double pitchChangeAmount = this.trickParams.forwardAxis() * (ticksLeft > 9 || ticksLeft < 4 ? 0.5 : -0.5);
+            this.squid.setTargetPitch(this.squid.getTargetPitch() + pitchChangeAmount * angleIncrement);
             // Then roll
             this.squid.setTargetRoll(this.squid.getTargetRoll() - this.trickParams.sideAxis() * angleIncrement);
         }
