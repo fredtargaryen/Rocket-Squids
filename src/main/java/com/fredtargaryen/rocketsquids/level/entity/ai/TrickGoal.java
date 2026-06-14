@@ -17,7 +17,7 @@ public class TrickGoal extends Goal {
     private final RocketSquidEntity squid;
     private TrickParameters trickParams;
 
-    private static final double boostSpeed = 2.0;
+    private static final double boostSpeed = 1.8;
 
     // Such that a vector (dBS, dBS) has a magnitude of bS
     private static final double diagonalBoostSpeed = boostSpeed / Math.sqrt(2.0);
