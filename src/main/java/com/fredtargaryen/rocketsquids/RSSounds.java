@@ -21,6 +21,8 @@ public class RSSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> CONCH_EQUIP = registerSoundEvents("conch_equip");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRICK = registerSoundEvents("trick");
+
     public static SoundEvent[] CONCH_NOTES = new SoundEvent[]{
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchc3")),
             SoundEvent.createVariableRangeEvent(DataReference.getIdentifier("conchcs3")),

@@ -20,8 +20,6 @@ public class DataReference {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    public static final double DOUBLE_PI = Math.PI * 2;
-
     public static final int[] C_MAJOR_SCALE = {12, 14, 16, 17, 19, 21, 23};
 
     /**
@@ -33,6 +31,11 @@ public class DataReference {
      * How many AI ticks (10 per second) a rocket squid blast should last
      */
     public static final byte DEFAULT_BLAST_LENGTH = 15;
+
+    /**
+     * How many AI ticks (10 per second) a rocket squid trick should last
+     */
+    public static final byte DEFAULT_TRICK_LENGTH = 12;
 
     // Conch hearing ranges
     public static final double PLAYER_HEAR_RANGE = 16.0;

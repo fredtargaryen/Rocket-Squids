@@ -45,6 +45,12 @@ public class MessageHandler {
                 SquidNoteMessage.STREAM_CODEC,
                 SquidNoteMessage::handle
         );
+
+        registrar.playToServer(
+                TrickMessage.TYPE,
+                TrickMessage.STREAM_CODEC,
+                TrickMessage::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload message) {

@@ -6,11 +6,43 @@ import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 import java.util.ArrayList;
 
+/**
+ * Contains helpful methods and notes to do with squid rotation.
+ * <p>
+ * Rocket Squids ignore the normal pitch and yaw variables of Minecraft creatures and implement their own pitch, yaw and roll variables,
+ * which is why in the debug hitbox and direction screen (F3+B) they all appear to point east (towards positive X or +X).
+ * These values are doubles and in radians, but degrees are used in the table below for simplicity.
+ * <p>
+ * "Pointing" below means the direction of the squid's body so pointing up means parallel to the y axis with the body going up and tentacles (arms, technically) going down.
+ * "Facing" refers to the direction the eyes are looking in.
+ * <p>
+ * Table of directions:
+ * Pitch    Yaw Roll    Direction
+ * 0        0   0       Pointing up, facing south (+Z) (On its left is east (+X))
+ * 90       0   0       Pointing south (+Z), facing down
+ * 180      0   0       Pointing down, facing north (-Z)
+ * -90      0   0       Pointing north (-Z)
+ * 0        90  0       Pointing up, facing west (-X)
+ * 0        180 0       Pointing up, facing north (-Z)
+ * 0        -90 0       Pointing up, facing east (+X)
+ * 90       0   90      Pointing south (+Z), facing east (+X)
+ * 90       0   180     Pointing south (+Z), facing up
+ * 90       0   -90     Pointing south (+Z), facing west (-X)
+ * <p>
+ * Rotation applies the Yaw, then Pitch, then Roll.
+ * You could think of Yaw as the rotation around the global y axis,
+ * Pitch as how far forward it's leaning,
+ * and Roll as a final rotation around its "local y axis".
+ */
 public class RotationHelper {
     public static final float PI_F = (float) Math.PI;
+
+    public static final double DOUBLE_PI = Math.PI * 2;
 
     /**
      * To convert an angle from degrees to radians multiply it by this
@@ -18,9 +50,27 @@ public class RotationHelper {
     public static final double DEG2RAD = Math.PI / 180.0;
 
     /**
+     * To convert an angle from radians to degrees multiply it by this
+     */
+    public static final double RAD2DEG = 180.0 / Math.PI;
+
+    /**
      * If a component of a direction vector is beyond this threshold the squid is considered pointing in that direction
      */
-    public static final double DIRECTION_POINT_THRESHOLD = Math.sqrt(1.0/3.0) - 0.1;
+    public static final double DIRECTION_POINT_THRESHOLD = Math.sqrt(1.0 / 3.0) - 0.1;
+
+    /**
+     * "Wind" a value back to within the normal rotation range [-Math.PI, Math.PI].
+     * For example a value of 2.5PI would be reset to 0.5PI.
+     *
+     * @param d The value to reset
+     * @return The value, rotated until within the normal range
+     */
+    public static double resetRotationValueWithinRange(double d) {
+        while (d > Math.PI) d -= DOUBLE_PI;
+        while (d < -Math.PI) d += DOUBLE_PI;
+        return d;
+    }
 
     public static ArrayList<Direction> getBlockDirectionsSquidIsPointing(RocketSquidEntity e) {
         ArrayList<Direction> directions = new ArrayList<>();
@@ -44,6 +94,20 @@ public class RotationHelper {
             directions.add(Direction.WEST);
         }
         return directions;
+    }
+
+    /**
+     * Applies the squid's full rotation, including roll values, to a vector.
+     */
+    public static Vec3 applySquidRotationFull(RocketSquidEntity entity, Vec3 vec) {
+        Quaternionf quat = new Quaternionf()
+                .rotateLocalY((float) entity.getRoll())
+                .rotateLocalX((float) entity.getPitch())
+                .rotateLocalY((float) -entity.getYaw());
+
+        Vector3d v = quat.transform(new Vector3d(vec.x, vec.y, vec.z));
+
+        return new Vec3(v.x, v.y, v.z);
     }
 
     /**
@@ -75,7 +139,7 @@ public class RotationHelper {
             //By rearranging, horizontalForce = this.motionZ / cos(yaw).
             //This is the amount by which the squid is moving along its own z axis (forwards or backwards).
             double speed = motion.z / Math.cos(squid.getYaw());
-            squid.setTargetPitch(Math.PI / 2 - Math.atan2(motion.y, speed));
+            squid.setTargetPitch(Math.PI / 2.0 - Math.atan2(motion.y, speed));
         }
     }
 
