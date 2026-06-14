@@ -45,16 +45,21 @@ public class SqueleporterItem extends Item {
                 ValueInput squidVi = ValueIOHelper.getCompoundTagAsValueInput(data.squidData());
                 EntityType.create(squidVi, level, EntitySpawnReason.MOB_SUMMONED).ifPresent(entity -> {
                     RocketSquidEntity newSquid = (RocketSquidEntity) entity;
-                    newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
-                    newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
+                    newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * RotationHelper.DEG2RAD);
+                    newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * RotationHelper.DEG2RAD));
                     RotationHelper.moveSquidInDirectionPointing(newSquid);
                     Vec3 playerMotion = playerIn.getDeltaMovement();
                     newSquid.push(playerMotion.x, playerMotion.y, playerMotion.z);
                     Vec3 playerPos = playerIn.position();
-                    newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
-                    level.addFreshEntity(newSquid);
                     if (newSquid.getSaddled()) {
+                        newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
+                        level.addFreshEntity(newSquid);
                         playerIn.startRiding(newSquid);
+                    }
+                    else {
+                        Vec3 direction = RotationHelper.getSquidDirection(newSquid);
+                        newSquid.setPos(playerPos.x + direction.x * 2.0, playerPos.y + direction.y * 2.0, playerPos.z + direction.z * 2.0);
+                        level.addFreshEntity(newSquid);
                     }
                     level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     //Set the squeleporter to inactive
