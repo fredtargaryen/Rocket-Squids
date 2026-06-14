@@ -9,9 +9,12 @@ import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.ai.*;
 import com.fredtargaryen.rocketsquids.network.MessageHandler;
 import com.fredtargaryen.rocketsquids.network.message.SquidFireworkMessage;
+import com.fredtargaryen.rocketsquids.network.message.TrickMessage;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -53,8 +56,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.fredtargaryen.rocketsquids.DataReference.C_MAJOR_SCALE;
-import static com.fredtargaryen.rocketsquids.DataReference.DOUBLE_PI;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
+import static com.fredtargaryen.rocketsquids.util.RotationHelper.DOUBLE_PI;
 
 public class RocketSquidEntity extends AgeableWaterCreature implements Leashable {
     //Properties controlled by the server, but which have a visual effect so need to be synced to clients
@@ -74,6 +77,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     private static final EntityDataAccessor<Byte> COUNTDOWN_TICKS = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Byte> BLAST_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Byte> TRICK_TICKS_REMAINING = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BYTE);
 
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(RocketSquidEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -105,6 +109,11 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
      */
     public int[] targetNotes;
 
+    /**
+     * Server only - parameters for doing a trick, set by a message to the server if a player is riding, or occasionally by the squid itself if it chooses to do a trick
+     */
+    public TrickParameters trickParams;
+
 
     //Client-only properties that don't need to be synced to the server
     /**
@@ -127,6 +136,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         this.riderRotated = false;
         this.forcePitchInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
         this.forceYawInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
+        this.forceRollInstant(Mth.nextDouble(level.getRandom(), -Math.PI, Math.PI));
         RandomSource r = level.getRandom();
         this.latestNotes = new int[]{-1, -1, -1};
         this.targetNotes = new int[]{
@@ -154,8 +164,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         builder.define(ROLL, 0.0);
         builder.define(ROLL_TARGET, 0.0);
         builder.define(SHAKING, false);
-        builder.define(COUNTDOWN_TICKS, (byte) -1);
-        builder.define(BLAST_TICKS_REMAINING, (byte) -1);
+        builder.define(COUNTDOWN_TICKS, (byte) 0);
+        builder.define(BLAST_TICKS_REMAINING, (byte) 0);
+        builder.define(TRICK_TICKS_REMAINING, (byte) 0);
         builder.define(SADDLED, false);
     }
 
@@ -172,6 +183,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         vo.putBoolean("Shaking", sed.get(SHAKING));
         vo.putByte("CountdownTicks", sed.get(COUNTDOWN_TICKS));
         vo.putByte("BlastTicksRemaining", sed.get(BLAST_TICKS_REMAINING));
+        vo.putByte("TrickTicksRemaining", sed.get(TRICK_TICKS_REMAINING));
         vo.putBoolean("Saddled", sed.get(SADDLED));
         vo.putBoolean("BlastingToStatue", this.blastingToStatue);
         vo.putBoolean("ForcedBlast", this.forcedBlast);
@@ -190,8 +202,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         sed.set(ROLL, vi.getDoubleOr("CurrentRoll", 0.0));
         sed.set(ROLL_TARGET, vi.getDoubleOr("TargetRoll", 0.0));
         sed.set(SHAKING, vi.getBooleanOr("Shaking", false));
-        sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) -1));
-        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) -1));
+        sed.set(COUNTDOWN_TICKS, vi.getByteOr("CountdownTicks", (byte) 0));
+        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("BlastTicksRemaining", (byte) 0));
+        sed.set(BLAST_TICKS_REMAINING, vi.getByteOr("TrickTicksRemaining", (byte) 0));
         sed.set(SADDLED, vi.getBooleanOr("Saddled", false));
         this.blastingToStatue = vi.getBooleanOr("BlastingToStatue", false);
         this.forcedBlast = vi.getBooleanOr("ForcedBlast", false);
@@ -203,12 +216,13 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new BlastToStatueGoal(this));
-        this.goalSelector.addGoal(1, new BlastoffGoal(this));
-        this.goalSelector.addGoal(2, new CountdownGoal(this));
-        this.goalSelector.addGoal(3, new SingGoal(this));
-        this.goalSelector.addGoal(4, new SwimAroundGoal(this));
-        this.goalSelector.addGoal(5, new FlopAroundGoal(this));
+        this.goalSelector.addGoal(0, new TrickGoal(this));
+        this.goalSelector.addGoal(1, new BlastToStatueGoal(this));
+        this.goalSelector.addGoal(2, new BlastoffGoal(this));
+        this.goalSelector.addGoal(3, new CountdownGoal(this));
+        this.goalSelector.addGoal(4, new SingGoal(this));
+        this.goalSelector.addGoal(5, new SwimAroundGoal(this));
+        this.goalSelector.addGoal(6, new FlopAroundGoal(this));
     }
 
     /**
@@ -218,7 +232,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     public void aiStep() {
         super.aiStep();
-        // This is ran on both the Client and the Server
+        // This is run on both the Client and the Server
         // Fraction of distance to target rotation to rotate by each server tick
         double rotateSpeed;
         if (this.isInWater()) {
@@ -246,14 +260,11 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             this.setDeltaMovement(motionX, motionY, motionZ);
         }
 
-        boolean onFire = false;
+        if (this.getBlasting()) rotateSpeed = 0.25;
+
         if (this.isOnFire() || this.isInLava()) {
-            onFire = true;
             this.forcedBlast = true;
-        }
-        if (onFire || this.forcedBlast) {
-            this.playSound(RSSounds.BLASTOFF.get(), 0.5F, 1.0F);
-            this.getEntityData().set(BLAST_TICKS_REMAINING, DataReference.DEFAULT_BLAST_LENGTH);
+            this.blastoff();
         }
 
         //Rotate towards target pitch
@@ -282,11 +293,18 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             this.setRoll(rr);
         }
 
-        Vec3 pos = this.position();
-
         if (this.level().isClientSide()) {
-            //Client side
-            //Handles tentacle angles
+            // Client side
+            // Have to roll (haha) our own vehicle-jumping mechanics because vanilla vehicle-jumping relies on being
+            // fully in control of the squid
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && this.getFirstPassenger() == player) {
+                if (player.input.keyPresses.jump() && this.getBlasting() && !this.getTricking()) {
+                    // Do a trick!
+                    MessageHandler.sendToServer(new TrickMessage(this.uuid, TrickParameters.createFromClientInput(player.input)));
+                }
+            }
+            // Handles tentacle angles
             this.lastTentacleAngle = this.tentacleAngle;
             if (this.getBlasting()) {
                 //Tentacles quickly close up
@@ -299,6 +317,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                 this.tentacleAngle = this.isInWater() ? (float) ((Math.PI / 6.0) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6.0)) : 0;
             }
             if (this.getBlasting()) {
+                Vec3 pos = this.position();
                 if (this.isInWater()) {
                     double smallerX = pos.x - 0.25;
                     double largerX = pos.x + 0.25;
@@ -314,10 +333,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             }
         } else {
             //Server side
-            if (this.isInWater() && !this.getEntityData().get(SHAKING) && !this.getBlasting()) {
-                RotationHelper.moveSquidInDirectionPointing(this);
-            }
-
             // Throw the rider ahead of the squid if they just dismounted
             if (this.riderToThrow != null) {
                 Vec3 movement = this.getDeltaMovement().scale(2.5);
@@ -517,6 +532,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forcePitchInstant(double pitch) {
+        pitch = RotationHelper.resetRotationValueWithinRange(pitch);
         this.getEntityData().set(PITCH_PREV, pitch);
         this.getEntityData().set(PITCH, pitch);
         this.getEntityData().set(PITCH_TARGET, pitch);
@@ -526,27 +542,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(PITCH_TARGET);
     }
 
+    /**
+     * Set the target pitch for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetPitch(double p) {
-        double currentPitch = this.getEntityData().get(PITCH);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentPitch < -Math.PI) {
-            currentPitch += DOUBLE_PI;
+        double currentPitchClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(PITCH));
+        double difference = RotationHelper.resetRotationValueWithinRange(p) - currentPitchClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (p < -Math.PI) {
-            p += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentPitch > Math.PI) {
-            currentPitch -= DOUBLE_PI;
-        }
-        while (p > Math.PI) {
-            p -= DOUBLE_PI;
-        }
-        this.getEntityData().set(PITCH_PREV, currentPitch);
-        this.getEntityData().set(PITCH, currentPitch);
-        this.getEntityData().set(PITCH_TARGET, p);
+        this.getEntityData().set(PITCH_PREV, currentPitchClamped);
+        this.getEntityData().set(PITCH, currentPitchClamped);
+        this.getEntityData().set(PITCH_TARGET, currentPitchClamped + difference);
     }
 
     public double getPreviousYaw() {
@@ -563,6 +576,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forceYawInstant(double yaw) {
+        yaw = RotationHelper.resetRotationValueWithinRange(yaw);
         this.getEntityData().set(YAW_PREV, yaw);
         this.getEntityData().set(YAW, yaw);
         this.getEntityData().set(YAW_TARGET, yaw);
@@ -572,27 +586,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(YAW_TARGET);
     }
 
+    /**
+     * Set the target yaw for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetYaw(double y) {
-        double currentYaw = this.getEntityData().get(YAW);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentYaw < -Math.PI) {
-            currentYaw += DOUBLE_PI;
+        double currentYawClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(YAW));
+        double difference = RotationHelper.resetRotationValueWithinRange(y) - currentYawClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (y < -Math.PI) {
-            y += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentYaw > Math.PI) {
-            currentYaw -= DOUBLE_PI;
-        }
-        while (y > Math.PI) {
-            y -= DOUBLE_PI;
-        }
-        this.getEntityData().set(YAW_PREV, currentYaw);
-        this.getEntityData().set(YAW, currentYaw);
-        this.getEntityData().set(YAW_TARGET, y);
+        this.getEntityData().set(YAW_PREV, currentYawClamped);
+        this.getEntityData().set(YAW, currentYawClamped);
+        this.getEntityData().set(YAW_TARGET, currentYawClamped + difference);
     }
 
     public double getPreviousRoll() {
@@ -609,6 +620,7 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     }
 
     public void forceRollInstant(double roll) {
+        roll = RotationHelper.resetRotationValueWithinRange(roll);
         this.getEntityData().set(ROLL_PREV, roll);
         this.getEntityData().set(ROLL, roll);
         this.getEntityData().set(ROLL_TARGET, roll);
@@ -618,27 +630,24 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(ROLL_TARGET);
     }
 
+    /**
+     * Set the target roll for the squid to rotate to. This can be outside the normal rotation range of
+     * [-Math.PI, Math.PI], so that a squid can rotate "the short way" from 170 degrees to 190 degrees instead of
+     * "the long way" of 170 degrees to -170 degrees.
+     */
     public void setTargetRoll(double r) {
-        double currentRoll = this.getEntityData().get(ROLL);
-        //Set current rotation to be within [-PI, PI].
-        //Any operations on current rotation are also applied to target rotation.
-        //Target rotation can be outside the interval; it will be
-        //current rotation and brought back in next time this method is called.
-        while (currentRoll < -Math.PI) {
-            currentRoll += DOUBLE_PI;
+        double currentRollClamped = RotationHelper.resetRotationValueWithinRange(this.getEntityData().get(ROLL));
+        double difference = RotationHelper.resetRotationValueWithinRange(r) - currentRollClamped;
+        // If entering either if block, would be turning the long way. Turn the short way instead
+        if (difference > Math.PI) {
+            difference -= DOUBLE_PI;
         }
-        while (r < -Math.PI) {
-            r += DOUBLE_PI;
+        else if (difference < -Math.PI) {
+            difference += DOUBLE_PI;
         }
-        while (currentRoll > Math.PI) {
-            currentRoll -= DOUBLE_PI;
-        }
-        while (r > Math.PI) {
-            r -= DOUBLE_PI;
-        }
-        this.getEntityData().set(ROLL_PREV, currentRoll);
-        this.getEntityData().set(ROLL, currentRoll);
-        this.getEntityData().set(ROLL_TARGET, r);
+        this.getEntityData().set(ROLL_PREV, currentRollClamped);
+        this.getEntityData().set(ROLL, currentRollClamped);
+        this.getEntityData().set(ROLL_TARGET, currentRollClamped + difference);
     }
 
     public boolean getShaking() {
@@ -667,16 +676,29 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(BLAST_TICKS_REMAINING) > 0;
     }
 
-    public void setBlasting(boolean blasting) {
-        this.getEntityData().set(BLAST_TICKS_REMAINING, blasting ? DataReference.DEFAULT_BLAST_LENGTH : -1);
-    }
-
     public byte getBlastTicksRemaining() {
         return this.getEntityData().get(BLAST_TICKS_REMAINING);
     }
 
     public void setBlastTicksRemaining(byte ticksRemaining) {
         this.getEntityData().set(BLAST_TICKS_REMAINING, ticksRemaining);
+    }
+
+    public boolean getTricking() {
+        return this.getEntityData().get(TRICK_TICKS_REMAINING) > 0;
+    }
+
+    public byte getTrickTicksRemaining() {
+        return this.getEntityData().get(TRICK_TICKS_REMAINING);
+    }
+
+    public void setTrickTicksRemaining(byte ticksRemaining) {
+        this.getEntityData().set(TRICK_TICKS_REMAINING, ticksRemaining);
+    }
+
+    public void doTrick(TrickParameters trickParams) {
+        this.trickParams = trickParams;
+        this.getEntityData().set(TRICK_TICKS_REMAINING, DataReference.DEFAULT_TRICK_LENGTH);
     }
 
     public void blastoff() {
@@ -835,11 +857,16 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
     @Override
     public boolean causeFallDamage(double distance, float damageMultiplier, @NotNull DamageSource damageSource) {
         if (this.isVehicle()) {
-            if (Math.sin(this.getEntityData().get(PITCH)) < -0.7071067811865) {
-                for (Entity entity : this.getPassengers()) {
-                    entity.causeFallDamage(distance, damageMultiplier, damageSource);
-                }
+            double riderDownness = new Vec3(0.0, -1.0, 0.0).dot(RotationHelper.applySquidRotationFull(this, new Vec3(0.0, 0.0, -1.0)));
+            if (riderDownness < -0.17) {
+                // Angle between rider and ground over ~100 degrees, so the squid hits first and takes the damage
+                return false;
             }
+            else if (riderDownness < 0.0) {
+                // Just over 90 degrees so the squid takes half the damage
+                damageMultiplier *= 0.5;
+            }
+            return super.causeFallDamage(distance, damageMultiplier, damageSource);
         }
         return false;
     }

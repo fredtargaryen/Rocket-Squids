@@ -37,7 +37,7 @@ public class SwimAroundGoal extends Goal {
         ++this.tickCounter;
         if (this.tickCounter > this.nextScheduledMove) this.scheduleNextMove();
 
-        //Move and play notes if scheduled
+        //Move if scheduled
         if (this.tickCounter == this.nextScheduledMove) {
             if (this.squid.isBaby()) {
                 int randomInt = this.r.nextInt(2);
@@ -73,42 +73,23 @@ public class SwimAroundGoal extends Goal {
      */
     public void doTurn(boolean playerIsRiding, boolean blocked) {
         if (playerIsRiding) {
-            //Rider rotations are clamped to [-PI, PI]; squid rotations are not.
-            //Therefore need to work in terms of this range, or risk squids spinning ridiculous amounts if they have
-            //turned around many times before being ridden.
             Entity pass = this.squid.getFirstPassenger();
             assert pass != null;
-            float pp = (float) ((pass.getXRot() + 90.0F) * Math.PI / 180.0F);
-            float py = (float) (pass.getYHeadRot() * Math.PI / 180.0F);
-            float unclamped_sp = (float) this.squid.getPitch();
-            float unclamped_sy = (float) this.squid.getYaw();
-            //Clamp them to [-2PI, 2PI]
-            float clamped_sp = unclamped_sp;
-            while (clamped_sp > Math.PI * 2) clamped_sp -= (float) (Math.PI * 2);
-            while (clamped_sp < -Math.PI * 2) clamped_sp += (float) (Math.PI * 2);
-            float clamped_sy = unclamped_sy;
-            while (clamped_sy > Math.PI * 2) clamped_sy -= (float) (Math.PI * 2);
-            while (clamped_sy < -Math.PI * 2) clamped_sy += (float) (Math.PI * 2);
-            float pitchDiff = pp - clamped_sp;
-            float yawDiff = py - clamped_sy;
-            if (Math.abs(pitchDiff) >= 0.005 || Math.abs(yawDiff) >= 0.005) {
-                //Player rotation is sufficiently far from squid rotation for the squid to start a new turn
-                //Turn by the difference in rotations, to avoid having to spin into the [-PI, PI] range
-                this.squid.setTargetPitch(unclamped_sp + pitchDiff);
-                this.squid.setTargetYaw(unclamped_sy + yawDiff);
-            }
+            double pp = (pass.getXRot() + 90.0F) * RotationHelper.DEG2RAD;
+            double py = pass.getYHeadRot() * RotationHelper.DEG2RAD;
+            this.squid.setTargetPitch(pp);
+            this.squid.setTargetYaw(py);
         } else {
             if (blocked) {
                 //Just point the opposite way
                 Vec3 direction = RotationHelper.getSquidDirection(this.squid);
                 RotationHelper.pointSquidInDirection(this.squid, direction.scale(-1), Math.PI / 3.0);
             } else {
-                //Random doubles between -PI and PI, added to current rotation
-                this.squid.setTargetPitch(this.squid.getPitch() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
-                this.squid.setTargetYaw(this.squid.getYaw() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
+                this.squid.setTargetPitch(this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1));
+                this.squid.setTargetYaw(this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1));
             }
         }
-        this.squid.setTargetRoll(this.squid.getRoll() + (this.r.nextDouble() * Math.PI / 4.0 * (this.r.nextBoolean() ? 1 : -1)));
+        this.squid.setTargetRoll(this.r.nextDouble() * Math.PI * (this.r.nextBoolean() ? 1 : -1));
     }
 
     /**
