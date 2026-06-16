@@ -10,6 +10,7 @@ public class RocketSquidRenderState extends LivingEntityRenderState {
     public float yBodyRot2;
     public boolean saddled;
     public boolean shaking;
-    public boolean blasting;
+    public byte countdownTicks;
+    public byte blastTicksRemaining;
     public boolean isInWater;
 }

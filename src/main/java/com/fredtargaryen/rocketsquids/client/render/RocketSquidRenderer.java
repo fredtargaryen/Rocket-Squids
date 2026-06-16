@@ -32,7 +32,7 @@ import static com.fredtargaryen.rocketsquids.client.event.ClientHandler.SQUID_BO
 
 public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, RocketSquidRenderState, RocketSquidModel> {
     private static final Identifier ADULT_NORMAL = DataReference.getIdentifier("textures/entity/rocket_squid.png");
-    private static final Identifier ADULT_BLASTING = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
+    private static final Identifier ADULT_SHAKING = DataReference.getIdentifier("textures/entity/rocket_squid_b.png");
     private static final Identifier BABY = DataReference.getIdentifier("textures/entity/baby_rocket_squid.png");
     private final TextureAtlasSprite fireTexture;
 
@@ -58,7 +58,8 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
         state.yBodyRot2 = (float) (Mth.lerp(state.partialTick, squid.getPreviousRoll(), squid.getRoll()));
         state.saddled = squid.getSaddled();
         state.shaking = squid.getShaking();
-        state.blasting = squid.getBlasting();
+        state.countdownTicks = squid.getCountdownTicks();
+        state.blastTicksRemaining = squid.getBlastTicksRemaining();
         state.isInWater = squid.isInWater();
     }
 
@@ -66,9 +67,16 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
     public Vec3 getRenderOffset(RocketSquidRenderState state) {
         Vec3 vec3 = super.getRenderOffset(state);
         if (state.shaking) {
-            return vec3.add(this.random.nextGaussian() * 0.02d,
-                    this.random.nextGaussian() * 0.02d,
-                    this.random.nextGaussian() * 0.02d);
+            double shakeAmount = 0.0;
+            if (state.countdownTicks > 0) {
+                shakeAmount = 0.1 - (0.1 * state.countdownTicks / (double) DataReference.DEFAULT_COUNTDOWN_LENGTH);
+            }
+            else if (state.blastTicksRemaining > 0) {
+                shakeAmount = 0.06 * state.blastTicksRemaining / (double) DataReference.DEFAULT_BLAST_LENGTH;
+            }
+            return vec3.add(this.random.nextGaussian() * shakeAmount,
+                    this.random.nextGaussian() * shakeAmount,
+                    this.random.nextGaussian() * shakeAmount);
         }
         return vec3;
     }
@@ -90,7 +98,7 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
             CameraRenderState cameraState
     ) {
         super.submit(state, poseStack, collector, cameraState);
-        if (state.blasting && !state.isInWater) {
+        if (state.blastTicksRemaining > 0 && !state.isInWater) {
             //Calculate and set translation-rotation matrix
             poseStack.pushPose();
             double yaw_r = state.yBodyRot;
@@ -145,7 +153,7 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
     @Override
     public @NotNull Identifier getTextureLocation(RocketSquidRenderState state) {
         if (state.isBaby) return BABY;
-        if (state.shaking) return ADULT_BLASTING;
+        if (state.shaking) return ADULT_SHAKING;
         return ADULT_NORMAL;
     }
 
