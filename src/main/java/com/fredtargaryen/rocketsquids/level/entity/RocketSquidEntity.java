@@ -267,31 +267,9 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
             this.blastoff();
         }
 
-        //Rotate towards target pitch
-        double trp = this.getEntityData().get(PITCH_TARGET);
-        double rp = this.getEntityData().get(PITCH);
-        if (trp != rp) {
-            //Squids rotate <= 180 degrees either way.
-            //The squid can rotate out of the interval [-PI, PI].
-            rp += (trp - rp) * rotateSpeed;
-            this.setPitch(rp);
-        }
-
-        //Rotate towards target yaw
-        double trY = this.getEntityData().get(YAW_TARGET);
-        double ry = this.getEntityData().get(YAW);
-        if (trY != ry) {
-            ry += (trY - ry) * rotateSpeed;
-            this.setYaw(ry);
-        }
-
-        //Rotate towards target roll
-        double trr = this.getEntityData().get(ROLL_TARGET);
-        double rr = this.getEntityData().get(ROLL);
-        if (trr != rr) {
-            rr += (trr - rr) * rotateSpeed;
-            this.setRoll(rr);
-        }
+        this.turnTowardsTarget(PITCH_PREV, PITCH, PITCH_TARGET, rotateSpeed);
+        this.turnTowardsTarget(YAW_PREV, YAW, YAW_TARGET, rotateSpeed);
+        this.turnTowardsTarget(ROLL_PREV, ROLL, ROLL_TARGET, rotateSpeed);
 
         if (this.level().isClientSide()) {
             // Client side
@@ -341,6 +319,28 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                 this.riderToThrow = null;
             }
         }
+    }
+
+    private void turnTowardsTarget(
+            EntityDataAccessor<Double> prevRotation,
+            EntityDataAccessor<Double> rotation,
+            EntityDataAccessor<Double> targetRotation,
+            double naturalTurnSpeed) {
+        SynchedEntityData sed = this.getEntityData();
+        double target = sed.get(targetRotation);
+        double current = sed.get(rotation);
+        if (target == current) return;
+        double difference = target - current;
+        if (Math.abs(difference) < 0.005) {
+            current = target;
+        }
+        else {
+            //Squids rotate <= 180 degrees either way.
+            //The squid can rotate out of the interval [-PI, PI].
+            current += (target - current) * naturalTurnSpeed;
+        }
+        sed.set(prevRotation, sed.get(rotation));
+        sed.set(rotation, current);
     }
 
     @Override
@@ -526,11 +526,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(PITCH);
     }
 
-    private void setPitch(double pitch) {
-        this.getEntityData().set(PITCH_PREV, this.getEntityData().get(PITCH));
-        this.getEntityData().set(PITCH, pitch);
-    }
-
     public void forcePitchInstant(double pitch) {
         pitch = RotationHelper.resetRotationValueWithinRange(pitch);
         this.getEntityData().set(PITCH_PREV, pitch);
@@ -570,11 +565,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
         return this.getEntityData().get(YAW);
     }
 
-    private void setYaw(double yaw) {
-        this.getEntityData().set(YAW_PREV, this.getEntityData().get(YAW));
-        this.getEntityData().set(YAW, yaw);
-    }
-
     public void forceYawInstant(double yaw) {
         yaw = RotationHelper.resetRotationValueWithinRange(yaw);
         this.getEntityData().set(YAW_PREV, yaw);
@@ -612,11 +602,6 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
 
     public double getRoll() {
         return this.getEntityData().get(ROLL);
-    }
-
-    private void setRoll(double roll) {
-        this.getEntityData().set(ROLL_PREV, this.getEntityData().get(ROLL));
-        this.getEntityData().set(ROLL, roll);
     }
 
     public void forceRollInstant(double roll) {
