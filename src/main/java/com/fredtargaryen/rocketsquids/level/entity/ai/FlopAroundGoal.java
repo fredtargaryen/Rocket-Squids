@@ -25,7 +25,7 @@ public class FlopAroundGoal extends Goal {
     @Override
     public void tick() {
         if (this.squid.onGround()) {
-            this.squid.setTargetPitch(Math.PI / 2);
+            this.squid.setTargetPitch(Math.PI / 2.0);
         } else if(Math.abs(this.squid.getDeltaMovement().y) > 0.008){
             RotationHelper.pointSquidInDirectionMoving(this.squid);
         }

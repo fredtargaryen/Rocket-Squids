@@ -8,6 +8,7 @@ import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,21 +46,45 @@ public class SqueleporterItem extends Item {
                 ValueInput squidVi = ValueIOHelper.getCompoundTagAsValueInput(data.squidData());
                 EntityType.create(squidVi, level, EntitySpawnReason.MOB_SUMMONED).ifPresent(entity -> {
                     RocketSquidEntity newSquid = (RocketSquidEntity) entity;
-                    newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * Math.PI / 180.0F);
-                    newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * Math.PI / 180.0F));
+                    newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * RotationHelper.DEG2RAD);
+                    newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * RotationHelper.DEG2RAD));
                     RotationHelper.moveSquidInDirectionPointing(newSquid);
                     Vec3 playerMotion = playerIn.getDeltaMovement();
                     newSquid.push(playerMotion.x, playerMotion.y, playerMotion.z);
                     Vec3 playerPos = playerIn.position();
-                    newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
-                    level.addFreshEntity(newSquid);
                     if (newSquid.getSaddled()) {
+                        newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
+                        level.addFreshEntity(newSquid);
                         playerIn.startRiding(newSquid);
+                        level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        //Set the squeleporter to inactive
+                        playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
+                        playerIn.getCooldowns().addCooldown(stack, 10);
                     }
-                    level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-                    //Set the squeleporter to inactive
-                    playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
-                    playerIn.getCooldowns().addCooldown(stack, 10);
+                    else {
+                        Vec3 direction = RotationHelper.getSquidDirection(newSquid);
+                        double spawnDistance = 3.0;
+                        boolean canSpawn = false;
+                        Vec3 spawnPos = playerIn.getEyePosition();
+                        while (!canSpawn && spawnDistance >= 0.0) {
+                            spawnPos = playerIn.getEyePosition().add(direction.scale(spawnDistance));
+                            BlockPos spawnBlockPos = BlockPos.containing(spawnPos.x, spawnPos.y, spawnPos.z);
+                            if (level.getBlockState(spawnBlockPos).isSolid()) {
+                                spawnDistance -= 1.0;
+                            }
+                            else {
+                                canSpawn = true;
+                            }
+                        }
+                        if (canSpawn) {
+                            newSquid.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+                            level.addFreshEntity(newSquid);
+                            level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                            //Set the squeleporter to inactive
+                            playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
+                            playerIn.getCooldowns().addCooldown(stack, 10);
+                        }
+                    }
                 });
             }
             return InteractionResult.PASS;

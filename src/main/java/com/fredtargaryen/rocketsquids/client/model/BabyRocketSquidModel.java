@@ -43,7 +43,7 @@ public class BabyRocketSquidModel extends RocketSquidModel {
             float floatx = (float) Math.cos(tentacleYRot) * 1.5F;
             float floaty = 4.0F;
             float floatz = (float) Math.sin(tentacleYRot) * 1.5F;
-            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2);
+            tentacleYRot = i * Math.PI * -2.0 / 8.0 + (Math.PI / 2.0);
             root.addOrReplaceChild(createTentacleName(i), tentCubeList, PartPose.offsetAndRotation(floatx, floaty, floatz, 0.0F, (float) tentacleYRot, 0.0F));
         }
 
