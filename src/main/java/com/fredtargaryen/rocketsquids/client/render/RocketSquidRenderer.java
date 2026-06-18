@@ -69,7 +69,7 @@ public class RocketSquidRenderer extends AgeableMobRenderer<RocketSquidEntity, R
         if (state.shaking) {
             double shakeAmount = 0.0;
             if (state.countdownTicks > 0) {
-                shakeAmount = 0.1 - (0.1 * state.countdownTicks / (double) DataReference.DEFAULT_COUNTDOWN_LENGTH);
+                shakeAmount = 0.09 - (0.09 * state.countdownTicks / (double) DataReference.DEFAULT_COUNTDOWN_LENGTH);
             }
             else if (state.blastTicksRemaining > 0) {
                 shakeAmount = 0.06 * state.blastTicksRemaining / (double) DataReference.DEFAULT_BLAST_LENGTH;
