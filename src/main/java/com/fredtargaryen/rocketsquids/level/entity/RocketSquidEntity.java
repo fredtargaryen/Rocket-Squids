@@ -289,10 +289,10 @@ public class RocketSquidEntity extends AgeableWaterCreature implements Leashable
                 this.tentacleAngle = 0;
             } else if (this.getEntityData().get(SHAKING)) {
                 //Tentacles stick out at 60 degrees
-                this.tentacleAngle = (float) Math.PI / 3;
+                this.tentacleAngle = (float) (Math.PI / 3.0);
             } else {
                 //If in water, tentacles oscillate normally
-                this.tentacleAngle = this.isInWater() ? (float) ((Math.PI / 6) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6)) : 0;
+                this.tentacleAngle = this.isInWater() ? (float) ((Math.PI / 6.0) + (Mth.sin((float) Math.toRadians(4 * (this.tickCount % 360))) * Math.PI / 6.0)) : 0;
             }
             if (this.getBlasting()) {
                 Vec3 pos = this.position();
