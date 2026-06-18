@@ -8,6 +8,7 @@ import com.fredtargaryen.rocketsquids.level.datacomponent.SqueleporterData;
 import com.fredtargaryen.rocketsquids.level.entity.RocketSquidEntity;
 import com.fredtargaryen.rocketsquids.util.RotationHelper;
 import com.fredtargaryen.rocketsquids.util.ValueIOHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -55,16 +56,35 @@ public class SqueleporterItem extends Item {
                         newSquid.setPos(playerPos.x, playerPos.y, playerPos.z);
                         level.addFreshEntity(newSquid);
                         playerIn.startRiding(newSquid);
+                        level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        //Set the squeleporter to inactive
+                        playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
+                        playerIn.getCooldowns().addCooldown(stack, 10);
                     }
                     else {
                         Vec3 direction = RotationHelper.getSquidDirection(newSquid);
-                        newSquid.setPos(playerPos.x + direction.x * 2.0, playerPos.y + direction.y * 2.0, playerPos.z + direction.z * 2.0);
-                        level.addFreshEntity(newSquid);
+                        double spawnDistance = 3.0;
+                        boolean canSpawn = false;
+                        Vec3 spawnPos = playerIn.getEyePosition();
+                        while (!canSpawn && spawnDistance >= 0.0) {
+                            spawnPos = playerIn.getEyePosition().add(direction.scale(spawnDistance));
+                            BlockPos spawnBlockPos = BlockPos.containing(spawnPos.x, spawnPos.y, spawnPos.z);
+                            if (level.getBlockState(spawnBlockPos).isSolid()) {
+                                spawnDistance -= 1.0;
+                            }
+                            else {
+                                canSpawn = true;
+                            }
+                        }
+                        if (canSpawn) {
+                            newSquid.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+                            level.addFreshEntity(newSquid);
+                            level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                            //Set the squeleporter to inactive
+                            playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
+                            playerIn.getCooldowns().addCooldown(stack, 10);
+                        }
                     }
-                    level.playSound(null, playerPos.x, playerPos.y, playerPos.z, RSSounds.SQUIDTP_OUT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-                    //Set the squeleporter to inactive
-                    playerIn.setItemInHand(handIn, RSItems.SQUELEPORTER_INACTIVE.get().getDefaultInstance());
-                    playerIn.getCooldowns().addCooldown(stack, 10);
                 });
             }
             return InteractionResult.PASS;
