@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,8 +26,11 @@ import org.jetbrains.annotations.NotNull;
 import static com.fredtargaryen.rocketsquids.RSDataComponentTypes.SQUELEPORTER;
 
 public class SqueleporterItem extends Item {
+    private EntitySpawnRequest spawnRequest;
+
     public SqueleporterItem(Item.Properties properties) {
         super(properties);
+        this.spawnRequest = new EntitySpawnRequest(EntitySpawnReason.MOB_SUMMONED, true);
     }
 
     /**
@@ -44,7 +48,7 @@ public class SqueleporterItem extends Item {
                 //The squeleporter is active so squid data is stored.
                 SqueleporterData data = stack.get(SQUELEPORTER);
                 ValueInput squidVi = ValueIOHelper.getCompoundTagAsValueInput(data.squidData());
-                EntityType.create(squidVi, level, EntitySpawnReason.MOB_SUMMONED).ifPresent(entity -> {
+                EntityType.create(squidVi, level, this.spawnRequest).ifPresent(entity -> {
                     RocketSquidEntity newSquid = (RocketSquidEntity) entity;
                     newSquid.forcePitchInstant((playerIn.getXRot() + 90.0F) * RotationHelper.DEG2RAD);
                     newSquid.forceYawInstant((float) (playerIn.getYHeadRot() * RotationHelper.DEG2RAD));

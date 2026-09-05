@@ -99,7 +99,7 @@ public class ClientHandler {
     }
 
     public static void openConchClient(byte conchStage) {
-        Minecraft.getInstance().setScreen(new ConchScreen(conchStage));
+        Minecraft.getInstance().gui.setScreen(new ConchScreen(conchStage));
     }
 
     public static void playNoteFromMessageConchNeeded(int note) {

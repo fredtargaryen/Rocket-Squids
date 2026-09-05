@@ -30,7 +30,8 @@ displayName="${mod_name}" #mandatory
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="banner.png" #optional
+bannerFile="banner.png" #optional'
+iconFile="icon.png"
 
 # A text field displayed in the mod UI
 #credits="" #optional
