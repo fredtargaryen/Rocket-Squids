@@ -34,7 +34,7 @@ There are currently 5 models to export from `statue_closed.bbmodel` in Blockbenc
 Textures are set up for the model editor's convenience in Blockbench but need to be manually set after editing to look correct in-game. In the .json for every exported model replace the `textures` group with this:
 ```
 	"textures": {
-		"1": "rocketsquids:block/statue",
+		"model": "rocketsquids:block/statue",
 		"particle": "block/stone"
 	},
 ```
