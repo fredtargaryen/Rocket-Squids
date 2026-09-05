@@ -1,5 +1,5 @@
 {
-  "parent": "rocketsquids:block/statue_open",
+  "parent": "rocketsquids:block/statue_item_closed",
   "display": {
     "thirdperson_righthand": {
       "rotation": [0, -180, 0],
