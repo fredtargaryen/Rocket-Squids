@@ -12,9 +12,9 @@ Likewise to "close" the model set the `door` rotation to 0 and move the faces ba
 ## Exporting Statue Models
 There are currently 5 models to export from `statue_closed.bbmodel` in Blockbench for statues:
 - The item models are shrunken versions of the entire statue.
-  - `models/block/statue_item_closed`: the item model for closed statues in the inventory
+  - `models/block/statue_closed`: the item model for closed statues in the inventory
     - Export the model as-is (File > Export > Export Block/Item Model)
-  - `models/block/statue_item_open`: the item model for open statues in the inventory
+  - `models/block/statue_open`: the item model for open statues in the inventory
     - Change the model to open (see [Opening the Statue](README.md#opening-the-statue))
     - Export the model
 - The block model is divided into upper and lower blocks to make a multiblock statue. This is good practice but also avoids issues with Minecraft's lighting system.

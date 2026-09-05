@@ -23,8 +23,8 @@ public class RSItems {
     public static final DeferredItem<Conch3Item> ITEM_CONCH3 = ITEMS.registerItem("conch_3", Conch3Item::new, props -> props.stacksTo(1).rarity(Rarity.RARE));
     public static final DeferredItem<NitroInkSacItem> NITRO_SAC = ITEMS.registerItem("nitro_ink_sac", NitroInkSacItem::new, props -> props.stacksTo(64));
     public static final DeferredItem<TurboTubeItem> TURBO_TUBE = ITEMS.registerItem("turbo_tube", TurboTubeItem::new, props -> props.stacksTo(64).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<BlockItem> ITEM_STATUE_CLOSED = ITEMS.registerSimpleBlockItem("statue_item_closed", RSBlocks.STATUE, props -> props.stacksTo(1).rarity(Rarity.RARE));
-    public static final DeferredItem<BlockItem> ITEM_STATUE_OPEN = ITEMS.registerSimpleBlockItem("statue_item_open", RSBlocks.STATUE, props -> props.stacksTo(1));
+    public static final DeferredItem<BlockItem> ITEM_STATUE_CLOSED = ITEMS.registerSimpleBlockItem("statue_closed", RSBlocks.STATUE, props -> props.stacksTo(1).rarity(Rarity.RARE));
+    public static final DeferredItem<BlockItem> ITEM_STATUE_OPEN = ITEMS.registerSimpleBlockItem("statue_open", RSBlocks.STATUE, props -> props.stacksTo(1));
     public static final DeferredItem<SqueleporterItem> SQUELEPORTER_ACTIVE = ITEMS.registerItem("squeleporter_active", SqueleporterItem::new, props -> props.stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<SqueleporterItem> SQUELEPORTER_INACTIVE = ITEMS.registerItem("squeleporter_inactive", SqueleporterItem::new, props -> props.stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<SpawnEggItem> ROCKET_SQUID_SPAWN_EGG = ITEMS.registerItem("rocket_squid_spawn_egg", props -> new SpawnEggItem(props.spawnEgg(RSEntityTypes.SQUID_TYPE.get())));
