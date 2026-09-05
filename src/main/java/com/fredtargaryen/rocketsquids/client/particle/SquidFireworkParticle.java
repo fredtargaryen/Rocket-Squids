@@ -211,7 +211,7 @@ public class SquidFireworkParticle {
 
         private boolean isFarFromCamera() {
             Minecraft minecraft = Minecraft.getInstance();
-            return minecraft.gameRenderer.getMainCamera().position().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
+            return minecraft.gameRenderer.mainCamera().position().distanceToSqr(this.x, this.y, this.z) >= 256.0D;
         }
 
         private void createShaped(double speed, double[][] shape, int[] colours, int[] fadeColours, boolean trail, boolean twinkleIn) {

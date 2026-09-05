@@ -11,7 +11,7 @@ import com.fredtargaryen.rocketsquids.level.block.StatueBlock;
 import com.geckolib.animatable.client.GeoRenderProvider;
 import com.geckolib.renderer.GeoArmorRenderer;
 import com.google.common.base.Suppliers;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
